@@ -1,0 +1,16 @@
+{
+    "name": "Massive.~Samples",
+    "rootNamespace": "Massive.Samples",
+    "references": [
+        "GUID:cf2e24c64a0d02f4690b9be74f35390f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

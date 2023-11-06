@@ -1,0 +1,8 @@
+﻿{
+  "name": "massive",
+  "version": "0.0.1",
+  "type": "library",
+  "displayName": "Data container with rollback.",
+  "unity": "2021.2",
+  "description": "External data container for entities, featuring rollback."
+}
