@@ -125,11 +125,6 @@ namespace Massive
             return ref _continuousState[worldIndex];
         }
 
-        public Span<TState> GetAll()
-        {
-            return new Span<TState>(_continuousState, _frameStarts[_currentFrame], _continuousState.Length);
-        }
-
         public bool Exists(int localIndex)
         {
             return localIndex < _frameLengths[_currentFrame];
