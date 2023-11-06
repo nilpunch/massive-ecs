@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Massive.Samples
+﻿namespace Massive.Samples
 {
     public class WorldTime : ITickable
     {

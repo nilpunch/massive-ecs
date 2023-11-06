@@ -1,6 +1,6 @@
 ﻿namespace Massive
 {
-    public struct StateHandle<TState> where TState : struct
+    public readonly struct StateHandle<TState> where TState : struct
     {
         private readonly int _localIndex;
         private readonly WorldState<TState> _worldState;

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Massive.Samples
 {
@@ -8,7 +7,7 @@ namespace Massive.Samples
         private StateHandle<TestEntityState> _stateHandle;
         private WorldTime _worldTime;
 
-        public void Register(StateHandle<TestEntityState> stateHandle, WorldTime worldTime)
+        public void Construct(StateHandle<TestEntityState> stateHandle, WorldTime worldTime)
         {
             _worldTime = worldTime;
             _stateHandle = stateHandle;

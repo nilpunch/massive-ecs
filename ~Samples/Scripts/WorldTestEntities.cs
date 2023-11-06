@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace Massive.Samples
 {
@@ -18,13 +16,13 @@ namespace Massive.Samples
         private void Start()
         {
             var entities = FindObjectsOfType<TestEntity>();
-            _worldState = new WorldState<TestEntityState>(maxFrames: 2400, maxStatesPerFrame: 150);
+            _worldState = new WorldState<TestEntityState>(maxFrames: 240, maxStatesPerFrame: entities.Length);
 
             _worldTime = new WorldTime(60);
 
             foreach (TestEntity testEntity in entities)
             {
-                testEntity.Register(
+                testEntity.Construct(
                     _worldState.Reserve(new TestEntityState(testEntity.transform.position, testEntity.transform.rotation)),
                     _worldTime);
             }
@@ -47,7 +45,7 @@ namespace Massive.Samples
             ElapsedTime += Time.deltaTime * _simulationSpeed;
             ElapsedTime = Mathf.Max(ElapsedTime, 0);
 
-            EarliestApprovedTick = TargetTick - _resimulate;
+            EarliestApprovedTick = Mathf.Max(TargetTick - _resimulate, 0);
 
             FastForward(TargetTick);
 
