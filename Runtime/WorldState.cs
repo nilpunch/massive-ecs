@@ -9,7 +9,6 @@ namespace Massive
         private readonly TState[] _continuousState;
         private readonly int[] _frameLengths;
         private readonly int[] _frameStarts;
-
         private int _currentFrame;
         private int _savedFrames;
 
@@ -77,12 +76,12 @@ namespace Massive
                 }
             }
 
-            _savedFrames = Math.Min(_savedFrames + 1, _maxFrames);
-
             int nextFrame = Loop(_currentFrame + 1, _maxFrames);
             _currentFrame = nextFrame;
             _frameStarts[nextFrame] = Loop(nextStartIndex, _continuousState.Length);
             _frameLengths[nextFrame] = currentLength;
+
+            _savedFrames = Math.Min(_savedFrames + 1, _maxFrames);
         }
 
         public void Rollback(int rollbackFrames)
@@ -121,11 +120,16 @@ namespace Massive
 
         public ref TState Get(int localIndex)
         {
+            if (!IsExist(localIndex))
+            {
+                throw new InvalidOperationException($"State does not exist! RequestedState: {localIndex}");
+            }
+
             int worldIndex = LocalToWorldIndex(localIndex);
             return ref _continuousState[worldIndex];
         }
 
-        public bool Exists(int localIndex)
+        public bool IsExist(int localIndex)
         {
             return localIndex < _frameLengths[_currentFrame];
         }

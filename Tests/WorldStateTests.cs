@@ -73,5 +73,31 @@ namespace Massive.Tests
 
             Assert.AreEqual(handle1.State, 1);
         }
+
+        [Test]
+        public void IsExist_ShouldWorkCorrectWithRollback()
+        {
+            WorldState<int> worldState = new WorldState<int>(2, 2);
+
+            worldState.SaveFrame();
+
+            Assert.IsFalse(worldState.IsExist(0));
+            Assert.IsFalse(worldState.IsExist(1));
+
+            worldState.Reserve(1);
+
+            Assert.IsTrue(worldState.IsExist(0));
+            Assert.IsFalse(worldState.IsExist(1));
+
+            worldState.SaveFrame();
+
+            Assert.IsTrue(worldState.IsExist(0));
+            Assert.IsFalse(worldState.IsExist(1));
+
+            worldState.Rollback(1);
+
+            Assert.IsFalse(worldState.IsExist(0));
+            Assert.IsFalse(worldState.IsExist(1));
+        }
     }
 }

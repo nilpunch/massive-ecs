@@ -29,6 +29,8 @@ namespace Massive.Samples
                     _worldTime);
             }
 
+            _worldState.SaveFrame();
+
             _tickables = new List<ITickable>();
             _tickables.Add(_worldTime);
             _tickables.AddRange(entities);
