@@ -2,7 +2,7 @@
 
 namespace Massive.Samples
 {
-    public class TestEntity : MonoBehaviour, ITickable
+    public class TestEntity : MonoBehaviour
     {
         private StateHandle<TestEntityState> _stateHandle;
         private WorldTime _worldTime;
@@ -13,15 +13,14 @@ namespace Massive.Samples
             _stateHandle = stateHandle;
         }
 
-        public void Tick()
+        public void Tick(ref TestEntityState state)
         {
-            ref TestEntityState state = ref _stateHandle.State;
             state.Position += Vector3.forward * (0.5f * _worldTime.DeltaTime);
         }
 
         private void LateUpdate()
         {
-            ref TestEntityState state = ref _stateHandle.State;
+            TestEntityState state = _stateHandle.State;
             transform.position = state.Position;
             transform.rotation = state.Rotation;
         }

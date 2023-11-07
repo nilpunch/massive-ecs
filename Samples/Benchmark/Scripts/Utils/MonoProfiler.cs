@@ -34,7 +34,7 @@ namespace Massive.Samples.Benchmark
 
         private void OnGUI()
         {
-            var height = (float)Screen.height / 3;
+            var height = (float)Screen.height / 4;
             var area = new Rect(0, _drawOrder * height, Screen.width, height);
 
             GUI.Label(area, $"{_identifier}: {Average(_samples)}", _style.Value);

@@ -26,7 +26,7 @@ namespace Massive.Samples
             // var entities = FindObjectsOfType<TestEntity>();
             // var entityWorldState = new WorldState<TestEntityState>();
 
-            var testState = new WorldState<int>(maxFrames: 3, maxStatesPerFrame: 3);
+            var testState = new WorldState<int>(frames: 3, statesPerFrame: 3);
 
             // testState.Reserve(new TestState(1));
             // testState.Reserve(new TestState(2));

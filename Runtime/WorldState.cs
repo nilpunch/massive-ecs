@@ -9,92 +9,46 @@ namespace Massive
 #endif
     public class WorldState<TState> where TState : struct
     {
-        private readonly int _maxFrames;
-        private readonly int _maxStatesPerFrame;
-        private readonly TState[] _continuousState;
-        private readonly int[] _frameLengths;
-        private readonly int[] _frameStarts;
+        private readonly int _framesCapacity;
+        private readonly int _statesPerFrame;
+        private readonly TState[] _statesByFrames;
+        private readonly int[] _framesLength;
         private int _currentFrame;
-        private int _savedFrames;
+        private int _framesCount;
 
-        public WorldState(int maxFrames = 120, int maxStatesPerFrame = 100)
+        public WorldState(int frames = 120, int statesPerFrame = 100)
         {
             // Reserve 2 frames. One for rollback restoration, other one for current frame.
-            _maxFrames = maxFrames + 2;
+            _framesCapacity = frames + 2;
 
-            _maxStatesPerFrame = maxStatesPerFrame;
-            _continuousState = new TState[maxStatesPerFrame * _maxFrames];
-            _frameLengths = new int[_maxFrames];
-            _frameStarts = new int[_maxFrames];
-
-            _frameLengths[0] = 0;
-            _frameStarts[0] = 0;
+            _statesPerFrame = statesPerFrame;
+            _statesByFrames = new TState[_framesCapacity * statesPerFrame];
+            _framesLength = new int[_framesCapacity];
         }
 
         public void SaveFrame()
         {
-            int currentLength = _frameLengths[_currentFrame];
-            int currentStartIndex = _frameStarts[_currentFrame];
+            int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
+            int currentFrameLength = _framesLength[_currentFrame];
 
-            int nextStartIndex = currentStartIndex + currentLength;
-            int nextEndIndex = nextStartIndex + currentLength;
-
-            if (currentLength > 0)
+            if (currentFrameLength > 0)
             {
-                // 3______12 -> _123_____
-                if (nextStartIndex >= _continuousState.Length)
-                {
-                    int residualLength = nextStartIndex - _continuousState.Length;
-                    int copyLength = _continuousState.Length - currentStartIndex;
-
-                    // First half:
-                    // 3______12 -> 312______
-                    Array.Copy(_continuousState, currentStartIndex, _continuousState, residualLength, copyLength);
-
-                    if (residualLength > 0)
-                    {
-                        // Second half:
-                        // 312______ -> _123_____
-                        Array.Copy(_continuousState, 0, _continuousState, residualLength + copyLength, residualLength);
-                    }
-                }
-                // _____123_ -> 23______1
-                else if (nextEndIndex > _continuousState.Length)
-                {
-                    int copyLength = _continuousState.Length - nextStartIndex;
-
-                    // First half:
-                    // _____123_ -> ______231
-                    Array.Copy(_continuousState, currentStartIndex, _continuousState, nextStartIndex, copyLength);
-
-                    int residualLength = nextEndIndex - _continuousState.Length;
-                    if (residualLength > 0)
-                    {
-                        // Second half:
-                        // ______231 -> 23______1
-                        Array.Copy(_continuousState, currentStartIndex + copyLength, _continuousState, 0, residualLength);
-                    }
-                }
-                // ___123___ -> ______123
-                else
-                {
-                    Array.Copy(_continuousState, currentStartIndex, _continuousState, nextStartIndex, currentLength);
-                }
+                int currentFrameIndex = _currentFrame * _statesPerFrame;
+                int nextFrameIndex = nextFrame * _statesPerFrame;
+                Array.Copy(_statesByFrames, currentFrameIndex, _statesByFrames, nextFrameIndex, currentFrameLength);
             }
 
-            int nextFrame = Loop(_currentFrame + 1, _maxFrames);
             _currentFrame = nextFrame;
-            _frameStarts[nextFrame] = Loop(nextStartIndex, _continuousState.Length);
-            _frameLengths[nextFrame] = currentLength;
+            _framesLength[nextFrame] = currentFrameLength;
 
-            // Limit saved frames by maxFrames-1, because one frame is current and not counted.
-            _savedFrames = Math.Min(_savedFrames + 1, _maxFrames - 1);
+            // Limit count by maxFrames-1, because one frame is current and so not counted.
+            _framesCount = Math.Min(_framesCount + 1, _framesCapacity - 1);
         }
 
         public void Rollback(int rollbackFrames)
         {
             // One frame is reserved for restoring.
-            int canRollback = _savedFrames - 1;
+            int canRollback = _framesCount - 1;
 
             if (rollbackFrames > canRollback)
             {
@@ -104,8 +58,8 @@ namespace Massive
             // Add one frame to the rollback to appear at one frame before the target frame.
             rollbackFrames += 1;
 
-            _savedFrames -= rollbackFrames;
-            _currentFrame = LoopNegative(_currentFrame - rollbackFrames, _maxFrames);
+            _framesCount -= rollbackFrames;
+            _currentFrame = LoopNegative(_currentFrame - rollbackFrames, _framesCapacity);
 
             // Populate target frame with data from rollback frame.
             // This will keep rollback frame untouched.
@@ -114,15 +68,14 @@ namespace Massive
 
         public StateHandle<TState> Reserve(TState state)
         {
-            if (_frameLengths[_currentFrame] == _maxStatesPerFrame)
+            if (_framesLength[_currentFrame] == _statesPerFrame)
             {
-                throw new InvalidOperationException($"Exceeded limit of states per frame! Limit: {_maxStatesPerFrame}.");
+                throw new InvalidOperationException($"Exceeded limit of states per frame! Limit: {_statesPerFrame}.");
             }
 
-            int localIndex = _frameLengths[_currentFrame];
-            int worldIndex = LocalToWorldIndex(localIndex);
-            _continuousState[worldIndex] = state;
-            _frameLengths[_currentFrame] += 1;
+            int localIndex = _framesLength[_currentFrame];
+            _statesByFrames[GlobalIndex(localIndex)] = state;
+            _framesLength[_currentFrame] += 1;
             return new StateHandle<TState>(localIndex, this);
         }
 
@@ -134,20 +87,25 @@ namespace Massive
                 throw new InvalidOperationException($"State does not exist! RequestedState: {localIndex}.");
             }
 
-            int worldIndex = LocalToWorldIndex(localIndex);
-            return ref _continuousState[worldIndex];
+            return ref _statesByFrames[GlobalIndex(localIndex)];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Span<TState> GetAll()
+        {
+            return new Span<TState>(_statesByFrames, _currentFrame * _statesPerFrame, _framesLength[_currentFrame]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsExist(int localIndex)
         {
-            return localIndex < _frameLengths[_currentFrame];
+            return localIndex < _framesLength[_currentFrame];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int LocalToWorldIndex(int localIndex)
+        private int GlobalIndex(int localIndex)
         {
-            return Loop(_frameStarts[_currentFrame] + localIndex, _continuousState.Length);
+            return _currentFrame * _statesPerFrame + localIndex;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

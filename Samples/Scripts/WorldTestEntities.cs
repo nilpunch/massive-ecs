@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Massive.Samples
@@ -7,20 +8,21 @@ namespace Massive.Samples
     public class WorldTestEntities : MonoBehaviour
     {
         [SerializeField] private float _simulationSpeed = 1f;
+        [SerializeField] private int _framesCapacity = 240;
         [SerializeField] private int _resimulate = 0;
 
-        private List<ITickable> _tickables;
         private WorldState<TestEntityState> _worldState;
         private WorldTime _worldTime;
+        private List<TestEntity> _testEntities;
 
         private void Start()
         {
-            var entities = FindObjectsOfType<TestEntity>();
-            _worldState = new WorldState<TestEntityState>(maxFrames: 240, maxStatesPerFrame: entities.Length);
+            _testEntities = FindObjectsOfType<TestEntity>().ToList();
+            _worldState = new WorldState<TestEntityState>(frames: _framesCapacity, statesPerFrame: _testEntities.Count);
 
             _worldTime = new WorldTime(60);
 
-            foreach (TestEntity testEntity in entities)
+            foreach (TestEntity testEntity in _testEntities)
             {
                 testEntity.Construct(
                     _worldState.Reserve(new TestEntityState(testEntity.transform.position, testEntity.transform.rotation)),
@@ -28,10 +30,6 @@ namespace Massive.Samples
             }
 
             _worldState.SaveFrame();
-
-            _tickables = new List<ITickable>();
-            _tickables.Add(_worldTime);
-            _tickables.AddRange(entities);
         }
 
         [field: SerializeField] public float ElapsedTime { get; set; }
@@ -59,10 +57,14 @@ namespace Massive.Samples
 
                 while (CurrentTick < targetTick)
                 {
-                    foreach (var tickable in _tickables)
+                    Span<TestEntityState> states = _worldState.GetAll();
+                    for (int index = 0; index < states.Length; index++)
                     {
-                        tickable.Tick();
+                        ref TestEntityState state = ref states[index];
+                        // state.Position += Vector3.forward * (0.5f * _worldTime.DeltaTime);
+                        _testEntities[index].Tick(ref state);
                     }
+
                     _worldState.SaveFrame();
                     CurrentTick += 1;
                 }
