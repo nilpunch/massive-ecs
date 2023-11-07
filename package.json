@@ -4,5 +4,13 @@
   "type": "library",
   "displayName": "Data container with rollback.",
   "unity": "2021.2",
-  "description": "External data container for entities, featuring rollback."
+  "description": "External data container for entities, featuring rollback.",
+  "samples": [
+      {
+          "displayName": "Benchmark Sample",
+          "description": "Contains sample for monitoring performance.",
+          "path": "Samples/Benchmark"
+      }
+  ],
+  "author": "https://github.com/nilpunch"
 }
