@@ -34,7 +34,7 @@ namespace Massive.Samples.Misc
 
         [field: SerializeField] public float ElapsedTime { get; set; }
 
-        public int TargetTick => Mathf.FloorToInt(ElapsedTime * _worldTime.TicksPerSecond);
+        public int TargetTick => Mathf.FloorToInt(ElapsedTime * _worldTime.FramesPerSecond);
         public int CurrentTick { get; set; }
         private int EarliestApprovedTick { get; set; }
 

@@ -2,23 +2,23 @@
 {
     public class WorldTime : ITickable
     {
-        public float Time => DeltaTime * Tick;
+        public float Time => DeltaTime * Frame;
 
         public float DeltaTime { get; }
 
-        public int Tick { get; private set; }
+        public int Frame { get; private set; }
 
-        public int TicksPerSecond { get; }
+        public int FramesPerSecond { get; }
 
-        public WorldTime(int ticksPerSecond)
+        public WorldTime(int framesPerSecond)
         {
-            TicksPerSecond = ticksPerSecond;
-            DeltaTime = 1f / TicksPerSecond;
+            FramesPerSecond = framesPerSecond;
+            DeltaTime = 1f / FramesPerSecond;
         }
 
         void ITickable.Tick()
         {
-            Tick += 1;
+            Frame += 1;
         }
     }
 }

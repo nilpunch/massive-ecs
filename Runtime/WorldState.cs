@@ -7,7 +7,7 @@ namespace Massive
     [Unity.IL2CPP.CompilerServices.Il2CppSetOption (Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
     [Unity.IL2CPP.CompilerServices.Il2CppSetOption (Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 #endif
-    public class WorldState<TState> where TState : struct
+    public class WorldState<TState> : IWorldState where TState : struct
     {
         private readonly int _framesCapacity;
         private readonly int _statesPerFrame;
@@ -25,6 +25,12 @@ namespace Massive
             _statesByFrames = new TState[_framesCapacity * statesPerFrame];
             _framesLength = new int[_framesCapacity];
         }
+
+        public int StatesCount => _framesLength[_currentFrame];
+
+        public int StatesCapacity => _statesPerFrame;
+
+        public bool CanReserveState => _framesLength[_currentFrame] != _statesPerFrame;
 
         public void SaveFrame()
         {
@@ -45,21 +51,21 @@ namespace Massive
             _framesCount = Math.Min(_framesCount + 1, _framesCapacity - 1);
         }
 
-        public void Rollback(int rollbackFrames)
+        public void Rollback(int frames)
         {
             // One frame is reserved for restoring.
             int canRollback = _framesCount - 1;
 
-            if (rollbackFrames > canRollback)
+            if (frames > canRollback)
             {
-                throw new InvalidOperationException($"Can't rollback this far. CanRollback:{canRollback}, Requested: {rollbackFrames}.");
+                throw new InvalidOperationException($"Can't rollback this far. CanRollback:{canRollback}, Requested: {frames}.");
             }
 
             // Add one frame to the rollback to appear at one frame before the target frame.
-            rollbackFrames += 1;
+            frames += 1;
 
-            _framesCount -= rollbackFrames;
-            _currentFrame = LoopNegative(_currentFrame - rollbackFrames, _framesCapacity);
+            _framesCount -= frames;
+            _currentFrame = LoopNegative(_currentFrame - frames, _framesCapacity);
 
             // Populate target frame with data from rollback frame.
             // This will keep rollback frame untouched.
