@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Massive.Samples
+namespace Massive.Samples.Misc
 {
     public class WorldTestEntities : MonoBehaviour
     {

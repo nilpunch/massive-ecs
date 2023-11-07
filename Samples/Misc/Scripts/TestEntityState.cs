@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Massive.Samples
+namespace Massive.Samples.Misc
 {
     public struct TestEntityState
     {

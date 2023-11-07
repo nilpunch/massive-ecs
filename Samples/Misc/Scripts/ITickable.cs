@@ -1,4 +1,4 @@
-﻿namespace Massive.Samples
+﻿namespace Massive.Samples.Misc
 {
     public interface ITickable
     {

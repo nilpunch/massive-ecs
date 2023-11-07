@@ -3,7 +3,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Massive.Samples
+namespace Massive.Samples.Misc
 {
     public struct TestState
     {
