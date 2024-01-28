@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 1118741506}
   - component: {fileID: 1118741505}
   - component: {fileID: 1118741508}
+  - component: {fileID: 1118741509}
   m_Layer: 0
   m_Name: WorldStateBenchmarks
   m_TagString: Untagged
@@ -155,8 +156,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _identifier: Saving
   _drawOrder: 0
-  _iterations: 10000
-  _worldEntitiesCount: 100
+  _iterations: 120
+  _worldEntitiesCount: 1000
 --- !u!4 &1118741506
 Transform:
   m_ObjectHideFlags: 0
@@ -185,9 +186,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _identifier: Mutation With Span
-  _drawOrder: 3
-  _iterations: 10000
-  _worldEntitiesCount: 100
+  _drawOrder: 1
+  _iterations: 120
+  _worldEntitiesCount: 1000
+--- !u!114 &1118741509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1118741503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 191abfd3a1c244c09c71a2415baefb7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _identifier: Create Then Delete
+  _drawOrder: 2
+  _iterations: 120
+  _worldEntitiesCount: 1000
 --- !u!1 &1660207770
 GameObject:
   m_ObjectHideFlags: 0

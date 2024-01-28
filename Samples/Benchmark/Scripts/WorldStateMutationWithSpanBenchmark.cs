@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Massive.Samples.Benchmark
@@ -7,24 +6,6 @@ namespace Massive.Samples.Benchmark
     public class WorldStateMutationWithSpanBenchmark : MonoProfiler
     {
         [SerializeField, Min(1)] private int _worldEntitiesCount = 100;
-
-        private struct TestState : IState
-        {
-            public int Value;
-
-            public Vector3 Data1;
-            public Quaternion Data2;
-
-            public TestState(int value)
-            {
-                Value = value;
-                Data1 = default;
-                Data2 = default;
-                SparseIndex = -1;
-            }
-
-            public int SparseIndex { get; set; }
-        }
 
         private WorldState<TestState> _worldState;
 

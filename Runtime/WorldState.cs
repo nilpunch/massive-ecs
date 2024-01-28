@@ -10,7 +10,7 @@ namespace Massive
     {
         private readonly int _framesCapacity;
         private readonly int _statesCapacity;
-        private readonly TState[] _denseStatesByFrames;
+        private readonly TState[] _denseByFrames;
         private readonly int[] _sparseByFrames;
         private readonly int[] _framesAliveCount;
 
@@ -24,7 +24,7 @@ namespace Massive
             _framesCapacity = frames + 2;
 
             _statesCapacity = statesCapacity;
-            _denseStatesByFrames = new TState[_framesCapacity * statesCapacity];
+            _denseByFrames = new TState[_framesCapacity * statesCapacity];
             _sparseByFrames = new int[_framesCapacity * statesCapacity];
             _framesAliveCount = new int[_framesCapacity];
 
@@ -51,7 +51,7 @@ namespace Massive
             
             if (currentAliveCount > 0)
             {
-                Array.Copy(_denseStatesByFrames, currentFrameIndex, _denseStatesByFrames, nextFrameIndex, currentAliveCount);
+                Array.Copy(_denseByFrames, currentFrameIndex, _denseByFrames, nextFrameIndex, currentAliveCount);
             }
             
             Array.Copy(_sparseByFrames, currentFrameIndex, _sparseByFrames, nextFrameIndex, _statesCapacity);
@@ -84,77 +84,51 @@ namespace Massive
             SaveFrame();
         }
 
+        public unsafe Frame<TState> CurrentFrame
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                int startIndex = _currentFrame * _statesCapacity;
+
+                fixed (int* aliveCount = &_framesAliveCount[_currentFrame])
+                {
+                    return new Frame<TState>(
+                        new Span<int>(_sparseByFrames, startIndex, _statesCapacity),
+                        new Span<TState>(_denseByFrames, startIndex, _statesCapacity),
+                        aliveCount);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Create(TState state = default)
         {
-            int nextIndex = _framesAliveCount[_currentFrame];
-            
-            if (nextIndex == _statesCapacity)
-            {
-                throw new InvalidOperationException($"Exceeded limit of states per frame! Limit: {_statesCapacity}.");
-            }
-
-            state.SparseIndex = nextIndex;
-            
-            int denseIndex = _sparseByFrames[GlobalIndex(nextIndex)];
-            _denseStatesByFrames[GlobalIndex(denseIndex)] = state;
-            
-            _framesAliveCount[_currentFrame] += 1;
-            return nextIndex;
+            return CurrentFrame.Create(state);
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Delete(int sparseIndex)
         {
-            int denseIndex = _sparseByFrames[GlobalIndex(sparseIndex)];
-            int aliveCount = _framesAliveCount[_currentFrame];
-            
-            if (denseIndex >= aliveCount)
-            {
-                throw new InvalidOperationException($"Index is not alive! SparseIndex: {sparseIndex}.");
-            }
-
-            int swapDenseIndex = aliveCount - 1;
-            TState swapState = _denseStatesByFrames[GlobalIndex(swapDenseIndex)];
-            int swapSparseIndex = swapState.SparseIndex;
-            
-            _sparseByFrames[GlobalIndex(sparseIndex)] = swapDenseIndex;
-            _sparseByFrames[GlobalIndex(swapSparseIndex)] = denseIndex;
-
-            swapState.SparseIndex = sparseIndex;
-            
-            _denseStatesByFrames[GlobalIndex(denseIndex)] = swapState;
-            
-            _framesAliveCount[_currentFrame] -= 1;
+            CurrentFrame.Delete(sparseIndex);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref TState Get(int sparseIndex)
         {
-            if (!IsAlive(sparseIndex))
-            {
-                throw new InvalidOperationException($"State does not exist! RequestedState: {sparseIndex}.");
-            }
-
-            int denseId = _sparseByFrames[GlobalIndex(sparseIndex)];
-
-            return ref _denseStatesByFrames[GlobalIndex(denseId)];
+            return ref CurrentFrame.Get(sparseIndex);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Span<TState> GetAll()
         {
-            return new Span<TState>(_denseStatesByFrames, _currentFrame * _statesCapacity, _framesAliveCount[_currentFrame]);
+            return CurrentFrame.GetAll();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsAlive(int sparseIndex)
         {
-            return _sparseByFrames[GlobalIndex(sparseIndex)] < _framesAliveCount[_currentFrame];
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GlobalIndex(int localIndex)
-        {
-            return _currentFrame * _statesCapacity + localIndex;
+            return CurrentFrame.IsAlive(sparseIndex);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
