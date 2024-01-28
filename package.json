@@ -1,6 +1,6 @@
 ﻿{
   "name": "massive",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "library",
   "displayName": "Data container with rollback.",
   "unity": "2021.2",
@@ -10,11 +10,6 @@
           "displayName": "Benchmark Sample",
           "description": "Contains sample for monitoring performance.",
           "path": "Samples/Benchmark"
-      },
-      {
-          "displayName": "Misc Sample",
-          "description": "Contains random testing stuff.",
-          "path": "Samples/Misc"
       }
   ],
   "author": "https://github.com/nilpunch"

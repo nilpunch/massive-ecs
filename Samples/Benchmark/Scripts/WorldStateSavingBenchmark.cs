@@ -7,7 +7,7 @@ namespace Massive.Samples.Benchmark
     {
         [SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
-        private struct TestState
+        private struct TestState : IState
         {
             public int Value;
 
@@ -19,7 +19,10 @@ namespace Massive.Samples.Benchmark
                 Value = value;
                 Data1 = default;
                 Data2 = default;
+                SparseIndex = -1;
             }
+
+            public int SparseIndex { get; set; }
         }
 
         private WorldState<TestState> _worldState;
@@ -30,7 +33,7 @@ namespace Massive.Samples.Benchmark
 
             for (int i = 0; i < _worldEntitiesCount; i++)
             {
-                _worldState.Reserve(new TestState(i));
+                _worldState.Create(new TestState(i));
             }
         }
 

@@ -1,19 +1,44 @@
-﻿#if ENABLE_IL2CPP
-using System;
+﻿namespace Unity.IL2CPP.CompilerServices
+{
+	using System;
 
-// Unity IL2CPP performance optimization attribute.
-namespace Unity.IL2CPP.CompilerServices {
-    enum Option {
-        NullChecks = 1,
-        ArrayBoundsChecks = 2
-    }
-
-    [AttributeUsage (AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
-    class Il2CppSetOptionAttribute : Attribute {
-        public Option Option { get; private set; }
-        public object Value { get; private set; }
-
-        public Il2CppSetOptionAttribute (Option option, object value) { Option = option; Value = value; }
-    }
-}
+#if !ENABLE_IL2CPP
+	public enum Option
+	{
+#else
+	internal enum Option
+	{
 #endif
+		NullChecks = 1,
+		ArrayBoundsChecks = 2,
+		DivideByZeroChecks = 3
+	}
+
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = true)]
+#if !ENABLE_IL2CPP
+	public class Il2CppSetOptionAttribute : Attribute
+	{
+#else
+	internal class Il2CppSetOptionAttribute : Attribute
+	{
+#endif
+		public Option Option { get; }
+		public object Value { get; }
+
+		public Il2CppSetOptionAttribute(Option option, object value)
+		{
+			this.Option = option;
+			this.Value = value;
+		}
+	}
+
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
+#if !ENABLE_IL2CPP
+	public class Il2CppEagerStaticClassConstructionAttribute : Attribute
+	{
+#else
+	internal class Il2CppEagerStaticClassConstructionAttribute : Attribute
+	{
+#endif
+	}
+}

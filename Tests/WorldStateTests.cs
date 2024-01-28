@@ -5,99 +5,126 @@ namespace Massive.Tests
     [TestFixture]
     public class WorldStateTests
     {
+        public struct TestState : IState
+        {
+            public int Value;
+            
+            public int SparseIndex { get; set; }
+        }
+        
+        [Test]
+        public void Delete_ShouldRewriteSparseIndices()
+        {
+            WorldState<TestState> worldState = new WorldState<TestState>(2, 4);
+
+            worldState.Create(new TestState { Value = 1 });
+            worldState.Create(new TestState { Value = 2 });
+            worldState.Create(new TestState { Value = 3 });
+            
+            Assert.AreEqual(worldState.Get(0).SparseIndex, 0);
+            Assert.AreEqual(worldState.Get(1).SparseIndex, 1);
+            Assert.AreEqual(worldState.Get(2).SparseIndex, 2);
+            
+            worldState.Delete(1);
+            
+            Assert.IsFalse(worldState.IsAlive(1));
+            Assert.AreEqual(worldState.Get(2).SparseIndex, 1);
+        }
+        
         [Test]
         public void Reserve_ShouldInitializeData()
         {
-            WorldState<int> worldState = new WorldState<int>(2, 4);
+            WorldState<TestState> worldState = new WorldState<TestState>(2, 4);
 
-            worldState.Reserve(1);
-            worldState.Reserve(2);
-            worldState.Reserve(3);
+            worldState.Create(new TestState { Value = 1 });
+            worldState.Create(new TestState { Value = 2 });
+            worldState.Create(new TestState { Value = 3 });
 
-            Assert.AreEqual(worldState.Get(0), 1);
-            Assert.AreEqual(worldState.Get(1), 2);
-            Assert.AreEqual(worldState.Get(2), 3);
+            Assert.AreEqual(worldState.Get(0).Value, 1);
+            Assert.AreEqual(worldState.Get(1).Value, 2);
+            Assert.AreEqual(worldState.Get(2).Value, 3);
         }
 
         [Test]
-        public void Reserve_ShouldReturnCorrectHandle()
+        public void Reserve_ShouldReturnCorrectSparseIndex()
         {
-            WorldState<int> worldState = new WorldState<int>(2, 4);
+            WorldState<TestState> worldState = new WorldState<TestState>(2, 4);
 
-            var handle1 = worldState.Reserve(1);
-            var handle2 = worldState.Reserve(2);
-            var handle3 = worldState.Reserve(3);
+            var index1 = worldState.Create(new TestState { Value = 1 });
+            var index2 = worldState.Create(new TestState { Value = 2 });
+            var index3 = worldState.Create(new TestState { Value = 3 });
 
-            Assert.AreEqual(handle1.State, 1);
-            Assert.AreEqual(handle2.State, 2);
-            Assert.AreEqual(handle3.State, 3);
+            Assert.AreEqual(index1, 0);
+            Assert.AreEqual(index2, 1);
+            Assert.AreEqual(index3, 2);
         }
 
         [Test]
-        public void StateHandle_WhenAffected_ShouldChangeState()
+        public void State_WhenAffected_ShouldChangeState()
         {
-            WorldState<int> worldState = new WorldState<int>(2, 2);
-            var handle1 = worldState.Reserve(1);
+            WorldState<TestState> worldState = new WorldState<TestState>(2, 2);
+            
+            var index1 = worldState.Create(new TestState { Value = 1 });
 
-            handle1.State = 2;
+            worldState.Get(index1).Value = 2;
 
-            Assert.AreEqual(handle1.State, 2);
+            Assert.AreEqual(worldState.Get(index1).Value, 2);
         }
 
         [Test]
-        public void SaveFrame_ShouldPreserveHandles()
+        public void SaveFrame_ShouldPreserveStates()
         {
-            WorldState<int> worldState = new WorldState<int>(2, 4);
+            WorldState<TestState> worldState = new WorldState<TestState>(2, 4);
 
-            var handle1 = worldState.Reserve(1);
-            var handle2 = worldState.Reserve(2);
-            var handle3 = worldState.Reserve(3);
+            var index1 = worldState.Create(new TestState { Value = 1 });
+            var index2 = worldState.Create(new TestState { Value = 2 });
+            var index3 = worldState.Create(new TestState { Value = 3 });
 
             worldState.SaveFrame();
 
-            Assert.AreEqual(handle1.State, 1);
-            Assert.AreEqual(handle2.State, 2);
-            Assert.AreEqual(handle3.State, 3);
+            Assert.AreEqual(worldState.Get(index1).Value, 1);
+            Assert.AreEqual(worldState.Get(index2).Value, 2);
+            Assert.AreEqual(worldState.Get(index3).Value, 3);
         }
 
         [Test]
         public void RollbackZero_ShouldResetCurrentFrameChanges()
         {
-            WorldState<int> worldState = new WorldState<int>(2, 2);
+            WorldState<TestState> worldState = new WorldState<TestState>(2, 2);
 
-            var handle1 = worldState.Reserve(1);
+            var index1 = worldState.Create(new TestState { Value = 1 });
             worldState.SaveFrame();
 
-            handle1.State = 2;
+            worldState.Get(index1).Value = 2;
             worldState.Rollback(0);
 
-            Assert.AreEqual(handle1.State, 1);
+            Assert.AreEqual(worldState.Get(index1).Value, 1);
         }
 
         [Test]
-        public void IsExist_ShouldWorkCorrectWithRollback()
+        public void IsAlive_ShouldWorkCorrectWithRollback()
         {
-            WorldState<int> worldState = new WorldState<int>(2, 2);
+            WorldState<TestState> worldState = new WorldState<TestState>(2, 2);
 
             worldState.SaveFrame();
 
-            Assert.IsFalse(worldState.IsExist(0));
-            Assert.IsFalse(worldState.IsExist(1));
+            Assert.IsFalse(worldState.IsAlive(0));
+            Assert.IsFalse(worldState.IsAlive(1));
 
-            worldState.Reserve(1);
+            worldState.Create(new TestState { Value = 1 });
 
-            Assert.IsTrue(worldState.IsExist(0));
-            Assert.IsFalse(worldState.IsExist(1));
+            Assert.IsTrue(worldState.IsAlive(0));
+            Assert.IsFalse(worldState.IsAlive(1));
 
             worldState.SaveFrame();
 
-            Assert.IsTrue(worldState.IsExist(0));
-            Assert.IsFalse(worldState.IsExist(1));
+            Assert.IsTrue(worldState.IsAlive(0));
+            Assert.IsFalse(worldState.IsAlive(1));
 
             worldState.Rollback(1);
 
-            Assert.IsFalse(worldState.IsExist(0));
-            Assert.IsFalse(worldState.IsExist(1));
+            Assert.IsFalse(worldState.IsAlive(0));
+            Assert.IsFalse(worldState.IsAlive(1));
         }
     }
 }
