@@ -40,7 +40,7 @@ namespace Massive.Samples.Benchmark
             GUI.Label(area, $"{_identifier}: {Average(_samples)}", _style.Value);
         }
 
-        private static long Average(RingBuffer<long> buffer)
+        private static float Average(RingBuffer<long> buffer)
         {
             long total = 0;
 
@@ -49,7 +49,7 @@ namespace Massive.Samples.Benchmark
                 total += buffer[i];
             }
 
-            return total / buffer.Length;
+            return (float)total / buffer.Length;
         }
     }
 }

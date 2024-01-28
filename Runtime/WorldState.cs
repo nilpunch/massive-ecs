@@ -29,13 +29,9 @@ namespace Massive
             _framesAliveCount = new int[_framesCapacity];
 
             // Initialize sparse set
-            for (int i = 0; i < _framesCapacity; i++)
+            for (int sparseIndex = 0; sparseIndex < statesCapacity; sparseIndex++)
             {
-                Span<int> span = new Span<int>(_sparseByFrames, i * statesCapacity, statesCapacity);
-                for (int j = 0; j < statesCapacity; j++)
-                {
-                    span[j] = j;
-                }
+                _sparseByFrames[sparseIndex] = sparseIndex;
             }
         }
 
@@ -50,13 +46,15 @@ namespace Massive
             int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
             int currentAliveCount = _framesAliveCount[_currentFrame];
 
+            int currentFrameIndex = _currentFrame * _statesCapacity;
+            int nextFrameIndex = nextFrame * _statesCapacity;
+            
             if (currentAliveCount > 0)
             {
-                int currentFrameIndex = _currentFrame * _statesCapacity;
-                int nextFrameIndex = nextFrame * _statesCapacity;
                 Array.Copy(_denseStatesByFrames, currentFrameIndex, _denseStatesByFrames, nextFrameIndex, currentAliveCount);
-                Array.Copy(_sparseByFrames, currentFrameIndex, _sparseByFrames, nextFrameIndex, _statesCapacity);
             }
+            
+            Array.Copy(_sparseByFrames, currentFrameIndex, _sparseByFrames, nextFrameIndex, _statesCapacity);
 
             _currentFrame = nextFrame;
             _framesAliveCount[nextFrame] = currentAliveCount;

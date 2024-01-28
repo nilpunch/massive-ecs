@@ -12,15 +12,11 @@ namespace Massive.Samples.Benchmark
             public int Value;
 
             public Vector3 Data1;
-            public Quaternion Data2;
-
-            public TestState(int value)
-            {
-                Value = value;
-                Data1 = default;
-                Data2 = default;
-                SparseIndex = -1;
-            }
+            public Quaternion Data3;
+            public Quaternion Data4;
+            public Quaternion Data5;
+            public Quaternion Data6;
+            public Quaternion Data7;
 
             public int SparseIndex { get; set; }
         }
@@ -33,7 +29,7 @@ namespace Massive.Samples.Benchmark
 
             for (int i = 0; i < _worldEntitiesCount; i++)
             {
-                _worldState.Create(new TestState(i));
+                _worldState.Create(new TestState() { Value = 1 + i});
             }
         }
 

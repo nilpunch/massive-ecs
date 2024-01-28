@@ -133,8 +133,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1118741506}
   - component: {fileID: 1118741505}
-  - component: {fileID: 1118741504}
-  - component: {fileID: 1118741507}
   - component: {fileID: 1118741508}
   m_Layer: 0
   m_Name: WorldStateBenchmarks
@@ -143,22 +141,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1118741504
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1118741503}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17d7fd02f00a4b0d8af40be497fd277e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _identifier: Mutation and Saving
-  _drawOrder: 1
-  _iterations: 10000
-  _worldEntitiesCount: 100
 --- !u!114 &1118741505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,22 +172,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1118741507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1118741503}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0a90786106b412d9839df843250a441, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _identifier: Mutation
-  _drawOrder: 2
-  _iterations: 10000
-  _worldEntitiesCount: 100
 --- !u!114 &1118741508
 MonoBehaviour:
   m_ObjectHideFlags: 0
