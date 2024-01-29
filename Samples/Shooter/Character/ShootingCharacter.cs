@@ -18,6 +18,7 @@ namespace Massive.Samples.Shooter
 			{
 				return;
 			}
+
 			weaponState.Cooldown = _cooldown;
 
 			BulletState createBullet = new BulletState
@@ -27,7 +28,7 @@ namespace Massive.Samples.Shooter
 				Lifetime = _bulletLifetime,
 				Damage = _bulletDamage
 			};
-			
+
 			world.Bullets.Create();
 		}
 	}

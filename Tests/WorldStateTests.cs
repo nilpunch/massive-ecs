@@ -15,9 +15,9 @@ namespace Massive.Tests
 		{
 			WorldState<TestState> worldState = new WorldState<TestState>(2, 4);
 
-			worldState.Create(0, new TestState { Value = 1 });
-			worldState.Create(1, new TestState { Value = 2 });
-			worldState.Create(2, new TestState { Value = 3 });
+			worldState.Create(new TestState { Value = 1 });
+			worldState.Create(new TestState { Value = 2 });
+			worldState.Create(new TestState { Value = 3 });
 
 			worldState.Delete(1);
 
@@ -35,9 +35,9 @@ namespace Massive.Tests
 			Assert.IsFalse(worldState.IsAlive(1));
 			Assert.IsFalse(worldState.IsAlive(2));
 			
-			worldState.Create(0, new TestState { Value = 1 });
-			worldState.Create(1, new TestState { Value = 2 });
-			worldState.Create(2, new TestState { Value = 3 });
+			worldState.Create(new TestState { Value = 1 });
+			worldState.Create(new TestState { Value = 2 });
+			worldState.Create(new TestState { Value = 3 });
 
 			Assert.IsTrue(worldState.IsAlive(0));
 			Assert.IsTrue(worldState.IsAlive(1));
@@ -49,9 +49,9 @@ namespace Massive.Tests
 		{
 			WorldState<TestState> worldState = new WorldState<TestState>(2, 4);
 
-			worldState.Create(0, new TestState { Value = 1 });
-			worldState.Create(1, new TestState { Value = 2 });
-			worldState.Create(2, new TestState { Value = 3 });
+			worldState.Create(new TestState { Value = 1 });
+			worldState.Create(new TestState { Value = 2 });
+			worldState.Create(new TestState { Value = 3 });
 
 			Assert.AreEqual(worldState.Get(0).Value, 1);
 			Assert.AreEqual(worldState.Get(1).Value, 2);
@@ -63,7 +63,7 @@ namespace Massive.Tests
 		{
 			WorldState<TestState> worldState = new WorldState<TestState>(2, 2);
 
-			worldState.Create(0, new TestState { Value = 1 });
+			worldState.Create(new TestState { Value = 1 });
 
 			worldState.Get(0).Value = 2;
 
@@ -75,9 +75,9 @@ namespace Massive.Tests
 		{
 			WorldState<TestState> worldState = new WorldState<TestState>(2, 4);
 
-			worldState.Create(0, new TestState { Value = 1 });
-			worldState.Create(1, new TestState { Value = 2 });
-			worldState.Create(2, new TestState { Value = 3 });
+			worldState.Create(new TestState { Value = 1 });
+			worldState.Create(new TestState { Value = 2 });
+			worldState.Create(new TestState { Value = 3 });
 
 			worldState.SaveFrame();
 
@@ -110,7 +110,7 @@ namespace Massive.Tests
 		{
 			WorldState<TestState> worldState = new WorldState<TestState>(2, 2);
 
-			worldState.Create(0, new TestState { Value = 1 });
+			worldState.Create(new TestState { Value = 1 });
 			worldState.SaveFrame();
 
 			worldState.Get(0).Value = 2;
@@ -129,7 +129,7 @@ namespace Massive.Tests
 			Assert.IsFalse(worldState.IsAlive(0));
 			Assert.IsFalse(worldState.IsAlive(1));
 
-			worldState.Create(0, new TestState { Value = 1 });
+			worldState.Create(new TestState { Value = 1 });
 
 			Assert.IsTrue(worldState.IsAlive(0));
 			Assert.IsFalse(worldState.IsAlive(1));

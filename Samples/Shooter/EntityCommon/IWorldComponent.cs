@@ -18,7 +18,7 @@
 			DeltaTime = 1f / FramesPerSecond;
 		}
 	}
-	
+
 	public interface IWorldComponent<TState>
 	{
 		void UpdateState(World world, ref TState state);

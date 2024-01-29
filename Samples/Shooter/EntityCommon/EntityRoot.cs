@@ -10,9 +10,7 @@ namespace Massive.Samples.Shooter
 
 		private void Awake()
 		{
-			_components = GetComponentsInChildren<IWorldComponent<TState>>()
-				.Where(component => !ReferenceEquals(component, this))
-				.ToArray();
+			_components = GetComponentsInChildren<IWorldComponent<TState>>().Where(component => !ReferenceEquals(component, this)).ToArray();
 
 			_renderers = GetComponentsInChildren<Renderer>();
 		}

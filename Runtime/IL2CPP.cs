@@ -14,8 +14,7 @@
 		DivideByZeroChecks = 3
 	}
 
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Property,
-		AllowMultiple = true)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = true)]
 #if !ENABLE_IL2CPP
 	public class Il2CppSetOptionAttribute : Attribute
 	{

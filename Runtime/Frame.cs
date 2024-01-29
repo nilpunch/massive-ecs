@@ -13,16 +13,18 @@ namespace Massive
 		private readonly Span<int> _dense;
 		private readonly Span<TState> _data;
 		private readonly int* _aliveCount;
+		private readonly int* _maxId;
 		private readonly int* _currentFrame;
 		private readonly int _thisFrame;
 		private readonly int _statesCapacity;
 
-		public Frame(Span<int> sparse, Span<int> dense, Span<TState> data, int* aliveCount, int* currentFrame)
+		public Frame(Span<int> sparse, Span<int> dense, Span<TState> data, int* aliveCount, int* maxId, int* currentFrame)
 		{
 			_sparse = sparse;
 			_dense = dense;
 			_data = data;
 			_aliveCount = aliveCount;
+			_maxId = maxId;
 			_currentFrame = currentFrame;
 			_thisFrame = *currentFrame;
 			_statesCapacity = sparse.Length;
@@ -30,22 +32,33 @@ namespace Massive
 
 		public int AliveCount => *_aliveCount;
 
-		public void Create(int id, TState state = default)
+		public int Create(TState state = default)
 		{
 			ThrowIfFrameIsNotCurrent();
 
-			int nextDenseIndex = *_aliveCount;
+			int count = *_aliveCount;
+			int maxId = *_maxId;
 
-			if (nextDenseIndex == _statesCapacity)
+			if (count == _statesCapacity)
 			{
 				throw new InvalidOperationException($"Exceeded limit of states per frame! Limit: {_statesCapacity}.");
 			}
 
-			_data[nextDenseIndex] = state;
-			_dense[nextDenseIndex] = id;
-			_sparse[id] = nextDenseIndex;
+			_data[count] = state;
+
+			// If there are unused elements in the dense array, return last
+			if (count < maxId)
+			{
+				*_aliveCount += 1;
+				return _dense[count];
+			}
 
 			*_aliveCount += 1;
+			*_maxId += 1;
+
+			_dense[count] = maxId;
+			_sparse[maxId] = count;
+			return maxId;
 		}
 
 		public void Delete(int id)
@@ -57,18 +70,26 @@ namespace Massive
 
 			if (denseIndex >= aliveCount)
 			{
-				throw new InvalidOperationException($"Index is not alive! SparseIndex: {id}.");
+				throw new InvalidOperationException($"Id is not alive! Id: {id}.");
 			}
 
-			int swapDenseIndex = aliveCount - 1;
-			int swapSparseIndex = _dense[swapDenseIndex];
-			TState swapData = _data[swapDenseIndex];
-
-			_data[denseIndex] = swapData;
-			_dense[denseIndex] = swapSparseIndex;
-			_sparse[swapSparseIndex] = denseIndex;
+			// If dense is the last used element, simply decrease count
+			if (denseIndex == aliveCount - 1)
+			{
+				*_aliveCount -= 1;
+				return;
+			}
 
 			*_aliveCount -= 1;
+
+			int swapDenseIndex = aliveCount - 1;
+			int swapId = _dense[swapDenseIndex];
+
+			_data[denseIndex] = _data[swapDenseIndex];
+			_dense[denseIndex] = swapId;
+			_sparse[id] = swapDenseIndex;
+			_dense[swapDenseIndex] = id;
+			_sparse[swapId] = denseIndex;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

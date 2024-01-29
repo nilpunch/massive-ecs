@@ -5,7 +5,7 @@ namespace Massive.Samples.Shooter
 	public struct BulletState
 	{
 		public EntityTransform Transform;
-		
+
 		public Vector3 Velocity;
 
 		public float Damage;

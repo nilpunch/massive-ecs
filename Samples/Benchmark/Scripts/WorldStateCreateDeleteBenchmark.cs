@@ -16,12 +16,12 @@ namespace Massive.Samples.Benchmark
 		protected override void Sample()
 		{
 			Frame<TestState> frame = _worldState.CurrentFrame;
-			
+
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				frame.Create(index, new TestState() { Value = index + 1 });
+				frame.Create(new TestState() { Value = index + 1 });
 			}
-			
+
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
 				frame.Delete(index);

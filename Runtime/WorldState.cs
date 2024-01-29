@@ -13,6 +13,7 @@ namespace Massive
 		private readonly TState[] _dataByFrames;
 		private readonly int[] _denseByFrames;
 		private readonly int[] _sparseByFrames;
+		private readonly int[] _maxIdByFrames;
 		private readonly int[] _framesAliveCount;
 
 		private int _currentFrame;
@@ -28,6 +29,7 @@ namespace Massive
 			_dataByFrames = new TState[_framesCapacity * statesCapacity];
 			_denseByFrames = new int[_framesCapacity * statesCapacity];
 			_sparseByFrames = new int[_framesCapacity * statesCapacity];
+			_maxIdByFrames = new int[_framesCapacity * statesCapacity];
 			_framesAliveCount = new int[_framesCapacity];
 		}
 
@@ -39,13 +41,10 @@ namespace Massive
 				int startIndex = _currentFrame * _statesCapacity;
 
 				fixed (int* aliveCount = &_framesAliveCount[_currentFrame])
+				fixed (int* maxId = &_maxIdByFrames[_currentFrame])
 				fixed (int* currentFrame = &_currentFrame)
-					return new Frame<TState>(
-						new Span<int>(_sparseByFrames, startIndex, _statesCapacity),
-						new Span<int>(_denseByFrames, startIndex, _statesCapacity),
-						new Span<TState>(_dataByFrames, startIndex, _statesCapacity),
-						aliveCount,
-						currentFrame);
+					return new Frame<TState>(new Span<int>(_sparseByFrames, startIndex, _statesCapacity), new Span<int>(_denseByFrames, startIndex, _statesCapacity),
+						new Span<TState>(_dataByFrames, startIndex, _statesCapacity), aliveCount, maxId, currentFrame);
 			}
 		}
 
@@ -53,6 +52,7 @@ namespace Massive
 		{
 			int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
 			int currentAliveCount = _framesAliveCount[_currentFrame];
+			int currentMaxId = _maxIdByFrames[_currentFrame];
 
 			int currentFrameIndex = _currentFrame * _statesCapacity;
 			int nextFrameIndex = nextFrame * _statesCapacity;
@@ -67,6 +67,7 @@ namespace Massive
 
 			_currentFrame = nextFrame;
 			_framesAliveCount[nextFrame] = currentAliveCount;
+			_maxIdByFrames[nextFrame] = currentMaxId;
 
 			// Limit count by maxFrames-1, because one frame is current and so not counted
 			_framesCount = Math.Min(_framesCount + 1, _framesCapacity - 1);
@@ -94,9 +95,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Create(int id, TState state = default)
+		public int Create(TState state = default)
 		{
-			CurrentFrame.Create(id, state);
+			return CurrentFrame.Create(state);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -116,7 +117,7 @@ namespace Massive
 		{
 			return CurrentFrame.GetAllStates();
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Span<int> GetAllIds()
 		{
