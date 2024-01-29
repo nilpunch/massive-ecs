@@ -7,88 +7,81 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public readonly unsafe ref struct Frame<TState> where TState : IState
+	public readonly unsafe ref struct Frame<TState>
 	{
 		private readonly Span<int> _sparse;
-		private readonly Span<TState> _dense;
+		private readonly Span<int> _dense;
+		private readonly Span<TState> _data;
 		private readonly int* _aliveCount;
 		private readonly int* _currentFrame;
 		private readonly int _thisFrame;
 		private readonly int _statesCapacity;
 
-		public Frame(Span<int> sparse, Span<TState> dense, int* aliveCount, int* currentFrame)
+		public Frame(Span<int> sparse, Span<int> dense, Span<TState> data, int* aliveCount, int* currentFrame)
 		{
 			_sparse = sparse;
 			_dense = dense;
+			_data = data;
 			_aliveCount = aliveCount;
 			_currentFrame = currentFrame;
 			_thisFrame = *currentFrame;
 			_statesCapacity = sparse.Length;
 		}
 
-		public int Create(TState state = default)
+		public void Create(int id, TState state = default)
 		{
 			ThrowIfFrameIsNotCurrent();
 
-			int nextSparseIndex = *_aliveCount;
+			int nextDenseIndex = *_aliveCount;
 
-			if (nextSparseIndex == _statesCapacity)
+			if (nextDenseIndex == _statesCapacity)
 			{
 				throw new InvalidOperationException($"Exceeded limit of states per frame! Limit: {_statesCapacity}.");
 			}
 
-			state.SparseIndex = nextSparseIndex;
-
-			int denseIndex = _sparse[nextSparseIndex];
-			_dense[denseIndex] = state;
+			_data[nextDenseIndex] = state;
+			_dense[nextDenseIndex] = id;
+			_sparse[id] = nextDenseIndex;
 
 			*_aliveCount += 1;
-			return nextSparseIndex;
 		}
 
-		public void Delete(int sparseIndex)
+		public void Delete(int id)
 		{
 			ThrowIfFrameIsNotCurrent();
 
 			int aliveCount = *_aliveCount;
-			int denseIndex = _sparse[sparseIndex];
+			int denseIndex = _sparse[id];
 
 			if (denseIndex >= aliveCount)
 			{
-				throw new InvalidOperationException($"Index is not alive! SparseIndex: {sparseIndex}.");
+				throw new InvalidOperationException($"Index is not alive! SparseIndex: {id}.");
 			}
-
-			TState state = _dense[denseIndex];
-
+			
 			int swapDenseIndex = aliveCount - 1;
-			TState swapState = _dense[swapDenseIndex];
-			int swapSparseIndex = swapState.SparseIndex;
+			int swapSparseIndex = _dense[swapDenseIndex];
+			TState swapData = _data[swapDenseIndex];
 
-			_sparse[sparseIndex] = swapDenseIndex;
+			_data[denseIndex] = swapData;
+			_dense[denseIndex] = swapSparseIndex;
 			_sparse[swapSparseIndex] = denseIndex;
-
-			swapState.SparseIndex = sparseIndex;
-			state.SparseIndex = swapSparseIndex;
-
-			_dense[denseIndex] = swapState;
-			_dense[swapDenseIndex] = state;
 
 			*_aliveCount -= 1;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref TState Get(int sparseIndex)
+		public ref TState Get(int id)
 		{
 			ThrowIfFrameIsNotCurrent();
 
-			if (!IsAlive(sparseIndex))
+			if (!IsAlive(id))
 			{
-				throw new InvalidOperationException($"State does not exist! RequestedState: {sparseIndex}.");
+				throw new InvalidOperationException($"State does not exist! RequestedState: {id}.");
 			}
 
-			int denseIndex = _sparse[sparseIndex];
+			int denseIndex = _sparse[id];
 
-			return ref _dense[denseIndex];
+			return ref _data[denseIndex];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -96,15 +89,20 @@ namespace Massive
 		{
 			ThrowIfFrameIsNotCurrent();
 
-			return _dense.Slice(0, *_aliveCount);
+			return _data.Slice(0, *_aliveCount);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(int sparseIndex)
+		public bool IsAlive(int id)
 		{
 			ThrowIfFrameIsNotCurrent();
 
-			return sparseIndex < _statesCapacity && _sparse[sparseIndex] < *_aliveCount;
+			if (id >= _statesCapacity)
+				return false;
+
+			int denseIndex = _sparse[id];
+
+			return denseIndex < *_aliveCount && _dense[denseIndex] == id;
 		}
 
 		[Conditional("UNITY_EDITOR")]

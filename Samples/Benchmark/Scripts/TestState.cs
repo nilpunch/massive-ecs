@@ -2,7 +2,7 @@
 
 namespace Massive.Samples.Benchmark
 {
-	public struct TestState : IState
+	public struct TestState
 	{
 		public int Value;
 
@@ -14,7 +14,5 @@ namespace Massive.Samples.Benchmark
 		public Quaternion Data6;
 		public Quaternion Data7;
 		public Quaternion Data8;
-
-		public int SparseIndex { get; set; }
 	}
 }

@@ -20,7 +20,7 @@ namespace Massive.Samples.Benchmark
 			
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				frame.Create(new TestState() { Value = index + 1 });
+				frame.Create(index, new TestState() { Value = index + 1 });
 			}
 			
 			for (int index = 0; index < _worldEntitiesCount; index++)

@@ -6,11 +6,12 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class WorldState<TState> : IWorldState where TState : struct, IState
+	public class WorldState<TState> : IWorldState where TState : struct
 	{
 		private readonly int _framesCapacity;
 		private readonly int _statesCapacity;
-		private readonly TState[] _denseByFrames;
+		private readonly TState[] _dataByFrames;
+		private readonly int[] _denseByFrames;
 		private readonly int[] _sparseByFrames;
 		private readonly int[] _framesAliveCount;
 
@@ -24,22 +25,29 @@ namespace Massive
 			_framesCapacity = frames + 2;
 
 			_statesCapacity = statesCapacity;
-			_denseByFrames = new TState[_framesCapacity * statesCapacity];
+			_dataByFrames = new TState[_framesCapacity * statesCapacity];
+			_denseByFrames = new int[_framesCapacity * statesCapacity];
 			_sparseByFrames = new int[_framesCapacity * statesCapacity];
 			_framesAliveCount = new int[_framesCapacity];
-
-			// Initialize sparse set
-			for (int sparseIndex = 0; sparseIndex < statesCapacity; sparseIndex++)
-			{
-				_sparseByFrames[sparseIndex] = sparseIndex;
-			}
 		}
 
-		public int StatesCount => _framesAliveCount[_currentFrame];
+		public unsafe Frame<TState> CurrentFrame
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get
+			{
+				int startIndex = _currentFrame * _statesCapacity;
 
-		public int StatesCapacity => _statesCapacity;
-
-		public bool CanReserveState => _framesAliveCount[_currentFrame] != _statesCapacity;
+				fixed (int* aliveCount = &_framesAliveCount[_currentFrame])
+				fixed (int* currentFrame = &_currentFrame)
+					return new Frame<TState>(
+						new Span<int>(_sparseByFrames, startIndex, _statesCapacity),
+						new Span<int>(_denseByFrames, startIndex, _statesCapacity),
+						new Span<TState>(_dataByFrames, startIndex, _statesCapacity),
+						aliveCount,
+						currentFrame);
+			}
+		}
 
 		public void SaveFrame()
 		{
@@ -51,6 +59,7 @@ namespace Massive
 
 			if (currentAliveCount > 0)
 			{
+				Array.Copy(_dataByFrames, currentFrameIndex, _dataByFrames, nextFrameIndex, currentAliveCount);
 				Array.Copy(_denseByFrames, currentFrameIndex, _denseByFrames, nextFrameIndex, currentAliveCount);
 			}
 
@@ -84,39 +93,22 @@ namespace Massive
 			SaveFrame();
 		}
 
-		public unsafe Frame<TState> CurrentFrame
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Create(int id, TState state = default)
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get
-			{
-				int startIndex = _currentFrame * _statesCapacity;
-
-				fixed (int* aliveCount = &_framesAliveCount[_currentFrame])
-				fixed (int* currentFrame = &_currentFrame)
-					return new Frame<TState>(
-						new Span<int>(_sparseByFrames, startIndex, _statesCapacity),
-						new Span<TState>(_denseByFrames, startIndex, _statesCapacity),
-						aliveCount,
-						currentFrame);
-			}
+			CurrentFrame.Create(id, state);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Create(TState state = default)
+		public void Delete(int id)
 		{
-			return CurrentFrame.Create(state);
+			CurrentFrame.Delete(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Delete(int sparseIndex)
+		public ref TState Get(int id)
 		{
-			CurrentFrame.Delete(sparseIndex);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref TState Get(int sparseIndex)
-		{
-			return ref CurrentFrame.Get(sparseIndex);
+			return ref CurrentFrame.Get(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -126,9 +118,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(int sparseIndex)
+		public bool IsAlive(int id)
 		{
-			return CurrentFrame.IsAlive(sparseIndex);
+			return CurrentFrame.IsAlive(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
