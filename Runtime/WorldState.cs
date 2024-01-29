@@ -112,9 +112,15 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Span<TState> GetAll()
+		public Span<TState> GetAllStates()
 		{
-			return CurrentFrame.GetAll();
+			return CurrentFrame.GetAllStates();
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Span<int> GetAllIds()
+		{
+			return CurrentFrame.GetAllIds();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

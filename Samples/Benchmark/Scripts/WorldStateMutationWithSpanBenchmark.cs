@@ -12,15 +12,29 @@ namespace Massive.Samples.Benchmark
         private void Start()
         {
             _worldState = new WorldState<TestState>(100, _worldEntitiesCount);
+            
+            var currentFrame = _worldState.CurrentFrame;
+            
+            for (var index = 0; index < _worldEntitiesCount; index++)
+            {
+                currentFrame.Create(index, new TestState() { Value = index + 1 });
+            }
         }
 
         protected override void Sample()
         {
-            Span<TestState> states = _worldState.GetAll();
-            for (int index = 0; index < states.Length; index++)
+            var currentFrame = _worldState.CurrentFrame;
+
+            var states = currentFrame.GetAllStates();
+            var ids = currentFrame.GetAllIds();
+            for (var i = 0; i < states.Length; i++)
             {
-                ref TestState state = ref states[index];
-                state.Value += 1;
+                if (currentFrame.IsAlive(ids[i]))
+                {
+                    ref var state = ref states[i];
+                    state.Value += 1;
+                    state.Data1 *= Quaternion.identity;
+                }
             }
         }
     }

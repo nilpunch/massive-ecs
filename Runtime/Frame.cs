@@ -57,7 +57,7 @@ namespace Massive
 			{
 				throw new InvalidOperationException($"Index is not alive! SparseIndex: {id}.");
 			}
-			
+
 			int swapDenseIndex = aliveCount - 1;
 			int swapSparseIndex = _dense[swapDenseIndex];
 			TState swapData = _data[swapDenseIndex];
@@ -85,11 +85,19 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Span<TState> GetAll()
+		public Span<TState> GetAllStates()
 		{
 			ThrowIfFrameIsNotCurrent();
 
 			return _data.Slice(0, *_aliveCount);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Span<int> GetAllIds()
+		{
+			ThrowIfFrameIsNotCurrent();
+
+			return _dense.Slice(0, *_aliveCount);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
