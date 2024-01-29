@@ -86,6 +86,7 @@ namespace Massive
 			int swapId = _dense[swapDenseIndex];
 
 			_data[denseIndex] = _data[swapDenseIndex];
+			
 			_dense[denseIndex] = swapId;
 			_sparse[id] = swapDenseIndex;
 			_dense[swapDenseIndex] = id;

@@ -25,6 +25,22 @@ namespace Massive.Tests
 			Assert.IsFalse(worldState.IsAlive(1));
 			Assert.IsTrue(worldState.IsAlive(2));
 		}
+		
+		[Test]
+		public void DeleteThenCreate_ShouldRecycleIds()
+		{
+			WorldState<TestState> worldState = new WorldState<TestState>(2, 4);
+
+			worldState.Create(new TestState { Value = 1 });
+			int id2 = worldState.Create(new TestState { Value = 2 });
+			worldState.Create(new TestState { Value = 3 });
+
+			worldState.Delete(id2);
+			
+			int id = worldState.Create(new TestState { Value = 4 });
+			
+			Assert.AreEqual(id, id2);
+		}
 
 		[Test]
 		public void Create_ShouldMakeStatesAlive()
