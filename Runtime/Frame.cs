@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Massive
@@ -11,18 +12,24 @@ namespace Massive
 		private readonly Span<int> _sparse;
 		private readonly Span<TState> _dense;
 		private readonly int* _aliveCount;
+		private readonly int* _currentFrame;
+		private readonly int _thisFrame;
 		private readonly int _statesCapacity;
 
-		public Frame(Span<int> sparse, Span<TState> dense, int* aliveCount)
+		public Frame(Span<int> sparse, Span<TState> dense, int* aliveCount, int* currentFrame)
 		{
 			_sparse = sparse;
 			_dense = dense;
 			_aliveCount = aliveCount;
+			_currentFrame = currentFrame;
+			_thisFrame = *currentFrame;
 			_statesCapacity = sparse.Length;
 		}
 
 		public int Create(TState state = default)
 		{
+			ThrowIfFrameIsNotCurrent();
+
 			int nextSparseIndex = *_aliveCount;
 
 			if (nextSparseIndex == _statesCapacity)
@@ -41,6 +48,8 @@ namespace Massive
 
 		public void Delete(int sparseIndex)
 		{
+			ThrowIfFrameIsNotCurrent();
+
 			int aliveCount = *_aliveCount;
 			int denseIndex = _sparse[sparseIndex];
 
@@ -70,6 +79,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref TState Get(int sparseIndex)
 		{
+			ThrowIfFrameIsNotCurrent();
+
 			if (!IsAlive(sparseIndex))
 			{
 				throw new InvalidOperationException($"State does not exist! RequestedState: {sparseIndex}.");
@@ -83,13 +94,26 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Span<TState> GetAll()
 		{
+			ThrowIfFrameIsNotCurrent();
+
 			return _dense.Slice(0, *_aliveCount);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int sparseIndex)
 		{
-			return _sparse[sparseIndex] < *_aliveCount;
+			ThrowIfFrameIsNotCurrent();
+
+			return sparseIndex < _statesCapacity && _sparse[sparseIndex] < *_aliveCount;
+		}
+
+		[Conditional("UNITY_EDITOR")]
+		private void ThrowIfFrameIsNotCurrent()
+		{
+			if (_thisFrame != *_currentFrame)
+			{
+				throw new InvalidOperationException($"This frame is not valid! ThisFrame: {_thisFrame}, CurrentFrame {*_currentFrame}.");
+			}
 		}
 	}
 }

@@ -92,12 +92,12 @@ namespace Massive
 				int startIndex = _currentFrame * _statesCapacity;
 
 				fixed (int* aliveCount = &_framesAliveCount[_currentFrame])
-				{
+				fixed (int* currentFrame = &_currentFrame)
 					return new Frame<TState>(
 						new Span<int>(_sparseByFrames, startIndex, _statesCapacity),
 						new Span<TState>(_denseByFrames, startIndex, _statesCapacity),
-						aliveCount);
-				}
+						aliveCount,
+						currentFrame);
 			}
 		}
 
