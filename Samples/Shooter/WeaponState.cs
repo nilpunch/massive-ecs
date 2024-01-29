@@ -1,4 +1,4 @@
-﻿namespace UPR.PredictionRollback
+﻿namespace Massive.Samples.Shooter
 {
 	public struct WeaponState
 	{
