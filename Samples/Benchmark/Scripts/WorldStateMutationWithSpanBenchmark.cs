@@ -27,7 +27,7 @@ namespace Massive.Samples.Benchmark
 
             var states = currentFrame.GetAllStates();
             var ids = currentFrame.GetAllIds();
-            for (var i = 0; i < states.Length; i++)
+            for (var i = 0; i < currentFrame.AliveCount; i++)
             {
                 if (currentFrame.IsAlive(ids[i]))
                 {

@@ -28,6 +28,8 @@ namespace Massive
 			_statesCapacity = sparse.Length;
 		}
 
+		public int AliveCount => *_aliveCount;
+
 		public void Create(int id, TState state = default)
 		{
 			ThrowIfFrameIsNotCurrent();
