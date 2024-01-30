@@ -43,8 +43,11 @@ namespace Massive
 				fixed (int* aliveCount = &_framesAliveCount[_currentFrame])
 				fixed (int* maxId = &_maxIdByFrames[_currentFrame])
 				fixed (int* currentFrame = &_currentFrame)
-					return new Frame<TState>(new Span<int>(_sparseByFrames, startIndex, _statesCapacity), new Span<int>(_denseByFrames, startIndex, _statesCapacity),
-						new Span<TState>(_dataByFrames, startIndex, _statesCapacity), aliveCount, maxId, currentFrame);
+					return new Frame<TState>(
+						new Span<int>(_sparseByFrames, startIndex, _statesCapacity),
+						new Span<int>(_denseByFrames, startIndex, _statesCapacity),
+						new Span<TState>(_dataByFrames, startIndex, _statesCapacity),
+						aliveCount, maxId, currentFrame);
 			}
 		}
 
