@@ -14,23 +14,23 @@ namespace Massive
 		private readonly int[] _denseByFrames;
 		private readonly int[] _sparseByFrames;
 		private readonly int[] _maxIdByFrames;
-		private readonly int[] _framesAliveCount;
+		private readonly int[] _aliveCountByFrames;
 
 		private int _currentFrame;
 		private int _framesCount;
 
-		public WorldState(int frames = 120, int statesCapacity = 100)
+		public WorldState(int framesCapacity = 120, int statesCapacity = 100)
 		{
 			// Reserve 2 frames
 			// One for rollback restoration, another one for current frame
-			_framesCapacity = frames + 2;
+			_framesCapacity = framesCapacity + 2;
 
 			_statesCapacity = statesCapacity;
 			_dataByFrames = new TState[_framesCapacity * statesCapacity];
 			_denseByFrames = new int[_framesCapacity * statesCapacity];
 			_sparseByFrames = new int[_framesCapacity * statesCapacity];
-			_maxIdByFrames = new int[_framesCapacity * statesCapacity];
-			_framesAliveCount = new int[_framesCapacity];
+			_maxIdByFrames = new int[_framesCapacity];
+			_aliveCountByFrames = new int[_framesCapacity];
 		}
 
 		public unsafe Frame<TState> CurrentFrame
@@ -40,7 +40,7 @@ namespace Massive
 			{
 				int startIndex = _currentFrame * _statesCapacity;
 
-				fixed (int* aliveCount = &_framesAliveCount[_currentFrame])
+				fixed (int* aliveCount = &_aliveCountByFrames[_currentFrame])
 				fixed (int* maxId = &_maxIdByFrames[_currentFrame])
 				fixed (int* currentFrame = &_currentFrame)
 					return new Frame<TState>(
@@ -54,7 +54,7 @@ namespace Massive
 		public void SaveFrame()
 		{
 			int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
-			int currentAliveCount = _framesAliveCount[_currentFrame];
+			int currentAliveCount = _aliveCountByFrames[_currentFrame];
 			int currentMaxId = _maxIdByFrames[_currentFrame];
 
 			int currentFrameIndex = _currentFrame * _statesCapacity;
@@ -66,10 +66,10 @@ namespace Massive
 				Array.Copy(_denseByFrames, currentFrameIndex, _denseByFrames, nextFrameIndex, currentAliveCount);
 			}
 
-			Array.Copy(_sparseByFrames, currentFrameIndex, _sparseByFrames, nextFrameIndex, _statesCapacity);
+			Array.Copy(_sparseByFrames, currentFrameIndex, _sparseByFrames, nextFrameIndex, currentMaxId);
 
 			_currentFrame = nextFrame;
-			_framesAliveCount[nextFrame] = currentAliveCount;
+			_aliveCountByFrames[nextFrame] = currentAliveCount;
 			_maxIdByFrames[nextFrame] = currentMaxId;
 
 			// Limit count by maxFrames-1, because one frame is current and so not counted
