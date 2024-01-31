@@ -41,6 +41,8 @@ namespace Massive.Samples.Shooter
 		}
 
 		private int _currentFrame;
+
+		private float _elapsedTime;
 		
 		private void Update()
 		{
@@ -53,9 +55,11 @@ namespace Massive.Samples.Shooter
 				_bullets.Rollback(_bullets.CanRollbackFrames);
 			}
 
-			int targetFrame = Mathf.RoundToInt(Time.time * 1000 / 60);
+			_elapsedTime += Time.deltaTime;
 			
-			for (; _currentFrame < targetFrame; _currentFrame++)
+			int targetFrame = Mathf.RoundToInt(_elapsedTime * 60);
+			
+			while (_currentFrame < targetFrame)
 			{
 				var world = new WorldFrame(_characters.CurrentFrame, _bullets.CurrentFrame, _currentFrame);
 			
@@ -66,6 +70,7 @@ namespace Massive.Samples.Shooter
 
 				_characters.SaveFrame();
 				_bullets.SaveFrame();
+				_currentFrame++;
 			}
 			
 			var syncFrame = new WorldFrame(_characters.CurrentFrame, _bullets.CurrentFrame, _currentFrame);
