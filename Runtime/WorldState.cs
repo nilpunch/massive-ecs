@@ -60,12 +60,8 @@ namespace Massive
 			int currentFrameIndex = _currentFrame * _statesCapacity;
 			int nextFrameIndex = nextFrame * _statesCapacity;
 
-			if (currentAliveCount > 0)
-			{
-				Array.Copy(_dataByFrames, currentFrameIndex, _dataByFrames, nextFrameIndex, currentAliveCount);
-				Array.Copy(_denseByFrames, currentFrameIndex, _denseByFrames, nextFrameIndex, currentAliveCount);
-			}
-
+			Array.Copy(_dataByFrames, currentFrameIndex, _dataByFrames, nextFrameIndex, currentAliveCount);
+			Array.Copy(_denseByFrames, currentFrameIndex, _denseByFrames, nextFrameIndex, currentMaxId);
 			Array.Copy(_sparseByFrames, currentFrameIndex, _sparseByFrames, nextFrameIndex, currentMaxId);
 
 			_currentFrame = nextFrame;
