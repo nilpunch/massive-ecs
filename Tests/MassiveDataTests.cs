@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace Massive.Tests
 {
 	[TestFixture]
-	public class WorldStateTests
+	public class MassiveDataTests
 	{
 		private struct TestState
 		{

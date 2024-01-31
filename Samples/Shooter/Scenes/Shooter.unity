@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 453373615}
   - component: {fileID: 453373618}
   - component: {fileID: 453373617}
+  - component: {fileID: 453373619}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -155,8 +156,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _simulationsPerFrame: 120
-  _charactersCapacity: 10
+  _charactersCapacity: 15
   _bulletsCapacity: 2000
+  _characterPrefab: {fileID: 6570296482868281500, guid: 1d1e085c91905db4ba8bcc88d66309b6, type: 3}
+  _bulletPrefab: {fileID: 630462838858110626, guid: e335915f8dc878749bf7850aff3b5da1, type: 3}
 --- !u!4 &453373616
 Transform:
   m_ObjectHideFlags: 0
@@ -196,10 +199,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4972f385cdb44d4d9e08f8620955d87a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cooldown: 0.01
-  _bulletVelocity: 1
+  _cooldown: 0
+  _bulletVelocity: 14
   _bulletDamage: 1
-  _bulletLifetime: 2
+  _bulletLifetime: 1.5
+--- !u!114 &453373619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453373614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d326c01bed664138b259983d30c4101f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1342606201
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,7 +268,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 15
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -277,7 +292,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1342606201}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 10, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

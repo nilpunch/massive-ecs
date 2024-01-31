@@ -51,6 +51,8 @@ namespace Massive
 			}
 		}
 
+		public int CanRollbackFrames => _framesCount - 1;
+
 		public void SaveFrame()
 		{
 			int nextFrame = Loop(_currentFrame + 1, _framesCapacity);

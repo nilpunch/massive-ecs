@@ -21,7 +21,7 @@ namespace Massive.Samples.Shooter
 				weaponState.Cooldown -= worldFrame.DeltaTime;
 				if (weaponState.Cooldown > 0)
 				{
-					return;
+					continue;
 				}
 
 				weaponState.Cooldown = _cooldown;
