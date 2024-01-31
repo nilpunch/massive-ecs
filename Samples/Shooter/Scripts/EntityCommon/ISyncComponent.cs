@@ -2,6 +2,6 @@
 {
 	public interface ISyncComponent<TState>
 	{
-		void SyncState(World world, ref TState state);
+		void SyncState(WorldFrame worldFrame, ref TState state);
 	}
 }

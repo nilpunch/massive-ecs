@@ -6,13 +6,13 @@ namespace Massive.Samples.Benchmark
 	{
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
-		private WorldState<TestState> _worldState;
+		private MassiveData<TestState> _massiveData;
 
 		private void Start()
 		{
-			_worldState = new WorldState<TestState>(100, _worldEntitiesCount);
+			_massiveData = new MassiveData<TestState>(100, _worldEntitiesCount);
 
-			var currentFrame = _worldState.CurrentFrame;
+			var currentFrame = _massiveData.CurrentFrame;
 
 			for (var index = 0; index < _worldEntitiesCount; index++)
 			{
@@ -22,7 +22,7 @@ namespace Massive.Samples.Benchmark
 
 		protected override void Sample()
 		{
-			var currentFrame = _worldState.CurrentFrame;
+			var currentFrame = _massiveData.CurrentFrame;
 
 			var states = currentFrame.GetAll();
 			var ids = currentFrame.GetAllIds();

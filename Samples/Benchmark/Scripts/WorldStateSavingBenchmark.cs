@@ -6,21 +6,21 @@ namespace Massive.Samples.Benchmark
 	{
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
-		private WorldState<TestState> _worldState;
+		private MassiveData<TestState> _massiveData;
 
 		private void Start()
 		{
-			_worldState = new WorldState<TestState>(100, _worldEntitiesCount);
+			_massiveData = new MassiveData<TestState>(100, _worldEntitiesCount);
 
 			for (int i = 0; i < _worldEntitiesCount; i++)
 			{
-				_worldState.Create(new TestState() { Value = 1 + i });
+				_massiveData.Create(new TestState() { Value = 1 + i });
 			}
 		}
 
 		protected override void Sample()
 		{
-			_worldState.SaveFrame();
+			_massiveData.SaveFrame();
 		}
 	}
 }
