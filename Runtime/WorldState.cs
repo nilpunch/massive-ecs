@@ -6,11 +6,11 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class WorldState<TState> : IWorldState where TState : struct
+	public class WorldState<T> : IWorldState where T : struct
 	{
 		private readonly int _framesCapacity;
 		private readonly int _statesCapacity;
-		private readonly TState[] _dataByFrames;
+		private readonly T[] _dataByFrames;
 		private readonly int[] _denseByFrames;
 		private readonly int[] _sparseByFrames;
 		private readonly int[] _maxIdByFrames;
@@ -26,14 +26,14 @@ namespace Massive
 			_framesCapacity = framesCapacity + 2;
 
 			_statesCapacity = statesCapacity;
-			_dataByFrames = new TState[_framesCapacity * statesCapacity];
+			_dataByFrames = new T[_framesCapacity * statesCapacity];
 			_denseByFrames = new int[_framesCapacity * statesCapacity];
 			_sparseByFrames = new int[_framesCapacity * statesCapacity];
 			_maxIdByFrames = new int[_framesCapacity];
 			_aliveCountByFrames = new int[_framesCapacity];
 		}
 
-		public unsafe Frame<TState> CurrentFrame
+		public unsafe Frame<T> CurrentFrame
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
@@ -43,10 +43,10 @@ namespace Massive
 				fixed (int* aliveCount = &_aliveCountByFrames[_currentFrame])
 				fixed (int* maxId = &_maxIdByFrames[_currentFrame])
 				fixed (int* currentFrame = &_currentFrame)
-					return new Frame<TState>(
+					return new Frame<T>(
 						new Span<int>(_sparseByFrames, startIndex, _statesCapacity),
 						new Span<int>(_denseByFrames, startIndex, _statesCapacity),
-						new Span<TState>(_dataByFrames, startIndex, _statesCapacity),
+						new Span<T>(_dataByFrames, startIndex, _statesCapacity),
 						aliveCount, maxId, currentFrame);
 			}
 		}
@@ -72,7 +72,7 @@ namespace Massive
 			_aliveCountByFrames[nextFrame] = currentAliveCount;
 			_maxIdByFrames[nextFrame] = currentMaxId;
 
-			// Limit count by maxFrames-1, because one frame is current and so not counted
+			// Limit count by framesCapacity-1, because one frame is current and so not counted
 			_framesCount = Math.Min(_framesCount + 1, _framesCapacity - 1);
 		}
 
@@ -98,9 +98,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Create(TState state = default)
+		public int Create(T data = default)
 		{
-			return CurrentFrame.Create(state);
+			return CurrentFrame.Create(data);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -110,15 +110,15 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref TState Get(int id)
+		public ref T Get(int id)
 		{
 			return ref CurrentFrame.Get(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Span<TState> GetAllStates()
+		public Span<T> GetAll()
 		{
-			return CurrentFrame.GetAllStates();
+			return CurrentFrame.GetAll();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

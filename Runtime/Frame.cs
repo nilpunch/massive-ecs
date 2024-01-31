@@ -7,18 +7,18 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public readonly unsafe ref struct Frame<TState>
+	public readonly unsafe ref struct Frame<T>
 	{
 		private readonly Span<int> _sparse;
 		private readonly Span<int> _dense;
-		private readonly Span<TState> _data;
+		private readonly Span<T> _data;
 		private readonly int* _aliveCount;
 		private readonly int* _maxId;
 		private readonly int* _currentFrame;
 		private readonly int _thisFrame;
 		private readonly int _statesCapacity;
 
-		public Frame(Span<int> sparse, Span<int> dense, Span<TState> data, int* aliveCount, int* maxId, int* currentFrame)
+		public Frame(Span<int> sparse, Span<int> dense, Span<T> data, int* aliveCount, int* maxId, int* currentFrame)
 		{
 			_sparse = sparse;
 			_dense = dense;
@@ -32,7 +32,7 @@ namespace Massive
 
 		public int AliveCount => *_aliveCount;
 
-		public int Create(TState state = default)
+		public int Create(T state = default)
 		{
 			ThrowIfFrameIsNotCurrent();
 
@@ -86,7 +86,7 @@ namespace Massive
 			int swapId = _dense[swapDenseIndex];
 
 			_data[denseIndex] = _data[swapDenseIndex];
-			
+
 			_dense[denseIndex] = swapId;
 			_sparse[id] = swapDenseIndex;
 			_dense[swapDenseIndex] = id;
@@ -94,7 +94,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref TState Get(int id)
+		public ref T Get(int id)
 		{
 			ThrowIfFrameIsNotCurrent();
 
@@ -109,7 +109,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Span<TState> GetAllStates()
+		public Span<T> GetAll()
 		{
 			ThrowIfFrameIsNotCurrent();
 

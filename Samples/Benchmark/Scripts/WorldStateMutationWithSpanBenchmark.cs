@@ -24,7 +24,7 @@ namespace Massive.Samples.Benchmark
 		{
 			var currentFrame = _worldState.CurrentFrame;
 
-			var states = currentFrame.GetAllStates();
+			var states = currentFrame.GetAll();
 			var ids = currentFrame.GetAllIds();
 			for (var i = 0; i < currentFrame.AliveCount; i++)
 			{

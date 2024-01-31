@@ -3,23 +3,23 @@ using UnityEngine;
 
 namespace Massive.Samples.Shooter
 {
-	public class EntityRoot<TState> : MonoBehaviour, IWorldEntity<TState> where TState : struct
+	public class EntityRoot<TState> : MonoBehaviour, ISyncEntity<TState> where TState : struct
 	{
-		private IWorldComponent<TState>[] _components;
+		private ISyncComponent<TState>[] _components;
 		private Renderer[] _renderers;
 
 		private void Awake()
 		{
-			_components = GetComponentsInChildren<IWorldComponent<TState>>().Where(component => !ReferenceEquals(component, this)).ToArray();
+			_components = GetComponentsInChildren<ISyncComponent<TState>>().Where(component => !ReferenceEquals(component, this)).ToArray();
 
 			_renderers = GetComponentsInChildren<Renderer>();
 		}
 
-		public void UpdateState(World world, ref TState state)
+		public void SyncState(World world, ref TState state)
 		{
 			foreach (var component in _components)
 			{
-				component.UpdateState(world, ref state);
+				component.SyncState(world, ref state);
 			}
 		}
 
