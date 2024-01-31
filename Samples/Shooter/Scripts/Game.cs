@@ -33,7 +33,10 @@ namespace Massive.Samples.Shooter
 			for (int i = 0; i < _charactersCapacity; i++)
 			{
 				_characters.Create(new CharacterState() { Transform = new EntityTransform() 
-					{ Position = Vector3.right * (i - _charactersCapacity / 2f) * 1.5f }});
+					{
+						Position = Vector3.right * (i - _charactersCapacity / 2f) * 1.5f,
+						Rotation = Quaternion.AngleAxis(180f * (i - _charactersCapacity / 2f) / _charactersCapacity, Vector3.forward)
+					}});
 			}
 		}
 
@@ -50,11 +53,11 @@ namespace Massive.Samples.Shooter
 				_bullets.Rollback(_bullets.CanRollbackFrames);
 			}
 
-			int targetFrame = Mathf.RoundToInt(Time.time * 1000);
+			int targetFrame = Mathf.RoundToInt(Time.time * 1000 / 60);
 			
 			for (; _currentFrame < targetFrame; _currentFrame++)
 			{
-				var world = new WorldFrame(_characters.CurrentFrame, _bullets.CurrentFrame, _currentFrame, 60);
+				var world = new WorldFrame(_characters.CurrentFrame, _bullets.CurrentFrame, _currentFrame);
 			
 				foreach (var worldUpdater in _worldUpdaters)
 				{
@@ -65,7 +68,7 @@ namespace Massive.Samples.Shooter
 				_bullets.SaveFrame();
 			}
 			
-			var syncFrame = new WorldFrame(_characters.CurrentFrame, _bullets.CurrentFrame, _currentFrame, 60);
+			var syncFrame = new WorldFrame(_characters.CurrentFrame, _bullets.CurrentFrame, _currentFrame);
 
 			_characterSynchronisation.Synchronize(syncFrame, syncFrame.Characters);
 			_bulletSynchronisation.Synchronize(syncFrame, syncFrame.Bullets);

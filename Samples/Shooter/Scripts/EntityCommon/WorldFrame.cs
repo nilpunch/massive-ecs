@@ -9,7 +9,7 @@
 
 		public readonly float DeltaTime;
 
-		public WorldFrame(Frame<CharacterState> characters, Frame<BulletState> bullets, int currentFrame, int framesPerSecond)
+		public WorldFrame(Frame<CharacterState> characters, Frame<BulletState> bullets, int currentFrame, int framesPerSecond = 60)
 		{
 			Characters = characters;
 			Bullets = bullets;

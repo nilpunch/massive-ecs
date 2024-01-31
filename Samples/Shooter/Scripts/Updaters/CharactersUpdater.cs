@@ -8,6 +8,9 @@ namespace Massive.Samples.Shooter
 		[SerializeField] private float _bulletVelocity = 1f;
 		[SerializeField] private float _bulletDamage = 1f;
 		[SerializeField] private float _bulletLifetime = 2f;
+		
+		[Header("Rotation")]
+		[SerializeField] private float _rotation = 2f;
 
 		public override void UpdateWorld(in WorldFrame worldFrame)
 		{
@@ -18,6 +21,8 @@ namespace Massive.Samples.Shooter
 				ref CharacterState characterState = ref characters[i];
 				ref WeaponState weaponState = ref characterState.Weapon;
 
+				characterState.Transform.Rotation *= Quaternion.AngleAxis(_rotation * worldFrame.DeltaTime, Vector3.forward);
+				
 				weaponState.Cooldown -= worldFrame.DeltaTime;
 				if (weaponState.Cooldown > 0)
 				{
@@ -29,7 +34,7 @@ namespace Massive.Samples.Shooter
 				BulletState createBullet = new BulletState
 				{
 					Transform = characterState.Transform,
-					Velocity = Vector3.up * _bulletVelocity,
+					Velocity = characterState.Transform.Rotation * Vector3.up * _bulletVelocity,
 					Lifetime = _bulletLifetime,
 					Damage = _bulletDamage
 				};
