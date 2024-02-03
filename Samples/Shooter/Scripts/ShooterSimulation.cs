@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Massive.Samples.Shooter
 {
-	public class Game : MonoBehaviour
+	public class ShooterSimulation : MonoBehaviour
 	{
 		[SerializeField] private int _simulationsPerFrame = 120;
 		[SerializeField] private int _charactersCapacity = 10;
@@ -75,8 +75,8 @@ namespace Massive.Samples.Shooter
 			
 			var syncFrame = new WorldFrame(_characters.CurrentFrame, _bullets.CurrentFrame, _currentFrame);
 
-			_characterSynchronisation.Synchronize(syncFrame, syncFrame.Characters);
-			_bulletSynchronisation.Synchronize(syncFrame, syncFrame.Bullets);
+			_characterSynchronisation.Synchronize(syncFrame.Characters);
+			_bulletSynchronisation.Synchronize(syncFrame.Bullets);
 
 			_debugTime = stopwatch.ElapsedMilliseconds;
 		}

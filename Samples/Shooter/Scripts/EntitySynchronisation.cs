@@ -12,7 +12,7 @@ namespace Massive.Samples.Shooter
 			_entities = new AvailableEntities<TState>(entityFactory);
 		}
 
-		public void Synchronize(in WorldFrame worldFrame, in Frame<TState> frame)
+		public void Synchronize(in Frame<TState> frame)
 		{
 			if (_entities.EntitiesCount < frame.AliveCount)
 			{
@@ -28,7 +28,7 @@ namespace Massive.Samples.Shooter
 			Span<TState> states = frame.GetAll();
 			for (int i = 0; i < states.Length; i++)
 			{
-				entities[i].SyncState(worldFrame, ref states[i]);
+				entities[i].SyncState(ref states[i]);
 			}
 		}
 	}

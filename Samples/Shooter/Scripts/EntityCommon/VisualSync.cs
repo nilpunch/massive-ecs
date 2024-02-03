@@ -6,7 +6,7 @@ namespace Massive.Samples.Shooter
 	{
 		private EntityTransform _entityTransform;
 
-		public void SyncState(WorldFrame worldFrame, ref TState state)
+		public virtual void SyncState(ref TState state)
 		{
 			TransformFromState(in state, out _entityTransform);
 		}

@@ -15,11 +15,11 @@ namespace Massive.Samples.Shooter
 			_renderers = GetComponentsInChildren<Renderer>();
 		}
 
-		public void SyncState(WorldFrame worldFrame, ref TState state)
+		public void SyncState(ref TState state)
 		{
 			foreach (var component in _components)
 			{
-				component.SyncState(worldFrame, ref state);
+				component.SyncState(ref state);
 			}
 		}
 
