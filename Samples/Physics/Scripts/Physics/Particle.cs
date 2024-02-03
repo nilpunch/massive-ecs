@@ -15,7 +15,7 @@ namespace Massive.Samples.Physics
 		public Vector3 Velocity;
 		public Vector3 Acceleration;
 
-		public Particle(Vector3 position, float radius, float mass = 1f, float drag = 0.1f)
+		public Particle(Vector3 position, float radius, float mass = 1f, float drag = 1f)
 		{
 			Radius = radius;
 			Mass = mass;

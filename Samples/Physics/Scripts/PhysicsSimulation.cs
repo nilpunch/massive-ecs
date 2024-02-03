@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Massive.Samples.Shooter;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Massive.Samples.Physics
 {
@@ -16,16 +17,23 @@ namespace Massive.Samples.Physics
 		[SerializeField] private float _gravity = 10f;
 
 		private MassiveData<Particle> _particles;
+		private MassiveData<Spring> _springs;
 		private EntitySynchronisation<Particle> _particleSynchronisation;
 
 		private void Awake()
 		{
 			_particles = new MassiveData<Particle>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_springs = new MassiveData<Spring>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			_particleSynchronisation = new EntitySynchronisation<Particle>(new EntityFactory<Particle>(_particlePrefab));
 
 			foreach (var particleSpawnPoint in FindObjectsOfType<ParticleSpawnPoint>())
 			{
 				_particles.Create(new Particle(particleSpawnPoint.Position, particleSpawnPoint.Radius));
+			}
+			
+			foreach (var spawnPoint in FindObjectsOfType<PhysicsSpawnPoint>())
+			{
+				spawnPoint.Spawn(_particles.CurrentFrame, _springs.CurrentFrame);
 			}
 		}
 
@@ -41,6 +49,7 @@ namespace Massive.Samples.Physics
 			{
 				_currentFrame -= _particles.CanRollbackFrames;
 				_particles.Rollback(_particles.CanRollbackFrames);
+				_springs.Rollback(_springs.CanRollbackFrames);
 			}
 
 			_elapsedTime += Time.deltaTime;
@@ -50,6 +59,7 @@ namespace Massive.Samples.Physics
 			while (_currentFrame < targetFrame)
 			{
 				var particles = _particles.CurrentFrame;
+				var springs = _springs.CurrentFrame;
 
 				const float simulationDeltaTime = 1f / 60f;
 				float subStepDeltaTime = simulationDeltaTime / _substeps;
@@ -59,10 +69,12 @@ namespace Massive.Samples.Physics
 					Gravity.Apply(particles, _gravity);
 					Collisions.Solve(particles);
 					GlobalFloorConstaint.Apply(particles);
+					Spring.Update(springs, particles, subStepDeltaTime);
 					Particle.Update(particles, subStepDeltaTime);
 				}
 				
 				_particles.SaveFrame();
+				_springs.SaveFrame();
 				_currentFrame++;
 			}
 			
