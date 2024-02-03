@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Massive.Samples.Shooter;
 using UnityEngine;
 
@@ -12,10 +13,8 @@ namespace Massive.Samples.Physics
 		[Header("Physics")]
 		[SerializeField] private EntityRoot<Particle> _particlePrefab;
 		[SerializeField] private int _substeps = 8;
-		[SerializeField] private float _radius = 0.5f;
 		[SerializeField] private float _gravity = 10f;
-		[SerializeField] private Vector3 _spawnPoint = Vector3.zero;
-		
+
 		private MassiveData<Particle> _particles;
 		private EntitySynchronisation<Particle> _particleSynchronisation;
 
@@ -24,7 +23,10 @@ namespace Massive.Samples.Physics
 			_particles = new MassiveData<Particle>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			_particleSynchronisation = new EntitySynchronisation<Particle>(new EntityFactory<Particle>(_particlePrefab));
 
-			_particles.Create(new Particle(_spawnPoint, _radius));
+			foreach (var particleSpawnPoint in FindObjectsOfType<ParticleSpawnPoint>())
+			{
+				_particles.Create(new Particle(particleSpawnPoint.Position, particleSpawnPoint.Radius));
+			}
 		}
 
 		private int _currentFrame;
@@ -55,7 +57,8 @@ namespace Massive.Samples.Physics
 				for (int i = 0; i < _substeps; i++)
 				{
 					Gravity.Apply(particles, _gravity);
-					GlobalFloor.Apply(particles);
+					Collisions.Solve(particles);
+					GlobalFloorConstaint.Apply(particles);
 					Particle.Update(particles, subStepDeltaTime);
 				}
 				

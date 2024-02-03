@@ -8,17 +8,19 @@ namespace Massive.Samples.Physics
 		public readonly float Radius;
 		public readonly float Mass;
 		public readonly float InverseMass;
+		public readonly float Drag;
 
 		public Vector3 LastPosition;
 		public Vector3 Position;
 		public Vector3 Velocity;
 		public Vector3 Acceleration;
 
-		public Particle(Vector3 position, float radius, float mass = 1f)
+		public Particle(Vector3 position, float radius, float mass = 1f, float drag = 0.1f)
 		{
 			Radius = radius;
 			Mass = mass;
 			InverseMass = 1f / Mass;
+			Drag = drag;
 			LastPosition = position;
 			Position = position;
 			Velocity = Vector3.zero;
@@ -32,7 +34,7 @@ namespace Massive.Samples.Physics
 			
 			LastPosition = Position;
 			
-			Position += displacement + deltaTime * deltaTime * InverseMass * Acceleration;
+			Position += displacement * (1f - deltaTime * Drag) + deltaTime * deltaTime * InverseMass * Acceleration;
 			Acceleration = Vector3.zero;
 			
 			// Not used in calculations

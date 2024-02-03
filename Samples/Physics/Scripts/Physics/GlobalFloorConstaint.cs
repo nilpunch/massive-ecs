@@ -2,7 +2,7 @@
 
 namespace Massive.Samples.Physics
 {
-	public static class GlobalFloor
+	public static class GlobalFloorConstaint
 	{
 		public static void Apply(in Frame<Particle> particles, float height = 0f)
 		{
