@@ -16,7 +16,7 @@ namespace Massive.Samples.Physics
 					particle.Position.y = particle.Radius + height;
 					
 					// Simulate friction as a kinetic energy loss
-					particle.AddVelocity(-frictionCoefficient * particle.Velocity);
+					particle.AddVelocity(-frictionCoefficient * Vector3.ProjectOnPlane(particle.Velocity, Vector3.up));
 				}
 			}
 		}

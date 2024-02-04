@@ -33,29 +33,26 @@ namespace Massive.Samples.Physics
 			
 			ref Particle a = ref particles.GetFast(ParticleA);
 			ref Particle b = ref particles.GetFast(ParticleB);
-			Vector3 axis = a.Position - b.Position;
-			float distance = axis.magnitude;
-			Vector3 normal = axis / distance;
+			Vector3 displacement = a.Position - b.Position;
+			float distance = displacement.magnitude;
+			Vector3 normal = displacement / distance;
 			float delta = RestLength - distance;
 
 			Broken = distance > RestLength * MaxElongationRatio;
 			
-			Vector3 displacement = -delta * Strength / (a.Mass + b.Mass) * normal;
+			Vector3 movement = -delta * Strength / (a.Mass + b.Mass) * normal;
 			
-			a.AddMove(deltaTime * a.InverseMass * -displacement);
-			b.AddMove(deltaTime * b.InverseMass * displacement);
+			a.AddMove(deltaTime * a.InverseMass * -movement);
+			b.AddMove(deltaTime * b.InverseMass * movement);
 		}
 		
 		public static void ApplyAll(in Frame<Spring> springsFrame, in Frame<Particle> particlesFrame, float deltaTime)
 		{
 			var springs = springsFrame.GetAll();
-			for (var dense = 0; dense < springs.Length; dense++)
-			{
-				springs[dense].Apply(particlesFrame, deltaTime);
-			}
-			
 			for (var dense = 0; dense < springsFrame.AliveCount; dense++)
 			{
+				springs[dense].Apply(particlesFrame, deltaTime);
+				
 				if (springs[dense].Broken)
 				{
 					springsFrame.DeleteDense(dense);
