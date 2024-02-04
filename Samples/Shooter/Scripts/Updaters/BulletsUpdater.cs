@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Massive.Samples.Shooter
 {
@@ -6,12 +7,12 @@ namespace Massive.Samples.Shooter
 	{
 		public override void UpdateWorld(in WorldFrame worldFrame)
 		{
-			var bullets = worldFrame.Bullets.GetAll();
+			var bullets = worldFrame.Bullets.Data;
 
 			for (int dense = 0; dense < worldFrame.Bullets.AliveCount; dense++)
 			{
 				ref BulletState state = ref bullets[dense];
-				
+
 				state.Lifetime -= worldFrame.DeltaTime;
 				if (state.IsDestroyed)
 				{
@@ -19,7 +20,7 @@ namespace Massive.Samples.Shooter
 					dense -= 1;
 					continue;
 				}
-				
+
 				state.Transform.Position += state.Velocity * worldFrame.DeltaTime;
 			}
 		}

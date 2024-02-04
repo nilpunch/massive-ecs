@@ -8,9 +8,8 @@ namespace Massive.Samples.Shooter
 		[SerializeField] private int _simulationsPerFrame = 120;
 		[SerializeField] private int _charactersCapacity = 10;
 		[SerializeField] private int _bulletsCapacity = 1000;
-		
-		[Header("Entities")]
-		[SerializeField] private EntityRoot<CharacterState> _characterPrefab;
+
+		[Header("Entities")] [SerializeField] private EntityRoot<CharacterState> _characterPrefab;
 		[SerializeField] private EntityRoot<BulletState> _bulletPrefab;
 
 		private MassiveData<CharacterState> _characters;
@@ -32,18 +31,21 @@ namespace Massive.Samples.Shooter
 
 			for (int i = 0; i < _charactersCapacity; i++)
 			{
-				_characters.Create(new CharacterState() { Transform = new EntityTransform() 
+				_characters.Create(new CharacterState()
+				{
+					Transform = new EntityTransform()
 					{
 						Position = Vector3.right * (i - _charactersCapacity / 2f) * 1.5f,
 						Rotation = Quaternion.AngleAxis(180f * (i - _charactersCapacity / 2f) / _charactersCapacity, Vector3.forward)
-					}});
+					}
+				});
 			}
 		}
 
 		private int _currentFrame;
 
 		private float _elapsedTime;
-		
+
 		private void Update()
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
@@ -56,13 +58,13 @@ namespace Massive.Samples.Shooter
 			}
 
 			_elapsedTime += Time.deltaTime;
-			
+
 			int targetFrame = Mathf.RoundToInt(_elapsedTime * 60);
-			
+
 			while (_currentFrame < targetFrame)
 			{
-				var world = new WorldFrame(_characters.CurrentFrame, _bullets.CurrentFrame, _currentFrame);
-			
+				var world = new WorldFrame(_characters, _bullets, _currentFrame);
+
 				foreach (var worldUpdater in _worldUpdaters)
 				{
 					worldUpdater.UpdateWorld(world);
@@ -72,8 +74,8 @@ namespace Massive.Samples.Shooter
 				_bullets.SaveFrame();
 				_currentFrame++;
 			}
-			
-			var syncFrame = new WorldFrame(_characters.CurrentFrame, _bullets.CurrentFrame, _currentFrame);
+
+			var syncFrame = new WorldFrame(_characters, _bullets, _currentFrame);
 
 			_characterSynchronisation.Synchronize(syncFrame.Characters);
 			_bulletSynchronisation.Synchronize(syncFrame.Bullets);
@@ -82,13 +84,13 @@ namespace Massive.Samples.Shooter
 		}
 
 		private long _debugTime;
-		
+
 		private void OnGUI()
 		{
 			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
 			GUILayout.TextField($"{_characters.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_characters.CurrentFrame.AliveCount} Characters", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_bullets.CurrentFrame.AliveCount} Bullets", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_characters.AliveCount} Characters", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_bullets.AliveCount} Bullets", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}
 }

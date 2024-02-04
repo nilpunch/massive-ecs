@@ -2,14 +2,14 @@
 {
 	public readonly ref struct WorldFrame
 	{
-		public readonly Frame<CharacterState> Characters;
-		public readonly Frame<BulletState> Bullets;
+		public readonly MassiveData<CharacterState> Characters;
+		public readonly MassiveData<BulletState> Bullets;
 		public readonly int CurrentFrame;
 		public readonly int FramesPerSecond;
 
 		public readonly float DeltaTime;
 
-		public WorldFrame(Frame<CharacterState> characters, Frame<BulletState> bullets, int currentFrame, int framesPerSecond = 60)
+		public WorldFrame(MassiveData<CharacterState> characters, MassiveData<BulletState> bullets, int currentFrame, int framesPerSecond = 60)
 		{
 			Characters = characters;
 			Bullets = bullets;

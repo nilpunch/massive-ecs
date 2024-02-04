@@ -10,20 +10,28 @@ namespace Massive
 	{
 		private readonly int _framesCapacity;
 		private readonly int _dataCapacity;
+
+		// Saved frames
 		private readonly T[] _dataByFrames;
 		private readonly int[] _denseByFrames;
 		private readonly int[] _sparseByFrames;
 		private readonly int[] _maxIdByFrames;
 		private readonly int[] _aliveCountByFrames;
 
+		// Current frame
+		private readonly T[] _currentData;
+		private readonly int[] _currentDense;
+		private readonly int[] _currentSparse;
+		private int _currentMaxId;
+		private int _currentAliveCount;
+
 		private int _currentFrame;
-		private int _framesCount;
+		private int _savedFrames;
 
 		public MassiveData(int framesCapacity = 120, int dataCapacity = 100)
 		{
-			// Reserve 2 frames
-			// One for rollback restoration, another one for current frame
-			_framesCapacity = framesCapacity + 2;
+			// Reserve 1 frame for rollback restoration
+			_framesCapacity = framesCapacity + 1;
 
 			_dataCapacity = dataCapacity;
 			_dataByFrames = new T[_framesCapacity * dataCapacity];
@@ -31,104 +39,166 @@ namespace Massive
 			_sparseByFrames = new int[_framesCapacity * dataCapacity];
 			_maxIdByFrames = new int[_framesCapacity];
 			_aliveCountByFrames = new int[_framesCapacity];
+
+			_currentData = new T[dataCapacity];
+			_currentDense = new int[dataCapacity];
+			_currentSparse = new int[dataCapacity];
 		}
 
-		public unsafe Frame<T> CurrentFrame
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get
-			{
-				int startIndex = _currentFrame * _dataCapacity;
+		public Span<T> Data => new Span<T>(_currentData);
+		public Span<int> Dense => new Span<int>(_denseByFrames);
+		public Span<int> Sparse => new Span<int>(_sparseByFrames);
 
-				fixed (int* aliveCount = &_aliveCountByFrames[_currentFrame])
-				fixed (int* maxId = &_maxIdByFrames[_currentFrame])
-				fixed (int* currentFrame = &_currentFrame)
-					return new Frame<T>(
-						new Span<int>(_sparseByFrames, startIndex, _dataCapacity),
-						new Span<int>(_denseByFrames, startIndex, _dataCapacity),
-						new Span<T>(_dataByFrames, startIndex, _dataCapacity),
-						aliveCount, maxId, currentFrame);
-			}
-		}
+		public int AliveCount => _currentAliveCount;
 
-		public int CanRollbackFrames => _framesCount - 1;
+		// One frame is reserved for restoring
+		public int CanRollbackFrames => _savedFrames - 1;
 
 		public void SaveFrame()
 		{
 			int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
-			int currentAliveCount = _aliveCountByFrames[_currentFrame];
-			int currentMaxId = _maxIdByFrames[_currentFrame];
+			int currentAliveCount = _currentAliveCount;
+			int currentMaxId = _currentMaxId;
 
-			int currentFrameIndex = _currentFrame * _dataCapacity;
 			int nextFrameIndex = nextFrame * _dataCapacity;
 
-			Array.Copy(_dataByFrames, currentFrameIndex, _dataByFrames, nextFrameIndex, currentAliveCount);
-			Array.Copy(_denseByFrames, currentFrameIndex, _denseByFrames, nextFrameIndex, currentMaxId);
-			Array.Copy(_sparseByFrames, currentFrameIndex, _sparseByFrames, nextFrameIndex, currentMaxId);
-
-			_currentFrame = nextFrame;
+			// Copy everything from current frame
+			Array.Copy(_currentData, 0, _dataByFrames, nextFrameIndex, currentAliveCount);
+			Array.Copy(_currentDense, 0, _denseByFrames, nextFrameIndex, currentMaxId);
+			Array.Copy(_currentSparse, 0, _sparseByFrames, nextFrameIndex, currentMaxId);
 			_aliveCountByFrames[nextFrame] = currentAliveCount;
 			_maxIdByFrames[nextFrame] = currentMaxId;
 
-			// Limit count by framesCapacity-1, because one frame is current and so not counted
-			_framesCount = Math.Min(_framesCount + 1, _framesCapacity - 1);
+			_currentFrame = nextFrame;
+
+			_savedFrames = Math.Min(_savedFrames + 1, _framesCapacity);
 		}
 
 		public void Rollback(int frames)
 		{
-			// One frame is reserved for restoring
-			int canRollback = _framesCount - 1;
-
-			if (frames > canRollback)
+			if (frames > CanRollbackFrames)
 			{
-				throw new InvalidOperationException($"Can't rollback this far. CanRollback:{canRollback}, Requested: {frames}.");
+				throw new InvalidOperationException($"Can't rollback this far. CanRollback:{CanRollbackFrames}, Requested: {frames}.");
 			}
 
-			// Add one frame to the rollback to appear at one frame before the target frame
-			frames += 1;
-
-			_framesCount -= frames;
+			_savedFrames -= frames;
 			_currentFrame = LoopNegative(_currentFrame - frames, _framesCapacity);
 
-			// Populate target frame with data from rollback frame
-			// This will keep rollback frame untouched
-			SaveFrame();
+			// Copy everything from rollback frame to current
+			int rollbackAliveCount = _aliveCountByFrames[_currentFrame];
+			int rollbackMaxId = _maxIdByFrames[_currentFrame];
+			int rollbackFrameIndex = _currentFrame * _dataCapacity;
+			Array.Copy(_dataByFrames, rollbackFrameIndex, _currentData, 0, rollbackAliveCount);
+
+			// Copy _currentMaxId elements to ensure zeroing excess elements
+			Array.Copy(_denseByFrames, rollbackFrameIndex, _currentDense, 0, _currentMaxId);
+			Array.Copy(_sparseByFrames, rollbackFrameIndex, _currentSparse, 0, _currentMaxId);
+			_currentAliveCount = rollbackAliveCount;
+			_currentMaxId = rollbackMaxId;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create(T data = default)
 		{
-			return CurrentFrame.Create(data);
+			int count = _currentAliveCount;
+			int maxId = _currentMaxId;
+
+			if (count == _dataCapacity)
+			{
+				throw new InvalidOperationException($"Exceeded limit of data! Limit: {_dataCapacity}.");
+			}
+
+			_currentData[count] = data;
+
+			// If there are unused elements in the dense array, return last
+			if (count < maxId)
+			{
+				_currentAliveCount += 1;
+				return _currentDense[count];
+			}
+
+			_currentAliveCount += 1;
+			_currentMaxId += 1;
+
+			_currentDense[count] = maxId;
+			_currentSparse[maxId] = count;
+			return maxId;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Delete(int id)
 		{
-			CurrentFrame.Delete(id);
+			int aliveCount = _currentAliveCount;
+			int denseIndex = _currentSparse[id];
+
+			if (denseIndex >= aliveCount)
+			{
+				throw new InvalidOperationException($"Id is not alive! Id: {id}.");
+			}
+
+			// If dense is the last used element, simply decrease count
+			if (denseIndex == aliveCount - 1)
+			{
+				_currentAliveCount -= 1;
+				return;
+			}
+
+			_currentAliveCount -= 1;
+
+			int swapDenseIndex = aliveCount - 1;
+			int swapId = _currentDense[swapDenseIndex];
+
+			_currentData[denseIndex] = _currentData[swapDenseIndex];
+
+			_currentDense[denseIndex] = swapId;
+			_currentSparse[id] = swapDenseIndex;
+			_currentDense[swapDenseIndex] = id;
+			_currentSparse[swapId] = denseIndex;
+		}
+
+		public void DeleteDense(int denseIndex)
+		{
+			int aliveCount = _currentAliveCount;
+
+			if (denseIndex >= aliveCount)
+			{
+				throw new InvalidOperationException($"Dense is not alive! Dense: {denseIndex}.");
+			}
+
+			// If dense is the last used element, simply decrease count
+			if (denseIndex == aliveCount - 1)
+			{
+				_currentAliveCount -= 1;
+				return;
+			}
+
+			_currentAliveCount -= 1;
+
+			int deleteId = _currentDense[denseIndex];
+			int swapDenseIndex = aliveCount - 1;
+			int swapId = _currentDense[swapDenseIndex];
+
+			_currentData[denseIndex] = _currentData[swapDenseIndex];
+
+			_currentDense[denseIndex] = swapId;
+			_currentSparse[deleteId] = swapDenseIndex;
+			_currentDense[swapDenseIndex] = deleteId;
+			_currentSparse[swapId] = denseIndex;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			return ref CurrentFrame.Get(id);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Span<T> GetAll()
-		{
-			return CurrentFrame.GetAll();
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Span<int> GetAllIds()
-		{
-			return CurrentFrame.GetAllIds();
+			return ref _currentData[_currentSparse[id]];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			return CurrentFrame.IsAlive(id);
+			if (id >= _dataCapacity)
+				return false;
+
+			int denseIndex = _currentSparse[id];
+
+			return denseIndex < _currentAliveCount && _currentDense[denseIndex] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

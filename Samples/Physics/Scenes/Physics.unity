@@ -251,7 +251,7 @@ MonoBehaviour:
   _particlePrefab: {fileID: 3200494944595069422, guid: 50c4703ddfb0e3045bb5ddd6bb11b25f, type: 3}
   _substeps: 1
   _gravity: 10
-  _groundFriction: 0.1
+  _groundFriction: 0.3
 --- !u!1001 &58237900
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -355,7 +355,7 @@ MonoBehaviour:
   _particlesRadius: 0.3
   _particlesMass: 1
   _particlesDrag: 0
-  _stiffness: 10
+  _stiffness: 20
   _elongation: 10
 --- !u!4 &77571476
 Transform:
@@ -615,7 +615,7 @@ MonoBehaviour:
   _particlesRadius: 0.3
   _particlesMass: 1
   _particlesDrag: 0
-  _stiffness: 10
+  _stiffness: 20
   _elongation: 10
 --- !u!4 &229616961
 Transform:
@@ -805,7 +805,7 @@ MonoBehaviour:
   _particlesRadius: 0.3
   _particlesMass: 1
   _particlesDrag: 0
-  _stiffness: 10
+  _stiffness: 20
   _elongation: 10
 --- !u!4 &279688295
 Transform:
@@ -860,7 +860,7 @@ MonoBehaviour:
   _particlesRadius: 0.3
   _particlesMass: 1
   _particlesDrag: 0
-  _stiffness: 10
+  _stiffness: 20
   _elongation: 10
 --- !u!4 &294755125
 Transform:
@@ -1385,7 +1385,7 @@ MonoBehaviour:
   _particlesRadius: 0.3
   _particlesMass: 1
   _particlesDrag: 0
-  _stiffness: 10
+  _stiffness: 20
   _elongation: 10
 --- !u!4 &484966153
 Transform:
@@ -1580,7 +1580,7 @@ MonoBehaviour:
   _particlesRadius: 0.3
   _particlesMass: 1
   _particlesDrag: 0
-  _stiffness: 10
+  _stiffness: 20
   _elongation: 10
 --- !u!4 &556524342
 Transform:
@@ -2646,7 +2646,7 @@ MonoBehaviour:
   _particlesRadius: 0.3
   _particlesMass: 1
   _particlesDrag: 0
-  _stiffness: 10
+  _stiffness: 20
   _elongation: 10
 --- !u!4 &1022596461
 Transform:
@@ -4491,7 +4491,7 @@ MonoBehaviour:
   _particlesRadius: 0.3
   _particlesMass: 1
   _particlesDrag: 0
-  _stiffness: 10
+  _stiffness: 20
   _elongation: 10
 --- !u!4 &2040954544
 Transform:

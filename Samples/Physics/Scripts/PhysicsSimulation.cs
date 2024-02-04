@@ -11,9 +11,8 @@ namespace Massive.Samples.Physics
 		[SerializeField, Range(0.01f, 10f)] private float _simulationSpeed = 1f;
 		[SerializeField] private int _simulationsPerFrame = 120;
 		[SerializeField] private int _particlesCapacity = 1000;
-		
-		[Header("Physics")]
-		[SerializeField] private EntityRoot<Particle> _particlePrefab;
+
+		[Header("Physics")] [SerializeField] private EntityRoot<Particle> _particlePrefab;
 		[SerializeField] private int _substeps = 8;
 		[SerializeField] private float _gravity = 10f;
 		[SerializeField] private float _groundFriction = 0.2f;
@@ -32,17 +31,17 @@ namespace Massive.Samples.Physics
 			{
 				_particles.Create(new Particle(particleSpawnPoint.Position, particleSpawnPoint.Radius, 1f, particleSpawnPoint.Drag));
 			}
-			
+
 			foreach (var spawnPoint in FindObjectsOfType<PhysicsSpawnPoint>())
 			{
-				spawnPoint.Spawn(_particles.CurrentFrame, _springs.CurrentFrame);
+				spawnPoint.Spawn(_particles, _springs);
 			}
 		}
 
 		private int _currentFrame;
 
 		private float _elapsedTime;
-		
+
 		private void Update()
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
@@ -55,44 +54,41 @@ namespace Massive.Samples.Physics
 			}
 
 			_elapsedTime += Time.deltaTime * _simulationSpeed;
-			
+
 			int targetFrame = Mathf.RoundToInt(_elapsedTime * 60);
 
 			while (_currentFrame < targetFrame)
 			{
-				var particles = _particles.CurrentFrame;
-				var springs = _springs.CurrentFrame;
-
 				const float simulationDeltaTime = 1f / 60f;
 				float subStepDeltaTime = simulationDeltaTime / _substeps;
 
 				for (int i = 0; i < _substeps; i++)
 				{
-					Gravity.Apply(particles, _gravity);
-					Collisions.Solve(particles);
-					GlobalFloorConstraint.Apply(particles, frictionCoefficient: _groundFriction);
-					Spring.ApplyAll(springs, particles, subStepDeltaTime);
-					Particle.IntegrateAll(particles, subStepDeltaTime);
+					Gravity.Apply(_particles, _gravity);
+					Collisions.Solve(_particles);
+					GlobalFloorConstraint.Apply(_particles, frictionCoefficient: _groundFriction);
+					Spring.ApplyAll(_springs, _particles, subStepDeltaTime);
+					Particle.IntegrateAll(_particles, subStepDeltaTime);
 				}
-				
+
 				_particles.SaveFrame();
 				_springs.SaveFrame();
 				_currentFrame++;
 			}
-			
-			_particleSynchronisation.Synchronize(_particles.CurrentFrame);
+
+			_particleSynchronisation.Synchronize(_particles);
 
 			_debugTime = stopwatch.ElapsedMilliseconds;
 		}
 
 		private long _debugTime;
-		
+
 		private void OnGUI()
 		{
 			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
 			GUILayout.TextField($"{_particles.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_particles.CurrentFrame.AliveCount} Particles", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_springs.CurrentFrame.AliveCount} Springs", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_particles.AliveCount} Particles", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_springs.AliveCount} Springs", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}
 }

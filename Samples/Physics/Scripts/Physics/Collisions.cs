@@ -1,17 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Massive.Samples.Physics
 {
 	public static class Collisions
 	{
-		public static void Solve(in Frame<Particle> particles, float beta = 0.75f)
+		public static void Solve(in MassiveData<Particle> particles, float beta = 0.75f)
 		{
-			var span = particles.GetAll();
-			for (int i = 0; i < span.Length; ++i)
+			var span = particles.Data;
+			var aliveCount = particles.AliveCount;
+			for (int i = 0; i < aliveCount; ++i)
 			{
 				ref Particle a = ref span[i];
 
-				for (int j = i + 1; j < span.Length; ++j)
+				for (int j = i + 1; j < aliveCount; ++j)
 				{
 					ref Particle b = ref span[j];
 					Vector3 axis = a.Position - b.Position;

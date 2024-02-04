@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -37,12 +38,12 @@ namespace Massive.Samples.Physics
 		public void Integrate(float deltaTime)
 		{
 			float drag = (1f - deltaTime * Drag);
-			Vector3 lastPosition  = LastPosition;
-			
+			Vector3 lastPosition = LastPosition;
+
 			LastPosition = Position;
 			Position += (Position - lastPosition) * drag + VelocityChange * deltaTime + deltaTime * deltaTime * InverseMass * Acceleration;
 			Velocity = (Position - LastPosition) / deltaTime;
-			
+
 			Acceleration = Vector3.zero;
 			VelocityChange = Vector3.zero;
 			PositionChange = Vector3.zero;
@@ -53,24 +54,25 @@ namespace Massive.Samples.Physics
 		{
 			Position += delta;
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void AddAcceleration(Vector3 acceleration)
 		{
 			Acceleration += acceleration;
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void AddVelocity(Vector3 velocity)
 		{
 			VelocityChange += velocity;
 		}
 
-		public static void IntegrateAll(in Frame<Particle> particles, float deltaTime)
+		public static void IntegrateAll(in MassiveData<Particle> particles, float deltaTime)
 		{
-			var span = particles.GetAll();
-			
-			for (var i = 0; i < span.Length; i++)
+			var span = particles.Data;
+			var aliveCount = particles.AliveCount;
+
+			for (var i = 0; i < aliveCount; i++)
 			{
 				span[i].Integrate(deltaTime);
 			}

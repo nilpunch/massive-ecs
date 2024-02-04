@@ -103,25 +103,6 @@ namespace Massive.Tests
 		}
 
 		[Test]
-		public void CurrentFrame_ShouldThrowWhenAccessedAfterFrameChange()
-		{
-			MassiveData<TestState> massiveData = new MassiveData<TestState>(2, 4);
-
-			Assert.DoesNotThrow(() =>
-			{
-				var currentFrame = massiveData.CurrentFrame;
-				currentFrame.IsAlive(1);
-			});
-
-			Assert.Catch(() =>
-			{
-				var currentFrame = massiveData.CurrentFrame;
-				massiveData.SaveFrame();
-				currentFrame.IsAlive(1);
-			});
-		}
-
-		[Test]
 		public void RollbackZero_ShouldResetCurrentFrameChanges()
 		{
 			MassiveData<TestState> massiveData = new MassiveData<TestState>(2, 2);

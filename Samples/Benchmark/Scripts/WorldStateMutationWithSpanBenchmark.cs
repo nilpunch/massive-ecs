@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Massive.Samples.Benchmark
 {
@@ -12,23 +13,19 @@ namespace Massive.Samples.Benchmark
 		{
 			_massiveData = new MassiveData<TestState>(100, _worldEntitiesCount);
 
-			var currentFrame = _massiveData.CurrentFrame;
-
 			for (var index = 0; index < _worldEntitiesCount; index++)
 			{
-				currentFrame.Create(new TestState() { Value = index + 1 });
+				_massiveData.Create(new TestState() { Value = index + 1 });
 			}
 		}
 
 		protected override void Sample()
 		{
-			var currentFrame = _massiveData.CurrentFrame;
-
-			var states = currentFrame.GetAll();
-			var ids = currentFrame.GetAllIds();
-			for (var i = 0; i < currentFrame.AliveCount; i++)
+			var states = _massiveData.Data;
+			var ids = _massiveData.Sparse;
+			for (var i = 0; i < _massiveData.AliveCount; i++)
 			{
-				if (currentFrame.IsAlive(ids[i]))
+				if (_massiveData.IsAlive(ids[i]))
 				{
 					ref var state = ref states[i];
 					state.Value += 1;

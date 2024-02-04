@@ -14,7 +14,7 @@ namespace Massive.Samples.Physics
 
 		protected override void TransformFromState(in Particle state, out EntityTransform transform)
 		{
-			transform = new EntityTransform() { Position = state.Position, Rotation = Quaternion.identity};
+			transform = new EntityTransform() { Position = state.Position, Rotation = Quaternion.identity };
 		}
 	}
 }

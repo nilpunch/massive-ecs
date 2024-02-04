@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Massive.Samples.Shooter
 {
@@ -8,13 +9,12 @@ namespace Massive.Samples.Shooter
 		[SerializeField] private float _bulletVelocity = 1f;
 		[SerializeField] private float _bulletDamage = 1f;
 		[SerializeField] private float _bulletLifetime = 2f;
-		
-		[Header("Rotation")]
-		[SerializeField] private float _rotation = 2f;
+
+		[Header("Rotation")] [SerializeField] private float _rotation = 2f;
 
 		public override void UpdateWorld(in WorldFrame worldFrame)
 		{
-			var characters = worldFrame.Characters.GetAll();
+			var characters = worldFrame.Characters.Data;
 
 			for (int i = 0; i < worldFrame.Characters.AliveCount; i++)
 			{
@@ -22,7 +22,7 @@ namespace Massive.Samples.Shooter
 				ref WeaponState weaponState = ref characterState.Weapon;
 
 				characterState.Transform.Rotation *= Quaternion.AngleAxis(_rotation * worldFrame.DeltaTime, Vector3.forward);
-				
+
 				weaponState.Cooldown -= worldFrame.DeltaTime;
 				if (weaponState.Cooldown > 0)
 				{

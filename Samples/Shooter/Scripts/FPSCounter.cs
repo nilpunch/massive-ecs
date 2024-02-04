@@ -14,7 +14,7 @@ namespace Massive.Samples.Shooter
 		{
 			_frameRateSamples = new int[_averageFromAmount];
 		}
-		
+
 		void OnGUI()
 		{
 			var currentFrame = (int)Mathf.Round(1f / Time.smoothDeltaTime);
@@ -25,6 +25,7 @@ namespace Massive.Samples.Shooter
 			{
 				average += frameRate;
 			}
+
 			_currentAveraged = (int)Mathf.Round(average / _averageFromAmount);
 			_averageCounter = (_averageCounter + 1) % _averageFromAmount;
 
@@ -34,12 +35,11 @@ namespace Massive.Samples.Shooter
 
 			GUILayout.FlexibleSpace();
 
-			GUILayout.TextField($"{_currentAveraged} FPS", new GUIStyle() {fontSize = 70, normal = new GUIStyleState() { textColor = Color.white }});
+			GUILayout.TextField($"{_currentAveraged} FPS", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
 
 			GUILayout.EndHorizontal();
 
 			GUILayout.EndArea();
-			
 		}
 	}
 }

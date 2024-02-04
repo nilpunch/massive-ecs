@@ -15,16 +15,14 @@ namespace Massive.Samples.Benchmark
 
 		protected override void Sample()
 		{
-			Frame<TestState> frame = _massiveData.CurrentFrame;
-
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				frame.Create(new TestState() { Value = index + 1 });
+				_massiveData.Create(new TestState() { Value = index + 1 });
 			}
 
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				frame.Delete(index);
+				_massiveData.Delete(index);
 			}
 		}
 	}

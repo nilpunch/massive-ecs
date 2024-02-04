@@ -12,21 +12,22 @@ namespace Massive.Samples.Shooter
 			_entities = new AvailableEntities<TState>(entityFactory);
 		}
 
-		public void Synchronize(in Frame<TState> frame)
+		public void Synchronize(MassiveData<TState> data)
 		{
-			if (_entities.EntitiesCount < frame.AliveCount)
+			var aliveCount = data.AliveCount;
+
+			if (_entities.EntitiesCount < aliveCount)
 			{
-				_entities.Reserve(frame.AliveCount - _entities.EntitiesCount);
+				_entities.Reserve(aliveCount - _entities.EntitiesCount);
 			}
-			
-			if (_entities.EntitiesCount > frame.AliveCount)
+			else if (_entities.EntitiesCount > aliveCount)
 			{
-				_entities.Free(_entities.EntitiesCount - frame.AliveCount);
+				_entities.Free(_entities.EntitiesCount - aliveCount);
 			}
 
 			IReadOnlyList<EntityRoot<TState>> entities = _entities.Entities;
-			Span<TState> states = frame.GetAll();
-			for (int i = 0; i < states.Length; i++)
+			Span<TState> states = data.Data;
+			for (int i = 0; i < aliveCount; i++)
 			{
 				entities[i].SyncState(ref states[i]);
 			}
