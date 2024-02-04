@@ -8,6 +8,7 @@ namespace Massive.Samples.Physics
 {
 	public class PhysicsSimulation : MonoBehaviour
 	{
+		[SerializeField, Range(0.01f, 10f)] private float _simulationSpeed = 1f;
 		[SerializeField] private int _simulationsPerFrame = 120;
 		[SerializeField] private int _particlesCapacity = 1000;
 		
@@ -15,6 +16,7 @@ namespace Massive.Samples.Physics
 		[SerializeField] private EntityRoot<Particle> _particlePrefab;
 		[SerializeField] private int _substeps = 8;
 		[SerializeField] private float _gravity = 10f;
+		[SerializeField] private float _groundFriction = 0.2f;
 
 		private MassiveData<Particle> _particles;
 		private MassiveData<Spring> _springs;
@@ -28,7 +30,7 @@ namespace Massive.Samples.Physics
 
 			foreach (var particleSpawnPoint in FindObjectsOfType<ParticleSpawnPoint>())
 			{
-				_particles.Create(new Particle(particleSpawnPoint.Position, particleSpawnPoint.Radius));
+				_particles.Create(new Particle(particleSpawnPoint.Position, particleSpawnPoint.Radius, 1f, particleSpawnPoint.Drag));
 			}
 			
 			foreach (var spawnPoint in FindObjectsOfType<PhysicsSpawnPoint>())
@@ -52,7 +54,7 @@ namespace Massive.Samples.Physics
 				_springs.Rollback(_springs.CanRollbackFrames);
 			}
 
-			_elapsedTime += Time.deltaTime;
+			_elapsedTime += Time.deltaTime * _simulationSpeed;
 			
 			int targetFrame = Mathf.RoundToInt(_elapsedTime * 60);
 
@@ -68,9 +70,9 @@ namespace Massive.Samples.Physics
 				{
 					Gravity.Apply(particles, _gravity);
 					Collisions.Solve(particles);
-					GlobalFloorConstaint.Apply(particles);
-					Spring.Update(springs, particles, subStepDeltaTime);
-					Particle.Update(particles, subStepDeltaTime);
+					GlobalFloorConstraint.Apply(particles, frictionCoefficient: _groundFriction);
+					Spring.ApplyAll(springs, particles, subStepDeltaTime);
+					Particle.IntegrateAll(particles, subStepDeltaTime);
 				}
 				
 				_particles.SaveFrame();
@@ -90,6 +92,7 @@ namespace Massive.Samples.Physics
 			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
 			GUILayout.TextField($"{_particles.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
 			GUILayout.TextField($"{_particles.CurrentFrame.AliveCount} Particles", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_springs.CurrentFrame.AliveCount} Springs", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}
 }

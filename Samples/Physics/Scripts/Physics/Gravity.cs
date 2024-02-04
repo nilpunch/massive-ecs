@@ -9,7 +9,7 @@ namespace Massive.Samples.Physics
 			var span = particles.GetAll();
 			for (var i = 0; i < span.Length; i++)
 			{
-				span[i].Accelerate(Vector3.down * gravity);
+				span[i].AddAcceleration(Vector3.down * gravity);
 			}
 		}
 	}

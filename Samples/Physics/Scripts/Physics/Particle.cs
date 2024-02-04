@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Massive.Samples.Physics
@@ -15,6 +16,9 @@ namespace Massive.Samples.Physics
 		public Vector3 Velocity;
 		public Vector3 Acceleration;
 
+		public Vector3 PositionChange;
+		public Vector3 VelocityChange;
+
 		public Particle(Vector3 position, float radius, float mass = 1f, float drag = 1f)
 		{
 			Radius = radius;
@@ -23,39 +27,49 @@ namespace Massive.Samples.Physics
 			Drag = drag;
 			LastPosition = position;
 			Position = position;
-			Velocity = Vector3.zero;
 			Acceleration = Vector3.zero;
+			Velocity = Vector3.zero;
+			PositionChange = Vector3.zero;
+			VelocityChange = Vector3.zero;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Integrate(float deltaTime)
 		{
-			Vector3 displacement = Position - LastPosition;
+			float drag = (1f - deltaTime * Drag);
+			Vector3 lastPosition  = LastPosition;
 			
 			LastPosition = Position;
+			Position += (Position - lastPosition) * drag + VelocityChange * deltaTime + deltaTime * deltaTime * InverseMass * Acceleration;
+			Velocity = (Position - LastPosition) / deltaTime;
 			
-			Position += displacement * (1f - deltaTime * Drag) + deltaTime * deltaTime * InverseMass * Acceleration;
 			Acceleration = Vector3.zero;
-			
-			// Not used in calculations
-			Velocity = displacement / deltaTime;
+			VelocityChange = Vector3.zero;
+			PositionChange = Vector3.zero;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void MoveDelta(Vector3 delta)
+		public void AddMove(Vector3 delta)
 		{
 			Position += delta;
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Accelerate(Vector3 acceleration)
+		public void AddAcceleration(Vector3 acceleration)
 		{
 			Acceleration += acceleration;
 		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void AddVelocity(Vector3 velocity)
+		{
+			VelocityChange += velocity;
+		}
 
-		public static void Update(in Frame<Particle> particles, float deltaTime)
+		public static void IntegrateAll(in Frame<Particle> particles, float deltaTime)
 		{
 			var span = particles.GetAll();
+			
 			for (var i = 0; i < span.Length; i++)
 			{
 				span[i].Integrate(deltaTime);

@@ -6,17 +6,17 @@ namespace Massive.Samples.Shooter
 	{
 		public override void UpdateWorld(in WorldFrame worldFrame)
 		{
-			var ids = worldFrame.Bullets.GetAllIds();
 			var bullets = worldFrame.Bullets.GetAll();
 
-			for (int i = 0; i < worldFrame.Bullets.AliveCount; i++)
+			for (int dense = 0; dense < worldFrame.Bullets.AliveCount; dense++)
 			{
-				ref BulletState state = ref bullets[i];
+				ref BulletState state = ref bullets[dense];
 				
 				state.Lifetime -= worldFrame.DeltaTime;
 				if (state.IsDestroyed)
 				{
-					worldFrame.Bullets.Delete(ids[i]);
+					worldFrame.Bullets.DeleteDense(dense);
+					dense -= 1;
 					continue;
 				}
 				

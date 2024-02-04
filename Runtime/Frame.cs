@@ -92,6 +92,38 @@ namespace Massive
 			_dense[swapDenseIndex] = id;
 			_sparse[swapId] = denseIndex;
 		}
+		
+		public void DeleteDense(int denseIndex)
+		{
+			ThrowIfFrameIsNotCurrent();
+
+			int aliveCount = *_aliveCount;
+
+			if (denseIndex >= aliveCount)
+			{
+				throw new InvalidOperationException($"Dense is not alive! Dense: {denseIndex}.");
+			}
+
+			// If dense is the last used element, simply decrease count
+			if (denseIndex == aliveCount - 1)
+			{
+				*_aliveCount -= 1;
+				return;
+			}
+
+			*_aliveCount -= 1;
+
+			int deleteId = _dense[denseIndex];
+			int swapDenseIndex = aliveCount - 1;
+			int swapId = _dense[swapDenseIndex];
+
+			_data[denseIndex] = _data[swapDenseIndex];
+
+			_dense[denseIndex] = swapId;
+			_sparse[deleteId] = swapDenseIndex;
+			_dense[swapDenseIndex] = deleteId;
+			_sparse[swapId] = denseIndex;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
@@ -103,9 +135,15 @@ namespace Massive
 				throw new InvalidOperationException($"State does not exist! RequestedState: {id}.");
 			}
 
-			int denseIndex = _sparse[id];
+			return ref GetFast(id);
+		}
 
-			return ref _data[denseIndex];
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ref T GetFast(int id)
+		{
+			ThrowIfFrameIsNotCurrent();
+
+			return ref _data[_sparse[id]];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
