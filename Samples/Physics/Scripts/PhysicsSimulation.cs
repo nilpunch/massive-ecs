@@ -12,29 +12,27 @@ namespace Massive.Samples.Physics
 		[SerializeField] private int _simulationsPerFrame = 120;
 		[SerializeField] private int _particlesCapacity = 1000;
 
-		[Header("Physics")] [SerializeField] private EntityRoot<Particle> _particlePrefab;
+		[Header("Physics")] [SerializeField] private EntityRoot<PointMass> _particlePrefab;
 		[SerializeField] private int _substeps = 8;
 		[SerializeField] private float _gravity = 10f;
 		[SerializeField] private float _groundFriction = 0.2f;
 
-		private MassiveData<Particle> _particles;
+		private MassiveData<PointMass> _particles;
+		private MassiveData<SoftBody> _softBodies;
 		private MassiveData<Spring> _springs;
-		private EntitySynchronisation<Particle> _particleSynchronisation;
+		private EntitySynchronisation<PointMass> _particleSynchronisation;
 
 		private void Awake()
 		{
-			_particles = new MassiveData<Particle>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_particles = new MassiveData<PointMass>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_softBodies = new MassiveData<SoftBody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			_springs = new MassiveData<Spring>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
-			_particleSynchronisation = new EntitySynchronisation<Particle>(new EntityFactory<Particle>(_particlePrefab));
-
-			foreach (var particleSpawnPoint in FindObjectsOfType<ParticleSpawnPoint>())
-			{
-				_particles.Create(new Particle(particleSpawnPoint.Position, particleSpawnPoint.Radius, 1f, particleSpawnPoint.Drag));
-			}
+			
+			_particleSynchronisation = new EntitySynchronisation<PointMass>(new EntityFactory<PointMass>(_particlePrefab));
 
 			foreach (var spawnPoint in FindObjectsOfType<PhysicsSpawnPoint>())
 			{
-				spawnPoint.Spawn(_particles, _springs);
+				spawnPoint.Spawn(_softBodies, _particles, _springs);
 			}
 		}
 
@@ -51,6 +49,7 @@ namespace Massive.Samples.Physics
 				_currentFrame -= _particles.CanRollbackFrames;
 				_particles.Rollback(_particles.CanRollbackFrames);
 				_springs.Rollback(_springs.CanRollbackFrames);
+				_softBodies.Rollback(_softBodies.CanRollbackFrames);
 			}
 
 			_elapsedTime += Time.deltaTime * _simulationSpeed;
@@ -61,18 +60,21 @@ namespace Massive.Samples.Physics
 			{
 				const float simulationDeltaTime = 1f / 60f;
 				float subStepDeltaTime = simulationDeltaTime / _substeps;
+				
 
 				for (int i = 0; i < _substeps; i++)
 				{
+					SoftBody.UpdateAll(_softBodies, _particles);
+					ReferenceSpringing.Apply(_particles, _softBodies, subStepDeltaTime);
 					Gravity.Apply(_particles, _gravity);
-					Collisions.Solve(_particles);
-					GlobalFloorConstraint.Apply(_particles, frictionCoefficient: _groundFriction);
+					GlobalFloor.Apply(_particles, frictionCoefficient: _groundFriction);
 					Spring.ApplyAll(_springs, _particles, subStepDeltaTime);
-					Particle.IntegrateAll(_particles, subStepDeltaTime);
+					PointMass.IntegrateAll(_particles, subStepDeltaTime);
 				}
 
 				_particles.SaveFrame();
 				_springs.SaveFrame();
+				_softBodies.SaveFrame();
 				_currentFrame++;
 			}
 

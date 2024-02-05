@@ -2,7 +2,7 @@
 
 namespace Massive.Samples.Physics
 {
-	public class ParticleRoot : EntityRoot<Particle>
+	public class ParticleRoot : EntityRoot<PointMass>
 	{
 	}
 }

@@ -6,18 +6,16 @@ namespace Massive.Samples.Physics
 	public class PhysicsSpawnPoint : MonoBehaviour
 	{
 		[SerializeField] private float _boxSize;
-		[SerializeField] private float _particlesRadius;
-		[SerializeField] private float _particlesMass = 1f;
-		[SerializeField] private float _particlesDrag = 1f;
-		[SerializeField] private float _stiffness = 1f;
-		[SerializeField] private float _elongation = 1f;
+		[SerializeField] private float _pointsMass = 1f;
+		[SerializeField] private float _pointsDrag = 1f;
+		[SerializeField] private float _referenceSpring = 1f;
 
 		private void Start()
 		{
 			Destroy(gameObject);
 		}
 
-		public void Spawn(in MassiveData<Particle> particles, in MassiveData<Spring> springs)
+		public void Spawn(MassiveData<SoftBody> softBodies, MassiveData<PointMass> particles, MassiveData<Spring> springs)
 		{
 			// Calculate half extents based on box size
 			Vector3 halfExtents = new Vector3(_boxSize, _boxSize, _boxSize) * 0.5f;
@@ -25,36 +23,38 @@ namespace Massive.Samples.Physics
 			// Calculate all world space corners using half extents and Transform.TransformPoint
 			Vector3[] corners =
 			{
-				transform.TransformPoint(-halfExtents.x, -halfExtents.y, -halfExtents.z),
-				transform.TransformPoint(halfExtents.x, -halfExtents.y, -halfExtents.z),
-				transform.TransformPoint(-halfExtents.x, halfExtents.y, -halfExtents.z),
-				transform.TransformPoint(halfExtents.x, halfExtents.y, -halfExtents.z),
-				transform.TransformPoint(-halfExtents.x, -halfExtents.y, halfExtents.z),
-				transform.TransformPoint(halfExtents.x, -halfExtents.y, halfExtents.z),
-				transform.TransformPoint(-halfExtents.x, halfExtents.y, halfExtents.z),
-				transform.TransformPoint(halfExtents.x, halfExtents.y, halfExtents.z),
+				new Vector3(-halfExtents.x, -halfExtents.y, -halfExtents.z),
+				new Vector3(halfExtents.x, -halfExtents.y, -halfExtents.z),
+				new Vector3(-halfExtents.x, halfExtents.y, -halfExtents.z),
+				new Vector3(halfExtents.x, halfExtents.y, -halfExtents.z),
+				new Vector3(-halfExtents.x, -halfExtents.y, halfExtents.z),
+				new Vector3(halfExtents.x, -halfExtents.y, halfExtents.z),
+				new Vector3(-halfExtents.x, halfExtents.y, halfExtents.z),
+				new Vector3(halfExtents.x, halfExtents.y, halfExtents.z),
+			};
+			
+			Vector3[] transformedCorners =
+			{
+				transform.TransformPoint(corners[0]),
+				transform.TransformPoint(corners[1]),
+				transform.TransformPoint(corners[2]),
+				transform.TransformPoint(corners[3]),
+				transform.TransformPoint(corners[4]),
+				transform.TransformPoint(corners[5]),
+				transform.TransformPoint(corners[6]),
+				transform.TransformPoint(corners[7]),
 			};
 
-			int[] particlesIds =
-			{
-				particles.Create(new Particle(corners[0], _particlesRadius, _particlesMass, _particlesDrag)),
-				particles.Create(new Particle(corners[1], _particlesRadius, _particlesMass, _particlesDrag)),
-				particles.Create(new Particle(corners[2], _particlesRadius, _particlesMass, _particlesDrag)),
-				particles.Create(new Particle(corners[3], _particlesRadius, _particlesMass, _particlesDrag)),
-				particles.Create(new Particle(corners[4], _particlesRadius, _particlesMass, _particlesDrag)),
-				particles.Create(new Particle(corners[5], _particlesRadius, _particlesMass, _particlesDrag)),
-				particles.Create(new Particle(corners[6], _particlesRadius, _particlesMass, _particlesDrag)),
-				particles.Create(new Particle(corners[7], _particlesRadius, _particlesMass, _particlesDrag)),
-			};
+			int softBodyId = softBodies.Create(new SoftBody(8));
 
-			for (int i = 0; i < 8; i++)
-			{
-				for (int j = i + 1; j < 8; j++)
-				{
-					// Create springs between all pairs of particles (corners)
-					springs.Create(new Spring(particlesIds[i], particlesIds[j], Vector3.Distance(corners[i], corners[j]), _stiffness, _elongation));
-				}
-			}
+			particles.Create(new PointMass(softBodyId, transformedCorners[0], _pointsMass, _pointsDrag, false, corners[0], _referenceSpring));
+			particles.Create(new PointMass(softBodyId, transformedCorners[1], _pointsMass, _pointsDrag, false, corners[1], _referenceSpring));
+			particles.Create(new PointMass(softBodyId, transformedCorners[2], _pointsMass, _pointsDrag, false, corners[2], _referenceSpring));
+			particles.Create(new PointMass(softBodyId, transformedCorners[3], _pointsMass, _pointsDrag, false, corners[3], _referenceSpring));
+			particles.Create(new PointMass(softBodyId, transformedCorners[4], _pointsMass, _pointsDrag, false, corners[4], _referenceSpring));
+			particles.Create(new PointMass(softBodyId, transformedCorners[5], _pointsMass, _pointsDrag, false, corners[5], _referenceSpring));
+			particles.Create(new PointMass(softBodyId, transformedCorners[6], _pointsMass, _pointsDrag, false, corners[6], _referenceSpring));
+			particles.Create(new PointMass(softBodyId, transformedCorners[7], _pointsMass, _pointsDrag, false, corners[7], _referenceSpring));
 		}
 
 		public void OnDrawGizmos()
@@ -75,14 +75,19 @@ namespace Massive.Samples.Physics
 				transform.TransformPoint(halfExtents.x, halfExtents.y, halfExtents.z),
 			};
 
-			for (int i = 0; i < 8; i++)
-			{
-				Gizmos.DrawSphere(corners[i], _particlesRadius);
-				for (int j = i + 1; j < 8; j++)
-				{
-					Gizmos.DrawLine(corners[i], corners[j]);
-				}
-			}
+			// Wireframe
+			Gizmos.DrawLine(corners[0], corners[1]);
+			Gizmos.DrawLine(corners[1], corners[3]);
+			Gizmos.DrawLine(corners[3], corners[2]);
+			Gizmos.DrawLine(corners[2], corners[0]);
+			Gizmos.DrawLine(corners[4], corners[5]);
+			Gizmos.DrawLine(corners[5], corners[7]);
+			Gizmos.DrawLine(corners[7], corners[6]);
+			Gizmos.DrawLine(corners[6], corners[4]);
+			Gizmos.DrawLine(corners[0], corners[4]);
+			Gizmos.DrawLine(corners[1], corners[5]);
+			Gizmos.DrawLine(corners[2], corners[6]);
+			Gizmos.DrawLine(corners[3], corners[7]);
 		}
 	}
 }

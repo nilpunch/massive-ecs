@@ -24,15 +24,15 @@ namespace Massive.Samples.Physics
 			Broken = false;
 		}
 
-		public void Apply(in MassiveData<Particle> particles, float deltaTime)
+		public void Apply(in MassiveData<PointMass> particles, float deltaTime)
 		{
 			if (Broken)
 			{
 				return;
 			}
 
-			ref Particle a = ref particles.Get(ParticleA);
-			ref Particle b = ref particles.Get(ParticleB);
+			ref PointMass a = ref particles.Get(ParticleA);
+			ref PointMass b = ref particles.Get(ParticleB);
 			Vector3 displacement = a.Position - b.Position;
 			float distance = displacement.magnitude;
 			Vector3 normal = displacement / distance;
@@ -40,13 +40,13 @@ namespace Massive.Samples.Physics
 
 			Broken = distance > RestLength * MaxElongationRatio;
 
-			Vector3 movement = -delta * Strength / (a.Mass + b.Mass) * normal;
+			Vector3 movement = -delta * Strength * normal * deltaTime;
 
-			a.AddMove(deltaTime * a.InverseMass * -movement);
-			b.AddMove(deltaTime * b.InverseMass * movement);
+			a.AddMove(-movement * a.InverseMass);
+			b.AddMove(movement * b.InverseMass);
 		}
 
-		public static void ApplyAll(in MassiveData<Spring> springsFrame, in MassiveData<Particle> particlesFrame, float deltaTime)
+		public static void ApplyAll(in MassiveData<Spring> springsFrame, in MassiveData<PointMass> particlesFrame, float deltaTime)
 		{
 			var springs = springsFrame.Data;
 			for (var dense = 0; dense < springsFrame.AliveCount; dense++)
