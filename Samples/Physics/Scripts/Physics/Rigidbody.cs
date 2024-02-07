@@ -9,6 +9,12 @@ namespace MassiveData.Samples.Physics
 		public Vector3 Velocity;
 		public Vector3 Forces;
 
+		public Quaternion Rotation;
+		public Vector3 AngularVelocity;
+		public Vector3 Torques;
+
+		public Vector3 CenterOfMass;
+		public Vector3 InverseInertiaTensor;
 		public float InverseMass;
 		public float Mass;
 		public float Restitution;
@@ -17,16 +23,23 @@ namespace MassiveData.Samples.Physics
 
 		public Rigidbody(Vector3 position, float mass, float restitution = 1f, bool isStatic = false)
 		{
-			Position = position;
+			CenterOfMass = default;
 			Mass = mass;
 			InverseMass = 1f / mass;
 			Restitution = restitution;
-
-			Velocity = Vector3.zero;
-			Forces = Vector3.zero;
 			IsStatic = isStatic;
+
+			Position = position;
+			Velocity = default;
+			Forces = default;
+
+			Rotation = Quaternion.identity;
+			InverseInertiaTensor = Vector3.one * (5f / (2 * mass * 1f));
+			AngularVelocity = default;
+			Torques = default;
 		}
-		
+
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Integrate(float deltaTime)
 		{
@@ -37,9 +50,15 @@ namespace MassiveData.Samples.Physics
 				return;
 			}
 			
+			// Linear motion integration
 			Velocity += deltaTime * InverseMass * Forces;
 			Position += deltaTime * Velocity;
 			Forces = Vector3.zero;
+			
+			// Angular motion integration
+			AngularVelocity += deltaTime * Vector3.Scale(Torques, InverseInertiaTensor);
+			Rotation = Rotation * Quaternion.Euler(deltaTime * Mathf.Rad2Deg * AngularVelocity);
+			Torques = Vector3.zero;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -55,6 +74,15 @@ namespace MassiveData.Samples.Physics
 		public void ApplyForce(Vector3 force)
 		{
 			Forces += force;
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void ApplyAngularImpulse(Vector3 impulse)
+		{
+			if (!IsStatic)
+			{
+				AngularVelocity += impulse;
+			}
 		}
 		
 		public static void IntegrateAll(in Massive<Rigidbody> rigidbodies, float deltaTime)

@@ -13,6 +13,7 @@ namespace MassiveData.Samples.Physics
 			public int BodyA;
 			public int BodyB;
 			
+			public Vector3 Point;
 			public Vector3 Normal;
 			public float PenetrationDepth;
 		}
@@ -67,9 +68,29 @@ namespace MassiveData.Samples.Physics
 			float impulseMagnitude = -(1 + e) * Vector3.Dot(relativeVelocity, contact.Normal) / inverseMassSum;
 			Vector3 impulseDirection = contact.Normal;
 			Vector3 impulse = impulseDirection * impulseMagnitude;
-				
+			
 			a.ApplyImpulse(impulse);
 			b.ApplyImpulse(-impulse);
+			
+			// Calculate angular impulse
+			Vector3 rA = contact.Point - a.Position;
+			Vector3 rB = contact.Point - b.Position;
+			
+			// Calculate relative position from center of mass
+			Vector3 rAcm = rA - a.CenterOfMass;
+			Vector3 rBcm = rB - b.CenterOfMass;
+
+			// Calculate torque
+			Vector3 torqueA = Vector3.Cross(rAcm, impulse);
+			Vector3 torqueB = Vector3.Cross(rBcm, -impulse);
+
+			// Calculate change in angular velocity (angular impulse)
+			Vector3 angularImpulseA = Vector3.Scale(torqueA, a.InverseInertiaTensor);
+			Vector3 angularImpulseB = Vector3.Scale(torqueB, b.InverseInertiaTensor);
+
+			// Apply angular impulse
+			a.ApplyAngularImpulse(angularImpulseA);
+			b.ApplyAngularImpulse(angularImpulseB);
 		}
 		
 		private static readonly List<Contact> s_contacts = new List<Contact>();
@@ -100,13 +121,15 @@ namespace MassiveData.Samples.Physics
 					{
 						float distance = Mathf.Sqrt(sqrDistance);
 						Vector3 normal = displacement / distance;
+						float penetrationDepth = (distance - minDistance) * 0.5f;
 						
 						s_contacts.Add(new Contact()
 						{
 							BodyA = a.RigidbodyId,
 							BodyB = b.RigidbodyId,
+							Point = a.WorldPosition - normal * (a.Radius - penetrationDepth),
 							Normal = normal,
-							PenetrationDepth = (distance - minDistance) * 0.5f,
+							PenetrationDepth = penetrationDepth,
 						});
 					}
 				}

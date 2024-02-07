@@ -13,6 +13,7 @@ namespace MassiveData.Samples.Physics
 
 		public Vector3 LocalPosition;
 		public Vector3 WorldPosition;
+		public Quaternion WorldRotation;
 
 		public SphereCollider(int rigidbodyId, float radius)
 		{
@@ -21,6 +22,7 @@ namespace MassiveData.Samples.Physics
 			
 			LocalPosition = Vector3.zero;
 			WorldPosition = Vector3.zero;
+			WorldRotation = Quaternion.identity;
 		}
 
 		public static void UpdateWorldPositions(Massive<Rigidbody> bodies, Massive<SphereCollider> colliders)
@@ -30,6 +32,7 @@ namespace MassiveData.Samples.Physics
 			{
 				SphereCollider collider = aliveColliders[i];
 				aliveColliders[i].WorldPosition = collider.LocalPosition + bodies.Get(collider.RigidbodyId).Position;
+				aliveColliders[i].WorldRotation = bodies.Get(collider.RigidbodyId).Rotation;
 			}
 		}
 	}
