@@ -13,7 +13,9 @@ namespace Massive.Samples.Physics
 				ref PointMass point = ref particlesData[i];
 				SoftBody softBody = bodies.Get(point.SoftBodyId);
 
-				Vector3 referencePoint = softBody.Center + softBody.Rotation * point.LocalReferencePosition;
+				Vector3 rotatedLocalPosition = (Vector3)(softBody.Rotation * point.LocalReferencePosition);
+				
+				Vector3 referencePoint = softBody.Centroid + rotatedLocalPosition;
 				
 				Vector3 displacement = referencePoint - point.Position;
 				Vector3 movement = displacement * point.ReferenceSpring * deltaTime;

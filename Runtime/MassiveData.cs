@@ -185,6 +185,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int GetDenseIndex(int id)
+		{
+			return _currentSparse[id];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
 			return ref _currentData[_currentSparse[id]];

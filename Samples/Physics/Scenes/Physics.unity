@@ -185,8 +185,8 @@ MonoBehaviour:
   _particlesCapacity: 1000
   _particlePrefab: {fileID: 3200494944595069422, guid: 50c4703ddfb0e3045bb5ddd6bb11b25f, type: 3}
   _substeps: 2
-  _gravity: 0
-  _groundFriction: 0.3
+  _gravity: 10
+  _groundFriction: 0.1
 --- !u!1 &77571474
 GameObject:
   m_ObjectHideFlags: 0
@@ -816,7 +816,7 @@ MonoBehaviour:
   _boxSize: 2
   _pointsMass: 1
   _pointsDrag: 1
-  _referenceSpring: 0.01
+  _referenceSpring: 1
 --- !u!4 &2040954544
 Transform:
   m_ObjectHideFlags: 0
@@ -824,11 +824,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2040954542}
-  m_LocalRotation: {x: 0.46193978, y: 0.19134173, z: 0.19134173, w: 0.84462327}
+  m_LocalRotation: {x: -0.3235951, y: 0.7394909, z: 0.024475263, w: 0.58978}
   m_LocalPosition: {x: 1.28, y: 6.21, z: -2.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 45, y: 45, z: 45}
+  m_LocalEulerAnglesHint: {x: -24.702, y: 109.491, z: -29.671}

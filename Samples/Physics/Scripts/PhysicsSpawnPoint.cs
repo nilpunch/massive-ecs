@@ -45,7 +45,7 @@ namespace Massive.Samples.Physics
 				transform.TransformPoint(corners[7]),
 			};
 
-			int softBodyId = softBodies.Create(new SoftBody(8));
+			int softBodyId = softBodies.Create();
 
 			particles.Create(new PointMass(softBodyId, transformedCorners[0], _pointsMass, _pointsDrag, false, corners[0], _referenceSpring));
 			particles.Create(new PointMass(softBodyId, transformedCorners[1], _pointsMass, _pointsDrag, false, corners[1], _referenceSpring));
