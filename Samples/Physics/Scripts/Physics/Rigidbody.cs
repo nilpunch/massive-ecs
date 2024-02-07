@@ -45,7 +45,10 @@ namespace MassiveData.Samples.Physics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ApplyImpulse(Vector3 impulse)
 		{
-			Velocity += impulse;
+			if (!IsStatic)
+			{
+				Velocity += impulse;
+			}
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
