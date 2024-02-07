@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace MassiveData.Samples.Physics
@@ -16,7 +15,7 @@ namespace MassiveData.Samples.Physics
 
 		public bool Static;
 
-		public Rigidbody(Vector3 position, float mass, float restitution = 0.5f, bool @static = false)
+		public Rigidbody(Vector3 position, float mass, float restitution = 1f, bool isStatic = false)
 		{
 			Position = position;
 			Mass = mass;
@@ -25,7 +24,7 @@ namespace MassiveData.Samples.Physics
 
 			Velocity = Vector3.zero;
 			Forces = Vector3.zero;
-			Static = @static;
+			Static = isStatic;
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -46,7 +45,7 @@ namespace MassiveData.Samples.Physics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ApplyImpulse(Vector3 impulse)
 		{
-			Forces += impulse * Mass;
+			Velocity += impulse;
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

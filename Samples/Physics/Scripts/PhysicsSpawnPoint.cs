@@ -15,7 +15,7 @@ namespace MassiveData.Samples.Physics
 
 		public void Spawn(Massive<Rigidbody> softBodies, Massive<SphereCollider> colliders)
 		{
-			int bodyId = softBodies.Create(new Rigidbody(transform.position, _mass));
+			int bodyId = softBodies.Create(new Rigidbody(transform.position, _mass, isStatic: _static));
 			colliders.Create(new SphereCollider(bodyId, _radius));
 		}
 

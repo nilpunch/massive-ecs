@@ -9,7 +9,7 @@ namespace MassiveData.Samples.Physics
 		{
 			base.SyncState(ref state);
 
-			transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+			transform.localScale = Vector3.one * state.Radius;
 		}
 
 		protected override void TransformFromState(in SphereCollider state, out EntityTransform transform)

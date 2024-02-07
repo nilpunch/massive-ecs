@@ -23,8 +23,8 @@ namespace MassiveData.Samples.Physics
 
 			foreach (Contact contact in s_contacts)
 			{
-				var a = rigidbodies.Get(contact.BodyA);
-				var b = rigidbodies.Get(contact.BodyB);
+				ref var a = ref rigidbodies.Get(contact.BodyA);
+				ref var b = ref rigidbodies.Get(contact.BodyB);
 
 				var e = Mathf.Min(a.Restitution, b.Restitution);
 
