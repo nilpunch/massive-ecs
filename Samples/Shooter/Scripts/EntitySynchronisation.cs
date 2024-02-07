@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Massive.Samples.Shooter
+namespace MassiveData.Samples.Shooter
 {
 	public class EntitySynchronisation<TState> where TState : struct
 	{
@@ -12,7 +12,7 @@ namespace Massive.Samples.Shooter
 			_entities = new AvailableEntities<TState>(entityFactory);
 		}
 
-		public void Synchronize(MassiveData<TState> data)
+		public void Synchronize(Massive<TState> data)
 		{
 			var aliveCount = data.AliveCount;
 
@@ -26,7 +26,7 @@ namespace Massive.Samples.Shooter
 			}
 
 			IReadOnlyList<EntityRoot<TState>> entities = _entities.Entities;
-			Span<TState> states = data.Data;
+			Span<TState> states = data.AliveData;
 			for (int i = 0; i < aliveCount; i++)
 			{
 				entities[i].SyncState(ref states[i]);

@@ -1,4 +1,4 @@
-﻿namespace Massive.Samples.Shooter
+﻿namespace MassiveData.Samples.Shooter
 {
 	public struct WeaponState
 	{

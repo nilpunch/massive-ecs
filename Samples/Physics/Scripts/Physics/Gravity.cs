@@ -1,17 +1,16 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Massive.Samples.Physics
+namespace MassiveData.Samples.Physics
 {
 	public static class Gravity
 	{
-		public static void Apply(in MassiveData<PointMass> particles, float gravity = 10f)
+		public static void Apply(in Massive<Rigidbody> rigidbodies, float gravity = 10f)
 		{
-			var data = particles.Data;
-			var aliveCount = particles.AliveCount;
-			for (var i = 0; i < aliveCount; i++)
+			var aliveRigidbodies = rigidbodies.AliveData;
+			for (var i = 0; i < aliveRigidbodies.Length; i++)
 			{
-				data[i].AddForce(Vector3.down * gravity * data[i].Mass);
+				aliveRigidbodies[i].ApplyForce(Vector3.down * gravity);
 			}
 		}
 	}

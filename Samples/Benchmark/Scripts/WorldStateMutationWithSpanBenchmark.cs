@@ -1,31 +1,31 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Massive.Samples.Benchmark
+namespace MassiveData.Samples.Benchmark
 {
 	public class WorldStateMutationWithSpanBenchmark : MonoProfiler
 	{
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
-		private MassiveData<TestState> _massiveData;
+		private Massive<TestState> _massive;
 
 		private void Start()
 		{
-			_massiveData = new MassiveData<TestState>(100, _worldEntitiesCount);
+			_massive = new Massive<TestState>(100, _worldEntitiesCount);
 
 			for (var index = 0; index < _worldEntitiesCount; index++)
 			{
-				_massiveData.Create(new TestState() { Value = index + 1 });
+				_massive.Create(new TestState() { Value = index + 1 });
 			}
 		}
 
 		protected override void Sample()
 		{
-			var states = _massiveData.Data;
-			var ids = _massiveData.Sparse;
-			for (var i = 0; i < _massiveData.AliveCount; i++)
+			var states = _massive.AliveData;
+			var ids = _massive.Sparse;
+			for (var i = 0; i < _massive.AliveCount; i++)
 			{
-				if (_massiveData.IsAlive(ids[i]))
+				if (_massive.IsAlive(ids[i]))
 				{
 					ref var state = ref states[i];
 					state.Value += 1;

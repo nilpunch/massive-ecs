@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Massive
+namespace MassiveData
 {
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class MassiveData<T> : IMassiveData where T : struct
+	public class Massive<T> : IMassive where T : struct
 	{
 		private readonly int _framesCapacity;
 		private readonly int _dataCapacity;
@@ -28,7 +28,7 @@ namespace Massive
 		private int _currentFrame;
 		private int _savedFrames;
 
-		public MassiveData(int framesCapacity = 120, int dataCapacity = 100)
+		public Massive(int framesCapacity = 120, int dataCapacity = 100)
 		{
 			// Reserve 1 frame for rollback restoration
 			_framesCapacity = framesCapacity + 1;
@@ -45,9 +45,9 @@ namespace Massive
 			_currentSparse = new int[dataCapacity];
 		}
 
-		public Span<T> Data => new Span<T>(_currentData);
-		public Span<int> Dense => new Span<int>(_denseByFrames);
-		public Span<int> Sparse => new Span<int>(_sparseByFrames);
+		public Span<T> AliveData => new Span<T>(_currentData, 0, _currentAliveCount);
+		public Span<int> Dense => new Span<int>(_denseByFrames, 0, _currentAliveCount);
+		public Span<int> Sparse => new Span<int>(_sparseByFrames, 0, _currentAliveCount);
 
 		public int AliveCount => _currentAliveCount;
 

@@ -1,13 +1,13 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Massive.Samples.Shooter
+namespace MassiveData.Samples.Shooter
 {
 	public class BulletsUpdater : WorldUpdater
 	{
 		public override void UpdateWorld(in WorldFrame worldFrame)
 		{
-			var bullets = worldFrame.Bullets.Data;
+			var bullets = worldFrame.Bullets.AliveData;
 
 			for (int dense = 0; dense < worldFrame.Bullets.AliveCount; dense++)
 			{

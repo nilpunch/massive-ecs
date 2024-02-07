@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace Massive.Samples.Shooter
+namespace MassiveData.Samples.Shooter
 {
 	public class EntityRoot<TState> : MonoBehaviour, ISyncEntity<TState> where TState : struct
 	{

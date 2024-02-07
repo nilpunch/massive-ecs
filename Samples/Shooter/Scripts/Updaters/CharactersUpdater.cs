@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Massive.Samples.Shooter
+namespace MassiveData.Samples.Shooter
 {
 	public class CharactersUpdater : WorldUpdater
 	{
@@ -14,7 +14,7 @@ namespace Massive.Samples.Shooter
 
 		public override void UpdateWorld(in WorldFrame worldFrame)
 		{
-			var characters = worldFrame.Characters.Data;
+			var characters = worldFrame.Characters.AliveData;
 
 			for (int i = 0; i < worldFrame.Characters.AliveCount; i++)
 			{

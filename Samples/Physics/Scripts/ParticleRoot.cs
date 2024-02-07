@@ -1,8 +1,8 @@
-﻿using Massive.Samples.Shooter;
+﻿using MassiveData.Samples.Shooter;
 
-namespace Massive.Samples.Physics
+namespace MassiveData.Samples.Physics
 {
-	public class ParticleRoot : EntityRoot<PointMass>
+	public class ParticleRoot : EntityRoot<SphereCollider>
 	{
 	}
 }

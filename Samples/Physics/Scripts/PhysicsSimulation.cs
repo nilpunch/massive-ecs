@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using Massive.Samples.Shooter;
+using MassiveData.Samples.Shooter;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Massive.Samples.Physics
+namespace MassiveData.Samples.Physics
 {
 	public class PhysicsSimulation : MonoBehaviour
 	{
@@ -12,27 +12,25 @@ namespace Massive.Samples.Physics
 		[SerializeField] private int _simulationsPerFrame = 120;
 		[SerializeField] private int _particlesCapacity = 1000;
 
-		[Header("Physics")] [SerializeField] private EntityRoot<PointMass> _particlePrefab;
+		[Header("Physics")] [SerializeField] private EntityRoot<SphereCollider> _particlePrefab;
 		[SerializeField] private int _substeps = 8;
 		[SerializeField] private float _gravity = 10f;
 		[SerializeField] private float _groundFriction = 0.2f;
 
-		private MassiveData<PointMass> _particles;
-		private MassiveData<SoftBody> _softBodies;
-		private MassiveData<Spring> _springs;
-		private EntitySynchronisation<PointMass> _particleSynchronisation;
+		private Massive<SphereCollider> _sphereColliders;
+		private Massive<Rigidbody> _rigidbodies;
+		private EntitySynchronisation<SphereCollider> _particleSynchronisation;
 
 		private void Awake()
 		{
-			_particles = new MassiveData<PointMass>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
-			_softBodies = new MassiveData<SoftBody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
-			_springs = new MassiveData<Spring>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_sphereColliders = new Massive<SphereCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_rigidbodies = new Massive<Rigidbody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			
-			_particleSynchronisation = new EntitySynchronisation<PointMass>(new EntityFactory<PointMass>(_particlePrefab));
+			_particleSynchronisation = new EntitySynchronisation<SphereCollider>(new EntityFactory<SphereCollider>(_particlePrefab));
 
 			foreach (var spawnPoint in FindObjectsOfType<PhysicsSpawnPoint>())
 			{
-				spawnPoint.Spawn(_softBodies, _particles, _springs);
+				spawnPoint.Spawn(_rigidbodies, _sphereColliders);
 			}
 		}
 
@@ -44,12 +42,11 @@ namespace Massive.Samples.Physics
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
-			if (_particles.CanRollbackFrames >= 0)
+			if (_sphereColliders.CanRollbackFrames >= 0)
 			{
-				_currentFrame -= _particles.CanRollbackFrames;
-				_particles.Rollback(_particles.CanRollbackFrames);
-				_springs.Rollback(_springs.CanRollbackFrames);
-				_softBodies.Rollback(_softBodies.CanRollbackFrames);
+				_currentFrame -= _sphereColliders.CanRollbackFrames;
+				_sphereColliders.Rollback(_sphereColliders.CanRollbackFrames);
+				_rigidbodies.Rollback(_rigidbodies.CanRollbackFrames);
 			}
 
 			_elapsedTime += Time.deltaTime * _simulationSpeed;
@@ -64,21 +61,18 @@ namespace Massive.Samples.Physics
 
 				for (int i = 0; i < _substeps; i++)
 				{
-					SoftBody.UpdateAll(_softBodies, _particles);
-					ReferenceSpringing.Apply(_particles, _softBodies, subStepDeltaTime);
-					Gravity.Apply(_particles, _gravity);
-					GlobalFloor.Apply(_particles, frictionCoefficient: _groundFriction);
-					Spring.ApplyAll(_springs, _particles, subStepDeltaTime);
-					PointMass.IntegrateAll(_particles, subStepDeltaTime);
+					SphereCollider.UpdateWorldPositions(_rigidbodies, _sphereColliders);
+					Collisions.Solve(_rigidbodies, _sphereColliders);
+					Gravity.Apply(_rigidbodies, _gravity);
+					Rigidbody.IntegrateAll(_rigidbodies, subStepDeltaTime);
 				}
 
-				_particles.SaveFrame();
-				_springs.SaveFrame();
-				_softBodies.SaveFrame();
+				_sphereColliders.SaveFrame();
+				_rigidbodies.SaveFrame();
 				_currentFrame++;
 			}
 
-			_particleSynchronisation.Synchronize(_particles);
+			_particleSynchronisation.Synchronize(_sphereColliders);
 
 			_debugTime = stopwatch.ElapsedMilliseconds;
 		}
@@ -88,9 +82,8 @@ namespace Massive.Samples.Physics
 		private void OnGUI()
 		{
 			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_particles.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_particles.AliveCount} Particles", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_springs.AliveCount} Springs", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_sphereColliders.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_sphereColliders.AliveCount} Particles", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}
 }

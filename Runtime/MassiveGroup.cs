@@ -1,10 +1,10 @@
-﻿namespace Massive
+﻿namespace MassiveData
 {
-	public class MassiveDataGroup : IMassiveData
+	public class MassiveGroup : IMassive
 	{
-		private readonly IMassiveData[] _worldStates;
+		private readonly IMassive[] _worldStates;
 
-		public MassiveDataGroup(IMassiveData[] worldStates)
+		public MassiveGroup(IMassive[] worldStates)
 		{
 			_worldStates = worldStates;
 		}

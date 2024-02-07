@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Massive.Samples.Shooter
+namespace MassiveData.Samples.Shooter
 {
 	public abstract class VisualSync<TState> : MonoBehaviour, ISyncComponent<TState>
 	{

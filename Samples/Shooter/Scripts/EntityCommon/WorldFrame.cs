@@ -1,15 +1,15 @@
-﻿namespace Massive.Samples.Shooter
+﻿namespace MassiveData.Samples.Shooter
 {
 	public readonly ref struct WorldFrame
 	{
-		public readonly MassiveData<CharacterState> Characters;
-		public readonly MassiveData<BulletState> Bullets;
+		public readonly Massive<CharacterState> Characters;
+		public readonly Massive<BulletState> Bullets;
 		public readonly int CurrentFrame;
 		public readonly int FramesPerSecond;
 
 		public readonly float DeltaTime;
 
-		public WorldFrame(MassiveData<CharacterState> characters, MassiveData<BulletState> bullets, int currentFrame, int framesPerSecond = 60)
+		public WorldFrame(Massive<CharacterState> characters, Massive<BulletState> bullets, int currentFrame, int framesPerSecond = 60)
 		{
 			Characters = characters;
 			Bullets = bullets;

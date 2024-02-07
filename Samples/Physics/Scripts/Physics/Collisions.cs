@@ -1,34 +1,82 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Massive.Samples.Physics
+namespace MassiveData.Samples.Physics
 {
 	public static class Collisions
 	{
-		public static void Solve(in MassiveData<PointMass> particles, float beta = 0.75f)
+		public struct Contact
 		{
-			var span = particles.Data;
-			var aliveCount = particles.AliveCount;
-			for (int i = 0; i < aliveCount; ++i)
-			{
-				ref PointMass a = ref span[i];
+			public int BodyA;
+			public int BodyB;
+			
+			public Vector3 Normal;
+			public float PenetrationDepth;
+		}
 
-				for (int j = i + 1; j < aliveCount; ++j)
+		private static readonly List<Contact> s_contacts = new List<Contact>();
+		
+		public static void Solve(Massive<Rigidbody> rigidbodies, Massive<SphereCollider> colliders)
+		{
+			CollectContacts(colliders);
+
+			foreach (Contact contact in s_contacts)
+			{
+				var a = rigidbodies.Get(contact.BodyA);
+				var b = rigidbodies.Get(contact.BodyB);
+
+				var e = Mathf.Min(a.Restitution, b.Restitution);
+
+				var relativeVelocity = a.Velocity - b.Velocity;
+
+				float inverseMassSum;
+
+				if (!a.Static && !b.Static)
+					inverseMassSum = a.InverseMass + b.InverseMass;
+				else if (a.Static)
+					inverseMassSum = b.InverseMass;
+				else
+					inverseMassSum = a.InverseMass;
+
+				float impulseMagnitude = -(1 + e) * Vector3.Dot(relativeVelocity, contact.Normal) / inverseMassSum;
+				Vector3 impulseDirection = contact.Normal;
+				Vector3 impulse = impulseDirection * impulseMagnitude;
+				
+				a.ApplyImpulse(impulse);
+				b.ApplyImpulse(-impulse);
+			}
+		}
+
+		private static void CollectContacts(Massive<SphereCollider> colliders)
+		{
+			s_contacts.Clear();
+			
+			var aliveColliders = colliders.AliveData;
+			for (int i = 0; i < aliveColliders.Length; ++i)
+			{
+				SphereCollider a = aliveColliders[i];
+
+				for (int j = i + 1; j < aliveColliders.Length; ++j)
 				{
-					ref PointMass b = ref span[j];
-					Vector3 axis = a.Position - b.Position;
-					float sqrDistance = axis.sqrMagnitude;
-					float minDistance = 0f; // a.Radius + b.Radius;
+					SphereCollider b = aliveColliders[j];
+					
+					Vector3 displacement = a.WorldPosition - b.WorldPosition;
+					float sqrDistance = displacement.sqrMagnitude;
+					float minDistance = a.Radius + b.Radius;
 
 					if (sqrDistance < minDistance * minDistance)
 					{
 						float distance = Mathf.Sqrt(sqrDistance);
-						Vector3 normal = axis / distance;
-						float delta = 0.5f * (distance - minDistance) * beta;
-						float systemMass = a.Mass + b.Mass;
-
-						a.Position -= delta * systemMass * a.InverseMass * normal;
-						b.Position += delta * systemMass * a.InverseMass * normal;
+						Vector3 normal = displacement / distance;
+						
+						s_contacts.Add(new Contact()
+						{
+							BodyA = a.RigidbodyId,
+							BodyB = b.RigidbodyId,
+							Normal = normal,
+							PenetrationDepth = (distance - minDistance) * 0.5f,
+						});
 					}
 				}
 			}
