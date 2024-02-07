@@ -6,6 +6,8 @@ namespace MassiveData.Samples.Physics
 {
 	public static class Collisions
 	{
+		public const float PositionCollisionBeta = 0.7f;
+		
 		public struct Contact
 		{
 			public int BodyA;
@@ -15,40 +17,64 @@ namespace MassiveData.Samples.Physics
 			public float PenetrationDepth;
 		}
 
-		private static readonly List<Contact> s_contacts = new List<Contact>();
-		
-		public static void Solve(Massive<Rigidbody> rigidbodies, Massive<SphereCollider> colliders)
+		public static void Solve(Massive<SphereCollider> colliders, Massive<Rigidbody> bodies)
 		{
-			CollectContacts(colliders);
-
+			CollectContacts(colliders, bodies);
+			
 			foreach (Contact contact in s_contacts)
 			{
-				ref var a = ref rigidbodies.Get(contact.BodyA);
-				ref var b = ref rigidbodies.Get(contact.BodyB);
+				ref var a = ref bodies.Get(contact.BodyA);
+				ref var b = ref bodies.Get(contact.BodyB);
 
-				var e = Mathf.Min(a.Restitution, b.Restitution);
-
-				var relativeVelocity = a.Velocity - b.Velocity;
-
-				float inverseMassSum;
-
-				if (!a.Static && !b.Static)
-					inverseMassSum = a.InverseMass + b.InverseMass;
-				else if (a.Static)
-					inverseMassSum = b.InverseMass;
-				else
-					inverseMassSum = a.InverseMass;
-
-				float impulseMagnitude = -(1 + e) * Vector3.Dot(relativeVelocity, contact.Normal) / inverseMassSum;
-				Vector3 impulseDirection = contact.Normal;
-				Vector3 impulse = impulseDirection * impulseMagnitude;
-				
-				a.ApplyImpulse(impulse);
-				b.ApplyImpulse(-impulse);
+				SolvePositionCollision(ref a, ref b, contact);
+				SolveVelocityCollision(ref a, ref b, contact);
 			}
 		}
 
-		private static void CollectContacts(Massive<SphereCollider> colliders)
+		private static void SolvePositionCollision(ref Rigidbody a, ref Rigidbody b, Contact contact)
+		{
+			float systemMass;
+			if (!a.IsStatic && !b.IsStatic)
+				systemMass = a.Mass + b.Mass;
+			else if (a.IsStatic)
+				systemMass = b.Mass + b.Mass;
+			else
+				systemMass = a.Mass + a.Mass;
+
+			Vector3 resolution = -0.5f * PositionCollisionBeta * systemMass * contact.PenetrationDepth * contact.Normal;
+			
+			if (!a.IsStatic)
+				a.Position += resolution * a.InverseMass;
+			
+			if (!b.IsStatic)
+				b.Position -= resolution * b.InverseMass;
+		}
+		
+		private static void SolveVelocityCollision(ref Rigidbody a, ref Rigidbody b, Contact contact)
+		{
+			var e = Mathf.Min(a.Restitution, b.Restitution);
+
+			var relativeVelocity = a.Velocity - b.Velocity;
+
+			float inverseMassSum;
+			if (!a.IsStatic && !b.IsStatic)
+				inverseMassSum = a.InverseMass + b.InverseMass;
+			else if (a.IsStatic)
+				inverseMassSum = b.InverseMass;
+			else
+				inverseMassSum = a.InverseMass;
+
+			float impulseMagnitude = -(1 + e) * Vector3.Dot(relativeVelocity, contact.Normal) / inverseMassSum;
+			Vector3 impulseDirection = contact.Normal;
+			Vector3 impulse = impulseDirection * impulseMagnitude;
+				
+			a.ApplyImpulse(impulse);
+			b.ApplyImpulse(-impulse);
+		}
+		
+		private static readonly List<Contact> s_contacts = new List<Contact>();
+
+		private static void CollectContacts(Massive<SphereCollider> colliders, Massive<Rigidbody> bodies)
 		{
 			s_contacts.Clear();
 			
@@ -60,6 +86,11 @@ namespace MassiveData.Samples.Physics
 				for (int j = i + 1; j < aliveColliders.Length; ++j)
 				{
 					SphereCollider b = aliveColliders[j];
+
+					if (bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
+					{
+						continue;
+					}
 					
 					Vector3 displacement = a.WorldPosition - b.WorldPosition;
 					float sqrDistance = displacement.sqrMagnitude;

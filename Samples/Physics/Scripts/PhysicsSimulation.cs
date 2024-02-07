@@ -18,19 +18,19 @@ namespace MassiveData.Samples.Physics
 		[SerializeField] private float _groundFriction = 0.2f;
 
 		private Massive<SphereCollider> _sphereColliders;
-		private Massive<Rigidbody> _rigidbodies;
+		private Massive<Rigidbody> _bodies;
 		private EntitySynchronisation<SphereCollider> _particleSynchronisation;
 
 		private void Awake()
 		{
 			_sphereColliders = new Massive<SphereCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
-			_rigidbodies = new Massive<Rigidbody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_bodies = new Massive<Rigidbody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			
 			_particleSynchronisation = new EntitySynchronisation<SphereCollider>(new EntityFactory<SphereCollider>(_particlePrefab));
 
 			foreach (var spawnPoint in FindObjectsOfType<PhysicsSpawnPoint>())
 			{
-				spawnPoint.Spawn(_rigidbodies, _sphereColliders);
+				spawnPoint.Spawn(_bodies, _sphereColliders);
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace MassiveData.Samples.Physics
 			{
 				_currentFrame -= _sphereColliders.CanRollbackFrames;
 				_sphereColliders.Rollback(_sphereColliders.CanRollbackFrames);
-				_rigidbodies.Rollback(_rigidbodies.CanRollbackFrames);
+				_bodies.Rollback(_bodies.CanRollbackFrames);
 			}
 
 			_elapsedTime += Time.deltaTime * _simulationSpeed;
@@ -58,20 +58,28 @@ namespace MassiveData.Samples.Physics
 				const float simulationDeltaTime = 1f / 60f;
 				float subStepDeltaTime = simulationDeltaTime / _substeps;
 				
-
 				for (int i = 0; i < _substeps; i++)
 				{
-					SphereCollider.UpdateWorldPositions(_rigidbodies, _sphereColliders);
-					Collisions.Solve(_rigidbodies, _sphereColliders);
-					Gravity.Apply(_rigidbodies, _gravity);
-					Rigidbody.IntegrateAll(_rigidbodies, subStepDeltaTime);
+					SphereCollider.UpdateWorldPositions(_bodies, _sphereColliders);
+					Collisions.Solve(_sphereColliders, _bodies);
+					Gravity.Apply(_bodies, _gravity);
+					Rigidbody.IntegrateAll(_bodies, subStepDeltaTime);
 				}
 
 				_sphereColliders.SaveFrame();
-				_rigidbodies.SaveFrame();
+				_bodies.SaveFrame();
 				_currentFrame++;
 			}
 
+			float systemEnergy = 0f;
+			foreach (var body in _bodies.AliveData)
+			{
+				systemEnergy += body.Mass * Mathf.Max(0, body.Position.y + 100f) * _gravity;
+				systemEnergy += body.Velocity.sqrMagnitude * body.Mass / 2f;
+			}
+			
+			Debug.Log(systemEnergy);
+			
 			_particleSynchronisation.Synchronize(_sphereColliders);
 
 			_debugTime = stopwatch.ElapsedMilliseconds;

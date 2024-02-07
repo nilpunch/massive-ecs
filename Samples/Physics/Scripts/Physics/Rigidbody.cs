@@ -13,7 +13,7 @@ namespace MassiveData.Samples.Physics
 		public float Mass;
 		public float Restitution;
 
-		public bool Static;
+		public bool IsStatic;
 
 		public Rigidbody(Vector3 position, float mass, float restitution = 1f, bool isStatic = false)
 		{
@@ -24,13 +24,13 @@ namespace MassiveData.Samples.Physics
 
 			Velocity = Vector3.zero;
 			Forces = Vector3.zero;
-			Static = isStatic;
+			IsStatic = isStatic;
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Integrate(float deltaTime)
 		{
-			if (Static)
+			if (IsStatic)
 			{
 				Velocity = Vector3.zero;
 				Forces = Vector3.zero;
