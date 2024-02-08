@@ -55,10 +55,10 @@ namespace MassiveData.Samples.Physics
 			Position += deltaTime * Velocity;
 			Forces = Vector3.zero;
 			
-			// Angular motion integration
-			AngularVelocity += deltaTime * Vector3.Scale(Torques, InverseInertiaTensor);
-			Rotation = Rotation * Quaternion.Euler(deltaTime * Mathf.Rad2Deg * AngularVelocity);
-			Torques = Vector3.zero;
+			// // Angular motion integration
+			// AngularVelocity += deltaTime * Vector3.Scale(Torques, InverseInertiaTensor);
+			// Rotation = Rotation * Quaternion.Euler(deltaTime * Mathf.Rad2Deg * AngularVelocity);
+			// Torques = Vector3.zero;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

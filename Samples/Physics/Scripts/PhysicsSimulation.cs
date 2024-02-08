@@ -12,21 +12,26 @@ namespace MassiveData.Samples.Physics
 		[SerializeField] private int _simulationsPerFrame = 120;
 		[SerializeField] private int _particlesCapacity = 1000;
 
-		[Header("Physics")] [SerializeField] private EntityRoot<SphereCollider> _particlePrefab;
+		[Header("Physics")]
+		[SerializeField] private EntityRoot<SphereCollider> _spherePrefab;
+		[SerializeField] private EntityRoot<BoxCollider> _boxPrefab;
 		[SerializeField] private int _substeps = 8;
 		[SerializeField] private float _gravity = 10f;
-		[SerializeField] private float _groundFriction = 0.2f;
 
 		private Massive<SphereCollider> _sphereColliders;
+		private Massive<BoxCollider> _boxColliders;
 		private Massive<Rigidbody> _bodies;
-		private EntitySynchronisation<SphereCollider> _particleSynchronisation;
+		private EntitySynchronisation<SphereCollider> _spheresSynchronisation;
+		private EntitySynchronisation<BoxCollider> _boxesSynchronisation;
 
 		private void Awake()
 		{
 			_sphereColliders = new Massive<SphereCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_boxColliders = new Massive<BoxCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			_bodies = new Massive<Rigidbody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			
-			_particleSynchronisation = new EntitySynchronisation<SphereCollider>(new EntityFactory<SphereCollider>(_particlePrefab));
+			_spheresSynchronisation = new EntitySynchronisation<SphereCollider>(new EntityFactory<SphereCollider>(_spherePrefab));
+			_boxesSynchronisation = new EntitySynchronisation<BoxCollider>(new EntityFactory<BoxCollider>(_boxPrefab));
 
 			foreach (var spawnPoint in FindObjectsOfType<PhysicsSpawnPoint>())
 			{
@@ -61,12 +66,14 @@ namespace MassiveData.Samples.Physics
 				for (int i = 0; i < _substeps; i++)
 				{
 					SphereCollider.UpdateWorldPositions(_bodies, _sphereColliders);
+					BoxCollider.UpdateWorldPositions(_bodies, _boxColliders);
 					Collisions.Solve(_sphereColliders, _bodies);
 					Gravity.Apply(_bodies, _gravity);
 					Rigidbody.IntegrateAll(_bodies, subStepDeltaTime);
 				}
 
 				_sphereColliders.SaveFrame();
+				_boxColliders.SaveFrame();
 				_bodies.SaveFrame();
 				_currentFrame++;
 			}
@@ -80,7 +87,8 @@ namespace MassiveData.Samples.Physics
 			
 			Debug.Log(systemEnergy);
 			
-			_particleSynchronisation.Synchronize(_sphereColliders);
+			_spheresSynchronisation.Synchronize(_sphereColliders);
+			_boxesSynchronisation.Synchronize(_boxColliders);
 
 			_debugTime = stopwatch.ElapsedMilliseconds;
 		}
