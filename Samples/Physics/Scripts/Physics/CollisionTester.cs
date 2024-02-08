@@ -12,7 +12,7 @@ namespace MassiveData.Samples.Physics
 			//Note the negative 1. By convention, the normal points from B to A
 
 			// Calculate the normal
-			contact.Normal = offsetToB / centerDistance;
+			contact.Normal = -offsetToB / centerDistance;
 
 			// Determine if the normal is valid
 			bool normalIsValid = centerDistance > 0f;
@@ -34,13 +34,9 @@ namespace MassiveData.Samples.Physics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void SphereVsBox(ref SphereCollider a, ref BoxCollider b, Vector3 offsetToB, Quaternion orientationOfB, ref Contact contact)
 		{
-			// Clamp the position of the sphere to the box.
-			var orientationMatrixB = Matrix4x4.Rotate(orientationOfB);
-			var orientationMatrixBTranspose = orientationMatrixB.transpose;
-
 			// Note that we're working with localOffsetB, which is the offset from A to B, even though conceptually we want to be operating on the offset from B to A
 			// Those offsets differ only by their sign, so are equivalent due to the symmetry of the box. The negation is left implicit
-			var localOffsetB = orientationMatrixBTranspose.MultiplyVector(offsetToB);
+			var localOffsetB = Quaternion.Inverse(orientationOfB) * offsetToB;
 			Vector3 clampedLocalOffsetB;
 			clampedLocalOffsetB.x = Mathf.Min(Mathf.Max(localOffsetB.x, -b.HalfSize.x), b.HalfSize.x);
 			clampedLocalOffsetB.y = Mathf.Min(Mathf.Max(localOffsetB.y, -b.HalfSize.y), b.HalfSize.y);
@@ -76,7 +72,7 @@ namespace MassiveData.Samples.Physics
 			insideDepth += a.Radius;
 			var useInside = distance == 0f;
 			var localNormal = useInside ? insideNormal : outsideNormal;
-			contact.Normal = orientationMatrixB.MultiplyVector(-localNormal);
+			contact.Normal = orientationOfB * localNormal;
 
 			contact.Depth = useInside ? insideDepth : outsideDepth;
 

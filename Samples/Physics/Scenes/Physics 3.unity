@@ -326,7 +326,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1522102533}
   m_LocalRotation: {x: -0.5453279, y: -0.0047451174, z: -0.83474916, w: 0.07608363}
-  m_LocalPosition: {x: 1.67, y: 13.46, z: 0.07}
+  m_LocalPosition: {x: 0.481, y: 0, z: -1.038}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -345,7 +345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a48eea1f6194dad8c236f9f0788f85d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _size: {x: 100, y: 100, z: 100}
+  _size: {x: 1, y: 1, z: 1}
   _sphere: {fileID: 2040954544}
   _sphereRadius: 1
 --- !u!1 &2040954542
@@ -372,7 +372,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2040954542}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 19.5, y: 52, z: 20.7}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

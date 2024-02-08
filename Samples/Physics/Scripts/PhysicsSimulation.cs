@@ -97,10 +97,12 @@ namespace MassiveData.Samples.Physics
 
 		private void OnGUI()
 		{
-			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_sphereColliders.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_sphereColliders.AliveCount} Spheres", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_boxColliders.AliveCount} Boxes", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			float fontScaling = Screen.height / (float)1080;
+			
+			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = Mathf.RoundToInt(70 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_sphereColliders.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_sphereColliders.AliveCount} Spheres", new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_boxColliders.AliveCount} Boxes", new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}
 }

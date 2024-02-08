@@ -96,10 +96,10 @@ namespace MassiveData.Samples.Physics
 			Vector3 resolution = -0.5f * PositionCollisionBeta * systemMass * contact.Depth * contact.Normal;
 
 			if (!a.IsStatic)
-				a.Position += resolution * a.InverseMass;
+				a.Position -= resolution * a.InverseMass;
 
 			if (!b.IsStatic)
-				b.Position -= resolution * b.InverseMass;
+				b.Position += resolution * b.InverseMass;
 		}
 
 		private static void SolveVelocityCollision(ref Rigidbody a, ref Rigidbody b, Contact contact)

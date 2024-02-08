@@ -35,7 +35,9 @@ namespace MassiveData.Samples.Shooter
 
 			GUILayout.FlexibleSpace();
 
-			GUILayout.TextField($"{_currentAveraged} FPS", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
+			float fontScaling = Screen.height / (float)1080;
+
+			GUILayout.TextField($"{_currentAveraged} FPS", new GUIStyle() { fontSize = Mathf.RoundToInt(70 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
 
 			GUILayout.EndHorizontal();
 
