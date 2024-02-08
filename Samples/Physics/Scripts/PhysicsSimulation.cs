@@ -35,7 +35,7 @@ namespace MassiveData.Samples.Physics
 
 			foreach (var spawnPoint in FindObjectsOfType<PhysicsSpawnPoint>())
 			{
-				spawnPoint.Spawn(_bodies, _sphereColliders);
+				spawnPoint.Spawn(_bodies, _sphereColliders, _boxColliders);
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace MassiveData.Samples.Physics
 				{
 					SphereCollider.UpdateWorldPositions(_bodies, _sphereColliders);
 					BoxCollider.UpdateWorldPositions(_bodies, _boxColliders);
-					Collisions.Solve(_sphereColliders, _bodies);
+					Collisions.Solve(_bodies, _sphereColliders, _boxColliders);
 					Gravity.Apply(_bodies, _gravity);
 					Rigidbody.IntegrateAll(_bodies, subStepDeltaTime);
 				}
@@ -78,14 +78,14 @@ namespace MassiveData.Samples.Physics
 				_currentFrame++;
 			}
 
-			float systemEnergy = 0f;
-			foreach (var body in _bodies.AliveData)
-			{
-				systemEnergy += body.Mass * Mathf.Max(0, body.Position.y + 100f) * _gravity;
-				systemEnergy += body.Velocity.sqrMagnitude * body.Mass / 2f;
-			}
-			
-			Debug.Log(systemEnergy);
+			// float systemEnergy = 0f;
+			// foreach (var body in _bodies.AliveData)
+			// {
+			// 	systemEnergy += body.Mass * Mathf.Max(0, body.Position.y + 100f) * _gravity;
+			// 	systemEnergy += body.Velocity.sqrMagnitude * body.Mass / 2f;
+			// }
+			//
+			// Debug.Log(systemEnergy);
 			
 			_spheresSynchronisation.Synchronize(_sphereColliders);
 			_boxesSynchronisation.Synchronize(_boxColliders);
@@ -99,7 +99,8 @@ namespace MassiveData.Samples.Physics
 		{
 			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
 			GUILayout.TextField($"{_sphereColliders.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_sphereColliders.AliveCount} Particles", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_sphereColliders.AliveCount} Spheres", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_boxColliders.AliveCount} Boxes", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}
 }

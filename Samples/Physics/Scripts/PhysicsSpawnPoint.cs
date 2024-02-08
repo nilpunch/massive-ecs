@@ -18,18 +18,33 @@ namespace MassiveData.Samples.Physics
 			Destroy(gameObject);
 		}
 
-		public void Spawn(Massive<Rigidbody> softBodies, Massive<SphereCollider> colliders)
+		public void Spawn(Massive<Rigidbody> softBodies, Massive<SphereCollider> spheres, Massive<BoxCollider> boxes)
 		{
-			int bodyId = softBodies.Create(new Rigidbody(transform.position, _mass, _restitution, isStatic: _static) { Velocity = _startVelocity, CenterOfMass = _centerOfMass });
+			int bodyId = softBodies.Create(new Rigidbody(transform.position, _mass, _restitution, isStatic: _static)
+			{
+				Velocity = _startVelocity,
+				CenterOfMass = _centerOfMass,
+				Rotation = transform.rotation,
+			});
 
-			colliders.Create(new SphereCollider(bodyId, _radius));
+			if (_isBox)
+			{
+				boxes.Create(new BoxCollider(bodyId, _boxSize));
+			}
+			else
+			{
+				spheres.Create(new SphereCollider(bodyId, _radius));
+			}
 		}
 
 		public void OnDrawGizmos()
 		{
 			if (_isBox)
 			{
-				Gizmos.DrawCube(transform.position, _boxSize);
+				var orig = Gizmos.matrix;
+				Gizmos.matrix = transform.localToWorldMatrix;
+				Gizmos.DrawCube(Vector3.zero, _boxSize);
+				Gizmos.matrix = orig;
 			}
 			else
 			{
