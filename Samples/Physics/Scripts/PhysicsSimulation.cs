@@ -33,9 +33,9 @@ namespace MassiveData.Samples.Physics
 			_spheresSynchronisation = new EntitySynchronisation<SphereCollider>(new EntityFactory<SphereCollider>(_spherePrefab));
 			_boxesSynchronisation = new EntitySynchronisation<BoxCollider>(new EntityFactory<BoxCollider>(_boxPrefab));
 
-			foreach (var spawnPoint in FindObjectsOfType<PhysicsSpawnPoint>())
+			foreach (var massiveRigidbody in FindObjectsOfType<MassiveRigidbody>())
 			{
-				spawnPoint.Spawn(_bodies, _sphereColliders, _boxColliders);
+				massiveRigidbody.Spawn(_bodies, _sphereColliders, _boxColliders);
 			}
 		}
 

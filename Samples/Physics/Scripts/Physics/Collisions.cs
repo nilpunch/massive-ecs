@@ -49,7 +49,8 @@ namespace MassiveData.Samples.Physics
 				{
 					ref SphereCollider b = ref aliveSpheres[j];
 
-					if (bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
+					if (a.RigidbodyId == b.RigidbodyId ||
+						bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
 					{
 						continue;
 					}
@@ -67,7 +68,8 @@ namespace MassiveData.Samples.Physics
 				{
 					ref BoxCollider b = ref aliveBoxes[j];
 
-					if (bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
+					if (a.RigidbodyId == b.RigidbodyId ||
+					    bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
 					{
 						continue;
 					}

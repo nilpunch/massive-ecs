@@ -12,15 +12,16 @@ namespace MassiveData.Samples.Physics
 		public float Radius;
 
 		public Vector3 LocalPosition;
+		
 		public Vector3 WorldPosition;
 		public Quaternion WorldRotation;
 
-		public SphereCollider(int rigidbodyId, float radius)
+		public SphereCollider(int rigidbodyId, float radius, Vector3 localPosition = default)
 		{
 			RigidbodyId = rigidbodyId;
 			Radius = radius;
 			
-			LocalPosition = Vector3.zero;
+			LocalPosition = localPosition;
 			WorldPosition = Vector3.zero;
 			WorldRotation = Quaternion.identity;
 		}
@@ -30,9 +31,10 @@ namespace MassiveData.Samples.Physics
 			var aliveColliders = colliders.AliveData;
 			for (int i = 0; i < aliveColliders.Length; i++)
 			{
-				var collider = aliveColliders[i];
-				aliveColliders[i].WorldPosition = collider.LocalPosition + bodies.Get(collider.RigidbodyId).Position;
-				aliveColliders[i].WorldRotation = bodies.Get(collider.RigidbodyId).Rotation;
+				ref var collider = ref aliveColliders[i];
+				var body = bodies.Get(collider.RigidbodyId);
+				collider.WorldPosition = body.Position + body.Rotation * collider.LocalPosition;
+				collider.WorldRotation = body.Rotation;
 			}
 		}
 	}

@@ -21,7 +21,7 @@ namespace MassiveData.Samples.Physics
 
 		public bool IsStatic;
 
-		public Rigidbody(Vector3 position, float mass, float restitution = 1f, bool isStatic = false)
+		public Rigidbody(Vector3 position, Quaternion rotation, float mass, float restitution = 1f, bool isStatic = false)
 		{
 			CenterOfMass = default;
 			Mass = mass;
@@ -30,10 +30,10 @@ namespace MassiveData.Samples.Physics
 			IsStatic = isStatic;
 
 			Position = position;
+			Rotation = rotation;
 			Velocity = default;
 			Forces = default;
 
-			Rotation = Quaternion.identity;
 			InverseInertiaTensor = Vector3.one * (5f / (2 * mass * 1f));
 			AngularVelocity = default;
 			Torques = default;

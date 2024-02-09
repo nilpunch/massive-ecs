@@ -19,7 +19,7 @@ namespace MassiveData.Samples.Physics
 				WorldPosition = _sphere.position
 			};
 			
-			BoxCollider boxCollider = new BoxCollider(0, _size)
+			BoxCollider boxCollider = new BoxCollider(0, _size, Vector3.zero, Quaternion.identity)
 			{
 				WorldPosition = transform.position,
 				WorldRotation = transform.rotation,
