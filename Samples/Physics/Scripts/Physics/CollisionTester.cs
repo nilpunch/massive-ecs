@@ -6,38 +6,36 @@ namespace MassiveData.Samples.Physics
 	public static class CollisionTester
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SphereVsSphere(ref SphereCollider a, ref SphereCollider b, Vector3 offsetToB, ref Contact contact)
+		public static void SphereVsSphere(ref SphereCollider a, ref SphereCollider b, Vector3 offsetToB, ref ColliderContact colliderContact)
 		{
 			var centerDistance = offsetToB.magnitude;
-			//Note the negative 1. By convention, the normal points from B to A
+			
+			colliderContact.Normal = -offsetToB / centerDistance;
 
-			// Calculate the normal
-			contact.Normal = -offsetToB / centerDistance;
-
-			// Determine if the normal is valid
 			bool normalIsValid = centerDistance > 0f;
 
 			// Arbitrarily choose the (0,1,0) if the two spheres are in the same position
 			// Any unit length vector is equally valid
 			if (!normalIsValid)
-				contact.Normal = Vector3.up;
+				colliderContact.Normal = Vector3.up;
 
 			// Calculate depth
-			contact.Depth = a.Radius + b.Radius - centerDistance;
+			colliderContact.Depth = a.Radius + b.Radius - centerDistance;
 
 			// Calculate the contact position relative to object A
-			float negativeOffsetFromA = contact.Depth * 0.5f - a.Radius;
+			float negativeOffsetFromA = colliderContact.Depth * 0.5f - a.Radius;
 
-			contact.OffsetFromA = contact.Normal * negativeOffsetFromA;
+			colliderContact.OffsetFromColliderA = colliderContact.Normal * negativeOffsetFromA;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SphereVsBox(ref SphereCollider a, ref BoxCollider b, Vector3 offsetToB, Quaternion orientationOfB, ref Contact contact)
+		public static void SphereVsBox(ref SphereCollider a, ref BoxCollider b, Vector3 offsetToB, Quaternion orientationOfB, ref ColliderContact colliderContact)
 		{
 			// Note that we're working with localOffsetB, which is the offset from A to B, even though conceptually we want to be operating on the offset from B to A
 			// Those offsets differ only by their sign, so are equivalent due to the symmetry of the box. The negation is left implicit
 			var localOffsetB = Quaternion.Inverse(orientationOfB) * offsetToB;
 			Vector3 clampedLocalOffsetB;
+			
 			clampedLocalOffsetB.x = Mathf.Min(Mathf.Max(localOffsetB.x, -b.HalfSize.x), b.HalfSize.x);
 			clampedLocalOffsetB.y = Mathf.Min(Mathf.Max(localOffsetB.y, -b.HalfSize.y), b.HalfSize.y);
 			clampedLocalOffsetB.z = Mathf.Min(Mathf.Max(localOffsetB.z, -b.HalfSize.z), b.HalfSize.z);
@@ -72,14 +70,14 @@ namespace MassiveData.Samples.Physics
 			insideDepth += a.Radius;
 			var useInside = distance == 0f;
 			var localNormal = useInside ? insideNormal : outsideNormal;
-			contact.Normal = orientationOfB * localNormal;
+			colliderContact.Normal = orientationOfB * localNormal;
 
-			contact.Depth = useInside ? insideDepth : outsideDepth;
+			colliderContact.Depth = useInside ? insideDepth : outsideDepth;
 
 			//The contact position relative to object A (the sphere) is computed as the average of the extreme point along the normal toward the opposing shape on each shape, averaged.
 			//For capsule-sphere, this can be computed from the normal and depth.
-			var negativeOffsetFromSphere = contact.Depth * 0.5f - a.Radius;
-			contact.OffsetFromA = contact.Normal * negativeOffsetFromSphere;
+			var negativeOffsetFromSphere = colliderContact.Depth * 0.5f - a.Radius;
+			colliderContact.OffsetFromColliderA = colliderContact.Normal * negativeOffsetFromSphere;
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace MassiveData.Samples.Physics
 			if (_sphere == null)
 				return;
 
-			SphereCollider sphereCollider = new SphereCollider(0, _sphereRadius)
+			SphereCollider sphereCollider = new SphereCollider(0, _sphereRadius, Vector3.zero, Quaternion.identity)
 			{
 				WorldPosition = _sphere.position
 			};
@@ -25,7 +25,7 @@ namespace MassiveData.Samples.Physics
 				WorldRotation = transform.rotation,
 			};
 
-			SphereCollider sphereCollider2 = new SphereCollider(0, _sphereRadius)
+			SphereCollider sphereCollider2 = new SphereCollider(0, _sphereRadius, Vector3.zero, Quaternion.identity)
 			{
 				WorldPosition = transform.position
 			};
@@ -38,17 +38,17 @@ namespace MassiveData.Samples.Physics
 			// Gizmos.DrawCube(Vector3.zero, _size);
 			// Gizmos.matrix = orig;
 
-			Contact contact = new Contact();
+			ColliderContact colliderContact = new ColliderContact();
 			
 			// CollisionTester.SphereVsBox(ref sphereCollider, ref boxCollider, boxCollider.WorldPosition - sphereCollider.WorldPosition, boxCollider.WorldRotation, ref contact);
-			CollisionTester.SphereVsSphere(ref sphereCollider, ref sphereCollider2, sphereCollider2.WorldPosition - sphereCollider.WorldPosition, ref contact);
+			CollisionTester.SphereVsSphere(ref sphereCollider, ref sphereCollider2, sphereCollider2.WorldPosition - sphereCollider.WorldPosition, ref colliderContact);
 
-			if (contact.Depth > 0f)
+			if (colliderContact.Depth > 0f)
 			{
 				Gizmos.color = Color.red;
-				Gizmos.DrawSphere(sphereCollider.WorldPosition + contact.OffsetFromA, 0.1f);
+				Gizmos.DrawSphere(sphereCollider.WorldPosition + colliderContact.OffsetFromColliderA, 0.1f);
 				Gizmos.color = Color.yellow;
-				Gizmos.DrawLine(sphereCollider.WorldPosition + contact.OffsetFromA, sphereCollider.WorldPosition + contact.OffsetFromA + contact.Normal * contact.Depth);
+				Gizmos.DrawLine(sphereCollider.WorldPosition + colliderContact.OffsetFromColliderA, sphereCollider.WorldPosition + colliderContact.OffsetFromColliderA + colliderContact.Normal * colliderContact.Depth);
 			}
 		}
 	}

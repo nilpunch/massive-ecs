@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace MassiveData.Samples.Physics
 {
@@ -27,6 +28,12 @@ namespace MassiveData.Samples.Physics
 			WorldPosition = Vector3.zero;
 			WorldRotation = Quaternion.identity;
 		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector3 TransformFromLocalToWorld(Vector3 localPosition)
+		{
+			return WorldPosition + WorldRotation * localPosition;
+		}
 
 		public static void UpdateWorldPositions(Massive<Rigidbody> bodies, Massive<BoxCollider> colliders)
 		{
@@ -35,7 +42,7 @@ namespace MassiveData.Samples.Physics
 			{
 				ref var collider = ref aliveColliders[i];
 				var body = bodies.Get(collider.RigidbodyId);
-				collider.WorldPosition = body.Position + body.Rotation * collider.LocalPosition;
+				collider.WorldPosition = body.GetWorldCenterOfMass() + body.Rotation * collider.LocalPosition;
 				collider.WorldRotation = body.Rotation * collider.LocalRotation;
 			}
 		}
