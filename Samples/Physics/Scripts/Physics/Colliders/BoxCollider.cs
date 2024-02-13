@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MassiveData.Samples.Physics
 {
-	public struct BoxCollider
+	public struct BoxCollider : ISupportMappable
 	{
 		public readonly int RigidbodyId;
 
@@ -28,7 +28,28 @@ namespace MassiveData.Samples.Physics
 			WorldPosition = Vector3.zero;
 			WorldRotation = Quaternion.identity;
 		}
-		
+
+		Vector3 ISupportMappable.Centre => WorldPosition;
+
+		Vector3 ISupportMappable.SupportPoint(Vector3 direction)
+		{
+			Vector3 rotatedDirection = Quaternion.Inverse(WorldRotation) * direction;
+			var supportPoint = BoxSupportPoint(Vector3.zero, HalfSize, rotatedDirection);
+			var transformedSupportPoint = WorldRotation * supportPoint + WorldPosition;
+			return transformedSupportPoint;
+		}
+
+		private static Vector3 BoxSupportPoint(Vector3 center, Vector3 extents, Vector3 direction)
+		{
+			Vector3 signComponents = new Vector3(
+				Mathf.Sign(direction.x),
+				Mathf.Sign(direction.y),
+				Mathf.Sign(direction.z)
+			);
+
+			return center + Vector3.Scale(extents, signComponents);
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Vector3 TransformFromLocalToWorld(Vector3 localPosition)
 		{

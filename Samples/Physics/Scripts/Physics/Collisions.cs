@@ -1,28 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
 namespace MassiveData.Samples.Physics
 {
-	public struct RigidbodyContact
-	{
-		public int BodyA;
-		public int BodyB;
-
-		public Vector3 ContactPoint;
-		public Vector3 Normal;
-		public float Depth;
-	}
-
-	public struct ColliderContact
-	{
-		public Vector3 OffsetFromColliderA;
-		public Vector3 Normal;
-		public float Depth;
-	}
-
 	public static class Collisions
 	{
 		public const float PositionCollisionBeta = 0.7f;
@@ -51,10 +33,10 @@ namespace MassiveData.Samples.Physics
 			var aliveBoxes = boxes.AliveData;
 			for (int i = 0; i < aliveSpheres.Length; ++i)
 			{
-				ref SphereCollider a = ref aliveSpheres[i];
+				SphereCollider a = aliveSpheres[i];
 				for (int j = i + 1; j < aliveSpheres.Length; ++j)
 				{
-					ref SphereCollider b = ref aliveSpheres[j];
+					SphereCollider b = aliveSpheres[j];
 
 					if (a.RigidbodyId == b.RigidbodyId || bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
 					{
@@ -96,6 +78,35 @@ namespace MassiveData.Samples.Physics
 							Normal = contact.Normal,
 							Depth = contact.Depth,
 							ContactPoint = a.TransformFromLocalToWorld(contact.OffsetFromColliderA)
+						});
+					}
+				}
+			}
+
+			for (int i = 0; i < aliveBoxes.Length; ++i)
+			{
+				BoxCollider a = aliveBoxes[i];
+				for (int j = i + 1; j < aliveBoxes.Length; ++j)
+				{
+					BoxCollider b = aliveBoxes[j];
+
+					if (a.RigidbodyId == b.RigidbodyId || bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
+					{
+						continue;
+					}
+
+					var gjkResult = GjkAlgorithm.Calculate(a, b);
+
+					if (gjkResult.CollisionHappened)
+					{
+						var epaResult = EpaAlgorithm.Calculate(gjkResult.Simplex, a, b);
+
+						Contacts.Add(new RigidbodyContact()
+						{
+							BodyA = a.RigidbodyId, BodyB = b.RigidbodyId,
+							Normal = epaResult.PenetrationNormal,
+							Depth = epaResult.PenetrationDepth,
+							ContactPoint = epaResult.ContactFirst.Position
 						});
 					}
 				}
