@@ -115,24 +115,24 @@ namespace MassiveData.Samples.Physics
 			MinkowskiSharedA.Add(simplex.D.SupportA);
 			MinkowskiSharedB.Add(simplex.D.SupportB);
 
-			List<PolytopeFace> polytopeFaces = PolytopeFacesShared;
-			polytopeFaces.Add(new PolytopeFace(0, 1, 2));
-			polytopeFaces.Add(new PolytopeFace(0, 1, 3));
-			polytopeFaces.Add(new PolytopeFace(0, 2, 3));
-			polytopeFaces.Add(new PolytopeFace(1, 2, 3));
-			FixNormals(PolytopeShared, polytopeFaces);
+			PolytopeFacesShared.Add(new PolytopeFace(0, 1, 2));
+			PolytopeFacesShared.Add(new PolytopeFace(0, 1, 3));
+			PolytopeFacesShared.Add(new PolytopeFace(0, 2, 3));
+			PolytopeFacesShared.Add(new PolytopeFace(1, 2, 3));
 			
+			FixNormals(PolytopeShared, PolytopeFacesShared);
+
 			(int index, float distance, Vector3 normal, PolytopeFace face) closestFace = default;
 			
 			int iteration = 1;
 			while (iteration < maxIterations)
 			{
-				closestFace = FindClosestFace(PolytopeShared, polytopeFaces);
+				closestFace = FindClosestFace(PolytopeShared, PolytopeFacesShared);
 
 				MinkowskiDifference supportPoint = MinkowskiDifference.Calculate(shapeA, shapeB, closestFace.normal);
 
 				float minkowskiDistance = Vector3.Dot(closestFace.normal, supportPoint.Difference);
-				float closestFaceDistance = closestFace.distance * closestFace.distance;
+				float closestFaceDistance = closestFace.distance;
 
 				if (ApproximatelyEqual(closestFaceDistance, minkowskiDistance, Tolerance))
 				{
@@ -142,7 +142,7 @@ namespace MassiveData.Samples.Physics
 				PolytopeShared.Add(supportPoint.Difference);
 				MinkowskiSharedA.Add(supportPoint.SupportA);
 				MinkowskiSharedB.Add(supportPoint.SupportB);
-				ExpandPolytope(PolytopeShared, polytopeFaces, supportPoint.Difference);
+				ExpandPolytope(PolytopeShared, PolytopeFacesShared, supportPoint.Difference);
 				
 				iteration += 1;
 			}
@@ -174,7 +174,6 @@ namespace MassiveData.Samples.Physics
 		public static void ExpandPolytope(List<Vector3> polytope, List<PolytopeFace> faces, Vector3 extendPoint)
 		{
 			RemovalFacesIndicesShared.Clear();
-			var removalFacesIndices = RemovalFacesIndicesShared;
 
 			for (int i = 0; i < faces.Count; i++)
 			{
@@ -191,35 +190,34 @@ namespace MassiveData.Samples.Physics
 
 				if (Vector3.Dot(normal, extendPoint - polytope[face.A]) > Tolerance)
 				{
-					removalFacesIndices.Add(i);
+					RemovalFacesIndicesShared.Add(i);
 				}
 			}
 
-			// get the edges that are not shared between the faces that should be removed
+			// Get the edges that are not shared between the faces that should be removed
 			RemovalEdgesShared.Clear();
-			var edges = RemovalEdgesShared;
-			foreach (int removalFaceIndex in removalFacesIndices)
+			foreach (int removalFaceIndex in RemovalFacesIndicesShared)
 			{
 				var face = faces[removalFaceIndex];
 				(int a, int b) edgeAB = (face.A, face.B);
 				(int a, int b) edgeAC = (face.A, face.C);
 				(int a, int b) edgeBC = (face.B, face.C);
 
-				AddOrDeleteEdge(edges, edgeAB);
-				AddOrDeleteEdge(edges, edgeAC);
-				AddOrDeleteEdge(edges, edgeBC);
+				AddOrDeleteEdge(RemovalEdgesShared, edgeAB);
+				AddOrDeleteEdge(RemovalEdgesShared, edgeAC);
+				AddOrDeleteEdge(RemovalEdgesShared, edgeBC);
 			}
 
-			//remove the faces from the polytope
-			for (int i = removalFacesIndices.Count - 1; i >= 0; i--)
+			// Remove the faces from the polytope
+			for (int i = RemovalFacesIndicesShared.Count - 1; i >= 0; i--)
 			{
-				int index = removalFacesIndices[i];
+				int index = RemovalFacesIndicesShared[i];
 				faces.RemoveAt(index);
 			}
 
-			//form new faces with the edges and new point
+			// Form new faces with the edges and new point
 			Vector3 center = PolytopeCenter(polytope);
-			foreach ((int a, int b) in edges)
+			foreach ((int a, int b) in RemovalEdgesShared)
 			{
 				var fixedFace = FixFaceNormal(new PolytopeFace(a, b, polytope.Count - 1), polytope, center);
 

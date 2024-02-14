@@ -441,11 +441,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _simulationSpeed: 1
-  _simulationsPerFrame: 0
+  _simulationsPerFrame: 120
   _particlesCapacity: 1000
   _spherePrefab: {fileID: 3200494944595069422, guid: 50c4703ddfb0e3045bb5ddd6bb11b25f, type: 3}
   _boxPrefab: {fileID: 3669729094187474624, guid: 7fc754ef27155d64ebc6bf9d1f8dd430, type: 3}
-  _substeps: 1
+  _substeps: 2
   _gravity: 15
 --- !u!1 &46498887
 GameObject:
@@ -10643,9 +10643,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mass: 1
-  _inertia: 1
-  _restitution: 0.3
-  _friction: 0.8
+  _inertia: 3
+  _restitution: 0.1
+  _friction: 0.9
   _static: 0
   _startImpulse: {x: 0, y: 0, z: 0}
   _startImpulsePoint: {x: 0, y: 0, z: 0}

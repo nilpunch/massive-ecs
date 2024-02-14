@@ -104,9 +104,9 @@ namespace MassiveData.Samples.Physics
 						Contacts.Add(new RigidbodyContact()
 						{
 							BodyA = a.RigidbodyId, BodyB = b.RigidbodyId,
-							Normal = epaResult.PenetrationNormal,
+							Normal = -epaResult.PenetrationNormal,
 							Depth = epaResult.PenetrationDepth,
-							ContactPoint = epaResult.ContactFirst.Position
+							ContactPoint = (epaResult.ContactFirst.Position + epaResult.ContactSecond.Position) / 2f
 						});
 					}
 				}
