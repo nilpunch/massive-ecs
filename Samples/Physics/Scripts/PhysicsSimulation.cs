@@ -37,6 +37,8 @@ namespace MassiveData.Samples.Physics
 			{
 				massiveRigidbody.Spawn(_bodies, _sphereColliders, _boxColliders);
 			}
+			
+			Rigidbody.UpdateAllLocalInertiaTensor(_bodies, _boxColliders, _sphereColliders);
 		}
 
 		private int _currentFrame;
@@ -65,6 +67,7 @@ namespace MassiveData.Samples.Physics
 				
 				for (int i = 0; i < _substeps; i++)
 				{
+					Rigidbody.UpdateAllWorldInertia(_bodies);
 					SphereCollider.UpdateWorldPositions(_bodies, _sphereColliders);
 					BoxCollider.UpdateWorldPositions(_bodies, _boxColliders);
 					Collisions.Solve(_bodies, _sphereColliders, _boxColliders);

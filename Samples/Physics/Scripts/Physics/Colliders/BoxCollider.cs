@@ -51,9 +51,19 @@ namespace MassiveData.Samples.Physics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector3 TransformFromLocalToWorld(Vector3 localPosition)
+		public Matrix4x4 CalculateLocalMoi(float mass)
 		{
-			return WorldPosition + WorldRotation * localPosition;
+			float ix = (1f / 12f) * mass * (Size.y * Size.y + Size.z * Size.z);
+			float iy = (1f / 12f) * mass * (Size.x * Size.x + Size.z * Size.z);
+			float iz = (1f / 12f) * mass * (Size.x * Size.x + Size.y * Size.y);
+
+			Matrix4x4 inertiaTensor = new Matrix4x4();
+			inertiaTensor.SetRow(0, new Vector4(ix, 0f, 0f, 0f));
+			inertiaTensor.SetRow(1, new Vector4(0f, iy, 0f, 0f));
+			inertiaTensor.SetRow(2, new Vector4(0f, 0f, iz, 0f));
+			inertiaTensor.SetRow(3, new Vector4(0f, 0f, 0f, 1f)); // The last row is not used for MOI calculations
+
+			return Rigidbody.TransformMoi(inertiaTensor, LocalPosition, LocalRotation, mass);
 		}
 
 		public static void UpdateWorldPositions(Massive<Rigidbody> bodies, Massive<BoxCollider> colliders)

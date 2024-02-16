@@ -6,7 +6,6 @@ namespace MassiveData.Samples.Physics
 	public class MassiveRigidbody : MonoBehaviour
 	{
 		[SerializeField] private float _mass = 1f;
-		[SerializeField] private float _inertia = 1f;
 		[SerializeField] private float _restitution = 1f;
 		[SerializeField] private float _friction = 1f;
 		[SerializeField] private bool _static = false;
@@ -15,7 +14,7 @@ namespace MassiveData.Samples.Physics
 
 		public void Spawn(Massive<Rigidbody> bodies, Massive<SphereCollider> spheres, Massive<BoxCollider> boxes)
 		{
-			int bodyId = bodies.Create(new Rigidbody(transform.position, transform.rotation, _mass, _restitution, _friction, _inertia, _static));
+			int bodyId = bodies.Create(new Rigidbody(transform.position, transform.rotation, _mass, _restitution, _friction, _static));
 
 			foreach (var sphereCollider in GetComponentsInChildren<MassiveSphereCollider>())
 			{

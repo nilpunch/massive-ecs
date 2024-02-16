@@ -48,12 +48,14 @@ namespace MassiveData.Samples.Physics
 
 					if (contact.Depth > 0f)
 					{
+						Vector3 contactPoint = a.TransformFromLocalToWorld(contact.OffsetFromColliderA);
 						Contacts.Add(new RigidbodyContact()
 						{
 							BodyA = a.RigidbodyId, BodyB = b.RigidbodyId,
 							Normal = contact.Normal,
 							Depth = contact.Depth,
-							ContactPoint = a.TransformFromLocalToWorld(contact.OffsetFromColliderA)
+							ContactPointA = contactPoint,
+							ContactPointB = contactPoint
 						});
 					}
 				}
@@ -72,12 +74,14 @@ namespace MassiveData.Samples.Physics
 
 					if (contact.Depth > 0f)
 					{
+						Vector3 contactPoint = a.TransformFromLocalToWorld(contact.OffsetFromColliderA);
 						Contacts.Add(new RigidbodyContact()
 						{
 							BodyA = a.RigidbodyId, BodyB = b.RigidbodyId,
 							Normal = contact.Normal,
 							Depth = contact.Depth,
-							ContactPoint = a.TransformFromLocalToWorld(contact.OffsetFromColliderA)
+							ContactPointA = contactPoint,
+							ContactPointB = contactPoint
 						});
 					}
 				}
@@ -106,7 +110,8 @@ namespace MassiveData.Samples.Physics
 							BodyA = a.RigidbodyId, BodyB = b.RigidbodyId,
 							Normal = -epaResult.PenetrationNormal,
 							Depth = epaResult.PenetrationDepth,
-							ContactPoint = (epaResult.ContactFirst.Position + epaResult.ContactSecond.Position) / 2f
+							ContactPointA = epaResult.ContactFirst.Position,
+							ContactPointB = epaResult.ContactSecond.Position
 						});
 					}
 				}
@@ -137,59 +142,60 @@ namespace MassiveData.Samples.Physics
 			var e = Mathf.Min(a.Restitution, b.Restitution);
 			var friction = Mathf.Sqrt(a.Friction * b.Friction);
 
-			var contactPoint = contact.ContactPoint;
 			var normal = contact.Normal;
-			
-			Vector3 relativeVelocity = a.GetVelocityAtPoint(contactPoint) - b.GetVelocityAtPoint(contactPoint);
-			
-			Vector3 rA = contactPoint - a.GetWorldCenterOfMass();
-			Vector3 rB = contactPoint - b.GetWorldCenterOfMass();
-			
+
+			Vector3 relativeVelocity = a.GetVelocityAtPoint(contact.ContactPointA) - b.GetVelocityAtPoint(contact.ContactPointB);
+
+			Vector3 rA = contact.ContactPointA - a.GetWorldCenterOfMass();
+			Vector3 rB = contact.ContactPointB - b.GetWorldCenterOfMass();
+
 			Vector3 raCrossN = Vector3.Cross(rA, normal);
 			Vector3 rbCrossN = Vector3.Cross(rB, normal);
 
-			float angularInertiaA = a.IsStatic ? 0f : Vector3.Dot(raCrossN, Vector3.Scale(a.InverseInertiaTensor, raCrossN));
-			float angularInertiaB = b.IsStatic ? 0f : Vector3.Dot(rbCrossN, Vector3.Scale(b.InverseInertiaTensor, rbCrossN));
+			float angularInertiaA = a.IsStatic ? 0f : Vector3.Dot(raCrossN, a.InverseWorldInertiaTensor.MultiplyPoint3x4(raCrossN));
+			float angularInertiaB = b.IsStatic ? 0f : Vector3.Dot(rbCrossN, b.InverseWorldInertiaTensor.MultiplyPoint3x4(rbCrossN));
 			float angularInertia = angularInertiaA + angularInertiaB;
-			
+
 			float inverseMassA = a.IsStatic ? 0f : a.InverseMass;
 			float inverseMassB = b.IsStatic ? 0f : b.InverseMass;
 			float inverseMassSum = inverseMassA + inverseMassB;
 
-			// Calculate normal impulse scalar
-			float j = -(1 + e) * Vector3.Dot(relativeVelocity, normal) / (inverseMassSum + angularInertia);
+			float inverseInertia = inverseMassSum + angularInertia;
 
-			// Ignore separation impulse
+			// Calculate normal impulse scalar
+			float j = -(1 + e) * Vector3.Dot(relativeVelocity, normal) / inverseInertia;
+
+			// Ignore non-separating impulse
 			if (j < 0f)
 			{
 				return;
 			}
-			
+
 			// Apply normal impulse
 			Vector3 impulse = normal * j;
-			a.ApplyImpulseAtPoint(impulse, contactPoint);
-			b.ApplyImpulseAtPoint(-impulse, contactPoint);
-			
+			a.ApplyImpulseAtPoint(impulse, contact.ContactPointA);
+			b.ApplyImpulseAtPoint(-impulse, contact.ContactPointB);
+
 			// Recalculate relative velocity after normal impulse for friction calculations
-			relativeVelocity = a.GetVelocityAtPoint(contactPoint) - b.GetVelocityAtPoint(contactPoint);
+			relativeVelocity = a.GetVelocityAtPoint(contact.ContactPointA) - b.GetVelocityAtPoint(contact.ContactPointB);
 
 			Vector3 tangent = default;
 			Vector3 biTangent = default;
 			Vector3.OrthoNormalize(ref normal, ref tangent, ref biTangent);
-			
-			float jt = -Vector3.Dot(relativeVelocity, tangent) / (inverseMassSum + angularInertia);
-			float jbt = -Vector3.Dot(relativeVelocity, biTangent) / (inverseMassSum + angularInertia);
+
+			float jt = -Vector3.Dot(relativeVelocity, tangent) / inverseInertia;
+			float jbt = -Vector3.Dot(relativeVelocity, biTangent) / inverseInertia;
 
 			// Correctly clamp the friction impulse magnitude based on the normal impulse
 			float maxFrictionImpulse = j * friction;
 			float tangentImpulseMagnitude = Mathf.Clamp(jt, -maxFrictionImpulse, maxFrictionImpulse);
 			float biTangentImpulseMagnitude = Mathf.Clamp(jbt, -maxFrictionImpulse, maxFrictionImpulse);
-			
+
 			// Apply friction impulse
 			Vector3 frictionImpulse = tangent * tangentImpulseMagnitude + biTangent * biTangentImpulseMagnitude;
-				
-			a.ApplyImpulseAtPoint(frictionImpulse, contactPoint);
-			b.ApplyImpulseAtPoint(-frictionImpulse, contactPoint);
+
+			a.ApplyImpulseAtPoint(frictionImpulse, contact.ContactPointA);
+			b.ApplyImpulseAtPoint(-frictionImpulse, contact.ContactPointB);
 		}
 	}
 }
