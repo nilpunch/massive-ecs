@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace MassiveData.Samples.Physics
 {
-	public readonly struct MinkowskiDifference
+	public readonly struct MinkowskiDifference : IEquatable<MinkowskiDifference>
 	{
 		public readonly Vector3 SupportA;
 		public readonly Vector3 SupportB;
@@ -22,6 +23,21 @@ namespace MassiveData.Samples.Physics
 			Vector3 difference = supportA - supportB;
 
 			return new MinkowskiDifference(supportA, supportB, difference);
+		}
+
+		public bool Equals(MinkowskiDifference other)
+		{
+			return Difference.Equals(other.Difference);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is MinkowskiDifference other && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			return Difference.GetHashCode();
 		}
 	}
 }

@@ -36,13 +36,11 @@ namespace MassiveData.Samples.Physics
 	public static class EpaAlgorithm
 	{
 		private static float Tolerance => 0.0001f;
+		private static float NormalBias => 0.00001f;
 
-		public static List<Vector3> PolytopeShared { get; } = new List<Vector3>();
-		public static List<Vector3> MinkowskiSharedA { get; } = new List<Vector3>();
-		public static List<Vector3> MinkowskiSharedB { get; } = new List<Vector3>();
-		public static List<PolytopeFace> PolytopeFacesShared { get; } = new List<PolytopeFace>();
-		private static List<int> RemovalFacesIndicesShared { get; } = new List<int>();
-		private static List<(int a, int b)> RemovalEdgesShared { get; } = new List<(int a, int b)>();
+		public static List<MinkowskiDifference> Vertices { get; } = new List<MinkowskiDifference>();
+		public static List<PolytopeFace> Faces { get; } = new List<PolytopeFace>();
+		private static List<(int a, int b)> LooseEdges { get; } = new List<(int a, int b)>();
 
 		public static Vector3 Barycentric(Vector3 a, Vector3 b, Vector3 c, Vector3 point, bool clamp = false)
 		{
@@ -62,30 +60,29 @@ namespace MassiveData.Samples.Physics
 			return new Vector3(u, v, w);
 		}
 
-		private static Vector3 ProjectedBarycentric( Vector3 p, Vector3 q, Vector3 u, Vector3 v)
-		{
-			Vector3 n= Vector3.Cross( u, v );
-			float oneOver4ASquared= 1f / Vector3.SqrMagnitude(n);
-			Vector3 w= p - q;
-			float c = Vector3.Dot( Vector3.Cross( u, w ), n ) * oneOver4ASquared;
-			float b = Vector3.Dot( Vector3.Cross( w, v ), n ) * oneOver4ASquared;
-			float a = 1f - b - c;
-
-			return new Vector3(a, b, c);
-		}
-
 		public struct PolytopeFace
 		{
-			public PolytopeFace(int a, int b, int c)
+			public PolytopeFace(int a, int b, int c, Vector3 normal)
 			{
 				A = a;
 				B = b;
 				C = c;
+				Normal = normal;
 			}
 
-			public int A { get; }
-			public int B { get; }
-			public int C { get; }
+			public int A;
+			public int B;
+			public int C;
+			public Vector3 Normal;
+
+			public void FixNormalIfIncorrect(Vector3 centroid)
+			{
+				if (Vector3.Dot(-centroid, Normal) < -NormalBias)
+				{
+					(A, B) = (B, A);
+					Normal = -Normal;
+				}
+			}
 		}
 
 		public static bool ApproximatelyEqual(float a, float b, float epsilon)
@@ -97,54 +94,60 @@ namespace MassiveData.Samples.Physics
 		public static Collision Calculate<T>(Simplex simplex, T shapeA,
 			T shapeB, int maxIterations = 100) where T : ISupportMappable
 		{
-			PolytopeShared.Clear();
-			PolytopeFacesShared.Clear();
-			MinkowskiSharedA.Clear();
-			MinkowskiSharedB.Clear();
-
-			PolytopeShared.Add(simplex.A.Difference);
-			MinkowskiSharedA.Add(simplex.A.SupportA);
-			MinkowskiSharedB.Add(simplex.A.SupportB);
-			PolytopeShared.Add(simplex.B.Difference);
-			MinkowskiSharedA.Add(simplex.B.SupportA);
-			MinkowskiSharedB.Add(simplex.B.SupportB);
-			PolytopeShared.Add(simplex.C.Difference);
-			MinkowskiSharedA.Add(simplex.C.SupportA);
-			MinkowskiSharedB.Add(simplex.C.SupportB);
-			PolytopeShared.Add(simplex.D.Difference);
-			MinkowskiSharedA.Add(simplex.D.SupportA);
-			MinkowskiSharedB.Add(simplex.D.SupportB);
-
-			PolytopeFacesShared.Add(new PolytopeFace(0, 1, 2));
-			PolytopeFacesShared.Add(new PolytopeFace(0, 1, 3));
-			PolytopeFacesShared.Add(new PolytopeFace(0, 2, 3));
-			PolytopeFacesShared.Add(new PolytopeFace(1, 2, 3));
+			Faces.Clear();
+			Vertices.Clear();
 			
-			FixNormals(PolytopeShared, PolytopeFacesShared);
+			Vertices.Add(simplex.A);
+			Vertices.Add(simplex.B);
+			Vertices.Add(simplex.C);
+			Vertices.Add(simplex.D);
+			
+			Faces.Add(new PolytopeFace(0, 1, 2, CalculateFaceNormal(simplex.A.Difference, simplex.B.Difference, simplex.C.Difference)));
+			Faces.Add(new PolytopeFace(0, 2, 3, CalculateFaceNormal(simplex.A.Difference, simplex.C.Difference, simplex.D.Difference)));
+			Faces.Add(new PolytopeFace(0, 3, 1, CalculateFaceNormal(simplex.A.Difference, simplex.D.Difference, simplex.B.Difference)));
+			Faces.Add(new PolytopeFace(1, 3, 2, CalculateFaceNormal(simplex.B.Difference, simplex.D.Difference, simplex.C.Difference)));
 
-			(int index, float distance, Vector3 normal, PolytopeFace face) closestFace = default;
+			(float Distance, PolytopeFace Face) closestFace = default;
+			
+			foreach (var face in Faces)
+			{
+				Gizmos.color = Color.white;
+				Gizmos.DrawLine(Vertices[face.A].Difference, Vertices[face.B].Difference);
+				Gizmos.DrawLine(Vertices[face.B].Difference, Vertices[face.C].Difference);
+				Gizmos.DrawLine(Vertices[face.C].Difference, Vertices[face.A].Difference);
+				Gizmos.color = Color.cyan;
+				Vector3 center = (Vertices[face.A].Difference + Vertices[face.B].Difference + Vertices[face.C].Difference) / 3f;
+				Gizmos.DrawLine(center, center + face.Normal);
+			}
 			
 			int iteration = 1;
-			while (iteration < maxIterations)
+			for (int i = 0; i < maxIterations; i++)
 			{
-				closestFace = FindClosestFace(PolytopeShared, PolytopeFacesShared);
+				// foreach (var face in PolytopeFaces)
+				// {
+				// 	Gizmos.color = Color.white;
+				// 	Gizmos.DrawLine(Vertices[face.A].Difference, Vertices[face.B].Difference);
+				// 	Gizmos.DrawLine(Vertices[face.B].Difference, Vertices[face.C].Difference);
+				// 	Gizmos.DrawLine(Vertices[face.C].Difference, Vertices[face.A].Difference);
+				// 	Gizmos.color = Color.cyan;
+				// 	Vector3 center = (Vertices[face.A].Difference + Vertices[face.B].Difference + Vertices[face.C].Difference) / 3f;
+				// 	Gizmos.DrawLine(center, center + face.Normal);
+				// }
+				
+				closestFace = FindClosestFace(Faces);
 
-				MinkowskiDifference supportPoint = MinkowskiDifference.Calculate(shapeA, shapeB, closestFace.normal);
+				var searchDirection = closestFace.Face.Normal;
+				MinkowskiDifference supportPoint = MinkowskiDifference.Calculate(shapeA, shapeB, searchDirection);
 
-				float minkowskiDistance = Vector3.Dot(closestFace.normal, supportPoint.Difference);
-				float closestFaceDistance = closestFace.distance;
-
-				if (ApproximatelyEqual(closestFaceDistance, minkowskiDistance, Tolerance))
+				float minkowskiDistance = Vector3.Dot(supportPoint.Difference, searchDirection);
+				if (minkowskiDistance - closestFace.Distance < Tolerance)
 				{
 					break;
 				}
-
-				PolytopeShared.Add(supportPoint.Difference);
-				MinkowskiSharedA.Add(supportPoint.SupportA);
-				MinkowskiSharedB.Add(supportPoint.SupportB);
-				ExpandPolytope(PolytopeShared, PolytopeFacesShared, supportPoint.Difference);
 				
-				iteration += 1;
+				Vertices.Add(supportPoint);
+				
+				ExpandPolytope(supportPoint);
 			}
 			
 			if (iteration >= maxIterations)
@@ -153,152 +156,100 @@ namespace MassiveData.Samples.Physics
 			}
 
 			Vector3 barycentric = Barycentric(
-				PolytopeShared[closestFace.face.A],
-				PolytopeShared[closestFace.face.B],
-				PolytopeShared[closestFace.face.C],
-				closestFace.normal * closestFace.distance);
+				Vertices[closestFace.Face.A].Difference,
+				Vertices[closestFace.Face.B].Difference,
+				Vertices[closestFace.Face.C].Difference,
+				closestFace.Face.Normal * closestFace.Distance);
 
-			Vector3 supportAA = MinkowskiSharedA[closestFace.face.A];
-			Vector3 supportAB = MinkowskiSharedA[closestFace.face.B];
-			Vector3 supportAC = MinkowskiSharedA[closestFace.face.C];
-			Vector3 supportBA = MinkowskiSharedB[closestFace.face.A];
-			Vector3 supportBB = MinkowskiSharedB[closestFace.face.B];
-			Vector3 supportBC = MinkowskiSharedB[closestFace.face.C];
+			Vector3 supportAA = Vertices[closestFace.Face.A].SupportA;
+			Vector3 supportAB = Vertices[closestFace.Face.B].SupportA;
+			Vector3 supportAC = Vertices[closestFace.Face.C].SupportA;
+			Vector3 supportBA = Vertices[closestFace.Face.A].SupportB;
+			Vector3 supportBB = Vertices[closestFace.Face.B].SupportB;
+			Vector3 supportBC = Vertices[closestFace.Face.C].SupportB;
 
 			Vector3 point1 = barycentric.x * supportAA + barycentric.y * supportAB + barycentric.z * supportAC;
 			Vector3 point2 = barycentric.x * supportBA + barycentric.y * supportBB + barycentric.z * supportBC;
 
-			return new Collision(new ContactPoint(point1), new ContactPoint(point2), closestFace.normal, closestFace.distance + Tolerance);
+			return new Collision(new ContactPoint(point1), new ContactPoint(point2), closestFace.Face.Normal, closestFace.Distance + Tolerance);
 		}
 
-		public static void ExpandPolytope(List<Vector3> polytope, List<PolytopeFace> faces, Vector3 extendPoint)
+		public static void ExpandPolytope(MinkowskiDifference supportPoint)
 		{
-			RemovalFacesIndicesShared.Clear();
+			LooseEdges.Clear();
+
+			for (int i = 0; i < Faces.Count; i++)
+			{
+				var face = Faces[i];
+
+				if (Vector3.Dot(face.Normal, supportPoint.Difference - Vertices[face.A].Difference) > NormalBias)
+				{
+					(int a, int b) edgeAB = (face.A, face.B);
+					(int a, int b) edgeBC = (face.B, face.C);
+					(int a, int b) edgeCA = (face.C, face.A);
+
+					RemoveIfExistsOrAdd(LooseEdges, edgeAB);
+					RemoveIfExistsOrAdd(LooseEdges, edgeBC);
+					RemoveIfExistsOrAdd(LooseEdges, edgeCA);
+
+					Faces.RemoveAt(i);
+					i -= 1;
+				}
+			}
+
+			Vector3 centroid = CalculateCentroid();
+			int c = Vertices.Count - 1;
+			foreach ((int a, int b) in LooseEdges)
+			{
+				var face = new PolytopeFace(a, b, c, CalculateFaceNormal(Vertices[a].Difference, Vertices[b].Difference, Vertices[c].Difference));
+				face.FixNormalIfIncorrect(centroid);
+				Faces.Add(face);
+			}
+		}
+
+		public static (float Distance, PolytopeFace Face) FindClosestFace(List<PolytopeFace> faces)
+		{
+			(float Distance, PolytopeFace Face) closest = (Distance: float.MaxValue, default);
 
 			for (int i = 0; i < faces.Count; i++)
 			{
 				var face = faces[i];
+				var distance = Vector3.Dot(Vertices[face.A].Difference, face.Normal);
 
-				var ab = polytope[face.B] - polytope[face.A];
-				var ac = polytope[face.C] - polytope[face.A];
-				var normal = Vector3.Normalize(Vector3.Cross(ab, ac));
-
-				if (Vector3.Dot(polytope[face.A], normal) < -Tolerance)
+				if (distance < closest.Distance)
 				{
-					normal = -normal;
-				}
-
-				if (Vector3.Dot(normal, extendPoint - polytope[face.A]) > Tolerance)
-				{
-					RemovalFacesIndicesShared.Add(i);
-				}
-			}
-
-			// Get the edges that are not shared between the faces that should be removed
-			RemovalEdgesShared.Clear();
-			foreach (int removalFaceIndex in RemovalFacesIndicesShared)
-			{
-				var face = faces[removalFaceIndex];
-				(int a, int b) edgeAB = (face.A, face.B);
-				(int a, int b) edgeAC = (face.A, face.C);
-				(int a, int b) edgeBC = (face.B, face.C);
-
-				AddOrDeleteEdge(RemovalEdgesShared, edgeAB);
-				AddOrDeleteEdge(RemovalEdgesShared, edgeAC);
-				AddOrDeleteEdge(RemovalEdgesShared, edgeBC);
-			}
-
-			// Remove the faces from the polytope
-			for (int i = RemovalFacesIndicesShared.Count - 1; i >= 0; i--)
-			{
-				int index = RemovalFacesIndicesShared[i];
-				faces.RemoveAt(index);
-			}
-
-			// Form new faces with the edges and new point
-			Vector3 center = PolytopeCenter(polytope);
-			foreach ((int a, int b) in RemovalEdgesShared)
-			{
-				var fixedFace = FixFaceNormal(new PolytopeFace(a, b, polytope.Count - 1), polytope, center);
-
-				faces.Add(fixedFace);
-			}
-		}
-
-		public static (int index, float distance, Vector3 normal, PolytopeFace face) FindClosestFace(
-			List<Vector3> polytope, List<PolytopeFace> faces)
-		{
-			(int index, float distance, Vector3 normal, PolytopeFace face) closest = (-1, float.MaxValue,
-				default, default);
-
-			for (int i = 0; i < faces.Count; i++)
-			{
-				var face = faces[i];
-
-				var ab = polytope[face.B] - polytope[face.A];
-				var ac = polytope[face.C] - polytope[face.A];
-
-				var normal = Vector3.Normalize(Vector3.Cross(ab, ac));
-				var distance = Vector3.Dot(polytope[face.A], normal);
-
-				if (distance < -Tolerance)
-				{
-					normal = -normal;
-					distance = -distance;
-				}
-
-				if (distance < closest.distance)
-				{
-					closest = (i, distance, normal, face);
+					closest = (distance, face);
 				}
 			}
 
 			return closest;
 		}
 
-		public static void FixNormals(List<Vector3> polytope, List<PolytopeFace> faces)
+		private static Vector3 CalculateFaceNormal(Vector3 a, Vector3 b, Vector3 c)
 		{
-			Vector3 center = PolytopeCenter(polytope);
-
-			for (int i = 0; i < faces.Count; i++)
-			{
-				faces[i] = FixFaceNormal(faces[i], polytope, center);
-			}
+			var ab = b - a;
+			var ac = c - a;
+			return Vector3.Normalize(Vector3.Cross(ab, ac));
 		}
 
-		private static PolytopeFace FixFaceNormal(PolytopeFace face, List<Vector3> polytope, Vector3 center)
-		{
-			var ab = polytope[face.B] - polytope[face.A];
-			var ac = polytope[face.C] - polytope[face.A];
-
-			var normal = Vector3.Normalize(Vector3.Cross(ab, ac));
-
-			if (Vector3.Dot(-center, normal) < 0f)
-			{
-				return new PolytopeFace(face.A, face.C, face.B);
-			}
-
-			return face;
-		}
-
-		private static Vector3 PolytopeCenter(List<Vector3> polytope)
+		private static Vector3 CalculateCentroid()
 		{
 			Vector3 center = Vector3.zero;
-			foreach (var vertex in polytope)
-				center += vertex;
-			center /= polytope.Count;
+			foreach (var vertex in Vertices)
+				center += vertex.Difference;
+			center /= Vertices.Count;
 			return center;
 		}
 
-		public static void AddOrDeleteEdge(List<(int a, int b)> edges, (int a, int b) edge)
+		public static void RemoveIfExistsOrAdd<T>(List<(T a, T b)> edges, (T a, T b) edge) where T : IEquatable<T>
 		{
 			int edgeIndex = -1;
 
 			for (int index = 0; index < edges.Count; index++)
 			{
-				(int a, int b) pair = edges[index];
+				(T a, T b) pair = edges[index];
 
-				if (pair.a == edge.a && pair.b == edge.b || pair.a == edge.b && pair.b == edge.a)
+				if (pair.a.Equals(edge.a) && pair.b.Equals(edge.b) || pair.a.Equals(edge.b) && pair.b.Equals(edge.a))
 				{
 					edgeIndex = index;
 					break;
