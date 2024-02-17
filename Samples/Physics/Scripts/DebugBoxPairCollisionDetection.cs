@@ -41,10 +41,9 @@ namespace MassiveData.Samples.Physics
 				var epaResult = EpaAlgorithm.Calculate(gjkResult.Simplex, firstBox, secondBox);
 
 				Gizmos.color = Color.red;
-				Gizmos.DrawSphere((epaResult.ContactFirst.Position + epaResult.ContactSecond.Position) / 2f, 0.1f);
+				Gizmos.DrawSphere(epaResult.ContactFirst.Position, 0.1f);
 				Gizmos.color = Color.yellow;
-				Gizmos.DrawLine((epaResult.ContactFirst.Position + epaResult.ContactSecond.Position) / 2f,
-					(epaResult.ContactFirst.Position + epaResult.ContactSecond.Position) / 2f + epaResult.PenetrationNormal * epaResult.PenetrationDepth);
+				Gizmos.DrawLine(epaResult.ContactFirst.Position, epaResult.ContactFirst.Position + epaResult.PenetrationNormal * epaResult.PenetrationDepth);
 			}
 		}
 	}

@@ -74,15 +74,6 @@ namespace MassiveData.Samples.Physics
 			public int B;
 			public int C;
 			public Vector3 Normal;
-
-			public void FixNormalIfIncorrect(Vector3 centroid)
-			{
-				if (Vector3.Dot(-centroid, Normal) < -NormalBias)
-				{
-					(A, B) = (B, A);
-					Normal = -Normal;
-				}
-			}
 		}
 
 		public static bool ApproximatelyEqual(float a, float b, float epsilon)
@@ -108,32 +99,10 @@ namespace MassiveData.Samples.Physics
 			Faces.Add(new PolytopeFace(1, 3, 2, CalculateFaceNormal(simplex.B.Difference, simplex.D.Difference, simplex.C.Difference)));
 
 			(float Distance, PolytopeFace Face) closestFace = default;
-			
-			foreach (var face in Faces)
-			{
-				Gizmos.color = Color.white;
-				Gizmos.DrawLine(Vertices[face.A].Difference, Vertices[face.B].Difference);
-				Gizmos.DrawLine(Vertices[face.B].Difference, Vertices[face.C].Difference);
-				Gizmos.DrawLine(Vertices[face.C].Difference, Vertices[face.A].Difference);
-				Gizmos.color = Color.cyan;
-				Vector3 center = (Vertices[face.A].Difference + Vertices[face.B].Difference + Vertices[face.C].Difference) / 3f;
-				Gizmos.DrawLine(center, center + face.Normal);
-			}
-			
+
 			int iteration = 1;
 			for (int i = 0; i < maxIterations; i++)
 			{
-				// foreach (var face in PolytopeFaces)
-				// {
-				// 	Gizmos.color = Color.white;
-				// 	Gizmos.DrawLine(Vertices[face.A].Difference, Vertices[face.B].Difference);
-				// 	Gizmos.DrawLine(Vertices[face.B].Difference, Vertices[face.C].Difference);
-				// 	Gizmos.DrawLine(Vertices[face.C].Difference, Vertices[face.A].Difference);
-				// 	Gizmos.color = Color.cyan;
-				// 	Vector3 center = (Vertices[face.A].Difference + Vertices[face.B].Difference + Vertices[face.C].Difference) / 3f;
-				// 	Gizmos.DrawLine(center, center + face.Normal);
-				// }
-				
 				closestFace = FindClosestFace(Faces);
 
 				var searchDirection = closestFace.Face.Normal;
@@ -154,7 +123,7 @@ namespace MassiveData.Samples.Physics
 			{
 				throw new Exception();
 			}
-
+			
 			Vector3 barycentric = Barycentric(
 				Vertices[closestFace.Face.A].Difference,
 				Vertices[closestFace.Face.B].Difference,
@@ -197,12 +166,21 @@ namespace MassiveData.Samples.Physics
 				}
 			}
 
-			Vector3 centroid = CalculateCentroid();
 			int c = Vertices.Count - 1;
 			foreach ((int a, int b) in LooseEdges)
 			{
-				var face = new PolytopeFace(a, b, c, CalculateFaceNormal(Vertices[a].Difference, Vertices[b].Difference, Vertices[c].Difference));
-				face.FixNormalIfIncorrect(centroid);
+				var vA = Vertices[a].Difference;
+				var vB = Vertices[b].Difference;
+				var vC = Vertices[c].Difference;
+				
+				var face = new PolytopeFace(a, b, c, Vector3.Normalize(Vector3.Cross(vA - vB, vA - vC)));
+				
+				if (Vector3.Dot(vA, face.Normal) < -NormalBias)
+				{
+					(face.A, face.B) = (face.B, face.A);
+					face.Normal = -face.Normal;
+				}
+				
 				Faces.Add(face);
 			}
 		}
@@ -249,7 +227,7 @@ namespace MassiveData.Samples.Physics
 			{
 				(T a, T b) pair = edges[index];
 
-				if (pair.a.Equals(edge.a) && pair.b.Equals(edge.b) || pair.a.Equals(edge.b) && pair.b.Equals(edge.a))
+				if (pair.a.Equals(edge.b) && pair.b.Equals(edge.a))
 				{
 					edgeIndex = index;
 					break;
