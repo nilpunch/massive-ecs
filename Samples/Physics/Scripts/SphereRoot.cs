@@ -1,5 +1,4 @@
-﻿using System;
-using MassiveData.Samples.Shooter;
+﻿using MassiveData.Samples.Shooter;
 
 namespace MassiveData.Samples.Physics
 {

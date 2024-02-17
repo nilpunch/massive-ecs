@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-namespace MassiveData.Samples.Shooter
+﻿namespace MassiveData.Samples.Shooter
 {
 	public class BulletsUpdater : WorldUpdater
 	{

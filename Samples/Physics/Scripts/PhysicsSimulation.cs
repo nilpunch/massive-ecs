@@ -1,8 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using MassiveData.Samples.Shooter;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace MassiveData.Samples.Physics
 {
