@@ -11,12 +11,14 @@ namespace MassiveData
 		// Saved frames
 		private readonly int[] _denseByFrames;
 		private readonly int[] _sparseByFrames;
+		private readonly int[] _maxDenseByFrames;
 		private readonly int[] _maxIdByFrames;
 		private readonly int[] _aliveCountByFrames;
 
 		// Current frame
 		private readonly int[] _currentDense;
 		private readonly int[] _currentSparse;
+		private int _currentMaxDense;
 		private int _currentMaxId;
 		private int _currentAliveCount;
 
@@ -31,6 +33,7 @@ namespace MassiveData
 			DataCapacity = dataCapacity;
 			_denseByFrames = new int[FramesCapacity * dataCapacity];
 			_sparseByFrames = new int[FramesCapacity * dataCapacity];
+			_maxDenseByFrames = new int[FramesCapacity];
 			_maxIdByFrames = new int[FramesCapacity];
 			_aliveCountByFrames = new int[FramesCapacity];
 
@@ -41,9 +44,6 @@ namespace MassiveData
 		public int FramesCapacity { get; }
 		public int DataCapacity { get; }
 
-		public Span<int> Dense => new Span<int>(_denseByFrames, 0, _currentAliveCount);
-		public Span<int> Sparse => new Span<int>(_sparseByFrames, 0, _currentAliveCount);
-
 		public int AliveCount => _currentAliveCount;
 
 		// One frame is reserved for restoring
@@ -52,19 +52,20 @@ namespace MassiveData
 		public MassiveSaveInfo SaveFrame()
 		{
 			int nextFrame = Loop(_currentFrame + 1, FramesCapacity);
-			int currentAliveCount = _currentAliveCount;
+			int currentMaxDense = _currentMaxDense;
 			int currentMaxId = _currentMaxId;
+			int currentAliveCount = _currentAliveCount;
 
 			int nextFrameIndex = nextFrame * DataCapacity;
 
 			// Copy everything from current frame
-			Array.Copy(_currentDense, 0, _denseByFrames, nextFrameIndex, currentMaxId);
+			Array.Copy(_currentDense, 0, _denseByFrames, nextFrameIndex, currentMaxDense);
 			Array.Copy(_currentSparse, 0, _sparseByFrames, nextFrameIndex, currentMaxId);
-			_aliveCountByFrames[nextFrame] = currentAliveCount;
+			_maxDenseByFrames[nextFrame] = currentMaxDense;
 			_maxIdByFrames[nextFrame] = currentMaxId;
+			_aliveCountByFrames[nextFrame] = currentAliveCount;
 
 			_currentFrame = nextFrame;
-
 			_savedFrames = Math.Min(_savedFrames + 1, FramesCapacity);
 
 			return new MassiveSaveInfo()
@@ -85,15 +86,18 @@ namespace MassiveData
 			_currentFrame = LoopNegative(_currentFrame - frames, FramesCapacity);
 
 			// Copy everything from rollback frame to current
-			int rollbackAliveCount = _aliveCountByFrames[_currentFrame];
+			int rollbackMaxDense = _maxDenseByFrames[_currentFrame];
 			int rollbackMaxId = _maxIdByFrames[_currentFrame];
+			int rollbackAliveCount = _aliveCountByFrames[_currentFrame];
+
 			int rollbackFrameIndex = _currentFrame * DataCapacity;
 
 			// Copy _currentMaxId elements to ensure zeroing excess elements
-			Array.Copy(_denseByFrames, rollbackFrameIndex, _currentDense, 0, _currentMaxId);
+			Array.Copy(_denseByFrames, rollbackFrameIndex, _currentDense, 0, _currentMaxDense);
 			Array.Copy(_sparseByFrames, rollbackFrameIndex, _currentSparse, 0, _currentMaxId);
-			_currentAliveCount = rollbackAliveCount;
+			_currentMaxDense = rollbackMaxDense;
 			_currentMaxId = rollbackMaxId;
+			_currentAliveCount = rollbackAliveCount;
 
 			return new MassiveRollbackInfo()
 			{
@@ -102,10 +106,53 @@ namespace MassiveData
 			};
 		}
 
+		public MassiveCreateInfo Ensure(int id)
+		{
+			if (id >= DataCapacity)
+			{
+				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {DataCapacity}.");
+			}
+
+			int count = _currentAliveCount;
+			int dense = _currentSparse[id];
+
+			if (dense < _currentMaxDense)
+			{
+				if (dense < _currentAliveCount && _currentDense[dense] == id)
+				{
+					return new MassiveCreateInfo() { Id = id, Dense = dense };
+				}
+
+				SwapDense(dense, count);
+				_currentAliveCount += 1;
+				return new MassiveCreateInfo() { Id = id, Dense = count };
+			}
+
+			GrowDense();
+			_currentAliveCount += 1;
+
+			if (id >= _currentMaxId)
+			{
+				_currentMaxId = id + 1;
+			}
+
+			// If there are unused elements in the dense,
+			// Move the first unused element to the end
+			int lastDenseIndex = _currentMaxDense - 1;
+			if (count < lastDenseIndex)
+			{
+				int unusedId = _currentDense[count];
+				AssignIndex(unusedId, lastDenseIndex);
+			}
+
+			AssignIndex(id, count);
+
+			return new MassiveCreateInfo() { Id = id, Dense = count };
+		}
+
 		public MassiveCreateInfo Create()
 		{
 			int count = _currentAliveCount;
-			int maxId = _currentMaxId;
 
 			if (count == DataCapacity)
 			{
@@ -113,18 +160,16 @@ namespace MassiveData
 			}
 
 			// If there are unused elements in the dense array, return last
-			if (count < maxId)
+			if (count < _currentMaxDense)
 			{
 				_currentAliveCount += 1;
 				return new MassiveCreateInfo() { Id = _currentDense[count], Dense = count };
 			}
 
 			_currentAliveCount += 1;
-			_currentMaxId += 1;
 
-			_currentDense[count] = maxId;
-			_currentSparse[maxId] = count;
-			return new MassiveCreateInfo() { Id = maxId, Dense = count };
+			var id = CreateIdForDense(count);
+			return new MassiveCreateInfo() { Id = id, Dense = count };
 		}
 
 		public MassiveDeleteInfo Delete(int id)
@@ -147,12 +192,7 @@ namespace MassiveData
 			_currentAliveCount -= 1;
 
 			int swapDenseIndex = aliveCount - 1;
-			int swapId = _currentDense[swapDenseIndex];
-
-			_currentDense[denseIndex] = swapId;
-			_currentSparse[id] = swapDenseIndex;
-			_currentDense[swapDenseIndex] = id;
-			_currentSparse[swapId] = denseIndex;
+			SwapDense(denseIndex, swapDenseIndex);
 
 			return new MassiveDeleteInfo() { DenseSwapTarget = denseIndex, DenseSwapSource = swapDenseIndex };
 		}
@@ -175,16 +215,36 @@ namespace MassiveData
 
 			_currentAliveCount -= 1;
 
-			int deleteId = _currentDense[denseIndex];
 			int swapDenseIndex = aliveCount - 1;
-			int swapId = _currentDense[swapDenseIndex];
-
-			_currentDense[denseIndex] = swapId;
-			_currentSparse[deleteId] = swapDenseIndex;
-			_currentDense[swapDenseIndex] = deleteId;
-			_currentSparse[swapId] = denseIndex;
+			SwapDense(denseIndex, swapDenseIndex);
 
 			return new MassiveDeleteInfo() { DenseSwapTarget = denseIndex, DenseSwapSource = swapDenseIndex };
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private int CreateIdForDense(int dense)
+		{
+			int id = _currentMaxId;
+			_currentMaxId += 1;
+			GrowDense();
+			AssignIndex(id, dense);
+			return id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void GrowDense()
+		{
+			_currentDense[_currentMaxDense] = _currentMaxDense;
+			_currentMaxDense += 1;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void SwapDense(int denseA, int denseB)
+		{
+			int idA = _currentDense[denseA];
+			int idB = _currentDense[denseB];
+			AssignIndex(idA, denseB);
+			AssignIndex(idB, denseA);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -202,6 +262,19 @@ namespace MassiveData
 			int denseIndex = _currentSparse[id];
 
 			return denseIndex < _currentAliveCount && _currentDense[denseIndex] == id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsAliveDense(int dense)
+		{
+			return dense < _currentAliveCount;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void AssignIndex(int id, int dense)
+		{
+			_currentSparse[id] = dense;
+			_currentDense[dense] = id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
