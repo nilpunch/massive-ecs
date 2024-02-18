@@ -7,35 +7,36 @@ namespace MassiveData.Samples.Physics
 	{
 		public readonly int RigidbodyId;
 
+		public PhysicMaterial Material;
+		public Transformation Local;
+		public Transformation World;
+		
 		public float Radius;
 
-		public Vector3 LocalPosition;
-		public Quaternion LocalRotation;
-		
-		public Vector3 WorldPosition;
-		public Quaternion WorldRotation;
-
-		public SphereCollider(int rigidbodyId, float radius, Vector3 localPosition, Quaternion localRotation)
+		public SphereCollider(int rigidbodyId, float radius, Transformation local, PhysicMaterial material)
 		{
 			RigidbodyId = rigidbodyId;
 			Radius = radius;
 			
-			LocalPosition = localPosition;
-			LocalRotation = localRotation;
-			WorldPosition = Vector3.zero;
-			WorldRotation = Quaternion.identity;
+			Material = material;
+			Local = local;
+			World = local;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector3 TransformFromLocalToWorld(Vector3 localPosition)
+		public float Mass()
 		{
-			return WorldPosition + localPosition;
+			float volume = 4f / 3f * Mathf.PI * Radius * Radius * Radius;
+			return Material.Density * volume;
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Matrix4x4 CalculateLocalMoi(float mass)
+		public Matrix4x4 LocalInertiaTensor()
 		{
-			float i = (2f / 5f) * mass * Radius * Radius;
+			float volume = 4f / 3f * Mathf.PI * Radius * Radius * Radius;
+			float mass = Material.Density * volume;
+			
+			float i = 2f / 5f * mass * Radius * Radius;
 
 			Matrix4x4 inertiaTensor = new Matrix4x4();
 			inertiaTensor.SetRow(0, new Vector4(i, 0f, 0f, 0f));
@@ -43,7 +44,7 @@ namespace MassiveData.Samples.Physics
 			inertiaTensor.SetRow(2, new Vector4(0f, 0f, i, 0f));
 			inertiaTensor.SetRow(3, new Vector4(0f, 0f, 0f, 1f)); // The last row is not used for MOI calculations
 			
-			return Rigidbody.TransformMoi(inertiaTensor, LocalPosition, Quaternion.identity, mass);
+			return Rigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Quaternion.identity, mass);
 		}
 		
 		public static void UpdateWorldPositions(Massive<Rigidbody> bodies, Massive<SphereCollider> colliders)
@@ -52,9 +53,7 @@ namespace MassiveData.Samples.Physics
 			for (int i = 0; i < aliveColliders.Length; i++)
 			{
 				ref var collider = ref aliveColliders[i];
-				var body = bodies.Get(collider.RigidbodyId);
-				collider.WorldPosition = body.GetWorldCenterOfMass() + body.Rotation * collider.LocalPosition;
-				collider.WorldRotation = body.Rotation * collider.LocalRotation;
+				collider.World = collider.Local.LocalToWorld(bodies.Get(collider.RigidbodyId).WorldCenterOfMass);
 			}
 		}
 	}

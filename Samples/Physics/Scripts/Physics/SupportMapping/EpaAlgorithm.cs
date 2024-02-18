@@ -62,12 +62,29 @@ namespace MassiveData.Samples.Physics
 
 		public struct PolytopeFace
 		{
-			public PolytopeFace(int a, int b, int c, Vector3 normal)
+			public PolytopeFace(int a, int b, int c, Vector3 centroid)
 			{
 				A = a;
 				B = b;
 				C = c;
-				Normal = normal;
+				
+				Vector3 vA = Vertices[A].Difference;
+				Vector3 vB = Vertices[B].Difference;
+				Vector3 vC = Vertices[C].Difference;
+				Vector3 center = (vA + vB + vC) / 3f;
+				
+				Vector3 direction = center - centroid;
+				Vector3 normal = CalculateFaceNormal(vA, vB, vC);
+				
+				if (Vector3.Dot(direction, normal) < 0f)
+				{
+					(B, C) = (C, B);
+					Normal = -normal;
+				}
+				else
+				{
+					Normal = normal;
+				}
 			}
 
 			public int A;
@@ -93,10 +110,12 @@ namespace MassiveData.Samples.Physics
 			Vertices.Add(simplex.C);
 			Vertices.Add(simplex.D);
 			
-			Faces.Add(new PolytopeFace(0, 1, 2, CalculateFaceNormal(simplex.A.Difference, simplex.B.Difference, simplex.C.Difference)));
-			Faces.Add(new PolytopeFace(0, 2, 3, CalculateFaceNormal(simplex.A.Difference, simplex.C.Difference, simplex.D.Difference)));
-			Faces.Add(new PolytopeFace(0, 3, 1, CalculateFaceNormal(simplex.A.Difference, simplex.D.Difference, simplex.B.Difference)));
-			Faces.Add(new PolytopeFace(1, 3, 2, CalculateFaceNormal(simplex.B.Difference, simplex.D.Difference, simplex.C.Difference)));
+			var centroid = CalculateCentroid();
+
+			Faces.Add(new PolytopeFace(0, 1, 2, centroid));
+			Faces.Add(new PolytopeFace(0, 2, 3, centroid));
+			Faces.Add(new PolytopeFace(0, 3, 1, centroid));
+			Faces.Add(new PolytopeFace(1, 3, 2, centroid));
 
 			(float Distance, PolytopeFace Face) closestFace = default;
 
@@ -116,13 +135,24 @@ namespace MassiveData.Samples.Physics
 				
 				Vertices.Add(supportPoint);
 				
-				ExpandPolytope(supportPoint);
+				ExpandPolytope(supportPoint, centroid);
 			}
 			
-			if (iteration >= maxIterations)
-			{
-				throw new Exception();
-			}
+			// foreach (var face in Faces)
+			// {
+			// 	Gizmos.color = Color.white;
+			// 	Gizmos.DrawLine(Vertices[face.A].Difference, Vertices[face.B].Difference);
+			// 	Gizmos.DrawLine(Vertices[face.B].Difference, Vertices[face.C].Difference);
+			// 	Gizmos.DrawLine(Vertices[face.C].Difference, Vertices[face.A].Difference);
+			// 	Gizmos.color = Color.cyan;
+			// 	Vector3 center = (Vertices[face.A].Difference + Vertices[face.B].Difference + Vertices[face.C].Difference) / 3f;
+			// 	Gizmos.DrawLine(center, center + face.Normal);
+			// }
+			
+			// if (iteration >= maxIterations)
+			// {
+			// 	throw new Exception();
+			// }
 			
 			Vector3 barycentric = Barycentric(
 				Vertices[closestFace.Face.A].Difference,
@@ -143,7 +173,7 @@ namespace MassiveData.Samples.Physics
 			return new Collision(new ContactPoint(point1), new ContactPoint(point2), closestFace.Face.Normal, closestFace.Distance + Tolerance);
 		}
 
-		public static void ExpandPolytope(MinkowskiDifference supportPoint)
+		public static void ExpandPolytope(MinkowskiDifference supportPoint, Vector3 centroid)
 		{
 			LooseEdges.Clear();
 
@@ -151,7 +181,7 @@ namespace MassiveData.Samples.Physics
 			{
 				var face = Faces[i];
 
-				if (Vector3.Dot(face.Normal, supportPoint.Difference - Vertices[face.A].Difference) > NormalBias)
+				if (Vector3.Dot(face.Normal, supportPoint.Difference - Vertices[face.A].Difference) > 0f)
 				{
 					(int a, int b) edgeAB = (face.A, face.B);
 					(int a, int b) edgeBC = (face.B, face.C);
@@ -169,18 +199,7 @@ namespace MassiveData.Samples.Physics
 			int c = Vertices.Count - 1;
 			foreach ((int a, int b) in LooseEdges)
 			{
-				var vA = Vertices[a].Difference;
-				var vB = Vertices[b].Difference;
-				var vC = Vertices[c].Difference;
-				
-				var face = new PolytopeFace(a, b, c, Vector3.Normalize(Vector3.Cross(vA - vB, vA - vC)));
-				
-				if (Vector3.Dot(vA, face.Normal) < -NormalBias)
-				{
-					(face.A, face.B) = (face.B, face.A);
-					face.Normal = -face.Normal;
-				}
-				
+				var face = new PolytopeFace(a, b, c, centroid);
 				Faces.Add(face);
 			}
 		}
@@ -205,9 +224,7 @@ namespace MassiveData.Samples.Physics
 
 		private static Vector3 CalculateFaceNormal(Vector3 a, Vector3 b, Vector3 c)
 		{
-			var ab = b - a;
-			var ac = c - a;
-			return Vector3.Normalize(Vector3.Cross(ab, ac));
+			return Vector3.Normalize(Vector3.Cross(b - a, c - a));
 		}
 
 		private static Vector3 CalculateCentroid()

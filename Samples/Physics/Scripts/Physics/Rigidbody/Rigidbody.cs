@@ -5,48 +5,21 @@ namespace MassiveData.Samples.Physics
 {
 	public struct Rigidbody
 	{
-		public Vector3 Position;
+		public Transformation WorldCenterOfMass;
+		
 		public Vector3 Velocity;
 		public Vector3 Forces;
 
-		public Quaternion Rotation;
 		public Vector3 AngularVelocity;
 		public Vector3 Torques;
 
-		public Vector3 CenterOfMass;
 		public Matrix4x4 LocalInertiaTensor;
 		public Matrix4x4 InverseWorldInertiaTensor;
 		public float InverseMass;
 		public float Mass;
-		public float Restitution;
-		public float Friction;
 
 		public bool IsStatic;
-
-		private int CollidersAmount;
 		
-		public Rigidbody(Vector3 position, Quaternion rotation, float mass, float restitution = 1f, float friction = 1f, bool isStatic = false)
-		{
-			CenterOfMass = default;
-			Mass = mass;
-			Restitution = restitution;
-			Friction = friction;
-			IsStatic = isStatic;
-
-			Position = position;
-			Rotation = rotation;
-			Velocity = default;
-			Forces = default;
-
-			InverseMass = default;
-			AngularVelocity = default;
-			Torques = default;
-			LocalInertiaTensor = default;
-			InverseWorldInertiaTensor = default;
-			CollidersAmount = 0;
-		}
-
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Integrate(float deltaTime)
 		{
@@ -59,12 +32,12 @@ namespace MassiveData.Samples.Physics
 			
 			// Linear motion integration
 			Velocity += deltaTime * InverseMass * Forces;
-			Position += deltaTime * Velocity;
+			WorldCenterOfMass.Position += deltaTime * Velocity;
 			Forces = Vector3.zero;
 			
 			// Angular motion integration
 			AngularVelocity += deltaTime * InverseWorldInertiaTensor.MultiplyPoint3x4(Torques);
-			Rotation = Quaternion.Euler(deltaTime * Mathf.Rad2Deg * AngularVelocity) * Rotation;
+			WorldCenterOfMass.Rotation = Quaternion.Euler(deltaTime * Mathf.Rad2Deg * AngularVelocity) * WorldCenterOfMass.Rotation;
 			Torques = Vector3.zero;
 		}
 
@@ -77,7 +50,7 @@ namespace MassiveData.Samples.Physics
 				Velocity += impulse * InverseMass;
 
 				// Calculate the lever arm from the center of mass to the point of application
-				Vector3 leverArm = position - GetWorldCenterOfMass();
+				Vector3 leverArm = position - WorldCenterOfMass.Position;
 
 				// Calculate the angular impulse using the cross product between the lever arm and the impulse
 				Vector3 angularImpulse = Vector3.Cross(leverArm, impulse);
@@ -94,23 +67,16 @@ namespace MassiveData.Samples.Physics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void UpdateWorldInertia()
+		public void UpdateWorldInertiaTensor()
 		{
-			InverseMass = 1f / Mass;
-			var rotation = Matrix4x4.Rotate(Rotation);
+			var rotation = Matrix4x4.Rotate(WorldCenterOfMass.Rotation);
 			InverseWorldInertiaTensor = Matrix4x4.Inverse(rotation * LocalInertiaTensor * rotation.transpose);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Vector3 GetVelocityAtPoint(Vector3 point)
 		{
-			return Velocity + Vector3.Cross(AngularVelocity, point - GetWorldCenterOfMass());
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Vector3 GetWorldCenterOfMass()
-		{
-			return Position + Rotation * CenterOfMass;
+			return Velocity + Vector3.Cross(AngularVelocity, point - WorldCenterOfMass.Position);
 		}
 
 		public static void IntegrateAll(Massive<Rigidbody> bodies, float deltaTime)
@@ -127,11 +93,11 @@ namespace MassiveData.Samples.Physics
 			var bodiesAlive = bodies.AliveData;
 			for (int i = 0; i < bodiesAlive.Length; i++)
 			{
-				bodiesAlive[i].UpdateWorldInertia();
+				bodiesAlive[i].UpdateWorldInertiaTensor();
 			}
 		}
 
-		public static void UpdateAllLocalInertiaTensor(Massive<Rigidbody> bodies, Massive<BoxCollider> boxes, Massive<SphereCollider> spheres)
+		public static void RecalculateAllInertia(Massive<Rigidbody> bodies, Massive<BoxCollider> boxes, Massive<SphereCollider> spheres)
 		{
 			var bodiesAlive = bodies.AliveData;
 			var boxesAlive = boxes.AliveData;
@@ -139,32 +105,30 @@ namespace MassiveData.Samples.Physics
 
 			for (int i = 0; i < bodiesAlive.Length; i++)
 			{
-				bodiesAlive[i].CollidersAmount = 0;
+				bodiesAlive[i].Mass = 0f;
 				bodiesAlive[i].LocalInertiaTensor = Matrix4x4.zero;
 			}
 
 			foreach (var box in boxesAlive)
 			{
-				bodies.Get(box.RigidbodyId).CollidersAmount += 1;
-			}
-			foreach (var sphere in spheresAlive)
-			{
-				bodies.Get(sphere.RigidbodyId).CollidersAmount += 1;
-			}
-			
-			foreach (var box in boxesAlive)
-			{
 				ref var body = ref bodies.Get(box.RigidbodyId);
-				body.LocalInertiaTensor = CombineInertiaTensor(body.LocalInertiaTensor, box.CalculateLocalMoi(body.Mass / body.CollidersAmount));
+				body.LocalInertiaTensor = CombineInertiaTensor(body.LocalInertiaTensor, box.LocalInertiaTensor());
+				body.Mass = box.Mass();
 			}
 			foreach (var sphere in spheresAlive)
 			{
 				ref var body = ref bodies.Get(sphere.RigidbodyId);
-				body.LocalInertiaTensor = CombineInertiaTensor(body.LocalInertiaTensor, sphere.CalculateLocalMoi(body.Mass / body.CollidersAmount));
+				body.LocalInertiaTensor = CombineInertiaTensor(body.LocalInertiaTensor, sphere.LocalInertiaTensor());
+				body.Mass = sphere.Mass();
+			}
+			
+			for (int i = 0; i < bodiesAlive.Length; i++)
+			{
+				bodiesAlive[i].InverseMass = 1f / bodiesAlive[i].Mass;
 			}
 		}
 
-		public static Matrix4x4 TransformMoi(Matrix4x4 moi, Vector3 offsetFromCenterOfMass, Quaternion localRotation, float mass)
+		public static Matrix4x4 TransformInertiaTensor(Matrix4x4 moi, Vector3 offsetFromCenterOfMass, Quaternion localRotation, float mass)
 		{
 			var rotation = Matrix4x4.Rotate(localRotation);
 

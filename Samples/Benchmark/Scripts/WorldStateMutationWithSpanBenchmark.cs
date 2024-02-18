@@ -21,15 +21,11 @@ namespace MassiveData.Samples.Benchmark
 		protected override void Sample()
 		{
 			var states = _massive.AliveData;
-			var ids = _massive.Sparse;
-			for (var i = 0; i < _massive.AliveCount; i++)
+			for (var i = 0; i < states.Length; i++)
 			{
-				if (_massive.IsAlive(ids[i]))
-				{
-					ref var state = ref states[i];
-					state.Value += 1;
-					state.Data1 *= Quaternion.identity;
-				}
+				ref var state = ref states[i];
+				state.Value += 1;
+				state.Data1 *= Quaternion.identity;
 			}
 		}
 	}

@@ -7,24 +7,23 @@ namespace MassiveData.Samples.Physics
 		[SerializeField] private Vector3 _firstSize;
 		[SerializeField] private Vector3 _secondSize;
 		[Space]
-		[SerializeField] private Transform _firstTransform;
-		[SerializeField] private Transform _secondTransform;
+		[SerializeField] private UnityEngine.Transform _firstTransform;
+		[SerializeField] private UnityEngine.Transform _secondTransform;
+		[SerializeField, Range(0, 24)] private int _iterations = 0;
 
 		private void OnDrawGizmos()
 		{
 			if (_firstTransform == null || _secondTransform == null)
 				return;
 
-			BoxCollider firstBox = new BoxCollider(0, _firstSize, Vector3.zero, Quaternion.identity)
+			BoxCollider firstBox = new BoxCollider(0, _firstSize, new Transformation(), new PhysicMaterial())
 			{
-				WorldPosition = _firstTransform.position,
-				WorldRotation = _firstTransform.rotation,
+				World = new Transformation(_firstTransform.position, _firstTransform.rotation)
 			};
 
-			BoxCollider secondBox = new BoxCollider(0, _secondSize, Vector3.zero, Quaternion.identity)
+			BoxCollider secondBox = new BoxCollider(0, _secondSize, new Transformation(), new PhysicMaterial())
 			{
-				WorldPosition = _secondTransform.position,
-				WorldRotation = _secondTransform.rotation,
+				World = new Transformation(_secondTransform.position, _secondTransform.rotation)
 			};
 
 			var orig = Gizmos.matrix;
@@ -38,7 +37,7 @@ namespace MassiveData.Samples.Physics
 
 			if (gjkResult.CollisionHappened)
 			{
-				var epaResult = EpaAlgorithm.Calculate(gjkResult.Simplex, firstBox, secondBox);
+				var epaResult = EpaAlgorithm.Calculate(gjkResult.Simplex, firstBox, secondBox, _iterations);
 
 				Gizmos.color = Color.red;
 				Gizmos.DrawSphere(epaResult.ContactFirst.Position, 0.1f);

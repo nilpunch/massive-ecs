@@ -4,6 +4,22 @@ using UnityEngine;
 
 namespace MassiveData.Samples.Physics
 {
+	public class PhysicsWorld
+	{
+		public Massive<SphereCollider> Spheres { get; }
+		public Massive<BoxCollider> Boxes { get; }
+		public Massive<Rigidbody> Bodies { get; }
+		public Massive<Contact> Contacts { get; }
+
+		public PhysicsWorld(int framesCapacity)
+		{
+			Spheres = new Massive<SphereCollider>(framesCapacity);
+			Boxes = new Massive<BoxCollider>(framesCapacity);
+			Bodies = new Massive<Rigidbody>(framesCapacity);
+			Contacts = new Massive<Contact>(framesCapacity);
+		}
+	}
+	
 	public class PhysicsSimulation : MonoBehaviour
 	{
 		[SerializeField, Range(0.01f, 10f)] private float _simulationSpeed = 1f;
@@ -36,7 +52,7 @@ namespace MassiveData.Samples.Physics
 				massiveRigidbody.Spawn(_bodies, _sphereColliders, _boxColliders);
 			}
 			
-			Rigidbody.UpdateAllLocalInertiaTensor(_bodies, _boxColliders, _sphereColliders);
+			Rigidbody.RecalculateAllInertia(_bodies, _boxColliders, _sphereColliders);
 		}
 
 		private int _currentFrame;

@@ -15,7 +15,7 @@ namespace MassiveData.Samples.Physics
 
 		protected override void TransformFromState(in BoxCollider state, out EntityTransform transform)
 		{
-			transform = new EntityTransform() { Position = state.WorldPosition, Rotation = state.WorldRotation };
+			transform = new EntityTransform() { Position = state.World.Position, Rotation = state.World.Rotation };
 		}
 	}
 }

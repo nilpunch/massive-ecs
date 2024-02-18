@@ -2,7 +2,7 @@
 
 namespace MassiveData.Samples.Physics
 {
-	public struct RigidbodyContact
+	public struct Contact
 	{
 		public int BodyA;
 		public int BodyB;
@@ -11,5 +11,7 @@ namespace MassiveData.Samples.Physics
 		public Vector3 ContactPointB;
 		public Vector3 Normal;
 		public float Depth;
+		public float Friction;
+		public float Restitution;
 	}
 }

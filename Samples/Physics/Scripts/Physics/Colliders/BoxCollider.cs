@@ -7,35 +7,31 @@ namespace MassiveData.Samples.Physics
 	{
 		public readonly int RigidbodyId;
 
+		public PhysicMaterial Material;
+		public Transformation Local;
+		public Transformation World;
+
 		public Vector3 Size;
 		public Vector3 HalfSize;
 
-		public Vector3 LocalPosition;
-		public Quaternion LocalRotation;
-		
-		public Vector3 WorldPosition;
-		public Quaternion WorldRotation;
-
-		public BoxCollider(int rigidbodyId, Vector3 size, Vector3 localPosition, Quaternion localRotation)
+		public BoxCollider(int rigidbodyId, Vector3 size, Transformation local, PhysicMaterial material)
 		{
 			RigidbodyId = rigidbodyId;
 			Size = size;
+			Material = material;
 			HalfSize = size * 0.5f;
 			
-			LocalPosition = localPosition;
-			LocalRotation = localRotation;
-			
-			WorldPosition = Vector3.zero;
-			WorldRotation = Quaternion.identity;
+			Local = local;
+			World = local;
 		}
 
-		Vector3 ISupportMappable.Centre => WorldPosition;
+		Vector3 ISupportMappable.Centre => World.Position;
 
 		Vector3 ISupportMappable.SupportPoint(Vector3 direction)
 		{
-			Vector3 rotatedDirection = Quaternion.Inverse(WorldRotation) * direction;
+			Vector3 rotatedDirection = Quaternion.Inverse(World.Rotation) * direction;
 			var supportPoint = BoxSupportPoint(Vector3.zero, HalfSize, rotatedDirection);
-			var transformedSupportPoint = WorldRotation * supportPoint + WorldPosition;
+			var transformedSupportPoint = World.Rotation * supportPoint + World.Position;
 			return transformedSupportPoint;
 		}
 
@@ -51,8 +47,17 @@ namespace MassiveData.Samples.Physics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Matrix4x4 CalculateLocalMoi(float mass)
+		public float Mass()
 		{
+			float volume = Size.x * Size.y * Size.z;
+			return Material.Density * volume;
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Matrix4x4 LocalInertiaTensor()
+		{
+			float mass = Mass();
+			
 			float ix = (1f / 12f) * mass * (Size.y * Size.y + Size.z * Size.z);
 			float iy = (1f / 12f) * mass * (Size.x * Size.x + Size.z * Size.z);
 			float iz = (1f / 12f) * mass * (Size.x * Size.x + Size.y * Size.y);
@@ -63,7 +68,7 @@ namespace MassiveData.Samples.Physics
 			inertiaTensor.SetRow(2, new Vector4(0f, 0f, iz, 0f));
 			inertiaTensor.SetRow(3, new Vector4(0f, 0f, 0f, 1f)); // The last row is not used for MOI calculations
 
-			return Rigidbody.TransformMoi(inertiaTensor, LocalPosition, LocalRotation, mass);
+			return Rigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Local.Rotation, mass);
 		}
 
 		public static void UpdateWorldPositions(Massive<Rigidbody> bodies, Massive<BoxCollider> colliders)
@@ -72,9 +77,7 @@ namespace MassiveData.Samples.Physics
 			for (int i = 0; i < aliveColliders.Length; i++)
 			{
 				ref var collider = ref aliveColliders[i];
-				var body = bodies.Get(collider.RigidbodyId);
-				collider.WorldPosition = body.GetWorldCenterOfMass() + body.Rotation * collider.LocalPosition;
-				collider.WorldRotation = body.Rotation * collider.LocalRotation;
+				collider.World = collider.Local.LocalToWorld(bodies.Get(collider.RigidbodyId).WorldCenterOfMass);
 			}
 		}
 	}
