@@ -56,14 +56,20 @@ namespace MassiveData
 		public void Delete(int id)
 		{
 			var deleteInfo = _sparseSet.Delete(id);
-			_currentData[deleteInfo.DenseSwapTarget] = _currentData[deleteInfo.DenseSwapSource];
+			if (deleteInfo.HasValue)
+			{
+				_currentData[deleteInfo.Value.DenseSwapTarget] = _currentData[deleteInfo.Value.DenseSwapSource];
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void DeleteDense(int denseIndex)
 		{
 			var deleteInfo = _sparseSet.DeleteDense(denseIndex);
-			_currentData[deleteInfo.DenseSwapTarget] = _currentData[deleteInfo.DenseSwapSource];
+			if (deleteInfo.HasValue)
+			{
+				_currentData[deleteInfo.Value.DenseSwapTarget] = _currentData[deleteInfo.Value.DenseSwapSource];
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

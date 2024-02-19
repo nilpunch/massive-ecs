@@ -30,15 +30,21 @@ namespace MassiveData
 			// Reserve 1 frame for rollback restoration
 			FramesCapacity = framesCapacity + 1;
 
-			DataCapacity = dataCapacity;
-			_denseByFrames = new int[FramesCapacity * dataCapacity];
-			_sparseByFrames = new int[FramesCapacity * dataCapacity];
+			// Reserve 1 for the first element
+			DataCapacity = dataCapacity + 1;
+			_denseByFrames = new int[FramesCapacity * DataCapacity];
+			_sparseByFrames = new int[FramesCapacity * DataCapacity];
 			_maxDenseByFrames = new int[FramesCapacity];
 			_maxIdByFrames = new int[FramesCapacity];
 			_aliveCountByFrames = new int[FramesCapacity];
 
-			_currentDense = new int[dataCapacity];
-			_currentSparse = new int[dataCapacity];
+			_currentDense = new int[DataCapacity];
+			_currentSparse = new int[DataCapacity];
+
+			// Consume first value in dense array as 0 is used in the sparse array to
+			// indicate that a sparse element hasn't been paired yet
+			_currentMaxDense = 1;
+			_currentAliveCount = 1;
 		}
 
 		public int FramesCapacity { get; }
@@ -116,28 +122,32 @@ namespace MassiveData
 			int count = _currentAliveCount;
 			int dense = _currentSparse[id];
 
-			if (dense < _currentMaxDense)
+			// Check if element is paired
+			if (dense != 0)
 			{
-				if (dense < _currentAliveCount && _currentDense[dense] == id)
+				if (dense < _currentAliveCount)
 				{
+					// If dense is already alive, nothing to be done
 					return new MassiveCreateInfo() { Id = id, Dense = dense };
 				}
 
+				// If dense is not alive, swap it with the first unused element
 				SwapDense(dense, count);
+
+				// First unused element is now last used element
 				_currentAliveCount += 1;
+
 				return new MassiveCreateInfo() { Id = id, Dense = count };
 			}
 
-			GrowDense();
+			// Add new element to dense array and pair it with sparse
+			_currentMaxDense += 1;
 			_currentAliveCount += 1;
-
-			if (id >= _currentMaxId)
-			{
-				_currentMaxId = id + 1;
-			}
+			// If index is larger than max id, update max id
+			_currentMaxId = Math.Max(_currentMaxId, id + 1);
 
 			// If there are unused elements in the dense,
-			// Move the first unused element to the end
+			// move the first unused element to the end
 			int lastDenseIndex = _currentMaxDense - 1;
 			if (count < lastDenseIndex)
 			{
@@ -153,98 +163,82 @@ namespace MassiveData
 		public MassiveCreateInfo Create()
 		{
 			int count = _currentAliveCount;
-
 			if (count == DataCapacity)
 			{
 				throw new InvalidOperationException($"Exceeded limit of data! Limit: {DataCapacity}.");
 			}
 
 			// If there are unused elements in the dense array, return last
-			if (count < _currentMaxDense)
+			var maxDense = _currentMaxDense;
+			if (count < maxDense)
 			{
 				_currentAliveCount += 1;
 				return new MassiveCreateInfo() { Id = _currentDense[count], Dense = count };
 			}
 
+			var maxId = _currentMaxId;
+			if (maxId == DataCapacity)
+			{
+				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {DataCapacity}.");
+			}
+
+			// Add new element to dense array and pair it with a new element from sparse
 			_currentAliveCount += 1;
-
-			var id = CreateIdForDense(count);
-			return new MassiveCreateInfo() { Id = id, Dense = count };
-		}
-
-		public MassiveDeleteInfo Delete(int id)
-		{
-			int aliveCount = _currentAliveCount;
-			int denseIndex = _currentSparse[id];
-
-			if (denseIndex >= aliveCount)
-			{
-				throw new InvalidOperationException($"Id is not alive! Id: {id}.");
-			}
-
-			// If dense is the last used element, simply decrease count
-			if (denseIndex == aliveCount - 1)
-			{
-				_currentAliveCount -= 1;
-				return new MassiveDeleteInfo() { DenseSwapSource = denseIndex, DenseSwapTarget = denseIndex };
-			}
-
-			_currentAliveCount -= 1;
-
-			int swapDenseIndex = aliveCount - 1;
-			SwapDense(denseIndex, swapDenseIndex);
-
-			return new MassiveDeleteInfo() { DenseSwapTarget = denseIndex, DenseSwapSource = swapDenseIndex };
-		}
-
-		public MassiveDeleteInfo DeleteDense(int denseIndex)
-		{
-			int aliveCount = _currentAliveCount;
-
-			if (denseIndex >= aliveCount)
-			{
-				throw new InvalidOperationException($"Dense is not alive! Dense: {denseIndex}.");
-			}
-
-			// If dense is the last used element, simply decrease count
-			if (denseIndex == aliveCount - 1)
-			{
-				_currentAliveCount -= 1;
-				return new MassiveDeleteInfo() { DenseSwapSource = denseIndex, DenseSwapTarget = denseIndex };
-			}
-
-			_currentAliveCount -= 1;
-
-			int swapDenseIndex = aliveCount - 1;
-			SwapDense(denseIndex, swapDenseIndex);
-
-			return new MassiveDeleteInfo() { DenseSwapTarget = denseIndex, DenseSwapSource = swapDenseIndex };
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private int CreateIdForDense(int dense)
-		{
-			int id = _currentMaxId;
 			_currentMaxId += 1;
-			GrowDense();
-			AssignIndex(id, dense);
-			return id;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void GrowDense()
-		{
-			_currentDense[_currentMaxDense] = _currentMaxDense;
 			_currentMaxDense += 1;
+
+			AssignIndex(maxId, maxDense);
+
+			return new MassiveCreateInfo() { Id = maxId, Dense = maxDense };
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void SwapDense(int denseA, int denseB)
+		public MassiveDeleteInfo? Delete(int id)
 		{
-			int idA = _currentDense[denseA];
-			int idB = _currentDense[denseB];
-			AssignIndex(idA, denseB);
-			AssignIndex(idB, denseA);
+			int aliveCount = _currentAliveCount;
+			int dense = _currentSparse[id];
+
+			// Element is not paired or not alive, nothing to be done
+			if (dense == 0 || dense >= aliveCount)
+			{
+				return null;
+			}
+
+			_currentAliveCount -= 1;
+
+			// If dense is the last used element, nothing to be done
+			if (dense == _currentAliveCount)
+			{
+				return null;
+			}
+
+			int swapDense = _currentAliveCount;
+			SwapDense(dense, swapDense);
+
+			return new MassiveDeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
+		}
+
+		public MassiveDeleteInfo? DeleteDense(int dense)
+		{
+			int aliveCount = _currentAliveCount;
+
+			//  Element is not paired or not alive, nothing to be done
+			if (dense == 0 || dense >= aliveCount)
+			{
+				return null;
+			}
+
+			_currentAliveCount -= 1;
+
+			// If dense is the last used element, nothing to be done
+			if (dense == aliveCount - 1)
+			{
+				return null;
+			}
+
+			int swapDense = _currentAliveCount;
+			SwapDense(dense, swapDense);
+
+			return new MassiveDeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -256,18 +250,17 @@ namespace MassiveData
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			if (id >= DataCapacity)
-				return false;
-
-			int denseIndex = _currentSparse[id];
-
-			return denseIndex < _currentAliveCount && _currentDense[denseIndex] == id;
+			int dense = _currentSparse[id];
+			return dense != 0 && dense < _currentAliveCount && _currentDense[dense] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAliveDense(int dense)
+		private void SwapDense(int denseA, int denseB)
 		{
-			return dense < _currentAliveCount;
+			int idA = _currentDense[denseA];
+			int idB = _currentDense[denseB];
+			AssignIndex(idA, denseB);
+			AssignIndex(idB, denseA);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
