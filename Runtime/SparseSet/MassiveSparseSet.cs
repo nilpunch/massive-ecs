@@ -29,16 +29,10 @@ namespace MassiveData
 		public MassiveSparseSet(int framesCapacity = 121, int dataCapacity = 100)
 		{
 			_framesCapacity = framesCapacity;
-			
-			// Consume first value in dense array as 0 is used in the sparse array to
-			// indicate that a sparse element hasn't been paired yet
-			_currentMaxDense = 1;
-			_currentAliveCount = 1;
 
-			// Additional capacity for the first reserved dense element
-			_currentDense = new int[dataCapacity + 1];
+			_currentDense = new int[dataCapacity];
 			_currentSparse = new int[dataCapacity];
-			
+
 			_denseByFrames = new int[_framesCapacity * _currentDense.Length];
 			_sparseByFrames = new int[_framesCapacity * _currentSparse.Length];
 			_maxDenseByFrames = new int[_framesCapacity];
@@ -47,10 +41,10 @@ namespace MassiveData
 		}
 
 		/// <summary>
-		/// Dense elements count, including reserved first element.
+		/// Dense elements count.
 		/// </summary>
 		public int AliveCount => _currentAliveCount;
-		
+
 		/// <summary>
 		/// Can be negative, when there absolutely no saved frames to restore information.
 		/// </summary>
@@ -121,11 +115,11 @@ namespace MassiveData
 			int dense = _currentSparse[id];
 
 			// Check if element is paired
-			if (dense != 0)
+			if (_currentDense[dense] == id)
 			{
+				// If dense is already alive, nothing to be done
 				if (dense < count)
 				{
-					// If dense is already alive, nothing to be done
 					return new MassiveCreateInfo() { Id = id, Dense = dense };
 				}
 
@@ -192,12 +186,11 @@ namespace MassiveData
 		public MassiveDeleteInfo? Delete(int id)
 		{
 			int aliveCount = _currentAliveCount;
-			int dense = _currentSparse[id];
 
-			// Element is not paired or not alive, nothing to be done
-			if (dense == 0 || dense >= aliveCount)
+			// If element is not alive, nothing to be done
+			if (!TryGetDense(id, out var dense))
 			{
-				return null;
+				return default;
 			}
 
 			_currentAliveCount -= 1;
@@ -205,7 +198,7 @@ namespace MassiveData
 			// If dense is the last used element, nothing to be done
 			if (dense == aliveCount - 1)
 			{
-				return null;
+				return default;
 			}
 
 			int swapDense = aliveCount - 1;
@@ -218,10 +211,10 @@ namespace MassiveData
 		{
 			int aliveCount = _currentAliveCount;
 
-			//  Element is not paired or not alive, nothing to be done
-			if (dense == 0 || dense >= aliveCount)
+			// Element is not alive, nothing to be done
+			if (dense >= aliveCount)
 			{
-				return null;
+				return default;
 			}
 
 			_currentAliveCount -= 1;
@@ -229,7 +222,7 @@ namespace MassiveData
 			// If dense is the last used element, nothing to be done
 			if (dense == aliveCount - 1)
 			{
-				return null;
+				return default;
 			}
 
 			int swapDense = aliveCount - 1;
@@ -239,7 +232,7 @@ namespace MassiveData
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetDenseIndex(int id)
+		public int GetDense(int id)
 		{
 			return _currentSparse[id];
 		}
@@ -247,8 +240,26 @@ namespace MassiveData
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
+			if (id >= _currentMaxId)
+				return false;
+
 			int dense = _currentSparse[id];
-			return dense != 0 && dense < _currentAliveCount && _currentDense[dense] == id;
+
+			return dense < _currentAliveCount && _currentDense[dense] == id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool TryGetDense(int id, out int dense)
+		{
+			if (id >= _currentMaxId)
+			{
+				dense = default;
+				return false;
+			}
+
+			dense = _currentSparse[id];
+
+			return dense < _currentAliveCount && _currentDense[dense] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

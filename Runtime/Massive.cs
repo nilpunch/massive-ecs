@@ -6,10 +6,6 @@ namespace MassiveData
 	/// <summary>
 	/// Data wrapper around <see cref="MassiveData.MassiveSparseSet"/>.
 	/// </summary>
-	/// <remarks>
-	/// Has index shift to compensate for reserved dense element in <see cref="MassiveData.MassiveSparseSet"/>,
-	/// so that alive dense indices starts from zero and not from one.
-	/// </remarks>
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
@@ -27,15 +23,15 @@ namespace MassiveData
 		{
 			// Compensate for reserved rollback frame
 			framesCapacity += 1;
-			
+
 			_sparseSet = new MassiveSparseSet(framesCapacity, dataCapacity);
 			_dataByFrames = new T[framesCapacity * dataCapacity];
 			_currentData = new T[dataCapacity];
 		}
 
-		public Span<T> AliveData => new Span<T>(_currentData, 0, _sparseSet.AliveCount - 1);
-		
-		public int AliveCount => _sparseSet.AliveCount - 1;
+		public Span<T> AliveData => new Span<T>(_currentData, 0, _sparseSet.AliveCount);
+
+		public int AliveCount => _sparseSet.AliveCount;
 
 		public int CanRollbackFrames => _sparseSet.CanRollbackFrames;
 
@@ -43,21 +39,29 @@ namespace MassiveData
 		public void SaveFrame()
 		{
 			var saveInfo = _sparseSet.SaveFrame();
-			Array.Copy(_currentData, 0, _dataByFrames, saveInfo.NextFrame * _currentData.Length, saveInfo.DenseCount - 1);
+			Array.Copy(_currentData, 0, _dataByFrames, saveInfo.NextFrame * _currentData.Length, saveInfo.DenseCount);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
 			var rollbackInfo = _sparseSet.Rollback(frames);
-			Array.Copy(_dataByFrames, rollbackInfo.RollbackFrame * _currentData.Length, _currentData, 0, rollbackInfo.DenseCount - 1);
+			Array.Copy(_dataByFrames, rollbackInfo.RollbackFrame * _currentData.Length, _currentData, 0, rollbackInfo.DenseCount);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int Ensure(int id, T data = default)
+		{
+			var createInfo = _sparseSet.Ensure(id);
+			_currentData[createInfo.Dense] = data;
+			return createInfo.Id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create(T data = default)
 		{
 			var createInfo = _sparseSet.Create();
-			_currentData[createInfo.Dense - 1] = data;
+			_currentData[createInfo.Dense] = data;
 			return createInfo.Id;
 		}
 
@@ -67,24 +71,24 @@ namespace MassiveData
 			var deleteInfo = _sparseSet.Delete(id);
 			if (deleteInfo.HasValue)
 			{
-				_currentData[deleteInfo.Value.DenseSwapTarget - 1] = _currentData[deleteInfo.Value.DenseSwapSource - 1];
+				_currentData[deleteInfo.Value.DenseSwapTarget] = _currentData[deleteInfo.Value.DenseSwapSource];
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void DeleteDense(int denseIndex)
 		{
-			var deleteInfo = _sparseSet.DeleteDense(denseIndex + 1);
+			var deleteInfo = _sparseSet.DeleteDense(denseIndex);
 			if (deleteInfo.HasValue)
 			{
-				_currentData[deleteInfo.Value.DenseSwapTarget - 1] = _currentData[deleteInfo.Value.DenseSwapSource - 1];
+				_currentData[deleteInfo.Value.DenseSwapTarget] = _currentData[deleteInfo.Value.DenseSwapSource];
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			return ref _currentData[_sparseSet.GetDenseIndex(id) - 1];
+			return ref _currentData[_sparseSet.GetDense(id)];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

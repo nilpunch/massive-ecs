@@ -16,13 +16,13 @@ namespace MassiveData.Tests
 			Massive<TestState> massive = new Massive<TestState>(2, 4);
 
 			massive.Create(new TestState { Value = 1 });
-			massive.Create(new TestState { Value = 2 });
+			int id = massive.Create(new TestState { Value = 2 });
 			massive.Create(new TestState { Value = 3 });
 
-			massive.Delete(1);
+			massive.Delete(id);
 
 			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
+			Assert.IsFalse(massive.IsAlive(id));
 			Assert.IsTrue(massive.IsAlive(2));
 		}
 		
