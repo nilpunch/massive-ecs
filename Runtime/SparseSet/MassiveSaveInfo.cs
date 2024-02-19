@@ -2,7 +2,7 @@
 {
 	public struct MassiveSaveInfo
 	{
-		public int DestinationFrameIndex;
-		public int Count;
+		public int NextFrame;
+		public int DenseCount;
 	}
 }

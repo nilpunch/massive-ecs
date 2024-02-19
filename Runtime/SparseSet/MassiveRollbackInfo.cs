@@ -2,7 +2,7 @@
 {
 	public struct MassiveRollbackInfo
 	{
-		public int SourceFrameIndex;
-		public int Count;
+		public int RollbackFrame;
+		public int DenseCount;
 	}
 }

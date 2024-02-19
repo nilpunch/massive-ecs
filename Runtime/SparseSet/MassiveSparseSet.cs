@@ -22,62 +22,61 @@ namespace MassiveData
 		private int _currentMaxId;
 		private int _currentAliveCount;
 
+		private readonly int _framesCapacity;
 		private int _currentFrame;
 		private int _savedFrames;
 
-		public MassiveSparseSet(int framesCapacity = 120, int dataCapacity = 100)
+		public MassiveSparseSet(int framesCapacity = 121, int dataCapacity = 100)
 		{
-			// Reserve 1 frame for rollback restoration
-			FramesCapacity = framesCapacity + 1;
-
-			// Reserve 1 for the first element
-			DataCapacity = dataCapacity + 1;
-			_denseByFrames = new int[FramesCapacity * DataCapacity];
-			_sparseByFrames = new int[FramesCapacity * DataCapacity];
-			_maxDenseByFrames = new int[FramesCapacity];
-			_maxIdByFrames = new int[FramesCapacity];
-			_aliveCountByFrames = new int[FramesCapacity];
-
-			_currentDense = new int[DataCapacity];
-			_currentSparse = new int[DataCapacity];
-
+			_framesCapacity = framesCapacity;
+			
 			// Consume first value in dense array as 0 is used in the sparse array to
 			// indicate that a sparse element hasn't been paired yet
 			_currentMaxDense = 1;
 			_currentAliveCount = 1;
+
+			// Additional capacity for the first reserved dense element
+			_currentDense = new int[dataCapacity + 1];
+			_currentSparse = new int[dataCapacity];
+			
+			_denseByFrames = new int[_framesCapacity * _currentDense.Length];
+			_sparseByFrames = new int[_framesCapacity * _currentSparse.Length];
+			_maxDenseByFrames = new int[_framesCapacity];
+			_maxIdByFrames = new int[_framesCapacity];
+			_aliveCountByFrames = new int[_framesCapacity];
 		}
 
-		public int FramesCapacity { get; }
-		public int DataCapacity { get; }
-
+		/// <summary>
+		/// Dense elements count, including reserved first element.
+		/// </summary>
 		public int AliveCount => _currentAliveCount;
-
-		// One frame is reserved for restoring
+		
+		/// <summary>
+		/// Can be negative, when there absolutely no saved frames to restore information.
+		/// </summary>
 		public int CanRollbackFrames => _savedFrames - 1;
 
 		public MassiveSaveInfo SaveFrame()
 		{
-			int nextFrame = Loop(_currentFrame + 1, FramesCapacity);
 			int currentMaxDense = _currentMaxDense;
 			int currentMaxId = _currentMaxId;
 			int currentAliveCount = _currentAliveCount;
-
-			int nextFrameIndex = nextFrame * DataCapacity;
+			int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
 
 			// Copy everything from current frame
-			Array.Copy(_currentDense, 0, _denseByFrames, nextFrameIndex, currentMaxDense);
-			Array.Copy(_currentSparse, 0, _sparseByFrames, nextFrameIndex, currentMaxId);
+			Array.Copy(_currentDense, 0, _denseByFrames, nextFrame * _currentDense.Length, currentMaxDense);
+			Array.Copy(_currentSparse, 0, _sparseByFrames, nextFrame * _currentSparse.Length, currentMaxId);
 			_maxDenseByFrames[nextFrame] = currentMaxDense;
 			_maxIdByFrames[nextFrame] = currentMaxId;
 			_aliveCountByFrames[nextFrame] = currentAliveCount;
 
 			_currentFrame = nextFrame;
-			_savedFrames = Math.Min(_savedFrames + 1, FramesCapacity);
+			_savedFrames = Math.Min(_savedFrames + 1, _framesCapacity);
 
 			return new MassiveSaveInfo()
 			{
-				DestinationFrameIndex = nextFrameIndex,
-				Count = currentAliveCount
+				NextFrame = nextFrame,
+				DenseCount = currentAliveCount
 			};
 		}
 
@@ -89,34 +88,33 @@ namespace MassiveData
 			}
 
 			_savedFrames -= frames;
-			_currentFrame = LoopNegative(_currentFrame - frames, FramesCapacity);
+			_currentFrame = LoopNegative(_currentFrame - frames, _framesCapacity);
 
 			// Copy everything from rollback frame to current
 			int rollbackMaxDense = _maxDenseByFrames[_currentFrame];
 			int rollbackMaxId = _maxIdByFrames[_currentFrame];
 			int rollbackAliveCount = _aliveCountByFrames[_currentFrame];
-
-			int rollbackFrameIndex = _currentFrame * DataCapacity;
+			int rollbackFrame = _currentFrame;
 
 			// Copy _currentMaxId elements to ensure zeroing excess elements
-			Array.Copy(_denseByFrames, rollbackFrameIndex, _currentDense, 0, _currentMaxDense);
-			Array.Copy(_sparseByFrames, rollbackFrameIndex, _currentSparse, 0, _currentMaxId);
+			Array.Copy(_denseByFrames, rollbackFrame * _currentDense.Length, _currentDense, 0, _currentMaxDense);
+			Array.Copy(_sparseByFrames, rollbackFrame * _currentSparse.Length, _currentSparse, 0, _currentMaxId);
 			_currentMaxDense = rollbackMaxDense;
 			_currentMaxId = rollbackMaxId;
 			_currentAliveCount = rollbackAliveCount;
 
 			return new MassiveRollbackInfo()
 			{
-				SourceFrameIndex = rollbackFrameIndex,
-				Count = rollbackAliveCount
+				RollbackFrame = rollbackFrame,
+				DenseCount = rollbackAliveCount
 			};
 		}
 
 		public MassiveCreateInfo Ensure(int id)
 		{
-			if (id >= DataCapacity)
+			if (id >= _currentSparse.Length)
 			{
-				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {DataCapacity}.");
+				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {_currentSparse.Length}.");
 			}
 
 			int count = _currentAliveCount;
@@ -125,7 +123,7 @@ namespace MassiveData
 			// Check if element is paired
 			if (dense != 0)
 			{
-				if (dense < _currentAliveCount)
+				if (dense < count)
 				{
 					// If dense is already alive, nothing to be done
 					return new MassiveCreateInfo() { Id = id, Dense = dense };
@@ -143,16 +141,15 @@ namespace MassiveData
 			// Add new element to dense array and pair it with sparse
 			_currentMaxDense += 1;
 			_currentAliveCount += 1;
-			// If index is larger than max id, update max id
 			_currentMaxId = Math.Max(_currentMaxId, id + 1);
 
 			// If there are unused elements in the dense,
 			// move the first unused element to the end
-			int lastDenseIndex = _currentMaxDense - 1;
-			if (count < lastDenseIndex)
+			int lastDense = _currentMaxDense - 1;
+			if (count < lastDense)
 			{
 				int unusedId = _currentDense[count];
-				AssignIndex(unusedId, lastDenseIndex);
+				AssignIndex(unusedId, lastDense);
 			}
 
 			AssignIndex(id, count);
@@ -163,9 +160,9 @@ namespace MassiveData
 		public MassiveCreateInfo Create()
 		{
 			int count = _currentAliveCount;
-			if (count == DataCapacity)
+			if (count == _currentDense.Length)
 			{
-				throw new InvalidOperationException($"Exceeded limit of data! Limit: {DataCapacity}.");
+				throw new InvalidOperationException($"Exceeded limit of data! Limit: {_currentDense.Length}.");
 			}
 
 			// If there are unused elements in the dense array, return last
@@ -177,9 +174,9 @@ namespace MassiveData
 			}
 
 			var maxId = _currentMaxId;
-			if (maxId == DataCapacity)
+			if (maxId == _currentSparse.Length)
 			{
-				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {DataCapacity}.");
+				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {_currentSparse.Length}.");
 			}
 
 			// Add new element to dense array and pair it with a new element from sparse
@@ -206,12 +203,12 @@ namespace MassiveData
 			_currentAliveCount -= 1;
 
 			// If dense is the last used element, nothing to be done
-			if (dense == _currentAliveCount)
+			if (dense == aliveCount - 1)
 			{
 				return null;
 			}
 
-			int swapDense = _currentAliveCount;
+			int swapDense = aliveCount - 1;
 			SwapDense(dense, swapDense);
 
 			return new MassiveDeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
@@ -235,7 +232,7 @@ namespace MassiveData
 				return null;
 			}
 
-			int swapDense = _currentAliveCount;
+			int swapDense = aliveCount - 1;
 			SwapDense(dense, swapDense);
 
 			return new MassiveDeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
