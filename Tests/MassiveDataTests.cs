@@ -15,30 +15,30 @@ namespace MassiveData.Tests
 		{
 			Massive<TestState> massive = new Massive<TestState>(2, 4);
 
-			massive.Create(new TestState { Value = 1 });
-			int id = massive.Create(new TestState { Value = 2 });
-			massive.Create(new TestState { Value = 3 });
+			int id1 = massive.Create(new TestState { Value = 1 });
+			int id2 = massive.Create(new TestState { Value = 2 });
+			int id3 = massive.Create(new TestState { Value = 3 });
 
-			massive.Delete(id);
+			massive.Delete(id2);
 
-			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(id));
-			Assert.IsTrue(massive.IsAlive(2));
+			Assert.IsTrue(massive.IsAlive(id1));
+			Assert.IsFalse(massive.IsAlive(id2));
+			Assert.IsTrue(massive.IsAlive(id3));
 		}
-		
+
 		[Test]
 		public void DeleteThenCreate_ShouldRecycleIds()
 		{
 			Massive<TestState> massive = new Massive<TestState>(2, 4);
 
-			massive.Create(new TestState { Value = 1 });
+			int id1 = massive.Create(new TestState { Value = 1 });
 			int id2 = massive.Create(new TestState { Value = 2 });
-			massive.Create(new TestState { Value = 3 });
+			int id3 = massive.Create(new TestState { Value = 3 });
 
 			massive.Delete(id2);
-			
+
 			int id = massive.Create(new TestState { Value = 4 });
-			
+
 			Assert.AreEqual(id, id2);
 		}
 
@@ -50,28 +50,28 @@ namespace MassiveData.Tests
 			Assert.IsFalse(massive.IsAlive(0));
 			Assert.IsFalse(massive.IsAlive(1));
 			Assert.IsFalse(massive.IsAlive(2));
-			
-			massive.Create(new TestState { Value = 1 });
-			massive.Create(new TestState { Value = 2 });
-			massive.Create(new TestState { Value = 3 });
 
-			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsTrue(massive.IsAlive(1));
-			Assert.IsTrue(massive.IsAlive(2));
+			int id1 = massive.Create(new TestState { Value = 1 });
+			int id2 = massive.Create(new TestState { Value = 2 });
+			int id3 = massive.Create(new TestState { Value = 3 });
+
+			Assert.IsTrue(massive.IsAlive(id1));
+			Assert.IsTrue(massive.IsAlive(id2));
+			Assert.IsTrue(massive.IsAlive(id3));
 		}
-		
+
 		[Test]
 		public void Create_ShouldInitializeData()
 		{
 			Massive<TestState> massive = new Massive<TestState>(2, 4);
 
-			massive.Create(new TestState { Value = 1 });
-			massive.Create(new TestState { Value = 2 });
-			massive.Create(new TestState { Value = 3 });
+			int id1 = massive.Create(new TestState { Value = 1 });
+			int id2 = massive.Create(new TestState { Value = 2 });
+			int id3 = massive.Create(new TestState { Value = 3 });
 
-			Assert.AreEqual(massive.Get(0).Value, 1);
-			Assert.AreEqual(massive.Get(1).Value, 2);
-			Assert.AreEqual(massive.Get(2).Value, 3);
+			Assert.AreEqual(massive.Get(id1).Value, 1);
+			Assert.AreEqual(massive.Get(id2).Value, 2);
+			Assert.AreEqual(massive.Get(id3).Value, 3);
 		}
 
 		[Test]
@@ -79,11 +79,11 @@ namespace MassiveData.Tests
 		{
 			Massive<TestState> massive = new Massive<TestState>(2, 2);
 
-			massive.Create(new TestState { Value = 1 });
+			int id1 = massive.Create(new TestState { Value = 1 });
 
-			massive.Get(0).Value = 2;
+			massive.Get(id1).Value = 2;
 
-			Assert.AreEqual(massive.Get(0).Value, 2);
+			Assert.AreEqual(massive.Get(id1).Value, 2);
 		}
 
 		[Test]
@@ -91,15 +91,15 @@ namespace MassiveData.Tests
 		{
 			Massive<TestState> massive = new Massive<TestState>(2, 4);
 
-			massive.Create(new TestState { Value = 1 });
-			massive.Create(new TestState { Value = 2 });
-			massive.Create(new TestState { Value = 3 });
+			int id1 = massive.Create(new TestState { Value = 1 });
+			int id2 = massive.Create(new TestState { Value = 2 });
+			int id3 = massive.Create(new TestState { Value = 3 });
 
 			massive.SaveFrame();
 
-			Assert.AreEqual(massive.Get(0).Value, 1);
-			Assert.AreEqual(massive.Get(1).Value, 2);
-			Assert.AreEqual(massive.Get(2).Value, 3);
+			Assert.AreEqual(massive.Get(id1).Value, 1);
+			Assert.AreEqual(massive.Get(id2).Value, 2);
+			Assert.AreEqual(massive.Get(id3).Value, 3);
 		}
 
 		[Test]
@@ -107,13 +107,13 @@ namespace MassiveData.Tests
 		{
 			Massive<TestState> massive = new Massive<TestState>(2, 2);
 
-			massive.Create(new TestState { Value = 1 });
+			int id1 = massive.Create(new TestState { Value = 1 });
 			massive.SaveFrame();
 
-			massive.Get(0).Value = 2;
+			massive.Get(id1).Value = 2;
 			massive.Rollback(0);
 
-			Assert.AreEqual(massive.Get(0).Value, 1);
+			Assert.AreEqual(massive.Get(id1).Value, 1);
 		}
 
 		[Test]
@@ -123,23 +123,22 @@ namespace MassiveData.Tests
 
 			massive.SaveFrame();
 
-			Assert.IsFalse(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
+			int id1 = massive.Create(new TestState { Value = 1 });
+			int id2 = massive.Create(new TestState { Value = 2 });
+			massive.Delete(id2);
 
-			massive.Create(new TestState { Value = 1 });
-
-			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
+			Assert.IsTrue(massive.IsAlive(id1));
+			Assert.IsFalse(massive.IsAlive(id2));
 
 			massive.SaveFrame();
 
-			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
+			Assert.IsTrue(massive.IsAlive(id1));
+			Assert.IsFalse(massive.IsAlive(id2));
 
 			massive.Rollback(1);
 
-			Assert.IsFalse(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
+			Assert.IsFalse(massive.IsAlive(id1));
+			Assert.IsFalse(massive.IsAlive(id2));
 		}
 	}
 }
