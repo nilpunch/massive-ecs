@@ -6,7 +6,7 @@ namespace MassiveData
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class MassiveSparseSet
+	public class MassiveSparseSet : IMassive
 	{
 		// Saved frames
 		private readonly int[] _denseByFrames;
@@ -40,6 +40,8 @@ namespace MassiveData
 			_aliveCountByFrames = new int[_framesCapacity];
 		}
 
+		public int CurrentFrame => _currentFrame;
+
 		/// <summary>
 		/// Dense elements count.
 		/// </summary>
@@ -50,7 +52,7 @@ namespace MassiveData
 		/// </summary>
 		public int CanRollbackFrames => _savedFrames - 1;
 
-		public MassiveSaveInfo SaveFrame()
+		public void SaveFrame()
 		{
 			int currentMaxDense = _currentMaxDense;
 			int currentMaxId = _currentMaxId;
@@ -66,15 +68,9 @@ namespace MassiveData
 
 			_currentFrame = nextFrame;
 			_savedFrames = Math.Min(_savedFrames + 1, _framesCapacity);
-
-			return new MassiveSaveInfo()
-			{
-				NextFrame = nextFrame,
-				DenseCount = currentAliveCount
-			};
 		}
 
-		public MassiveRollbackInfo Rollback(int frames)
+		public void Rollback(int frames)
 		{
 			if (frames > CanRollbackFrames)
 			{
@@ -96,12 +92,6 @@ namespace MassiveData
 			_currentMaxDense = rollbackMaxDense;
 			_currentMaxId = rollbackMaxId;
 			_currentAliveCount = rollbackAliveCount;
-
-			return new MassiveRollbackInfo()
-			{
-				RollbackFrame = rollbackFrame,
-				DenseCount = rollbackAliveCount
-			};
 		}
 
 		public MassiveCreateInfo Ensure(int id)

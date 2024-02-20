@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace MassiveData
 {
 	/// <summary>
-	/// Data wrapper around <see cref="MassiveData.MassiveSparseSet"/>.
+	/// Data extension for <see cref="MassiveData.MassiveSparseSet"/>. Always synchronized.
 	/// </summary>
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
@@ -38,15 +38,15 @@ namespace MassiveData
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			var saveInfo = _sparseSet.SaveFrame();
-			Array.Copy(_currentData, 0, _dataByFrames, saveInfo.NextFrame * _currentData.Length, saveInfo.DenseCount);
+			_sparseSet.SaveFrame();
+			Array.Copy(_currentData, 0, _dataByFrames, _sparseSet.CurrentFrame * _currentData.Length, _sparseSet.AliveCount);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			var rollbackInfo = _sparseSet.Rollback(frames);
-			Array.Copy(_dataByFrames, rollbackInfo.RollbackFrame * _currentData.Length, _currentData, 0, rollbackInfo.DenseCount);
+			_sparseSet.Rollback(frames);
+			Array.Copy(_dataByFrames, _sparseSet.CurrentFrame * _currentData.Length, _currentData, 0, _sparseSet.AliveCount);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
