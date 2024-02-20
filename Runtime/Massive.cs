@@ -30,6 +30,8 @@ namespace MassiveData
 		}
 
 		public Span<T> AliveData => new Span<T>(_currentData, 0, _sparseSet.AliveCount);
+		
+		public ReadOnlySpan<int> AliveIds => _sparseSet.AliveIds;
 
 		public int AliveCount => _sparseSet.AliveCount;
 
@@ -95,6 +97,12 @@ namespace MassiveData
 		public bool IsAlive(int id)
 		{
 			return _sparseSet.IsAlive(id);
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool TryGetDense(int id, out int dense)
+		{
+			return _sparseSet.TryGetDense(id, out dense);
 		}
 	}
 }

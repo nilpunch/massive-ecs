@@ -52,6 +52,8 @@ namespace MassiveData
 		/// </summary>
 		public int CanRollbackFrames => _savedFrames - 1;
 
+		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(_currentDense, 0, _currentAliveCount);
+
 		public void SaveFrame()
 		{
 			int currentMaxDense = _currentMaxDense;
