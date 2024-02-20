@@ -9,7 +9,7 @@ namespace Massive.Samples.ECS
 		private readonly int _framesCapacity;
 		private readonly int _entitiesCapacity;
 
-		private readonly MassiveSparseSet _entities;
+		private readonly ExtendedMassiveSparseSet _entities;
 
 		private readonly Dictionary<int, IExtendedMassive> _massivesLookup;
 		private readonly List<IExtendedMassive> _massives;
@@ -20,9 +20,9 @@ namespace Massive.Samples.ECS
 		{
 			_framesCapacity = framesCapacity;
 			_entitiesCapacity = entitiesCapacity;
-			_entities = new MassiveSparseSet(framesCapacity, entitiesCapacity);
+			_entities = new ExtendedMassiveSparseSet(framesCapacity, entitiesCapacity);
 			_massivesLookup = new Dictionary<int, IExtendedMassive>();
-			_massives = new List<IExtendedMassive>();
+			_massives = new List<IExtendedMassive> { _entities };
 		}
 
 		public int CreateEntity()
@@ -32,7 +32,6 @@ namespace Massive.Samples.ECS
 
 		public void DeleteEntity(int entity)
 		{
-			_entities.Delete(entity);
 			foreach (var massive in _massives)
 			{
 				massive.DeleteById(entity);
