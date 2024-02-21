@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using UnityEngine;
 
-namespace MassiveData.Samples.Benchmark
+namespace Massive.Samples.Benchmark
 {
 	public abstract class MonoProfiler : MonoBehaviour
 	{

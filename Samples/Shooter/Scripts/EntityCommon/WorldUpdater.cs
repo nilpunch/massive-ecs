@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MassiveData.Samples.Shooter
+namespace Massive.Samples.Shooter
 {
 	public abstract class WorldUpdater : MonoBehaviour
 	{

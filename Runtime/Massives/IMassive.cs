@@ -1,4 +1,4 @@
-﻿namespace MassiveData
+﻿namespace Massive
 {
 	public interface IMassive
 	{

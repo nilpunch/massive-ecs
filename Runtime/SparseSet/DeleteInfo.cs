@@ -1,6 +1,6 @@
-﻿namespace MassiveData
+﻿namespace Massive
 {
-	public struct MassiveDeleteInfo
+	public struct DeleteInfo
 	{
 		public int DenseSwapSource;
 		public int DenseSwapTarget;

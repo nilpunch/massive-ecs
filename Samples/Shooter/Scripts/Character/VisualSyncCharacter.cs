@@ -1,4 +1,4 @@
-﻿namespace MassiveData.Samples.Shooter
+﻿namespace Massive.Samples.Shooter
 {
 	public class VisualSyncCharacter : VisualSync<CharacterState>
 	{

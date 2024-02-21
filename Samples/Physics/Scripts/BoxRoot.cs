@@ -1,6 +1,6 @@
-﻿using MassiveData.Samples.Shooter;
+﻿using Massive.Samples.Shooter;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public class BoxRoot : EntityRoot<BoxCollider>
 	{

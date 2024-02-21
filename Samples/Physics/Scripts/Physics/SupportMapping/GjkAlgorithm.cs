@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public struct Simplex
 	{

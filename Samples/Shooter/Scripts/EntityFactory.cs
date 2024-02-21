@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using UnityEngine;
 
-namespace MassiveData.Samples.Shooter
+namespace Massive.Samples.Shooter
 {
 	public class EntityFactory<TState> where TState : struct
 	{

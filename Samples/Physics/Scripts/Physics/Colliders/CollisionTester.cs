@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public static class CollisionTester
 	{

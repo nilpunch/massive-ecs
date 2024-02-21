@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public class MassiveSphereCollider : MonoBehaviour
 	{

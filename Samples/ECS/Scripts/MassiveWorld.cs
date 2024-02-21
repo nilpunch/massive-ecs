@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using MassiveData;
+using Massive;
 
 namespace Massive.Samples.ECS
 {
@@ -48,7 +48,7 @@ namespace Massive.Samples.ECS
 			return ref GetOrCreateComponents<T>().Get(entity);
 		}
 
-		public Massive<T> GetComponents<T>() where T : struct
+		public MassiveDataSet<T> GetComponents<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -105,18 +105,18 @@ namespace Massive.Samples.ECS
 			}
 		}
 
-		private ExtendedMassive<T> GetOrCreateComponents<T>() where T : struct
+		private ExtendedMassiveDataSet<T> GetOrCreateComponents<T>() where T : struct
 		{
 			int id = ComponentMeta<T>.Id;
 
 			if (!_massivesLookup.TryGetValue(id, out var components))
 			{
-				components = new ExtendedMassive<T>(_framesCapacity, _entitiesCapacity);
+				components = new ExtendedMassiveDataSet<T>(_framesCapacity, _entitiesCapacity);
 				_massivesLookup.Add(id, components);
 				_massives.Add(components);
 			}
 
-			return (ExtendedMassive<T>)components;
+			return (ExtendedMassiveDataSet<T>)components;
 		}
 
 		private ExtendedMassiveSparseSet GetOrCreateTags<T>() where T : struct

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public readonly struct Collision
 	{

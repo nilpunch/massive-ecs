@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MassiveData.Samples.Benchmark
+namespace Massive.Samples.Benchmark
 {
 	public struct TestState
 	{

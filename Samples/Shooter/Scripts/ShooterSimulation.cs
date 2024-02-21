@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using UnityEngine;
 
-namespace MassiveData.Samples.Shooter
+namespace Massive.Samples.Shooter
 {
 	public class ShooterSimulation : MonoBehaviour
 	{
@@ -12,8 +12,8 @@ namespace MassiveData.Samples.Shooter
 		[Header("Entities")] [SerializeField] private EntityRoot<CharacterState> _characterPrefab;
 		[SerializeField] private EntityRoot<BulletState> _bulletPrefab;
 
-		private Massive<CharacterState> _characters;
-		private Massive<BulletState> _bullets;
+		private MassiveDataSet<CharacterState> _characters;
+		private MassiveDataSet<BulletState> _bullets;
 		private WorldUpdater[] _worldUpdaters;
 
 		private EntitySynchronisation<CharacterState> _characterSynchronisation;
@@ -21,8 +21,8 @@ namespace MassiveData.Samples.Shooter
 
 		private void Awake()
 		{
-			_characters = new Massive<CharacterState>(framesCapacity: _simulationsPerFrame, dataCapacity: _charactersCapacity);
-			_bullets = new Massive<BulletState>(framesCapacity: _simulationsPerFrame, dataCapacity: _bulletsCapacity);
+			_characters = new MassiveDataSet<CharacterState>(framesCapacity: _simulationsPerFrame, dataCapacity: _charactersCapacity);
+			_bullets = new MassiveDataSet<BulletState>(framesCapacity: _simulationsPerFrame, dataCapacity: _bulletsCapacity);
 
 			_worldUpdaters = FindObjectsOfType<WorldUpdater>();
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace MassiveData
+namespace Massive
 {
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
@@ -14,7 +14,7 @@ namespace MassiveData
 		protected int MaxId { get; set; }
 		public int AliveCount { get; protected set; }
 
-		public SparseSet(int dataCapacity = 100)
+		public SparseSet(int dataCapacity = Constants.DataCapacity)
 		{
 			Dense = new int[dataCapacity];
 			Sparse = new int[dataCapacity];
@@ -22,7 +22,7 @@ namespace MassiveData
 
 		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 
-		public MassiveCreateInfo Ensure(int id)
+		public CreateInfo Ensure(int id)
 		{
 			if (id >= Sparse.Length)
 			{
@@ -38,16 +38,15 @@ namespace MassiveData
 				// If dense is already alive, nothing to be done
 				if (dense < count)
 				{
-					return new MassiveCreateInfo() { Id = id, Dense = dense };
+					return new CreateInfo() { Id = id, Dense = dense };
 				}
 
 				// If dense is not alive, swap it with the first unused element
-				SwapDense(dense, count);
-
 				// First unused element is now last used element
+				SwapDense(dense, count);
 				AliveCount += 1;
 
-				return new MassiveCreateInfo() { Id = id, Dense = count };
+				return new CreateInfo() { Id = id, Dense = count };
 			}
 
 			// Add new element to dense array and pair it with sparse
@@ -66,10 +65,10 @@ namespace MassiveData
 
 			AssignIndex(id, count);
 
-			return new MassiveCreateInfo() { Id = id, Dense = count };
+			return new CreateInfo() { Id = id, Dense = count };
 		}
 
-		public MassiveCreateInfo Create()
+		public CreateInfo Create()
 		{
 			int count = AliveCount;
 			if (count == Dense.Length)
@@ -82,7 +81,7 @@ namespace MassiveData
 			if (count < maxDense)
 			{
 				AliveCount += 1;
-				return new MassiveCreateInfo() { Id = Dense[count], Dense = count };
+				return new CreateInfo() { Id = Dense[count], Dense = count };
 			}
 
 			var maxId = MaxId;
@@ -98,10 +97,10 @@ namespace MassiveData
 
 			AssignIndex(maxId, maxDense);
 
-			return new MassiveCreateInfo() { Id = maxId, Dense = maxDense };
+			return new CreateInfo() { Id = maxId, Dense = maxDense };
 		}
 
-		public MassiveDeleteInfo? Delete(int id)
+		public DeleteInfo? Delete(int id)
 		{
 			int aliveCount = AliveCount;
 
@@ -113,7 +112,7 @@ namespace MassiveData
 
 			AliveCount -= 1;
 
-			// If dense is the last used element, nothing to be done
+			// If dense is the last used element, decreasing alive count is enough
 			if (dense == aliveCount - 1)
 			{
 				return default;
@@ -122,10 +121,10 @@ namespace MassiveData
 			int swapDense = aliveCount - 1;
 			SwapDense(dense, swapDense);
 
-			return new MassiveDeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
+			return new DeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
 		}
 
-		public MassiveDeleteInfo? DeleteDense(int dense)
+		public DeleteInfo? DeleteDense(int dense)
 		{
 			int aliveCount = AliveCount;
 
@@ -137,7 +136,7 @@ namespace MassiveData
 
 			AliveCount -= 1;
 
-			// If dense is the last used element, nothing to be done
+			// If dense is the last used element, decreasing alive count is enough
 			if (dense == aliveCount - 1)
 			{
 				return default;
@@ -146,7 +145,7 @@ namespace MassiveData
 			int swapDense = aliveCount - 1;
 			SwapDense(dense, swapDense);
 
-			return new MassiveDeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
+			return new DeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

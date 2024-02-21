@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace MassiveData.Tests
+namespace Massive.Tests
 {
 	[TestFixture]
 	public class MassiveDataTests
@@ -13,31 +13,31 @@ namespace MassiveData.Tests
 		[Test]
 		public void Delete_ShouldMakeNotAlive()
 		{
-			Massive<TestState> massive = new Massive<TestState>(2, 4);
+			MassiveDataSet<TestState> massiveData = new MassiveDataSet<TestState>(2, 4);
 
-			int id1 = massive.Create(new TestState { Value = 1 });
-			int id2 = massive.Create(new TestState { Value = 2 });
-			int id3 = massive.Create(new TestState { Value = 3 });
+			int id1 = massiveData.Create(new TestState { Value = 1 });
+			int id2 = massiveData.Create(new TestState { Value = 2 });
+			int id3 = massiveData.Create(new TestState { Value = 3 });
 
-			massive.Delete(id2);
+			massiveData.Delete(id2);
 
-			Assert.IsTrue(massive.IsAlive(id1));
-			Assert.IsFalse(massive.IsAlive(id2));
-			Assert.IsTrue(massive.IsAlive(id3));
+			Assert.IsTrue(massiveData.IsAlive(id1));
+			Assert.IsFalse(massiveData.IsAlive(id2));
+			Assert.IsTrue(massiveData.IsAlive(id3));
 		}
 
 		[Test]
 		public void DeleteThenCreate_ShouldRecycleIds()
 		{
-			Massive<TestState> massive = new Massive<TestState>(2, 4);
+			MassiveDataSet<TestState> massiveData = new MassiveDataSet<TestState>(2, 4);
 
-			int id1 = massive.Create(new TestState { Value = 1 });
-			int id2 = massive.Create(new TestState { Value = 2 });
-			int id3 = massive.Create(new TestState { Value = 3 });
+			int id1 = massiveData.Create(new TestState { Value = 1 });
+			int id2 = massiveData.Create(new TestState { Value = 2 });
+			int id3 = massiveData.Create(new TestState { Value = 3 });
 
-			massive.Delete(id2);
+			massiveData.Delete(id2);
 
-			int id = massive.Create(new TestState { Value = 4 });
+			int id = massiveData.Create(new TestState { Value = 4 });
 
 			Assert.AreEqual(id, id2);
 		}
@@ -45,100 +45,100 @@ namespace MassiveData.Tests
 		[Test]
 		public void Create_ShouldMakeStatesAlive()
 		{
-			Massive<TestState> massive = new Massive<TestState>(2, 4);
+			MassiveDataSet<TestState> massiveData = new MassiveDataSet<TestState>(2, 4);
 
-			Assert.IsFalse(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
-			Assert.IsFalse(massive.IsAlive(2));
+			Assert.IsFalse(massiveData.IsAlive(0));
+			Assert.IsFalse(massiveData.IsAlive(1));
+			Assert.IsFalse(massiveData.IsAlive(2));
 
-			int id1 = massive.Create(new TestState { Value = 1 });
-			int id2 = massive.Create(new TestState { Value = 2 });
-			int id3 = massive.Create(new TestState { Value = 3 });
+			int id1 = massiveData.Create(new TestState { Value = 1 });
+			int id2 = massiveData.Create(new TestState { Value = 2 });
+			int id3 = massiveData.Create(new TestState { Value = 3 });
 
-			Assert.IsTrue(massive.IsAlive(id1));
-			Assert.IsTrue(massive.IsAlive(id2));
-			Assert.IsTrue(massive.IsAlive(id3));
+			Assert.IsTrue(massiveData.IsAlive(id1));
+			Assert.IsTrue(massiveData.IsAlive(id2));
+			Assert.IsTrue(massiveData.IsAlive(id3));
 		}
 
 		[Test]
 		public void Create_ShouldInitializeData()
 		{
-			Massive<TestState> massive = new Massive<TestState>(2, 4);
+			MassiveDataSet<TestState> massiveData = new MassiveDataSet<TestState>(2, 4);
 
-			int id1 = massive.Create(new TestState { Value = 1 });
-			int id2 = massive.Create(new TestState { Value = 2 });
-			int id3 = massive.Create(new TestState { Value = 3 });
+			int id1 = massiveData.Create(new TestState { Value = 1 });
+			int id2 = massiveData.Create(new TestState { Value = 2 });
+			int id3 = massiveData.Create(new TestState { Value = 3 });
 
-			Assert.AreEqual(massive.Get(id1).Value, 1);
-			Assert.AreEqual(massive.Get(id2).Value, 2);
-			Assert.AreEqual(massive.Get(id3).Value, 3);
+			Assert.AreEqual(massiveData.Get(id1).Value, 1);
+			Assert.AreEqual(massiveData.Get(id2).Value, 2);
+			Assert.AreEqual(massiveData.Get(id3).Value, 3);
 		}
 
 		[Test]
 		public void State_WhenAffected_ShouldChangeState()
 		{
-			Massive<TestState> massive = new Massive<TestState>(2, 2);
+			MassiveDataSet<TestState> massiveData = new MassiveDataSet<TestState>(2, 2);
 
-			int id1 = massive.Create(new TestState { Value = 1 });
+			int id1 = massiveData.Create(new TestState { Value = 1 });
 
-			massive.Get(id1).Value = 2;
+			massiveData.Get(id1).Value = 2;
 
-			Assert.AreEqual(massive.Get(id1).Value, 2);
+			Assert.AreEqual(massiveData.Get(id1).Value, 2);
 		}
 
 		[Test]
 		public void SaveFrame_ShouldPreserveStates()
 		{
-			Massive<TestState> massive = new Massive<TestState>(2, 4);
+			MassiveDataSet<TestState> massiveData = new MassiveDataSet<TestState>(2, 4);
 
-			int id1 = massive.Create(new TestState { Value = 1 });
-			int id2 = massive.Create(new TestState { Value = 2 });
-			int id3 = massive.Create(new TestState { Value = 3 });
+			int id1 = massiveData.Create(new TestState { Value = 1 });
+			int id2 = massiveData.Create(new TestState { Value = 2 });
+			int id3 = massiveData.Create(new TestState { Value = 3 });
 
-			massive.SaveFrame();
+			massiveData.SaveFrame();
 
-			Assert.AreEqual(massive.Get(id1).Value, 1);
-			Assert.AreEqual(massive.Get(id2).Value, 2);
-			Assert.AreEqual(massive.Get(id3).Value, 3);
+			Assert.AreEqual(massiveData.Get(id1).Value, 1);
+			Assert.AreEqual(massiveData.Get(id2).Value, 2);
+			Assert.AreEqual(massiveData.Get(id3).Value, 3);
 		}
 
 		[Test]
 		public void RollbackZero_ShouldResetCurrentFrameChanges()
 		{
-			Massive<TestState> massive = new Massive<TestState>(2, 2);
+			MassiveDataSet<TestState> massiveData = new MassiveDataSet<TestState>(2, 2);
 
-			int id1 = massive.Create(new TestState { Value = 1 });
-			massive.SaveFrame();
+			int id1 = massiveData.Create(new TestState { Value = 1 });
+			massiveData.SaveFrame();
 
-			massive.Get(id1).Value = 2;
-			massive.Rollback(0);
+			massiveData.Get(id1).Value = 2;
+			massiveData.Rollback(0);
 
-			Assert.AreEqual(massive.Get(id1).Value, 1);
+			Assert.AreEqual(massiveData.Get(id1).Value, 1);
 		}
 
 		[Test]
 		public void IsAlive_ShouldWorkCorrectWithRollback()
 		{
-			Massive<TestState> massive = new Massive<TestState>(2, 2);
+			MassiveDataSet<TestState> massiveData = new MassiveDataSet<TestState>(2, 2);
 
-			massive.SaveFrame();
+			massiveData.SaveFrame();
 
-			int id1 = massive.Create(new TestState { Value = 1 });
-			int id2 = massive.Create(new TestState { Value = 2 });
-			massive.Delete(id2);
+			int id1 = massiveData.Create(new TestState { Value = 1 });
+			int id2 = massiveData.Create(new TestState { Value = 2 });
+			massiveData.Delete(id2);
 
-			Assert.IsTrue(massive.IsAlive(id1));
-			Assert.IsFalse(massive.IsAlive(id2));
+			Assert.IsTrue(massiveData.IsAlive(id1));
+			Assert.IsFalse(massiveData.IsAlive(id2));
 
-			massive.SaveFrame();
+			massiveData.SaveFrame();
 
-			Assert.IsTrue(massive.IsAlive(id1));
-			Assert.IsFalse(massive.IsAlive(id2));
+			Assert.IsTrue(massiveData.IsAlive(id1));
+			Assert.IsFalse(massiveData.IsAlive(id2));
 
-			massive.Rollback(1);
+			massiveData.Rollback(1);
 
-			Assert.IsFalse(massive.IsAlive(id1));
-			Assert.IsFalse(massive.IsAlive(id2));
+			Assert.IsFalse(massiveData.IsAlive(id1));
+			Assert.IsFalse(massiveData.IsAlive(id2));
 		}
 	}
 }

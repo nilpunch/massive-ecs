@@ -1,4 +1,4 @@
-﻿using MassiveData;
+﻿using Massive;
 
 namespace Massive.Samples.ECS
 {

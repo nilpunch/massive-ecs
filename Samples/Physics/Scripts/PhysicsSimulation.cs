@@ -1,22 +1,22 @@
 ﻿using System.Diagnostics;
-using MassiveData.Samples.Shooter;
+using Massive.Samples.Shooter;
 using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public class PhysicsWorld
 	{
-		public Massive<SphereCollider> Spheres { get; }
-		public Massive<BoxCollider> Boxes { get; }
-		public Massive<Rigidbody> Bodies { get; }
-		public Massive<Contact> Contacts { get; }
+		public MassiveDataSet<SphereCollider> Spheres { get; }
+		public MassiveDataSet<BoxCollider> Boxes { get; }
+		public MassiveDataSet<Rigidbody> Bodies { get; }
+		public MassiveDataSet<Contact> Contacts { get; }
 
 		public PhysicsWorld(int framesCapacity)
 		{
-			Spheres = new Massive<SphereCollider>(framesCapacity);
-			Boxes = new Massive<BoxCollider>(framesCapacity);
-			Bodies = new Massive<Rigidbody>(framesCapacity);
-			Contacts = new Massive<Contact>(framesCapacity);
+			Spheres = new MassiveDataSet<SphereCollider>(framesCapacity);
+			Boxes = new MassiveDataSet<BoxCollider>(framesCapacity);
+			Bodies = new MassiveDataSet<Rigidbody>(framesCapacity);
+			Contacts = new MassiveDataSet<Contact>(framesCapacity);
 		}
 	}
 	
@@ -32,17 +32,17 @@ namespace MassiveData.Samples.Physics
 		[SerializeField] private int _substeps = 8;
 		[SerializeField] private float _gravity = 10f;
 
-		private Massive<SphereCollider> _sphereColliders;
-		private Massive<BoxCollider> _boxColliders;
-		private Massive<Rigidbody> _bodies;
+		private MassiveDataSet<SphereCollider> _sphereColliders;
+		private MassiveDataSet<BoxCollider> _boxColliders;
+		private MassiveDataSet<Rigidbody> _bodies;
 		private EntitySynchronisation<SphereCollider> _spheresSynchronisation;
 		private EntitySynchronisation<BoxCollider> _boxesSynchronisation;
 
 		private void Awake()
 		{
-			_sphereColliders = new Massive<SphereCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
-			_boxColliders = new Massive<BoxCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
-			_bodies = new Massive<Rigidbody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_sphereColliders = new MassiveDataSet<SphereCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_boxColliders = new MassiveDataSet<BoxCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_bodies = new MassiveDataSet<Rigidbody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			
 			_spheresSynchronisation = new EntitySynchronisation<SphereCollider>(new EntityFactory<SphereCollider>(_spherePrefab));
 			_boxesSynchronisation = new EntitySynchronisation<BoxCollider>(new EntityFactory<BoxCollider>(_boxPrefab));

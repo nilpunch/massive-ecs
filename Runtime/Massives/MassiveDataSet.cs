@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace MassiveData
+namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="MassiveData.MassiveSparseSet"/>. Always synchronized.
+	/// Data extension for <see cref="Massive.MassiveSparseSet"/>.
 	/// </summary>
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class Massive<T> : IMassive where T : struct
+	public class MassiveDataSet<T> : IMassive where T : struct
 	{
 		private readonly MassiveSparseSet _sparseSet;
 
@@ -19,18 +19,15 @@ namespace MassiveData
 		// Current frame
 		private readonly T[] _currentData;
 
-		public Massive(int framesCapacity = 120, int dataCapacity = 100)
+		public MassiveDataSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
 		{
-			// Compensate for reserved rollback frame
-			framesCapacity += 1;
-
 			_sparseSet = new MassiveSparseSet(framesCapacity, dataCapacity);
 			_dataByFrames = new T[framesCapacity * dataCapacity];
 			_currentData = new T[dataCapacity];
 		}
 
 		public Span<T> AliveData => new Span<T>(_currentData, 0, _sparseSet.AliveCount);
-		
+
 		public ReadOnlySpan<int> AliveIds => _sparseSet.AliveIds;
 
 		public int AliveCount => _sparseSet.AliveCount;
@@ -52,11 +49,10 @@ namespace MassiveData
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Ensure(int id, T data = default)
+		public void Ensure(int id, T data = default)
 		{
 			var createInfo = _sparseSet.Ensure(id);
 			_currentData[createInfo.Dense] = data;
-			return createInfo.Id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -94,15 +90,15 @@ namespace MassiveData
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(int id)
-		{
-			return _sparseSet.IsAlive(id);
-		}
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryGetDense(int id, out int dense)
 		{
 			return _sparseSet.TryGetDense(id, out dense);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsAlive(int id)
+		{
+			return _sparseSet.IsAlive(id);
 		}
 	}
 }

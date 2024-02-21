@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public class MassiveRigidbody : MonoBehaviour
 	{
@@ -8,7 +8,7 @@ namespace MassiveData.Samples.Physics
 		[SerializeField] private Vector3 _startImpulse;
 		[SerializeField] private Vector3 _startImpulsePoint;
 
-		public void Spawn(Massive<Rigidbody> bodies, Massive<SphereCollider> spheres, Massive<BoxCollider> boxes)
+		public void Spawn(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<BoxCollider> boxes)
 		{
 			int bodyId = bodies.Create(new Rigidbody()
 			{

@@ -1,7 +1,7 @@
-﻿using MassiveData.Samples.Shooter;
+﻿using Massive.Samples.Shooter;
 using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	[RequireComponent(typeof(SphereRoot))]
 	public class SphereVisualSync : VisualSync<SphereCollider>

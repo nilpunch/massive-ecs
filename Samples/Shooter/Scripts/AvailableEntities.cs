@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MassiveData.Samples.Shooter
+namespace Massive.Samples.Shooter
 {
 	public class AvailableEntities<TState> where TState : struct
 	{

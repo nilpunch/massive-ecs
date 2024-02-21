@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public struct SphereCollider
 	{
@@ -47,7 +47,7 @@ namespace MassiveData.Samples.Physics
 			return Rigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Quaternion.identity, mass);
 		}
 		
-		public static void UpdateWorldPositions(Massive<Rigidbody> bodies, Massive<SphereCollider> colliders)
+		public static void UpdateWorldPositions(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<SphereCollider> colliders)
 		{
 			var aliveColliders = colliders.AliveData;
 			for (int i = 0; i < aliveColliders.Length; i++)

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace MassiveData.Tests
+namespace Massive.Tests
 {
 	[TestFixture]
 	public class MassiveSparseSetTests

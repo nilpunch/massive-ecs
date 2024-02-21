@@ -1,20 +1,20 @@
-﻿using MassiveData;
+﻿using Massive;
 
 namespace Massive.Samples.ECS
 {
 	public class MassiveView<T>
 		where T : struct
 	{
-		private readonly Massive<T> _massive;
+		private readonly MassiveDataSet<T> _massiveData;
 
-		public MassiveView(Massive<T> massive)
+		public MassiveView(MassiveDataSet<T> massiveData)
 		{
-			_massive = massive;
+			_massiveData = massiveData;
 		}
 
 		public void ForEach(ActionRef<T> action)
 		{
-			var massiveData = _massive.AliveData;
+			var massiveData = _massiveData.AliveData;
 
 			for (int i = massiveData.Length - 1; i >= 0; i--)
 			{
@@ -27,10 +27,10 @@ namespace Massive.Samples.ECS
 		where T1 : struct
 		where T2 : struct
 	{
-		private readonly Massive<T1> _massive1;
-		private readonly Massive<T2> _massive2;
+		private readonly MassiveDataSet<T1> _massive1;
+		private readonly MassiveDataSet<T2> _massive2;
 
-		public MassiveView(Massive<T1> massive1)
+		public MassiveView(MassiveDataSet<T1> massive1)
 		{
 			_massive1 = massive1;
 			_massive1 = massive1;

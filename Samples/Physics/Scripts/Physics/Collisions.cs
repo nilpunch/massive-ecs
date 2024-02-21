@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public static class Collisions
 	{
@@ -9,7 +9,7 @@ namespace MassiveData.Samples.Physics
 
 		public static readonly List<Contact> Contacts = new List<Contact>();
 
-		public static void Solve(Massive<Rigidbody> bodies, Massive<SphereCollider> spheres, Massive<BoxCollider> boxes)
+		public static void Solve(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<BoxCollider> boxes)
 		{
 			CollectContacts(bodies, spheres, boxes);
 
@@ -108,7 +108,7 @@ namespace MassiveData.Samples.Physics
 			b.ApplyImpulseAtPoint(-frictionImpulse, contact.ContactPointB);
 		}
 
-		private static void CollectContacts(Massive<Rigidbody> bodies, Massive<SphereCollider> spheres, Massive<BoxCollider> boxes)
+		private static void CollectContacts(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<BoxCollider> boxes)
 		{
 			Contacts.Clear();
 

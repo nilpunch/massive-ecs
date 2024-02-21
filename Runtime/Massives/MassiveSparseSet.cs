@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace MassiveData
+namespace Massive
 {
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
@@ -18,7 +18,7 @@ namespace MassiveData
 		private int _currentFrame;
 		private int _savedFrames;
 
-		public MassiveSparseSet(int framesCapacity = 121, int dataCapacity = 100) : base(dataCapacity)
+		public MassiveSparseSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity) : base(dataCapacity)
 		{
 			_framesCapacity = framesCapacity;
 
@@ -35,8 +35,6 @@ namespace MassiveData
 		/// Can be negative, when there absolutely no saved frames to restore information.
 		/// </summary>
 		public int CanRollbackFrames => _savedFrames - 1;
-
-		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 
 		public void SaveFrame()
 		{

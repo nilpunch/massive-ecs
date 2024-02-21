@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MassiveData.Samples.Benchmark
+namespace Massive.Samples.Benchmark
 {
 	internal class RingBuffer<T>
 	{

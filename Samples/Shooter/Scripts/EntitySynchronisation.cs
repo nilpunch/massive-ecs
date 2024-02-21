@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MassiveData.Samples.Shooter
+namespace Massive.Samples.Shooter
 {
 	public class EntitySynchronisation<TState> where TState : struct
 	{
@@ -12,7 +12,7 @@ namespace MassiveData.Samples.Shooter
 			_entities = new AvailableEntities<TState>(entityFactory);
 		}
 
-		public void Synchronize(Massive<TState> data)
+		public void Synchronize(MassiveDataSet<TState> data)
 		{
 			var aliveCount = data.AliveCount;
 

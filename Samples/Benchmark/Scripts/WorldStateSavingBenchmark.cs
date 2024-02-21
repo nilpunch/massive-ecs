@@ -1,26 +1,26 @@
 ﻿using UnityEngine;
 
-namespace MassiveData.Samples.Benchmark
+namespace Massive.Samples.Benchmark
 {
 	public class WorldStateSavingBenchmark : MonoProfiler
 	{
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
-		private Massive<TestState> _massive;
+		private MassiveDataSet<TestState> _massiveData;
 
 		private void Start()
 		{
-			_massive = new Massive<TestState>(100, _worldEntitiesCount);
+			_massiveData = new MassiveDataSet<TestState>(100, _worldEntitiesCount);
 
 			for (int i = 0; i < _worldEntitiesCount; i++)
 			{
-				_massive.Create(new TestState() { Value = 1 + i });
+				_massiveData.Create(new TestState() { Value = 1 + i });
 			}
 		}
 
 		protected override void Sample()
 		{
-			_massive.SaveFrame();
+			_massiveData.SaveFrame();
 		}
 	}
 }

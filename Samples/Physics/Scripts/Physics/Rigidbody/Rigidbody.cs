@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public struct Rigidbody
 	{
@@ -79,7 +79,7 @@ namespace MassiveData.Samples.Physics
 			return Velocity + Vector3.Cross(AngularVelocity, point - WorldCenterOfMass.Position);
 		}
 
-		public static void IntegrateAll(Massive<Rigidbody> bodies, float deltaTime)
+		public static void IntegrateAll(MassiveDataSet<Rigidbody> bodies, float deltaTime)
 		{
 			var aliveRigidbodies = bodies.AliveData;
 			for (var i = 0; i < aliveRigidbodies.Length; i++)
@@ -88,7 +88,7 @@ namespace MassiveData.Samples.Physics
 			}
 		}
 
-		public static void UpdateAllWorldInertia(Massive<Rigidbody> bodies)
+		public static void UpdateAllWorldInertia(MassiveDataSet<Rigidbody> bodies)
 		{
 			var bodiesAlive = bodies.AliveData;
 			for (int i = 0; i < bodiesAlive.Length; i++)
@@ -97,7 +97,7 @@ namespace MassiveData.Samples.Physics
 			}
 		}
 
-		public static void RecalculateAllInertia(Massive<Rigidbody> bodies, Massive<BoxCollider> boxes, Massive<SphereCollider> spheres)
+		public static void RecalculateAllInertia(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<BoxCollider> boxes, MassiveDataSet<SphereCollider> spheres)
 		{
 			var bodiesAlive = bodies.AliveData;
 			var boxesAlive = boxes.AliveData;

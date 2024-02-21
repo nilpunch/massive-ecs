@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace MassiveData.Samples.Physics
+namespace Massive.Samples.Physics
 {
 	public struct BoxCollider : ISupportMappable
 	{
@@ -71,7 +71,7 @@ namespace MassiveData.Samples.Physics
 			return Rigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Local.Rotation, mass);
 		}
 
-		public static void UpdateWorldPositions(Massive<Rigidbody> bodies, Massive<BoxCollider> colliders)
+		public static void UpdateWorldPositions(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<BoxCollider> colliders)
 		{
 			var aliveColliders = colliders.AliveData;
 			for (int i = 0; i < aliveColliders.Length; i++)
