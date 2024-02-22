@@ -36,6 +36,7 @@ namespace Massive
 		/// </summary>
 		public int CanRollbackFrames => _savedFrames - 1;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
 			int currentMaxDense = MaxDense;
@@ -54,6 +55,7 @@ namespace Massive
 			_savedFrames = Math.Min(_savedFrames + 1, _framesCapacity);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
 			if (frames > CanRollbackFrames)

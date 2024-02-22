@@ -4,6 +4,8 @@ namespace Massive
 {
 	public interface IReadOnlySet
 	{
+		int Capacity { get; }
+
 		int AliveCount { get; }
 
 		ReadOnlySpan<int> AliveIds { get; }

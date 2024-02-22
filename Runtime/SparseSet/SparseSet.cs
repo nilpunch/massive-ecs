@@ -16,12 +16,12 @@ namespace Massive
 
 		public SparseSet(int dataCapacity = Constants.DataCapacity)
 		{
-			Dense = new int[dataCapacity];
-			Sparse = new int[dataCapacity];
-			DenseCapacity = dataCapacity;
+			Capacity = dataCapacity;
+			Dense = new int[Capacity];
+			Sparse = new int[Capacity];
 		}
 
-		public int DenseCapacity { get; }
+		public int Capacity { get; }
 
 		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 
