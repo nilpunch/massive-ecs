@@ -27,7 +27,7 @@ namespace Massive.Samples.ECS
 			}
 
 			ComponentIds.UsedIds.Add(id);
-			
+
 			Id = id;
 			SizeInBytes = Marshal.SizeOf<T>();
 			HasAnyFields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;

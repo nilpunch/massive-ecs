@@ -8,20 +8,40 @@ namespace Massive.Samples.ECS
 		private readonly int _framesCapacity;
 		private readonly int _entitiesCapacity;
 
-		private readonly ComponentSparseSet _entities;
+		private readonly EcsSparseSet _entities;
+		private readonly Dictionary<int, IEcsSet> _components;
 
-		private readonly Dictionary<int, IComponentMassive> _componentsLookup;
-		private readonly List<IComponentMassive> _components;
-
-		public int CanRollbackFrames => _entities.CanRollbackFrames;
+		private readonly List<IEcsSet> _allSets;
 
 		public MassiveWorld(int framesCapacity = 121, int entitiesCapacity = 1000)
 		{
 			_framesCapacity = framesCapacity;
 			_entitiesCapacity = entitiesCapacity;
-			_entities = new ComponentSparseSet(framesCapacity, entitiesCapacity);
-			_componentsLookup = new Dictionary<int, IComponentMassive>();
-			_components = new List<IComponentMassive> { _entities };
+
+			_entities = new EcsSparseSet(framesCapacity, entitiesCapacity);
+			_components = new Dictionary<int, IEcsSet>();
+			_allSets = new List<IEcsSet> { _entities };
+		}
+
+		public int CanRollbackFrames => _entities.CanRollbackFrames;
+
+		public void SaveFrame()
+		{
+			foreach (var massive in _allSets)
+			{
+				massive.SaveFrame();
+			}
+		}
+
+		public void Rollback(int frames)
+		{
+			foreach (var massive in _allSets)
+			{
+				if (massive.CanRollbackFrames >= 0)
+				{
+					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
+				}
+			}
 		}
 
 		public int CreateEntity()
@@ -31,7 +51,7 @@ namespace Massive.Samples.ECS
 
 		public void DeleteEntity(int entity)
 		{
-			foreach (var massive in _components)
+			foreach (var massive in _allSets)
 			{
 				massive.DeleteById(entity);
 			}
@@ -46,34 +66,34 @@ namespace Massive.Samples.ECS
 
 			return ref GetOrCreateComponents<T>().Get(entity);
 		}
-		
+
 		public bool Has<T>(int entity) where T : struct
 		{
-			if (_componentsLookup.TryGetValue(ComponentMeta<T>.Id, out var componentMassive))
+			if (_components.TryGetValue(ComponentMeta<T>.Id, out var componentMassive))
 			{
 				return componentMassive.IsAlive(entity);
 			}
-			
+
 			return false;
 		}
 
-		public ComponentDataSet<T> GetComponents<T>() where T : struct
+		public EcsDataSet<T> GetComponents<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
 				throw new Exception("Type has no fields! Use GetTags<T>() instead.");
 			}
-			
+
 			return GetOrCreateComponents<T>();
 		}
-		
+
 		public SparseSet GetTags<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
 				throw new Exception("Type has fields! Use GetComponents<T>() instead.");
 			}
-			
+
 			return GetOrCreateTags<T>();
 		}
 
@@ -96,51 +116,32 @@ namespace Massive.Samples.ECS
 			GetOrCreateComponents<T>().Delete(entity);
 		}
 
-		public void SaveFrame()
-		{
-			foreach (var massive in _components)
-			{
-				massive.SaveFrame();
-			}
-		}
-
-		public void Rollback(int frames)
-		{
-			foreach (var massive in _components)
-			{
-				if (massive.CanRollbackFrames >= 0)
-				{
-					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
-				}
-			}
-		}
-
-		private ComponentDataSet<T> GetOrCreateComponents<T>() where T : struct
+		private EcsDataSet<T> GetOrCreateComponents<T>() where T : struct
 		{
 			int id = ComponentMeta<T>.Id;
 
-			if (!_componentsLookup.TryGetValue(id, out var components))
+			if (!_components.TryGetValue(id, out var components))
 			{
-				components = new ComponentDataSet<T>(_framesCapacity, _entitiesCapacity);
-				_componentsLookup.Add(id, components);
-				_components.Add(components);
+				components = new EcsDataSet<T>(_framesCapacity, _entitiesCapacity);
+				_components.Add(id, components);
+				_allSets.Add(components);
 			}
 
-			return (ComponentDataSet<T>)components;
+			return (EcsDataSet<T>)components;
 		}
 
-		private ComponentSparseSet GetOrCreateTags<T>() where T : struct
+		private EcsSparseSet GetOrCreateTags<T>() where T : struct
 		{
 			int id = ComponentMeta<T>.Id;
 
-			if (!_componentsLookup.TryGetValue(id, out var tags))
+			if (!_components.TryGetValue(id, out var tags))
 			{
-				tags = new ComponentSparseSet(_framesCapacity, _entitiesCapacity);
-				_componentsLookup.Add(id, tags);
-				_components.Add(tags);
+				tags = new EcsSparseSet(_framesCapacity, _entitiesCapacity);
+				_components.Add(id, tags);
+				_allSets.Add(tags);
 			}
 
-			return (ComponentSparseSet)tags;
+			return (EcsSparseSet)tags;
 		}
 	}
 }

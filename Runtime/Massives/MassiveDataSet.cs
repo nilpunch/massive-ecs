@@ -19,6 +19,8 @@ namespace Massive
 			_dataByFrames = new T[framesCapacity * Data.Length];
 		}
 
+		public int CurrentFrame => SparseSet.CurrentFrame;
+
 		public int CanRollbackFrames => SparseSet.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -26,7 +28,7 @@ namespace Massive
 		{
 			SparseSet.SaveFrame();
 
-			// We can sync data saving with MassiveSparseSet saving
+			// We can sync saving with MassiveSparseSet saving, using its CurrentFrame
 			Array.Copy(Data, 0, _dataByFrames, SparseSet.CurrentFrame * Data.Length, AliveCount);
 		}
 
@@ -35,7 +37,7 @@ namespace Massive
 		{
 			SparseSet.Rollback(frames);
 
-			// Similarly to saving, we can sync data rollback with MassiveSparseSet rollback
+			// Similarly to saving, we can sync rollback with MassiveSparseSet rollback
 			Array.Copy(_dataByFrames, SparseSet.CurrentFrame * Data.Length, Data, 0, AliveCount);
 		}
 	}

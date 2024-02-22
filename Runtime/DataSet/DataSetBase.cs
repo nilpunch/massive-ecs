@@ -9,20 +9,20 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class DataSetBase<TData, TSparseSet> : IDataSet<TData>
-		where TData : struct
+	public class DataSetBase<T, TSparseSet> : IDataSet<T>
+		where T : struct
 		where TSparseSet : ISparseSet
 	{
 		protected readonly TSparseSet SparseSet;
-		protected readonly TData[] Data;
+		protected readonly T[] Data;
 
 		protected DataSetBase(TSparseSet sparseSet)
 		{
 			SparseSet = sparseSet;
-			Data = new TData[sparseSet.Capacity];
+			Data = new T[sparseSet.Capacity];
 		}
 
-		public Span<TData> AliveData => new Span<TData>(Data, 0, SparseSet.AliveCount);
+		public Span<T> AliveData => new Span<T>(Data, 0, SparseSet.AliveCount);
 
 		public ReadOnlySpan<int> AliveIds => SparseSet.AliveIds;
 
@@ -31,14 +31,14 @@ namespace Massive
 		public int AliveCount => SparseSet.AliveCount;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Ensure(int id, TData data = default)
+		public void Ensure(int id, T data = default)
 		{
 			var createInfo = SparseSet.Ensure(id);
 			Data[createInfo.Dense] = data;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Create(TData data = default)
+		public int Create(T data = default)
 		{
 			var createInfo = SparseSet.Create();
 			Data[createInfo.Dense] = data;
@@ -66,7 +66,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref TData Get(int id)
+		public ref T Get(int id)
 		{
 			return ref Data[SparseSet.GetDense(id)];
 		}
