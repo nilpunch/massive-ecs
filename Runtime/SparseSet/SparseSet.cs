@@ -6,7 +6,7 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class SparseSet : IReadOnlySet
+	public class SparseSet : ISparseSet
 	{
 		protected int[] Dense { get; }
 		protected int[] Sparse { get; }
@@ -18,12 +18,14 @@ namespace Massive
 		{
 			Dense = new int[dataCapacity];
 			Sparse = new int[dataCapacity];
+			DenseCapacity = dataCapacity;
 		}
 
-		public int Capacity => Dense.Length;
+		public int DenseCapacity { get; }
 
 		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CreateInfo Ensure(int id)
 		{
 			if (id >= Sparse.Length)
@@ -70,6 +72,7 @@ namespace Massive
 			return new CreateInfo() { Id = id, Dense = count };
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CreateInfo Create()
 		{
 			int count = AliveCount;
@@ -102,6 +105,7 @@ namespace Massive
 			return new CreateInfo() { Id = maxId, Dense = maxDense };
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DeleteInfo? Delete(int id)
 		{
 			int aliveCount = AliveCount;
@@ -126,6 +130,7 @@ namespace Massive
 			return new DeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DeleteInfo? DeleteDense(int dense)
 		{
 			int aliveCount = AliveCount;
