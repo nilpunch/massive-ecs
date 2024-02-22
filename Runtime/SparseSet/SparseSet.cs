@@ -6,7 +6,7 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class SparseSet
+	public class SparseSet : IReadOnlySet
 	{
 		protected int[] Dense { get; }
 		protected int[] Sparse { get; }
@@ -19,6 +19,8 @@ namespace Massive
 			Dense = new int[dataCapacity];
 			Sparse = new int[dataCapacity];
 		}
+
+		public int Capacity => Dense.Length;
 
 		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 

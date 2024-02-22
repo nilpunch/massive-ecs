@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Massive.Samples.Physics
+﻿namespace Massive.Samples.Physics
 {
 	[System.Serializable]
 	public struct PhysicMaterial

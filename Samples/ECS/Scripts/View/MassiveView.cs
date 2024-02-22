@@ -1,6 +1,4 @@
-﻿using Massive;
-
-namespace Massive.Samples.ECS
+﻿namespace Massive.Samples.ECS
 {
 	public class MassiveView<T>
 		where T : struct
@@ -12,13 +10,23 @@ namespace Massive.Samples.ECS
 			_massiveData = massiveData;
 		}
 
+		public void ForEach(EntityAction action)
+		{
+			ForEach((int id, ref T value) => action.Invoke(id));
+		}
+		
 		public void ForEach(ActionRef<T> action)
 		{
-			var massiveData = _massiveData.AliveData;
+			ForEach((int id, ref T value) => action.Invoke(ref value));
+		}
 
+		public void ForEach(EntityActionRef<T> action)
+		{
+			var massiveData = _massiveData.AliveData;
+			var ids = _massiveData.AliveIds;
 			for (int i = massiveData.Length - 1; i >= 0; i--)
 			{
-				action.Invoke(ref massiveData[i]);
+				action.Invoke(ids[i], ref massiveData[i]);
 			}
 		}
 	}
@@ -36,7 +44,37 @@ namespace Massive.Samples.ECS
 			_massive1 = massive1;
 		}
 
+		public void ForEach(EntityAction action)
+		{
+			ForEach((int id, ref T1 value1, ref T2 value2) => action.Invoke(id));
+		}
+		
+		public void ForEach(ActionRef<T1> action)
+		{
+			ForEach((int id, ref T1 value1, ref T2 value2) => action.Invoke(ref value1));
+		}
+		
+		public void ForEach(ActionRef<T2> action)
+		{
+			ForEach((int id, ref T1 value1, ref T2 value2) => action.Invoke(ref value2));
+		}
+		
+		public void ForEach(EntityActionRef<T1> action)
+		{
+			ForEach((int id, ref T1 value1, ref T2 value2) => action.Invoke(id, ref value1));
+		}
+		
+		public void ForEach(EntityActionRef<T2> action)
+		{
+			ForEach((int id, ref T1 value1, ref T2 value2) => action.Invoke(id, ref value2));
+		}
+		
 		public void ForEach(ActionRef<T1, T2> action)
+		{
+			ForEach((int id, ref T1 value1, ref T2 value2) => action.Invoke(ref value1, ref value2));
+		}
+		
+		public void ForEach(EntityActionRef<T1, T2> action)
 		{
 			var massiveData1 = _massive1.AliveData;
 			var massiveData2 = _massive2.AliveData;
@@ -49,7 +87,7 @@ namespace Massive.Samples.ECS
 					int id = ids1[dense1];
 					if (_massive2.TryGetDense(id, out var dense2))
 					{
-						action.Invoke(ref massiveData1[dense1], ref massiveData2[dense2]);
+						action.Invoke(id, ref massiveData1[dense1], ref massiveData2[dense2]);
 					}
 				}
 			}
@@ -61,7 +99,7 @@ namespace Massive.Samples.ECS
 					int id = ids2[dense2];
 					if (_massive1.TryGetDense(id, out var dense1))
 					{
-						action.Invoke(ref massiveData1[dense1], ref massiveData2[dense2]);
+						action.Invoke(id, ref massiveData1[dense1], ref massiveData2[dense2]);
 					}
 				}
 			}

@@ -9,7 +9,7 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class MassiveDataSet<T> : IMassive where T : struct
+	public class MassiveDataSet<T> : IMassive, IReadOnlySet where T : struct
 	{
 		private readonly MassiveSparseSet _sparseSet;
 
@@ -87,6 +87,12 @@ namespace Massive
 		public ref T Get(int id)
 		{
 			return ref _currentData[_sparseSet.GetDense(id)];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int GetDense(int id)
+		{
+			return _sparseSet.GetDense(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

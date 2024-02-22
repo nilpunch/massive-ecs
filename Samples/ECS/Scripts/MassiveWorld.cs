@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Massive;
 
 namespace Massive.Samples.ECS
 {
@@ -9,10 +8,10 @@ namespace Massive.Samples.ECS
 		private readonly int _framesCapacity;
 		private readonly int _entitiesCapacity;
 
-		private readonly ExtendedMassiveSparseSet _entities;
+		private readonly ComponentSparseSet _entities;
 
-		private readonly Dictionary<int, IExtendedMassive> _massivesLookup;
-		private readonly List<IExtendedMassive> _massives;
+		private readonly Dictionary<int, IComponentMassive> _componentsLookup;
+		private readonly List<IComponentMassive> _components;
 
 		public int CanRollbackFrames => _entities.CanRollbackFrames;
 
@@ -20,9 +19,9 @@ namespace Massive.Samples.ECS
 		{
 			_framesCapacity = framesCapacity;
 			_entitiesCapacity = entitiesCapacity;
-			_entities = new ExtendedMassiveSparseSet(framesCapacity, entitiesCapacity);
-			_massivesLookup = new Dictionary<int, IExtendedMassive>();
-			_massives = new List<IExtendedMassive> { _entities };
+			_entities = new ComponentSparseSet(framesCapacity, entitiesCapacity);
+			_componentsLookup = new Dictionary<int, IComponentMassive>();
+			_components = new List<IComponentMassive> { _entities };
 		}
 
 		public int CreateEntity()
@@ -32,7 +31,7 @@ namespace Massive.Samples.ECS
 
 		public void DeleteEntity(int entity)
 		{
-			foreach (var massive in _massives)
+			foreach (var massive in _components)
 			{
 				massive.DeleteById(entity);
 			}
@@ -47,15 +46,35 @@ namespace Massive.Samples.ECS
 
 			return ref GetOrCreateComponents<T>().Get(entity);
 		}
+		
+		public bool Has<T>(int entity) where T : struct
+		{
+			if (_componentsLookup.TryGetValue(ComponentMeta<T>.Id, out var componentMassive))
+			{
+				return componentMassive.IsAlive(entity);
+			}
+			
+			return false;
+		}
 
-		public MassiveDataSet<T> GetComponents<T>() where T : struct
+		public ComponentDataSet<T> GetComponents<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
-				throw new Exception("Type has no fields!");
+				throw new Exception("Type has no fields! Use GetTags<T>() instead.");
 			}
-
+			
 			return GetOrCreateComponents<T>();
+		}
+		
+		public SparseSet GetTags<T>() where T : struct
+		{
+			if (!ComponentMeta<T>.HasAnyFields)
+			{
+				throw new Exception("Type has fields! Use GetComponents<T>() instead.");
+			}
+			
+			return GetOrCreateTags<T>();
 		}
 
 		public void Set<T>(int entity, T data = default) where T : struct
@@ -74,21 +93,12 @@ namespace Massive.Samples.ECS
 
 		public void Remove<T>(int entity) where T : struct
 		{
-			if (ComponentMeta<T>.HasAnyFields)
-			{
-				var components = GetOrCreateComponents<T>();
-				components.Delete(entity);
-			}
-			else
-			{
-				var tags = GetOrCreateTags<T>();
-				tags.Delete(entity);
-			}
+			GetOrCreateComponents<T>().Delete(entity);
 		}
 
 		public void SaveFrame()
 		{
-			foreach (var massive in _massives)
+			foreach (var massive in _components)
 			{
 				massive.SaveFrame();
 			}
@@ -96,7 +106,7 @@ namespace Massive.Samples.ECS
 
 		public void Rollback(int frames)
 		{
-			foreach (var massive in _massives)
+			foreach (var massive in _components)
 			{
 				if (massive.CanRollbackFrames >= 0)
 				{
@@ -105,32 +115,32 @@ namespace Massive.Samples.ECS
 			}
 		}
 
-		private ExtendedMassiveDataSet<T> GetOrCreateComponents<T>() where T : struct
+		private ComponentDataSet<T> GetOrCreateComponents<T>() where T : struct
 		{
 			int id = ComponentMeta<T>.Id;
 
-			if (!_massivesLookup.TryGetValue(id, out var components))
+			if (!_componentsLookup.TryGetValue(id, out var components))
 			{
-				components = new ExtendedMassiveDataSet<T>(_framesCapacity, _entitiesCapacity);
-				_massivesLookup.Add(id, components);
-				_massives.Add(components);
+				components = new ComponentDataSet<T>(_framesCapacity, _entitiesCapacity);
+				_componentsLookup.Add(id, components);
+				_components.Add(components);
 			}
 
-			return (ExtendedMassiveDataSet<T>)components;
+			return (ComponentDataSet<T>)components;
 		}
 
-		private ExtendedMassiveSparseSet GetOrCreateTags<T>() where T : struct
+		private ComponentSparseSet GetOrCreateTags<T>() where T : struct
 		{
 			int id = ComponentMeta<T>.Id;
 
-			if (!_massivesLookup.TryGetValue(id, out var tags))
+			if (!_componentsLookup.TryGetValue(id, out var tags))
 			{
-				tags = new ExtendedMassiveSparseSet(_framesCapacity, _entitiesCapacity);
-				_massivesLookup.Add(id, tags);
-				_massives.Add(tags);
+				tags = new ComponentSparseSet(_framesCapacity, _entitiesCapacity);
+				_componentsLookup.Add(id, tags);
+				_components.Add(tags);
 			}
 
-			return (ExtendedMassiveSparseSet)tags;
+			return (ComponentSparseSet)tags;
 		}
 	}
 }
