@@ -1,22 +1,21 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Massive.Samples.ECS
+﻿namespace Massive.Samples.ECS
 {
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class View
+	public class View<T>
+		where T : struct
 	{
-		private readonly MassiveSparseSet _tags;
+		private readonly MassiveDataSet<T> _components;
 		private readonly Filter _filter;
 
-		public View(MassiveSparseSet tags, Filter filter = null)
+		public View(MassiveDataSet<T> components, Filter filter = null)
 		{
-			_tags = tags;
+			_components = components;
 			_filter = filter;
 		}
 
-		public void ForEach(EntityAction action)
+		public void ForEach(EntityActionRef<T> action)
 		{
 			if (_filter is null)
 			{
@@ -28,24 +27,26 @@ namespace Massive.Samples.ECS
 			}
 		}
 
-		private void ForEachRaw(EntityAction action)
+		private void ForEachRaw(EntityActionRef<T> action)
 		{
-			var ids = _tags.AliveIds;
+			var data = _components.AliveData;
+			var ids = _components.AliveIds;
 			for (int dense = ids.Length - 1; dense >= 0; dense--)
 			{
-				action.Invoke(ids[dense]);
+				action.Invoke(ids[dense], ref data[dense]);
 			}
 		}
 
-		private void ForEachFiltered(EntityAction action)
+		private void ForEachFiltered(EntityActionRef<T> action)
 		{
-			var ids = _tags.AliveIds;
+			var data = _components.AliveData;
+			var ids = _components.AliveIds;
 			for (int dense = ids.Length - 1; dense >= 0; dense--)
 			{
 				int id = ids[dense];
 				if (_filter.IsOkay(id))
 				{
-					action.Invoke(id);
+					action.Invoke(id, ref data[dense]);
 				}
 			}
 		}

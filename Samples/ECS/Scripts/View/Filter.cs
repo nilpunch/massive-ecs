@@ -20,7 +20,7 @@ namespace Massive.Samples.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool CheckId(int id)
+		public bool IsOkay(int id)
 		{
 			if (_mustExclude.Count == 0 && _mustInclude.Count == 0)
 			{
