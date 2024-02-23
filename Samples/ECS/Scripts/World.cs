@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Massive.Samples.ECS
 {
-	public class MassiveWorld : IMassive
+	public class World : IMassive
 	{
 		private readonly int _framesCapacity;
 		private readonly int _entitiesCapacity;
@@ -13,7 +13,7 @@ namespace Massive.Samples.ECS
 
 		private readonly List<IEcsSet> _allSets;
 
-		public MassiveWorld(int framesCapacity = 121, int entitiesCapacity = 1000)
+		public World(int framesCapacity = 121, int entitiesCapacity = 1000)
 		{
 			_framesCapacity = framesCapacity;
 			_entitiesCapacity = entitiesCapacity;
