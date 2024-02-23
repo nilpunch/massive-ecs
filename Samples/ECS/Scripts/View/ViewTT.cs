@@ -3,7 +3,7 @@
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public readonly struct View<T1, T2> : IView<T1, T2>
+	public readonly struct View<T1, T2>
 		where T1 : struct
 		where T2 : struct
 	{
@@ -15,6 +15,18 @@
 			_components1 = components1;
 			_components2 = components2;
 		}
+
+		public void ForEach(EntityAction action) => ForEach((int id, ref T1 _, ref T2 _) => action.Invoke(id));
+
+		public void ForEach(ActionRef<T1> action) => ForEach((int _, ref T1 value1, ref T2 _) => action.Invoke(ref value1));
+
+		public void ForEach(ActionRef<T2> action) => ForEach((int _, ref T1 _, ref T2 value2) => action.Invoke(ref value2));
+
+		public void ForEach(EntityActionRef<T1> action) => ForEach((int id, ref T1 value1, ref T2 _) => action.Invoke(id, ref value1));
+
+		public void ForEach(EntityActionRef<T2> action) => ForEach((int id, ref T1 _, ref T2 value2) => action.Invoke(id, ref value2));
+
+		public void ForEach(ActionRef<T1, T2> action) => ForEach((int _, ref T1 value1, ref T2 value2) => action.Invoke(ref value1, ref value2));
 
 		public void ForEach(EntityActionRef<T1, T2> action)
 		{

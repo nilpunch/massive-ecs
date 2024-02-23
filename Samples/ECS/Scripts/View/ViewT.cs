@@ -3,7 +3,7 @@
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public readonly struct View<T> : IView<T>
+	public readonly struct View<T>
 		where T : struct
 	{
 		private readonly MassiveDataSet<T> _components;
@@ -12,6 +12,10 @@
 		{
 			_components = components;
 		}
+
+		public void ForEach(EntityAction action) => ForEach((int id, ref T _) => action.Invoke(id));
+
+		public void ForEach(ActionRef<T> action) => ForEach((int _, ref T value) => action.Invoke(ref value));
 
 		public void ForEach(EntityActionRef<T> action)
 		{
