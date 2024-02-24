@@ -1,24 +1,31 @@
-﻿namespace Massive.Samples.Shooter
+﻿using Massive.Samples.ECS;
+
+namespace Massive.Samples.Shooter
 {
 	public class BulletsUpdater : WorldUpdater
 	{
-		public override void UpdateWorld(in WorldFrame worldFrame)
+		private Registry _registry;
+		private View<BulletState> _bullets;
+
+		public override void Init(Registry registry)
 		{
-			var bullets = worldFrame.Bullets.AliveData;
-
-			for (int dense = worldFrame.Bullets.AliveCount - 1; dense >= 0; dense--)
+			_registry = registry;
+			_bullets = new View<BulletState>(registry.Components<BulletState>());
+		}
+		
+		public override void UpdateWorld(float deltaTime)
+		{
+			_bullets.ForEach((int id, ref BulletState state) =>
 			{
-				ref BulletState state = ref bullets[dense];
-
-				state.Lifetime -= worldFrame.DeltaTime;
+				state.Lifetime -= deltaTime;
 				if (state.IsDestroyed)
 				{
-					worldFrame.Bullets.DeleteDense(dense);
-					continue;
+					_registry.DeleteEntity(id);
+					return;
 				}
 
-				state.Transform.Position += state.Velocity * worldFrame.DeltaTime;
-			}
+				state.Transform.Position += state.Velocity * deltaTime;
+			});
 		}
 	}
 }

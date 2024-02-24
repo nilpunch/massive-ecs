@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 453373618}
   - component: {fileID: 453373617}
   - component: {fileID: 453373619}
+  - component: {fileID: 453373620}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -155,9 +156,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 146b957c18694c93ba5f6f94eb17ea11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _simulationsPerFrame: 120
-  _charactersCapacity: 7
-  _bulletsCapacity: 2000
+  _simulationsPerFrame: 0
+  _entitiesCapacity: 3000
+  _charactersAmount: 10
   _characterPrefab: {fileID: 6570296482868281500, guid: 1d1e085c91905db4ba8bcc88d66309b6, type: 3}
   _bulletPrefab: {fileID: 630462838858110626, guid: e335915f8dc878749bf7850aff3b5da1, type: 3}
 --- !u!4 &453373616
@@ -202,8 +203,7 @@ MonoBehaviour:
   _cooldown: 0
   _bulletVelocity: 7
   _bulletDamage: 1
-  _bulletLifetime: 3.2
-  _rotation: 400
+  _bulletLifetime: 1.65
 --- !u!114 &453373619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,6 +216,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d326c01bed664138b259983d30c4101f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &453373620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453373614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0273dc9a27534bb7af8f514e6700567c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rotation: 400
 --- !u!1 &1342606201
 GameObject:
   m_ObjectHideFlags: 0

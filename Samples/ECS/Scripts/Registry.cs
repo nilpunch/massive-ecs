@@ -49,6 +49,13 @@ namespace Massive.Samples.ECS
 			return _entities.Create().Id;
 		}
 
+		public int CreateEntity<T>(T data) where T : struct
+		{
+			int id = _entities.Create().Id;
+			Set(id, data);
+			return id;
+		}
+
 		public void DeleteEntity(int entity)
 		{
 			foreach (var massive in _allSets)
@@ -77,26 +84,6 @@ namespace Massive.Samples.ECS
 			return false;
 		}
 
-		public IDataSet<T> GetComponents<T>() where T : struct
-		{
-			if (!ComponentMeta<T>.HasAnyFields)
-			{
-				throw new Exception("Type has no fields! Use GetTags<T>() instead.");
-			}
-
-			return GetOrCreateComponents<T>();
-		}
-
-		public ISet GetTags<T>() where T : struct
-		{
-			if (!ComponentMeta<T>.HasAnyFields)
-			{
-				throw new Exception("Type has fields! Use GetComponents<T>() instead.");
-			}
-
-			return GetOrCreateTags<T>();
-		}
-
 		public void Set<T>(int entity, T data = default) where T : struct
 		{
 			if (ComponentMeta<T>.HasAnyFields)
@@ -114,6 +101,26 @@ namespace Massive.Samples.ECS
 		public void Remove<T>(int entity) where T : struct
 		{
 			GetOrCreateComponents<T>().Delete(entity);
+		}
+
+		public IDataSet<T> Components<T>() where T : struct
+		{
+			if (!ComponentMeta<T>.HasAnyFields)
+			{
+				throw new Exception("Type has no fields! Use GetTags<T>() instead.");
+			}
+
+			return GetOrCreateComponents<T>();
+		}
+
+		public ISet Tags<T>() where T : struct
+		{
+			if (!ComponentMeta<T>.HasAnyFields)
+			{
+				throw new Exception("Type has fields! Use GetComponents<T>() instead.");
+			}
+
+			return GetOrCreateTags<T>();
 		}
 
 		private IDataSet<T> GetOrCreateComponents<T>() where T : struct
