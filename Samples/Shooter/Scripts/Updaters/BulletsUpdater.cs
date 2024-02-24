@@ -6,7 +6,7 @@
 		{
 			var bullets = worldFrame.Bullets.AliveData;
 
-			for (int dense = 0; dense < worldFrame.Bullets.AliveCount; dense++)
+			for (int dense = worldFrame.Bullets.AliveCount - 1; dense >= 0; dense--)
 			{
 				ref BulletState state = ref bullets[dense];
 
@@ -14,7 +14,6 @@
 				if (state.IsDestroyed)
 				{
 					worldFrame.Bullets.DeleteDense(dense);
-					dense -= 1;
 					continue;
 				}
 

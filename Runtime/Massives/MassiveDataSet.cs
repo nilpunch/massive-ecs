@@ -14,7 +14,7 @@ namespace Massive
 		private readonly T[] _dataByFrames;
 
 		public MassiveDataSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
-			: base(new MassiveSparseSet(dataCapacity))
+			: base(new MassiveSparseSet(framesCapacity, dataCapacity))
 		{
 			_dataByFrames = new T[framesCapacity * Data.Length];
 		}
