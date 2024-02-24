@@ -17,7 +17,7 @@ namespace Massive.Samples.Benchmark
 		{
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				_massiveData.Create(new TestState() { Value = index + 1 });
+				int temp = _massiveData.Create(new TestState() { Value = index + 1 }).Id;
 			}
 
 			for (int index = 0; index < _worldEntitiesCount; index++)

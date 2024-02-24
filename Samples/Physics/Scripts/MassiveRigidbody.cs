@@ -14,7 +14,7 @@ namespace Massive.Samples.Physics
 			{
 				WorldCenterOfMass = new Transformation(transform.position, transform.rotation),
 				IsStatic = _static
-			});
+			}).Id;
 
 			foreach (var sphereCollider in GetComponentsInChildren<MassiveSphereCollider>())
 			{

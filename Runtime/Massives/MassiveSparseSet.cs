@@ -6,7 +6,7 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class MassiveSparseSet : SparseSet, IMassive
+	public class MassiveSparseSet : SparseSet, IMassiveSet
 	{
 		private readonly int[] _denseByFrames;
 		private readonly int[] _sparseByFrames;

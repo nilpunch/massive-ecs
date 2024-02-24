@@ -1,6 +1,6 @@
 namespace Massive
 {
-	public interface ISparseSet : IReadOnlySet
+	public interface ISet : IReadOnlySet
 	{
 		CreateInfo Ensure(int id);
 		CreateInfo Create();

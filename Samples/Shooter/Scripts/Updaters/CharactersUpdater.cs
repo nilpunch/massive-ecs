@@ -38,7 +38,7 @@ namespace Massive.Samples.Shooter
 					Damage = _bulletDamage
 				};
 
-				worldFrame.Bullets.Create(createBullet);
+				int temp = worldFrame.Bullets.Create(createBullet).Id;
 			}
 		}
 	}

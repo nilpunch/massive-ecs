@@ -31,14 +31,14 @@ namespace Massive.Samples.Shooter
 
 			for (int i = 0; i < _charactersCapacity; i++)
 			{
-				_characters.Create(new CharacterState()
+				int temp = _characters.Create(new CharacterState()
 				{
 					Transform = new EntityTransform()
 					{
 						Position = Vector3.right * (i - _charactersCapacity / 2f) * 1.5f,
 						Rotation = Quaternion.AngleAxis(180f * (i - _charactersCapacity / 2f) / _charactersCapacity, Vector3.forward)
 					}
-				});
+				}).Id;
 			}
 		}
 

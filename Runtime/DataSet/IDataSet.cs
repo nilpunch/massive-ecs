@@ -2,12 +2,11 @@ using System;
 
 namespace Massive
 {
-	public interface IDataSet<T> : IReadOnlySet where T : struct
+	public interface IDataSet<T> : ISet where T : struct
 	{
 		Span<T> AliveData { get; }
-		void Ensure(int id, T data = default);
-		int Create(T data = default);
-		void Delete(int id);
-		void DeleteDense(int denseIndex);
+		CreateInfo Ensure(int id, T data);
+		CreateInfo Create(T data);
+		ref T Get(int id);
 	}
 }

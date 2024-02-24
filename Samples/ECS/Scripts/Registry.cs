@@ -3,24 +3,24 @@ using System.Collections.Generic;
 
 namespace Massive.Samples.ECS
 {
-	public class World : IMassive
+	public class Registry : IMassive
 	{
 		private readonly int _framesCapacity;
 		private readonly int _entitiesCapacity;
 
-		private readonly EcsSparseSet _entities;
-		private readonly Dictionary<int, IEcsSet> _components;
+		private readonly MassiveSparseSet _entities;
+		private readonly Dictionary<int, IMassiveSet> _components;
 
-		private readonly List<IEcsSet> _allSets;
+		private readonly List<IMassiveSet> _allSets;
 
-		public World(int framesCapacity = 121, int entitiesCapacity = 1000)
+		public Registry(int framesCapacity = 121, int entitiesCapacity = 1000)
 		{
 			_framesCapacity = framesCapacity;
 			_entitiesCapacity = entitiesCapacity;
 
-			_entities = new EcsSparseSet(framesCapacity, entitiesCapacity);
-			_components = new Dictionary<int, IEcsSet>();
-			_allSets = new List<IEcsSet> { _entities };
+			_entities = new MassiveSparseSet(framesCapacity, entitiesCapacity);
+			_components = new Dictionary<int, IMassiveSet>();
+			_allSets = new List<IMassiveSet> { _entities };
 		}
 
 		public int CanRollbackFrames => _entities.CanRollbackFrames;
@@ -53,7 +53,7 @@ namespace Massive.Samples.ECS
 		{
 			foreach (var massive in _allSets)
 			{
-				massive.DeleteById(entity);
+				massive.Delete(entity);
 			}
 		}
 
@@ -77,7 +77,7 @@ namespace Massive.Samples.ECS
 			return false;
 		}
 
-		public EcsDataSet<T> GetComponents<T>() where T : struct
+		public IDataSet<T> GetComponents<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -87,7 +87,7 @@ namespace Massive.Samples.ECS
 			return GetOrCreateComponents<T>();
 		}
 
-		public SparseSet GetTags<T>() where T : struct
+		public ISet GetTags<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -116,32 +116,32 @@ namespace Massive.Samples.ECS
 			GetOrCreateComponents<T>().Delete(entity);
 		}
 
-		private EcsDataSet<T> GetOrCreateComponents<T>() where T : struct
+		private IDataSet<T> GetOrCreateComponents<T>() where T : struct
 		{
 			int id = ComponentMeta<T>.Id;
 
 			if (!_components.TryGetValue(id, out var components))
 			{
-				components = new EcsDataSet<T>(_framesCapacity, _entitiesCapacity);
+				components = new MassiveDataSet<T>(_framesCapacity, _entitiesCapacity);
 				_components.Add(id, components);
 				_allSets.Add(components);
 			}
 
-			return (EcsDataSet<T>)components;
+			return (IDataSet<T>)components;
 		}
 
-		private EcsSparseSet GetOrCreateTags<T>() where T : struct
+		private ISet GetOrCreateTags<T>() where T : struct
 		{
 			int id = ComponentMeta<T>.Id;
 
 			if (!_components.TryGetValue(id, out var tags))
 			{
-				tags = new EcsSparseSet(_framesCapacity, _entitiesCapacity);
+				tags = new MassiveSparseSet(_framesCapacity, _entitiesCapacity);
 				_components.Add(id, tags);
 				_allSets.Add(tags);
 			}
 
-			return (EcsSparseSet)tags;
+			return tags;
 		}
 	}
 }
