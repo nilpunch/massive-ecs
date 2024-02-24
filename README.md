@@ -1,8 +1,10 @@
-# massive - sparse set ECS, featuring rollbacks
+# massive - Sparse Set, featuring rollbacks
 
 Made for a fast paced online multiplayer games with prediction-rollback netcode.
 
 This is a **library**, not a framework. Thus, it doesn't try to take control of the user codebase or the main game loop.
+
+ECS extension will be available soon.
 
 # Samples
 
