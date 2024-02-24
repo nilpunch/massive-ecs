@@ -17,8 +17,9 @@ namespace Massive.Samples.ECS
 		{
 			var type = typeof(T);
 			var typeFullName = type.FullName;
-			var id = typeFullName.GetHashCode();
+			var id = typeFullName!.GetHashCode();
 
+			// May happen, but very unlikely
 			if (ComponentIds.UsedIds.Contains(id))
 			{
 				Debug.LogError($"Id collision happened with type: {typeFullName}");

@@ -17,8 +17,8 @@ namespace Massive
 		public SparseSet(int dataCapacity = Constants.DataCapacity)
 		{
 			Capacity = dataCapacity;
-			Dense = new int[Capacity];
-			Sparse = new int[Capacity];
+			Dense = new int[dataCapacity];
+			Sparse = new int[dataCapacity];
 		}
 
 		public int Capacity { get; }

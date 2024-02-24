@@ -23,11 +23,11 @@ namespace Massive
 		{
 			_framesCapacity = framesCapacity;
 
-			_denseByFrames = new int[_framesCapacity * Dense.Length];
-			_sparseByFrames = new int[_framesCapacity * Sparse.Length];
-			_maxDenseByFrames = new int[_framesCapacity];
-			_maxIdByFrames = new int[_framesCapacity];
-			_aliveCountByFrames = new int[_framesCapacity];
+			_denseByFrames = new int[framesCapacity * Dense.Length];
+			_sparseByFrames = new int[framesCapacity * Sparse.Length];
+			_maxDenseByFrames = new int[framesCapacity];
+			_maxIdByFrames = new int[framesCapacity];
+			_aliveCountByFrames = new int[framesCapacity];
 		}
 
 		public int CurrentFrame => _currentFrame;

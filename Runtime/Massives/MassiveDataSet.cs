@@ -19,8 +19,6 @@ namespace Massive
 			_dataByFrames = new T[framesCapacity * Data.Length];
 		}
 
-		public int CurrentFrame => SparseSet.CurrentFrame;
-
 		public int CanRollbackFrames => SparseSet.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

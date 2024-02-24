@@ -4,19 +4,6 @@ using System.Runtime.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="Massive.SparseSet"/>.
-	/// </summary>
-	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
-	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
-	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class DataSet<T> : DataSet<T, SparseSet> where T : struct
-	{
-		public DataSet(int dataCapacity = Constants.DataCapacity) : base(new SparseSet(dataCapacity))
-		{
-		}
-	}
-
-	/// <summary>
 	/// Data extension for any <see cref="Massive.ISet"/>.
 	/// </summary>
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
@@ -35,13 +22,13 @@ namespace Massive
 			Data = new T[sparseSet.Capacity];
 		}
 
-		public Span<T> AliveData => new Span<T>(Data, 0, SparseSet.AliveCount);
+		public int Capacity => SparseSet.Capacity;
+
+		public int AliveCount => SparseSet.AliveCount;
 
 		public ReadOnlySpan<int> AliveIds => SparseSet.AliveIds;
 
-		public int Capacity => Data.Length;
-
-		public int AliveCount => SparseSet.AliveCount;
+		public Span<T> AliveData => new Span<T>(Data, 0, SparseSet.AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CreateInfo Ensure(int id)
@@ -119,6 +106,19 @@ namespace Massive
 		public bool IsAlive(int id)
 		{
 			return SparseSet.IsAlive(id);
+		}
+	}
+
+	/// <summary>
+	/// Data extension for <see cref="Massive.SparseSet"/>.
+	/// </summary>
+	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
+	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
+	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
+	public class DataSet<T> : DataSet<T, SparseSet> where T : struct
+	{
+		public DataSet(int dataCapacity = Constants.DataCapacity) : base(new SparseSet(dataCapacity))
+		{
 		}
 	}
 }
