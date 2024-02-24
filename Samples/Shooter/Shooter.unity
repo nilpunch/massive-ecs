@@ -156,9 +156,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 146b957c18694c93ba5f6f94eb17ea11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _simulationsPerFrame: 0
+  _simulationsPerFrame: 120
   _entitiesCapacity: 3000
-  _charactersAmount: 10
+  _charactersAmount: 7
   _characterPrefab: {fileID: 6570296482868281500, guid: 1d1e085c91905db4ba8bcc88d66309b6, type: 3}
   _bulletPrefab: {fileID: 630462838858110626, guid: e335915f8dc878749bf7850aff3b5da1, type: 3}
 --- !u!4 &453373616
@@ -203,7 +203,7 @@ MonoBehaviour:
   _cooldown: 0
   _bulletVelocity: 7
   _bulletDamage: 1
-  _bulletLifetime: 1.65
+  _bulletLifetime: 3.2
 --- !u!114 &453373619
 MonoBehaviour:
   m_ObjectHideFlags: 0
