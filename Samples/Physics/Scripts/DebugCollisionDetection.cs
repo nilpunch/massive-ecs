@@ -5,8 +5,7 @@ namespace Massive.Samples.Physics
 	public class DebugCollisionDetection : MonoBehaviour
 	{
 		[SerializeField] private Vector3 _size;
-		[Space]
-		[SerializeField] private UnityEngine.Transform _sphere;
+		[Space] [SerializeField] private UnityEngine.Transform _sphere;
 		[SerializeField] private float _sphereRadius;
 
 		private void OnDrawGizmos()
@@ -18,7 +17,7 @@ namespace Massive.Samples.Physics
 			{
 				World = new Transformation(_sphere.position, _sphere.rotation)
 			};
-			
+
 			BoxCollider boxCollider = new BoxCollider(0, _size, new Transformation(), new PhysicMaterial())
 			{
 				World = new Transformation(transform.position, transform.rotation)
@@ -38,7 +37,7 @@ namespace Massive.Samples.Physics
 			// Gizmos.matrix = orig;
 
 			ColliderContact colliderContact = new ColliderContact();
-			
+
 			// CollisionTester.SphereVsBox(ref sphereCollider, ref boxCollider, boxCollider.WorldPosition - sphereCollider.WorldPosition, boxCollider.WorldRotation, ref contact);
 			CollisionTester.SphereVsSphere(ref sphereCollider, ref sphereCollider2, sphereCollider2.World.Position - sphereCollider.World.Position, ref colliderContact);
 
@@ -47,7 +46,8 @@ namespace Massive.Samples.Physics
 				Gizmos.color = Color.red;
 				Gizmos.DrawSphere(sphereCollider.World.Position + colliderContact.OffsetFromColliderA, 0.1f);
 				Gizmos.color = Color.yellow;
-				Gizmos.DrawLine(sphereCollider.World.Position + colliderContact.OffsetFromColliderA, sphereCollider.World.Position + colliderContact.OffsetFromColliderA + colliderContact.Normal * colliderContact.Depth);
+				Gizmos.DrawLine(sphereCollider.World.Position + colliderContact.OffsetFromColliderA,
+					sphereCollider.World.Position + colliderContact.OffsetFromColliderA + colliderContact.Normal * colliderContact.Depth);
 			}
 		}
 	}

@@ -6,7 +6,7 @@ namespace Massive.Samples.Physics
 	public struct Rigidbody
 	{
 		public Transformation WorldCenterOfMass;
-		
+
 		public Vector3 Velocity;
 		public Vector3 Forces;
 
@@ -19,7 +19,7 @@ namespace Massive.Samples.Physics
 		public float Mass;
 
 		public bool IsStatic;
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Integrate(float deltaTime)
 		{
@@ -29,12 +29,12 @@ namespace Massive.Samples.Physics
 				Forces = Vector3.zero;
 				return;
 			}
-			
+
 			// Linear motion integration
 			Velocity += deltaTime * InverseMass * Forces;
 			WorldCenterOfMass.Position += deltaTime * Velocity;
 			Forces = Vector3.zero;
-			
+
 			// Angular motion integration
 			AngularVelocity += deltaTime * InverseWorldInertiaTensor.MultiplyPoint3x4(Torques);
 			WorldCenterOfMass.Rotation = Quaternion.Euler(deltaTime * Mathf.Rad2Deg * AngularVelocity) * WorldCenterOfMass.Rotation;
@@ -115,13 +115,14 @@ namespace Massive.Samples.Physics
 				body.LocalInertiaTensor = CombineInertiaTensor(body.LocalInertiaTensor, box.LocalInertiaTensor());
 				body.Mass = box.Mass();
 			}
+
 			foreach (var sphere in spheresAlive)
 			{
 				ref var body = ref bodies.Get(sphere.RigidbodyId);
 				body.LocalInertiaTensor = CombineInertiaTensor(body.LocalInertiaTensor, sphere.LocalInertiaTensor());
 				body.Mass = sphere.Mass();
 			}
-			
+
 			for (int i = 0; i < bodiesAlive.Length; i++)
 			{
 				bodiesAlive[i].InverseMass = 1f / bodiesAlive[i].Mass;
@@ -136,17 +137,17 @@ namespace Massive.Samples.Physics
 
 			// Apply the parallel axis theorem to adjust MOI for the collider's offset
 			float distanceSquared = offsetFromCenterOfMass.sqrMagnitude;
-			
+
 			// Calculate the additional inertia using the parallel axis theorem: d^2 * m
 			float additionalInertia = distanceSquared * mass;
 
 			moi[0, 0] += additionalInertia;
 			moi[1, 1] += additionalInertia;
 			moi[2, 2] += additionalInertia;
-			
+
 			return moi;
 		}
-		
+
 		public static Matrix4x4 CombineInertiaTensor(Matrix4x4 tensorA, Matrix4x4 tensorB)
 		{
 			Matrix4x4 sumTensor = new Matrix4x4();

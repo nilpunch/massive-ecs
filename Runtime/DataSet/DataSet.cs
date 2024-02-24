@@ -15,9 +15,9 @@ namespace Massive
 		{
 		}
 	}
-	
+
 	/// <summary>
-	/// Data extension for <see cref="Massive.ISet"/>.
+	/// Data extension for any <see cref="Massive.ISet"/>.
 	/// </summary>
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
@@ -68,7 +68,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public CreateInfo Create(T data )
+		public CreateInfo Create(T data)
 		{
 			var createInfo = SparseSet.Create();
 			Data[createInfo.Dense] = data;

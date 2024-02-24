@@ -75,7 +75,7 @@ namespace Massive.Samples.Physics
 			{
 				return;
 			}
-			
+
 			// Apply normal impulse
 			Vector3 impulse = normal * j;
 			a.ApplyImpulseAtPoint(impulse, contact.ContactPointA);

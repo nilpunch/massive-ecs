@@ -19,21 +19,22 @@ namespace Massive.Samples.Physics
 			foreach (var sphereCollider in GetComponentsInChildren<MassiveSphereCollider>())
 			{
 				spheres.Create(new SphereCollider(bodyId, sphereCollider.Radius,
-					new Transformation(transform.InverseTransformPoint(sphereCollider.transform.position), Quaternion.Inverse(transform.rotation) * sphereCollider.transform.rotation),
+					new Transformation(transform.InverseTransformPoint(sphereCollider.transform.position),
+						Quaternion.Inverse(transform.rotation) * sphereCollider.transform.rotation),
 					sphereCollider.Material));
 			}
-			
+
 			foreach (var boxCollider in GetComponentsInChildren<MassiveBoxCollider>())
 			{
 				boxes.Create(new BoxCollider(bodyId, boxCollider.Size,
 					new Transformation(transform.InverseTransformPoint(boxCollider.transform.position), Quaternion.Inverse(transform.rotation) * boxCollider.transform.rotation),
 					boxCollider.Material));
 			}
-			
+
 			Rigidbody.RecalculateAllInertia(bodies, boxes, spheres);
-			
+
 			bodies.Get(bodyId).ApplyImpulseAtPoint(_startImpulse, _startImpulsePoint);
-			
+
 			Debug.Log(bodies.Get(bodyId).LocalInertiaTensor);
 		}
 

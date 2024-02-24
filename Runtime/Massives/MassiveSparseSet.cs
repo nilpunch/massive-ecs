@@ -18,7 +18,8 @@ namespace Massive
 		private int _currentFrame;
 		private int _savedFrames;
 
-		public MassiveSparseSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity) : base(dataCapacity)
+		public MassiveSparseSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
+			: base(dataCapacity)
 		{
 			_framesCapacity = framesCapacity;
 

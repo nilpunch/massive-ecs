@@ -12,7 +12,7 @@ namespace Massive.Samples.Physics
 			Position = position;
 			Rotation = rotation;
 		}
-		
+
 		public Transformation LocalToWorld(Transformation parent)
 		{
 			return new Transformation()

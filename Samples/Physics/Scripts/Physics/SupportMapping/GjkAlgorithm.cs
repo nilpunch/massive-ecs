@@ -45,20 +45,20 @@ namespace Massive.Samples.Physics
 			while (iterations < maxIterations)
 			{
 				MinkowskiDifference supportPoint = MinkowskiDifference.Calculate(shapeA, shapeB, direction);
-				
+
 				simplex.D = simplex.C;
 				simplex.C = simplex.B;
 				simplex.B = simplex.A;
 				simplex.A = supportPoint;
-				
-				if(Vector3.Dot(supportPoint.Difference, direction) <= 0f)
+
+				if (Vector3.Dot(supportPoint.Difference, direction) <= 0f)
 				{
 					break;
 				}
 
 				var encloseResult = TryEncloseOrigin(ref simplex, shapeA, shapeB, direction);
-				
-				if(encloseResult.EncloseOrigin)
+
+				if (encloseResult.EncloseOrigin)
 				{
 					colliding = true;
 					break;
@@ -80,7 +80,7 @@ namespace Massive.Samples.Physics
 		private static Vector3 NormalizeSafe(Vector3 vector, Vector3 defaultValue)
 		{
 			Vector3 result = Vector3.Normalize(vector);
-			
+
 			if (result.Equals(Vector3.zero))
 			{
 				return defaultValue;
@@ -88,7 +88,7 @@ namespace Massive.Samples.Physics
 
 			return result;
 		}
-		
+
 		public static unsafe float CopySign(float target, float source)
 		{
 			// Convert floats to their bitwise integer representations
@@ -101,7 +101,7 @@ namespace Massive.Samples.Physics
 			// Convert the bits back to a float
 			return *(float*)&resultBits;
 		}
-		
+
 		private static Vector3 Orthonormal(Vector3 a)
 		{
 			float length = a.magnitude;
@@ -109,7 +109,7 @@ namespace Massive.Samples.Physics
 			float h = a.z + s;
 			return new Vector3(s * h - a.x * a.x, -a.x * a.y, -a.x * h);
 		}
-		
+
 		private static Vector3 TripleProduct(Vector3 a, Vector3 b, Vector3 c)
 		{
 			return Vector3.Cross(Vector3.Cross(a, b), c);
@@ -171,11 +171,12 @@ namespace Massive.Samples.Physics
 
 					// ABC
 					direction = Vector3.Normalize(Vector3.Cross(ab, ac));
-					if(Vector3.Dot(ad, direction) > 0f)
+					if (Vector3.Dot(ad, direction) > 0f)
 					{
 						direction = -direction;
 					}
-					if(Vector3.Dot(simplex.A.Difference, direction) < -Tolerance)
+
+					if (Vector3.Dot(simplex.A.Difference, direction) < -Tolerance)
 					{
 						// Remove d
 						simplex.Stage = 3;
@@ -184,11 +185,12 @@ namespace Massive.Samples.Physics
 
 					// ADB
 					direction = Vector3.Normalize(Vector3.Cross(ab, ad));
-					if(Vector3.Dot(ac, direction) > 0f)
+					if (Vector3.Dot(ac, direction) > 0f)
 					{
 						direction = -direction;
 					}
-					if(Vector3.Dot(simplex.A.Difference, direction) < -Tolerance)
+
+					if (Vector3.Dot(simplex.A.Difference, direction) < -Tolerance)
 					{
 						// Remove c
 						simplex.C = simplex.D;
@@ -198,11 +200,12 @@ namespace Massive.Samples.Physics
 
 					// ACD
 					direction = Vector3.Normalize(Vector3.Cross(ac, ad));
-					if(Vector3.Dot(ab, direction) > 0f)
+					if (Vector3.Dot(ab, direction) > 0f)
 					{
 						direction = -direction;
 					}
-					if(Vector3.Dot(simplex.A.Difference, direction) < -Tolerance)
+
+					if (Vector3.Dot(simplex.A.Difference, direction) < -Tolerance)
 					{
 						// Remove b
 						simplex.B = simplex.C;
@@ -213,11 +216,12 @@ namespace Massive.Samples.Physics
 
 					// BCD
 					direction = Vector3.Normalize(Vector3.Cross(bc, bd));
-					if(Vector3.Dot(ba, direction) > 0f)
+					if (Vector3.Dot(ba, direction) > 0f)
 					{
 						direction = -direction;
 					}
-					if(Vector3.Dot(simplex.B.Difference, direction) < -Tolerance)
+
+					if (Vector3.Dot(simplex.B.Difference, direction) < -Tolerance)
 					{
 						// Remove a
 						simplex.A = simplex.B;

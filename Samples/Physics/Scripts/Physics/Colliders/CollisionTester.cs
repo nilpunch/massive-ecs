@@ -9,7 +9,7 @@ namespace Massive.Samples.Physics
 		public static void SphereVsSphere(ref SphereCollider a, ref SphereCollider b, Vector3 offsetToB, ref ColliderContact colliderContact)
 		{
 			var centerDistance = offsetToB.magnitude;
-			
+
 			colliderContact.Normal = -offsetToB / centerDistance;
 
 			bool normalIsValid = centerDistance > 0f;
@@ -35,7 +35,7 @@ namespace Massive.Samples.Physics
 			// Those offsets differ only by their sign, so are equivalent due to the symmetry of the box. The negation is left implicit
 			var localOffsetB = Quaternion.Inverse(orientationOfB) * offsetToB;
 			Vector3 clampedLocalOffsetB;
-			
+
 			clampedLocalOffsetB.x = Mathf.Min(Mathf.Max(localOffsetB.x, -b.HalfSize.x), b.HalfSize.x);
 			clampedLocalOffsetB.y = Mathf.Min(Mathf.Max(localOffsetB.y, -b.HalfSize.y), b.HalfSize.y);
 			clampedLocalOffsetB.z = Mathf.Min(Mathf.Max(localOffsetB.z, -b.HalfSize.z), b.HalfSize.z);

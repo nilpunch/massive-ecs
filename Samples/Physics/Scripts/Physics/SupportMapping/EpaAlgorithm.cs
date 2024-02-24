@@ -22,7 +22,7 @@ namespace Massive.Samples.Physics
 			ContactSecond = contactSecond;
 		}
 	}
-	
+
 	public struct ContactPoint
 	{
 		public ContactPoint(Vector3 position)
@@ -32,7 +32,7 @@ namespace Massive.Samples.Physics
 
 		public Vector3 Position { get; }
 	}
-	
+
 	public static class EpaAlgorithm
 	{
 		private static float Tolerance => 0.0001f;
@@ -67,15 +67,15 @@ namespace Massive.Samples.Physics
 				A = a;
 				B = b;
 				C = c;
-				
+
 				Vector3 vA = Vertices[A].Difference;
 				Vector3 vB = Vertices[B].Difference;
 				Vector3 vC = Vertices[C].Difference;
 				Vector3 center = (vA + vB + vC) / 3f;
-				
+
 				Vector3 direction = center - centroid;
 				Vector3 normal = CalculateFaceNormal(vA, vB, vC);
-				
+
 				if (Vector3.Dot(direction, normal) < 0f)
 				{
 					(B, C) = (C, B);
@@ -104,12 +104,12 @@ namespace Massive.Samples.Physics
 		{
 			Faces.Clear();
 			Vertices.Clear();
-			
+
 			Vertices.Add(simplex.A);
 			Vertices.Add(simplex.B);
 			Vertices.Add(simplex.C);
 			Vertices.Add(simplex.D);
-			
+
 			var centroid = CalculateCentroid();
 
 			Faces.Add(new PolytopeFace(0, 1, 2, centroid));
@@ -132,12 +132,12 @@ namespace Massive.Samples.Physics
 				{
 					break;
 				}
-				
+
 				Vertices.Add(supportPoint);
-				
+
 				ExpandPolytope(supportPoint, centroid);
 			}
-			
+
 			// foreach (var face in Faces)
 			// {
 			// 	Gizmos.color = Color.white;
@@ -148,12 +148,12 @@ namespace Massive.Samples.Physics
 			// 	Vector3 center = (Vertices[face.A].Difference + Vertices[face.B].Difference + Vertices[face.C].Difference) / 3f;
 			// 	Gizmos.DrawLine(center, center + face.Normal);
 			// }
-			
+
 			// if (iteration >= maxIterations)
 			// {
 			// 	throw new Exception();
 			// }
-			
+
 			Vector3 barycentric = Barycentric(
 				Vertices[closestFace.Face.A].Difference,
 				Vertices[closestFace.Face.B].Difference,

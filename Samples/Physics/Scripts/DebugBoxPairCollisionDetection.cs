@@ -6,8 +6,7 @@ namespace Massive.Samples.Physics
 	{
 		[SerializeField] private Vector3 _firstSize;
 		[SerializeField] private Vector3 _secondSize;
-		[Space]
-		[SerializeField] private UnityEngine.Transform _firstTransform;
+		[Space] [SerializeField] private UnityEngine.Transform _firstTransform;
 		[SerializeField] private UnityEngine.Transform _secondTransform;
 		[SerializeField, Range(0, 24)] private int _iterations = 0;
 

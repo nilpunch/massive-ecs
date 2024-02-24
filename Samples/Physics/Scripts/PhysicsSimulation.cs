@@ -19,15 +19,14 @@ namespace Massive.Samples.Physics
 			Contacts = new MassiveDataSet<Contact>(framesCapacity);
 		}
 	}
-	
+
 	public class PhysicsSimulation : MonoBehaviour
 	{
 		[SerializeField, Range(0.01f, 10f)] private float _simulationSpeed = 1f;
 		[SerializeField] private int _simulationsPerFrame = 120;
 		[SerializeField] private int _particlesCapacity = 1000;
 
-		[Header("Physics")]
-		[SerializeField] private EntityRoot<SphereCollider> _spherePrefab;
+		[Header("Physics")] [SerializeField] private EntityRoot<SphereCollider> _spherePrefab;
 		[SerializeField] private EntityRoot<BoxCollider> _boxPrefab;
 		[SerializeField] private int _substeps = 8;
 		[SerializeField] private float _gravity = 10f;
@@ -43,7 +42,7 @@ namespace Massive.Samples.Physics
 			_sphereColliders = new MassiveDataSet<SphereCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			_boxColliders = new MassiveDataSet<BoxCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 			_bodies = new MassiveDataSet<Rigidbody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
-			
+
 			_spheresSynchronisation = new EntitySynchronisation<SphereCollider>(new EntityFactory<SphereCollider>(_spherePrefab));
 			_boxesSynchronisation = new EntitySynchronisation<BoxCollider>(new EntityFactory<BoxCollider>(_boxPrefab));
 
@@ -51,7 +50,7 @@ namespace Massive.Samples.Physics
 			{
 				massiveRigidbody.Spawn(_bodies, _sphereColliders, _boxColliders);
 			}
-			
+
 			Rigidbody.RecalculateAllInertia(_bodies, _boxColliders, _sphereColliders);
 		}
 
@@ -78,7 +77,7 @@ namespace Massive.Samples.Physics
 			{
 				const float simulationDeltaTime = 1f / 60f;
 				float subStepDeltaTime = simulationDeltaTime / _substeps;
-				
+
 				for (int i = 0; i < _substeps; i++)
 				{
 					Rigidbody.UpdateAllWorldInertia(_bodies);
@@ -103,7 +102,7 @@ namespace Massive.Samples.Physics
 			// }
 			//
 			// Debug.Log(systemEnergy);
-			
+
 			_spheresSynchronisation.Synchronize(_sphereColliders);
 			_boxesSynchronisation.Synchronize(_boxColliders);
 
@@ -115,11 +114,15 @@ namespace Massive.Samples.Physics
 		private void OnGUI()
 		{
 			float fontScaling = Screen.height / (float)1080;
-			
-			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = Mathf.RoundToInt(70 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_sphereColliders.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_sphereColliders.AliveCount} Spheres", new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_boxColliders.AliveCount} Boxes", new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
+
+			GUILayout.TextField($"{_debugTime}ms Simulation",
+				new GUIStyle() { fontSize = Mathf.RoundToInt(70 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_sphereColliders.CanRollbackFrames} Resimulations",
+				new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_sphereColliders.AliveCount} Spheres",
+				new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_boxColliders.AliveCount} Boxes",
+				new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}
 }

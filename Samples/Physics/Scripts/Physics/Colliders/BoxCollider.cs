@@ -20,7 +20,7 @@ namespace Massive.Samples.Physics
 			Size = size;
 			Material = material;
 			HalfSize = size * 0.5f;
-			
+
 			Local = local;
 			World = local;
 		}
@@ -52,12 +52,12 @@ namespace Massive.Samples.Physics
 			float volume = Size.x * Size.y * Size.z;
 			return Material.Density * volume;
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Matrix4x4 LocalInertiaTensor()
 		{
 			float mass = Mass();
-			
+
 			float ix = (1f / 12f) * mass * (Size.y * Size.y + Size.z * Size.z);
 			float iy = (1f / 12f) * mass * (Size.x * Size.x + Size.z * Size.z);
 			float iz = (1f / 12f) * mass * (Size.x * Size.x + Size.y * Size.y);
