@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Massive.Samples.ECS
 {
@@ -25,6 +26,7 @@ namespace Massive.Samples.ECS
 
 		public int CanRollbackFrames => _entities.CanRollbackFrames;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
 			foreach (var massive in _allSets)
@@ -33,6 +35,7 @@ namespace Massive.Samples.ECS
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
 			foreach (var massive in _allSets)
@@ -44,11 +47,13 @@ namespace Massive.Samples.ECS
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int CreateEntity()
 		{
 			return _entities.Create().Id;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int CreateEntity<T>(T data) where T : struct
 		{
 			int id = _entities.Create().Id;
@@ -56,6 +61,7 @@ namespace Massive.Samples.ECS
 			return id;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void DeleteEntity(int entity)
 		{
 			foreach (var massive in _allSets)
@@ -64,6 +70,7 @@ namespace Massive.Samples.ECS
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get<T>(int entity) where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
@@ -74,6 +81,7 @@ namespace Massive.Samples.ECS
 			return ref GetOrCreateComponents<T>().Get(entity);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has<T>(int entity) where T : struct
 		{
 			if (_components.TryGetValue(ComponentMeta<T>.Id, out var componentMassive))
@@ -84,6 +92,7 @@ namespace Massive.Samples.ECS
 			return false;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set<T>(int entity, T data = default) where T : struct
 		{
 			if (ComponentMeta<T>.HasAnyFields)
@@ -98,11 +107,13 @@ namespace Massive.Samples.ECS
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove<T>(int entity) where T : struct
 		{
 			GetOrCreateComponents<T>().Delete(entity);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IDataSet<T> Components<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
@@ -113,6 +124,7 @@ namespace Massive.Samples.ECS
 			return GetOrCreateComponents<T>();
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ISet Tags<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
@@ -123,6 +135,7 @@ namespace Massive.Samples.ECS
 			return GetOrCreateTags<T>();
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private IDataSet<T> GetOrCreateComponents<T>() where T : struct
 		{
 			int id = ComponentMeta<T>.Id;
@@ -137,6 +150,7 @@ namespace Massive.Samples.ECS
 			return (IDataSet<T>)components;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private ISet GetOrCreateTags<T>() where T : struct
 		{
 			int id = ComponentMeta<T>.Id;

@@ -1,4 +1,6 @@
-﻿namespace Massive.Samples.ECS
+﻿using System.Runtime.CompilerServices;
+
+namespace Massive.Samples.ECS
 {
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
@@ -12,6 +14,7 @@
 			_tags = tags;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action)
 		{
 			var ids = _tags.AliveIds;

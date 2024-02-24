@@ -1,4 +1,6 @@
-﻿namespace Massive.Samples.ECS
+﻿using System.Runtime.CompilerServices;
+
+namespace Massive.Samples.ECS
 {
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
@@ -16,18 +18,25 @@
 			_components2 = components2;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action) => ForEach((int id, ref T1 _, ref T2 _) => action.Invoke(id));
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(ActionRef<T1> action) => ForEach((int _, ref T1 value1, ref T2 _) => action.Invoke(ref value1));
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(ActionRef<T2> action) => ForEach((int _, ref T1 _, ref T2 value2) => action.Invoke(ref value2));
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T1> action) => ForEach((int id, ref T1 value1, ref T2 _) => action.Invoke(id, ref value1));
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T2> action) => ForEach((int id, ref T1 _, ref T2 value2) => action.Invoke(id, ref value2));
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(ActionRef<T1, T2> action) => ForEach((int _, ref T1 value1, ref T2 value2) => action.Invoke(ref value1, ref value2));
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T1, T2> action)
 		{
 			var data1 = _components1.AliveData;

@@ -1,4 +1,6 @@
-﻿namespace Massive.Samples.ECS
+﻿using System.Runtime.CompilerServices;
+
+namespace Massive.Samples.ECS
 {
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
@@ -12,10 +14,13 @@
 			_components = components;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action) => ForEach((int id, ref T _) => action.Invoke(id));
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(ActionRef<T> action) => ForEach((int _, ref T value) => action.Invoke(ref value));
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T> action)
 		{
 			var data = _components.AliveData;
