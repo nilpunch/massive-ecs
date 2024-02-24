@@ -5,9 +5,9 @@
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 	public readonly struct View
 	{
-		private readonly MassiveSparseSet _tags;
+		private readonly ISet _tags;
 
-		public View(MassiveSparseSet tags)
+		public View(ISet tags)
 		{
 			_tags = tags;
 		}

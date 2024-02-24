@@ -7,10 +7,10 @@
 		where T1 : struct
 		where T2 : struct
 	{
-		private readonly MassiveDataSet<T1> _components1;
-		private readonly MassiveDataSet<T2> _components2;
+		private readonly IDataSet<T1> _components1;
+		private readonly IDataSet<T2> _components2;
 
-		public View(MassiveDataSet<T1> components1, MassiveDataSet<T2> components2)
+		public View(IDataSet<T1> components1, IDataSet<T2> components2)
 		{
 			_components1 = components1;
 			_components2 = components2;

@@ -5,10 +5,10 @@
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 	public class FilterView
 	{
-		private readonly MassiveSparseSet _tags;
+		private readonly ISet _tags;
 		private readonly Filter _filter;
 
-		public FilterView(MassiveSparseSet tags, Filter filter)
+		public FilterView(ISet tags, Filter filter)
 		{
 			_tags = tags;
 			_filter = filter;

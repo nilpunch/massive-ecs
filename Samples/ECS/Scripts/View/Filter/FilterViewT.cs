@@ -5,10 +5,10 @@
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 	public class FilterView<T> where T : struct
 	{
-		private readonly MassiveDataSet<T> _components;
+		private readonly IDataSet<T> _components;
 		private readonly Filter _filter;
 
-		public FilterView(MassiveDataSet<T> components, Filter filter)
+		public FilterView(IDataSet<T> components, Filter filter)
 		{
 			_components = components;
 			_filter = filter;

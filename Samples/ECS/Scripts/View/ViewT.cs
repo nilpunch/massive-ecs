@@ -5,9 +5,9 @@
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 	public readonly struct View<T> where T : struct
 	{
-		private readonly MassiveDataSet<T> _components;
+		private readonly IDataSet<T> _components;
 
-		public View(MassiveDataSet<T> components)
+		public View(IDataSet<T> components)
 		{
 			_components = components;
 		}
