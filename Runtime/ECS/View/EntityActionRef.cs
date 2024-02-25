@@ -1,4 +1,4 @@
-﻿namespace Massive.Samples.ECS
+﻿namespace Massive.ECS
 {
 	public delegate void EntityAction(int entity);
 

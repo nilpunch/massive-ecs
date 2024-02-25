@@ -1,4 +1,4 @@
-﻿using Massive.Samples.ECS;
+﻿using Massive.ECS;
 using UnityEngine;
 
 namespace Massive.Samples.Shooter

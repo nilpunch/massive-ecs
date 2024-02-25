@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Massive.Samples.ECS
+namespace Massive.ECS
 {
 	public class Registry : IMassive
 	{
@@ -10,9 +10,8 @@ namespace Massive.Samples.ECS
 		private readonly int _entitiesCapacity;
 
 		private readonly MassiveSparseSet _entities;
-		private readonly Dictionary<int, IMassiveSet> _components;
-
-		private readonly List<IMassiveSet> _allSets;
+		private readonly Dictionary<int, IMassiveSet> _pools;
+		private readonly List<IMassiveSet> _massives;
 
 		public Registry(int framesCapacity = 121, int entitiesCapacity = 1000)
 		{
@@ -20,16 +19,21 @@ namespace Massive.Samples.ECS
 			_entitiesCapacity = entitiesCapacity;
 
 			_entities = new MassiveSparseSet(framesCapacity, entitiesCapacity);
-			_components = new Dictionary<int, IMassiveSet>();
-			_allSets = new List<IMassiveSet> { _entities };
+			_pools = new Dictionary<int, IMassiveSet>();
+			_massives = new List<IMassiveSet> { _entities };
+
+			// Save first empty frame to ensure we can rollback to it
+			_entities.SaveFrame();
 		}
+
+		public ISet Entities => _entities;
 
 		public int CanRollbackFrames => _entities.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			foreach (var massive in _allSets)
+			foreach (var massive in _massives)
 			{
 				massive.SaveFrame();
 			}
@@ -38,12 +42,9 @@ namespace Massive.Samples.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			foreach (var massive in _allSets)
+			foreach (var massive in _massives)
 			{
-				if (massive.CanRollbackFrames >= 0)
-				{
-					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
-				}
+				massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 			}
 		}
 
@@ -54,24 +55,24 @@ namespace Massive.Samples.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int CreateEntity<T>(T data) where T : struct
+		public int CreateEntity<T>(T data) where T : unmanaged
 		{
 			int id = _entities.Create().Id;
-			Set(id, data);
+			Add(id, data);
 			return id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void DeleteEntity(int entity)
 		{
-			foreach (var massive in _allSets)
+			foreach (var massive in _massives)
 			{
 				massive.Delete(entity);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref T Get<T>(int entity) where T : struct
+		public ref T Get<T>(int entity) where T : unmanaged
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -82,9 +83,9 @@ namespace Massive.Samples.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Has<T>(int entity) where T : struct
+		public bool Has<T>(int entity) where T : unmanaged
 		{
-			if (_components.TryGetValue(ComponentMeta<T>.Id, out var componentMassive))
+			if (_pools.TryGetValue(ComponentMeta<T>.Id, out var componentMassive))
 			{
 				return componentMassive.IsAlive(entity);
 			}
@@ -93,7 +94,7 @@ namespace Massive.Samples.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Set<T>(int entity, T data = default) where T : struct
+		public void Add<T>(int entity, T data = default) where T : unmanaged
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
@@ -108,13 +109,13 @@ namespace Massive.Samples.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove<T>(int entity) where T : struct
+		public void Remove<T>(int entity) where T : unmanaged
 		{
 			GetOrCreateComponents<T>().Delete(entity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IDataSet<T> Components<T>() where T : struct
+		public IDataSet<T> Components<T>() where T : unmanaged
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -125,7 +126,7 @@ namespace Massive.Samples.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet Tags<T>() where T : struct
+		public ISet Tags<T>() where T : unmanaged
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -136,30 +137,38 @@ namespace Massive.Samples.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private IDataSet<T> GetOrCreateComponents<T>() where T : struct
+		private IDataSet<T> GetOrCreateComponents<T>() where T : unmanaged
 		{
 			int id = ComponentMeta<T>.Id;
 
-			if (!_components.TryGetValue(id, out var components))
+			if (!_pools.TryGetValue(id, out var components))
 			{
 				components = new MassiveDataSet<T>(_framesCapacity, _entitiesCapacity);
-				_components.Add(id, components);
-				_allSets.Add(components);
+
+				// Save first empty frame to ensure we can rollback to it
+				components.SaveFrame();
+
+				_pools.Add(id, components);
+				_massives.Add(components);
 			}
 
 			return (IDataSet<T>)components;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private ISet GetOrCreateTags<T>() where T : struct
+		private ISet GetOrCreateTags<T>() where T : unmanaged
 		{
 			int id = ComponentMeta<T>.Id;
 
-			if (!_components.TryGetValue(id, out var tags))
+			if (!_pools.TryGetValue(id, out var tags))
 			{
 				tags = new MassiveSparseSet(_framesCapacity, _entitiesCapacity);
-				_components.Add(id, tags);
-				_allSets.Add(tags);
+
+				// Save first empty frame to ensure we can rollback to it
+				tags.SaveFrame();
+
+				_pools.Add(id, tags);
+				_massives.Add(tags);
 			}
 
 			return tags;

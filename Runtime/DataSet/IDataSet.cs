@@ -2,7 +2,7 @@ using System;
 
 namespace Massive
 {
-	public interface IDataSet<T> : ISet where T : struct
+	public interface IDataSet<T> : ISet where T : unmanaged
 	{
 		Span<T> AliveData { get; }
 		CreateInfo Ensure(int id, T data);

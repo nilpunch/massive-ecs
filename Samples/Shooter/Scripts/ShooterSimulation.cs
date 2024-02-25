@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using Massive.Samples.ECS;
+using Massive.ECS;
 using UnityEngine;
 
 namespace Massive.Samples.Shooter
@@ -43,7 +43,7 @@ namespace Massive.Samples.Shooter
 					}
 				});
 				
-				_registry.Set(character, new WeaponState());
+				_registry.Add(character, new WeaponState());
 			}
 		}
 

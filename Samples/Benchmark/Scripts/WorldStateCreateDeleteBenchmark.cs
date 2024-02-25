@@ -1,28 +1,34 @@
-﻿using UnityEngine;
+﻿using Massive.ECS;
+using UnityEngine;
 
 namespace Massive.Samples.Benchmark
 {
 	public class WorldStateCreateDeleteBenchmark : MonoProfiler
 	{
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
-
-		private MassiveDataSet<TestState> _massiveData;
+		
+		private Registry _registry;
 
 		private void Start()
 		{
-			_massiveData = new MassiveDataSet<TestState>(100, _worldEntitiesCount);
+			_registry = BenchmarkUtils.GetFullyPackedRegistry(121, _worldEntitiesCount);
+			
+			for (int index = 0; index < _worldEntitiesCount; index++)
+			{
+				_registry.DeleteEntity(index);
+			}
 		}
 
 		protected override void Sample()
 		{
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				int temp = _massiveData.Create(new TestState() { Value = index + 1 }).Id;
+				_registry.CreateEntity(new TestState() { Value = index + 1 });
 			}
 
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				_massiveData.Delete(index);
+				_registry.DeleteEntity(index);
 			}
 		}
 	}

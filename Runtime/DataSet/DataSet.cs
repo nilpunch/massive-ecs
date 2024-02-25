@@ -10,7 +10,7 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 	public class DataSet<T, TSparseSet> : IDataSet<T>
-		where T : struct
+		where T : unmanaged
 		where TSparseSet : ISet
 	{
 		protected readonly TSparseSet SparseSet;
@@ -115,7 +115,7 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class DataSet<T> : DataSet<T, SparseSet> where T : struct
+	public class DataSet<T> : DataSet<T, SparseSet> where T : unmanaged
 	{
 		public DataSet(int dataCapacity = Constants.DataCapacity) : base(new SparseSet(dataCapacity))
 		{

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Massive.Samples.ECS
+namespace Massive.ECS
 {
 	/// <summary>
 	/// Persistent ids used to avoid component ids collision.

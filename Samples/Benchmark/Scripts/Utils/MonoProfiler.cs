@@ -9,7 +9,7 @@ namespace Massive.Samples.Benchmark
 		private const int SampleCount = 32;
 
 		[SerializeField] public string _identifier;
-		[SerializeField] public int _drawOrder;
+		[SerializeField] public float _drawOrder;
 		[SerializeField, Min(1)] public int _iterations = 1000;
 
 		private readonly Stopwatch _stopwatch = new Stopwatch();

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Massive.ECS;
+using UnityEngine;
 
 namespace Massive.Samples.Benchmark
 {
@@ -6,21 +7,16 @@ namespace Massive.Samples.Benchmark
 	{
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
-		private MassiveDataSet<TestState> _massiveData;
+		private Registry _registry;
 
 		private void Start()
 		{
-			_massiveData = new MassiveDataSet<TestState>(100, _worldEntitiesCount);
-
-			for (int i = 0; i < _worldEntitiesCount; i++)
-			{
-				int temp = _massiveData.Create(new TestState() { Value = 1 + i }).Id;
-			}
+			_registry = BenchmarkUtils.GetFullyPackedRegistry(121, _worldEntitiesCount);
 		}
 
 		protected override void Sample()
 		{
-			_massiveData.SaveFrame();
+			_registry.SaveFrame();
 		}
 	}
 }

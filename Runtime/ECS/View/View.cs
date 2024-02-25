@@ -1,29 +1,26 @@
-﻿namespace Massive.Samples.ECS
+﻿using System.Runtime.CompilerServices;
+
+namespace Massive.ECS
 {
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class FilterView
+	public readonly struct View
 	{
 		private readonly ISet _tags;
-		private readonly Filter _filter;
 
-		public FilterView(ISet tags, Filter filter)
+		public View(ISet tags)
 		{
 			_tags = tags;
-			_filter = filter;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action)
 		{
 			var ids = _tags.AliveIds;
 			for (int dense = ids.Length - 1; dense >= 0; dense--)
 			{
-				int id = ids[dense];
-				if (_filter.IsOkay(id))
-				{
-					action.Invoke(id);
-				}
+				action.Invoke(ids[dense]);
 			}
 		}
 	}
