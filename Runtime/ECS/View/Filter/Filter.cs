@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Massive.ECS
@@ -8,25 +8,28 @@ namespace Massive.ECS
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 	public class Filter
 	{
-		public static Filter Default { get; } = new Filter();
+		private readonly Registry _registry;
+		private readonly List<IReadOnlySet> _mustInclude = new List<IReadOnlySet>();
+		private readonly List<IReadOnlySet> _mustExclude = new List<IReadOnlySet>();
 
-		private readonly ArraySegment<IReadOnlySet> _mustInclude;
-		private readonly ArraySegment<IReadOnlySet> _mustExclude;
-
-		public Filter(IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
+		public Filter(Registry registry)
 		{
-			_mustInclude = include ?? ArraySegment<IReadOnlySet>.Empty;
-			_mustExclude = exclude ?? ArraySegment<IReadOnlySet>.Empty;
+			_registry = registry;
+		}
+
+		public void Include<T>() where T : unmanaged
+		{
+			_mustInclude.Add(_registry.AnySet<T>());
+		}
+
+		public void Exclude<T>() where T : unmanaged
+		{
+			_mustExclude.Add(_registry.AnySet<T>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsOkay(int id)
 		{
-			if (_mustExclude.Count == 0 && _mustInclude.Count == 0)
-			{
-				return true;
-			}
-
 			foreach (var exclude in _mustExclude)
 			{
 				if (exclude.IsAlive(id))

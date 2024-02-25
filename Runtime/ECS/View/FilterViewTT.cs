@@ -3,7 +3,7 @@
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class FilterView<T1, T2>
+	public readonly struct FilterView<T1, T2>
 		where T1 : unmanaged
 		where T2 : unmanaged
 	{
@@ -42,7 +42,7 @@
 				for (int dense1 = ids1.Length - 1; dense1 >= 0; dense1--)
 				{
 					int id = ids1[dense1];
-					if (_components2.TryGetDense(id, out var dense2) && _filter.IsOkay(id))
+					if (_filter.IsOkay(id) && _components2.TryGetDense(id, out var dense2))
 					{
 						action.Invoke(id, ref data1[dense1], ref data2[dense2]);
 					}
@@ -54,7 +54,7 @@
 				for (int dense2 = ids2.Length - 1; dense2 >= 0; dense2--)
 				{
 					int id = ids2[dense2];
-					if (_components1.TryGetDense(id, out var dense1) && _filter.IsOkay(id))
+					if (_filter.IsOkay(id) && _components1.TryGetDense(id, out var dense1))
 					{
 						action.Invoke(id, ref data1[dense1], ref data2[dense2]);
 					}

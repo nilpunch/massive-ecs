@@ -16,9 +16,7 @@ namespace Massive.Samples.Shooter
 		public override void Init(Registry registry)
 		{
 			_registry = registry;
-			_weapons = new View<CharacterState, WeaponState>(
-				registry.Components<CharacterState>(),
-				registry.Components<WeaponState>());
+			_weapons = registry.View<CharacterState, WeaponState>();
 		}
 
 		public override void UpdateWorld(float deltaTime)

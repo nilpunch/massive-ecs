@@ -115,7 +115,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IDataSet<T> Components<T>() where T : unmanaged
+		public IDataSet<T> Component<T>() where T : unmanaged
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -126,14 +126,27 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet Tags<T>() where T : unmanaged
+		public ISet Tag<T>() where T : unmanaged
 		{
-			if (!ComponentMeta<T>.HasAnyFields)
+			if (ComponentMeta<T>.HasAnyFields)
 			{
 				throw new Exception("Type has fields! Use GetComponents<T>() instead.");
 			}
 
 			return GetOrCreateTags<T>();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ISet AnySet<T>() where T : unmanaged
+		{
+			if (ComponentMeta<T>.HasAnyFields)
+			{
+				return GetOrCreateComponents<T>();
+			}
+			else
+			{
+				return GetOrCreateTags<T>();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

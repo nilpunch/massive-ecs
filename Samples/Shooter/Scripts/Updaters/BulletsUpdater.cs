@@ -10,7 +10,7 @@ namespace Massive.Samples.Shooter
 		public override void Init(Registry registry)
 		{
 			_registry = registry;
-			_bullets = new View<BulletState>(registry.Components<BulletState>());
+			_bullets = registry.View<BulletState>();
 		}
 		
 		public override void UpdateWorld(float deltaTime)
