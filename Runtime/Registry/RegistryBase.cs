@@ -46,15 +46,15 @@ namespace Massive.ECS
 				throw new Exception("Type has no fields!");
 			}
 
-			return ref GetOrCreateComponents<T>().Get(entityId);
+			return ref GetOrCreateComponentPool<T>().Get(entityId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has<T>(int entityId) where T : unmanaged
 		{
-			if (_pools.TryGetValue(typeof(T), out var componentMassive))
+			if (_pools.TryGetValue(typeof(T), out var component))
 			{
-				return componentMassive.IsAlive(entityId);
+				return component.IsAlive(entityId);
 			}
 
 			return false;
@@ -65,20 +65,21 @@ namespace Massive.ECS
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
-				var components = GetOrCreateComponents<T>();
-				components.Ensure(entityId, data);
+				GetOrCreateComponentPool<T>().Ensure(entityId, data);
 			}
 			else
 			{
-				var tags = GetOrCreateTags<T>();
-				tags.Ensure(entityId);
+				GetOrCreateTagPool<T>().Ensure(entityId);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove<T>(int entityId) where T : unmanaged
 		{
-			GetOrCreateComponents<T>().Delete(entityId);
+			if (_pools.TryGetValue(typeof(T), out var anySet))
+			{
+				anySet.Delete(entityId);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -89,7 +90,7 @@ namespace Massive.ECS
 				throw new Exception($"Type has no fields! Use {nameof(Tag)} instead.");
 			}
 
-			return GetOrCreateComponents<T>();
+			return GetOrCreateComponentPool<T>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -100,7 +101,7 @@ namespace Massive.ECS
 				throw new Exception($"Type has fields! Use {nameof(Component)} instead.");
 			}
 
-			return GetOrCreateTags<T>();
+			return GetOrCreateTagPool<T>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -108,16 +109,16 @@ namespace Massive.ECS
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
-				return GetOrCreateComponents<T>();
+				return GetOrCreateComponentPool<T>();
 			}
 			else
 			{
-				return GetOrCreateTags<T>();
+				return GetOrCreateTagPool<T>();
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private IDataSet<T> GetOrCreateComponents<T>() where T : unmanaged
+		private IDataSet<T> GetOrCreateComponentPool<T>() where T : unmanaged
 		{
 			var type = typeof(T);
 
@@ -132,7 +133,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private ISet GetOrCreateTags<T>() where T : unmanaged
+		private ISet GetOrCreateTagPool<T>() where T : unmanaged
 		{
 			var type = typeof(T);
 
