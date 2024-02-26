@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Massive.ECS;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Massive.Samples.Shooter
 {
@@ -42,9 +43,11 @@ namespace Massive.Samples.Shooter
 						Rotation = Quaternion.AngleAxis(180f * (i - _charactersAmount / 2f) / _charactersAmount, Vector3.forward)
 					}
 				});
-				
+
 				_registry.Add(character, new WeaponState());
 			}
+			
+			_registry.SaveFrame();
 		}
 
 		private int _currentFrame;
@@ -57,8 +60,9 @@ namespace Massive.Samples.Shooter
 
 			if (_registry.CanRollbackFrames >= 0)
 			{
-				_currentFrame -= _registry.CanRollbackFrames;
-				_registry.Rollback(_registry.CanRollbackFrames);
+				var previousFrameCount = _currentFrame;
+				_currentFrame = Mathf.Max(_currentFrame - _registry.CanRollbackFrames, 0);
+				_registry.Rollback(previousFrameCount - _currentFrame);
 			}
 
 			_elapsedTime += Time.deltaTime;
