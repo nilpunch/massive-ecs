@@ -8,11 +8,11 @@ namespace Massive.ECS
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 	public class Filter
 	{
-		private readonly Registry _registry;
+		private readonly IRegistry _registry;
 		private readonly List<IReadOnlySet> _mustInclude = new List<IReadOnlySet>();
 		private readonly List<IReadOnlySet> _mustExclude = new List<IReadOnlySet>();
 
-		public Filter(Registry registry)
+		public Filter(IRegistry registry)
 		{
 			_registry = registry;
 		}

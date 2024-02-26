@@ -9,7 +9,7 @@ namespace Massive
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public class MassiveDataSet<T> : DataSet<T, MassiveSparseSet>, IMassiveSet where T : unmanaged
+	public class MassiveDataSet<T> : DataSetBase<T, MassiveSparseSet>, IMassiveSet where T : unmanaged
 	{
 		private readonly T[] _dataByFrames;
 

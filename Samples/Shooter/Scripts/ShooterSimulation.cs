@@ -14,7 +14,7 @@ namespace Massive.Samples.Shooter
 		[Header("Entities")] [SerializeField] private EntityRoot<CharacterState> _characterPrefab;
 		[SerializeField] private EntityRoot<BulletState> _bulletPrefab;
 
-		private Registry _registry;
+		private MassiveRegistry _registry;
 		private WorldUpdater[] _worldUpdaters;
 
 		private EntitySynchronisation<CharacterState> _characterSynchronisation;
@@ -22,7 +22,7 @@ namespace Massive.Samples.Shooter
 
 		private void Awake()
 		{
-			_registry = new Registry(_simulationsPerFrame + 1, _entitiesCapacity);
+			_registry = new MassiveRegistry(_simulationsPerFrame + 1, _entitiesCapacity);
 
 			_worldUpdaters = FindObjectsOfType<WorldUpdater>();
 			foreach (var worldUpdaters in _worldUpdaters)

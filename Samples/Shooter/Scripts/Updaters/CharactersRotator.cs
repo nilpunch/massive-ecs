@@ -9,7 +9,7 @@ namespace Massive.Samples.Shooter
 
 		private View<CharacterState> _characters;
 
-		public override void Init(Registry registry)
+		public override void Init(MassiveRegistry registry)
 		{
 			_characters = registry.View<CharacterState>();
 		}

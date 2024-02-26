@@ -4,9 +4,9 @@ namespace Massive.Samples.Benchmark
 {
 	public static class BenchmarkUtils
 	{
-		public static Registry GetSimplyPackedRegistry(int framesCapacity, int entitiesCapacity)
+		public static MassiveRegistry GetSimplyPackedRegistry(int framesCapacity, int entitiesCapacity)
 		{
-			Registry registry = new Registry(framesCapacity + 1, entitiesCapacity);
+			MassiveRegistry registry = new MassiveRegistry(framesCapacity + 1, entitiesCapacity);
 
 			for (int i = 0; i < entitiesCapacity; i++)
 			{
@@ -16,9 +16,9 @@ namespace Massive.Samples.Benchmark
 			return registry;
 		}
 
-		public static Registry GetFullyPackedRegistry(int framesCapacity, int entitiesCapacity)
+		public static MassiveRegistry GetFullyPackedRegistry(int framesCapacity, int entitiesCapacity)
 		{
-			Registry registry = new Registry(framesCapacity + 1, entitiesCapacity);
+			MassiveRegistry registry = new MassiveRegistry(framesCapacity + 1, entitiesCapacity);
 
 			for (int i = 0; i < entitiesCapacity; i++)
 			{

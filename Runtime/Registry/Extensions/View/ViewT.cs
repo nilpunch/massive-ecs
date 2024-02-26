@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Massive.ECS
 {
@@ -8,10 +7,10 @@ namespace Massive.ECS
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 	public readonly struct View<T> where T : unmanaged
 	{
-		private readonly Registry _registry;
+		private readonly IRegistry _registry;
 		private readonly IDataSet<T> _components;
 
-		public View(Registry registry)
+		public View(IRegistry registry)
 		{
 			_registry = registry;
 			_components = registry.Component<T>();

@@ -4,11 +4,11 @@ namespace Massive.ECS
 {
 	public readonly struct Entity
 	{
-		private readonly Registry _owner;
+		private readonly IRegistry _owner;
 
 		public readonly int Id;
 
-		public Entity(Registry registry, int id)
+		public Entity(IRegistry registry, int id)
 		{
 			_owner = registry;
 			Id = id;

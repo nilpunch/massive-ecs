@@ -1,73 +1,40 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Massive.ECS
 {
-	public class Registry : IMassive
+	public class RegistryBase<TSet> : IRegistry where TSet : ISet
 	{
-		private readonly int _framesCapacity;
-		private readonly int _entitiesCapacity;
+		protected TSet Entities { get; }
+		protected List<TSet> AllSets { get; }
 
-		private readonly MassiveSparseSet _entities;
-		private readonly Dictionary<Type, IMassiveSet> _pools;
-		private readonly List<IMassiveSet> _massives;
+		private readonly Dictionary<Type, TSet> _pools;
+		private readonly ISetFactory<TSet> _setFactory;
 
-		public Registry(int framesCapacity = 121, int entitiesCapacity = 1000)
+		public RegistryBase(ISetFactory<TSet> setFactory)
 		{
-			_framesCapacity = framesCapacity;
-			_entitiesCapacity = entitiesCapacity;
+			_setFactory = setFactory;
+			_pools = new Dictionary<Type, TSet>();
 
-			_entities = new MassiveSparseSet(framesCapacity, entitiesCapacity);
-			_pools = new Dictionary<Type, IMassiveSet>();
-			_massives = new List<IMassiveSet> { _entities };
-
-			// Save first empty frame to ensure we can rollback to it
-			_entities.SaveFrame();
+			Entities = setFactory.CreateSet();
+			AllSets = new List<TSet>() { Entities };
 		}
 
-		public ISet Entities => _entities;
-
-		public int CanRollbackFrames => _entities.CanRollbackFrames;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SaveFrame()
-		{
-			foreach (var massive in _massives)
-			{
-				massive.SaveFrame();
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Rollback(int frames)
-		{
-			foreach (var massive in _massives)
-			{
-				massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Create<T>(T data) where T : unmanaged
-		{
-			int id = _entities.Create().Id;
-			Add(id, data);
-			return id;
-		}
+		ISet IRegistry.Entities => Entities;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create()
 		{
-			return _entities.Create().Id;
+			return Entities.Create().Id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int entityId)
 		{
-			foreach (var massive in _massives)
+			foreach (var set in AllSets)
 			{
-				massive.Delete(entityId);
+				set.Delete(entityId);
 			}
 		}
 
@@ -119,7 +86,7 @@ namespace Massive.ECS
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
-				throw new Exception("Type has no fields! Use GetTags<T>() instead.");
+				throw new Exception($"Type has no fields! Use {nameof(Tag)} instead.");
 			}
 
 			return GetOrCreateComponents<T>();
@@ -130,7 +97,7 @@ namespace Massive.ECS
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
-				throw new Exception("Type has fields! Use GetComponents<T>() instead.");
+				throw new Exception($"Type has fields! Use {nameof(Component)} instead.");
 			}
 
 			return GetOrCreateTags<T>();
@@ -156,13 +123,9 @@ namespace Massive.ECS
 
 			if (!_pools.TryGetValue(type, out var components))
 			{
-				components = new MassiveDataSet<T>(_framesCapacity, _entitiesCapacity);
-
-				// Save first empty frame to ensure we can rollback to it
-				components.SaveFrame();
-
+				components = _setFactory.CreateDataSet<T>();
 				_pools.Add(type, components);
-				_massives.Add(components);
+				AllSets.Add(components);
 			}
 
 			return (IDataSet<T>)components;
@@ -175,13 +138,9 @@ namespace Massive.ECS
 
 			if (!_pools.TryGetValue(type, out var tags))
 			{
-				tags = new MassiveSparseSet(_framesCapacity, _entitiesCapacity);
-
-				// Save first empty frame to ensure we can rollback to it
-				tags.SaveFrame();
-
+				tags = _setFactory.CreateSet();
 				_pools.Add(type, tags);
-				_massives.Add(tags);
+				AllSets.Add(tags);
 			}
 
 			return tags;

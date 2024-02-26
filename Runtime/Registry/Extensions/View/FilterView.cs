@@ -5,15 +5,17 @@ namespace Massive.ECS
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.NullChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false)]
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
-	public readonly struct View
+	public readonly struct FilterView
 	{
-		private readonly Registry _registry;
+		private readonly IRegistry _registry;
+		private readonly Filter _filter;
 		private readonly ISet _entities;
 
-		public View(Registry registry)
+		public FilterView(IRegistry registry, Filter filter)
 		{
 			_registry = registry;
-			_entities = registry.Entities;
+			_filter = filter;
+			_entities = _registry.Entities;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -22,7 +24,11 @@ namespace Massive.ECS
 			var ids = _entities.AliveIds;
 			for (int dense = ids.Length - 1; dense >= 0; dense--)
 			{
-				action.Invoke(_registry.GetEntity(ids[dense]));
+				int id = ids[dense];
+				if (_filter.IsOkay(id))
+				{
+					action.Invoke(_registry.GetEntity(id));
+				}
 			}
 		}
 	}

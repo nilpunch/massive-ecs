@@ -7,7 +7,7 @@ namespace Massive.Samples.Benchmark
 	{
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
-		private Registry _registry;
+		private MassiveRegistry _registry;
 		private View<TestState, TestState<float, byte, int>> _testStates;
 
 		private void Start()

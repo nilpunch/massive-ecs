@@ -6,7 +6,7 @@ namespace Massive.Samples.Shooter
 	{
 		private View<BulletState> _bullets;
 
-		public override void Init(Registry registry)
+		public override void Init(MassiveRegistry registry)
 		{
 			_bullets = registry.View<BulletState>();
 		}

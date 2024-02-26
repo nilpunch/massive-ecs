@@ -9,12 +9,12 @@ namespace Massive.ECS
 		where T1 : unmanaged
 		where T2 : unmanaged
 	{
-		private readonly Registry _registry;
+		private readonly IRegistry _registry;
 		private readonly Filter _filter;
 		private readonly IDataSet<T1> _components1;
 		private readonly IDataSet<T2> _components2;
 
-		public FilterView(Registry registry, Filter filter)
+		public FilterView(IRegistry registry, Filter filter)
 		{
 			_registry = registry;
 			_filter = filter;

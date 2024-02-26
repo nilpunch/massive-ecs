@@ -7,11 +7,11 @@ namespace Massive.ECS
 	[Unity.IL2CPP.CompilerServices.Il2CppSetOption(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 	public readonly struct FilterView<T> where T : unmanaged
 	{
-		private readonly Registry _registry;
+		private readonly IRegistry _registry;
 		private readonly Filter _filter;
 		private readonly IDataSet<T> _components;
 
-		public FilterView(Registry registry, Filter filter)
+		public FilterView(IRegistry registry, Filter filter)
 		{
 			_registry = registry;
 			_filter = filter;

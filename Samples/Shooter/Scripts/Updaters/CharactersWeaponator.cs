@@ -10,10 +10,10 @@ namespace Massive.Samples.Shooter
 		[SerializeField] private float _bulletDamage = 1f;
 		[SerializeField] private float _bulletLifetime = 2f;
 
-		private Registry _registry;
+		private MassiveRegistry _registry;
 		private View<CharacterState, WeaponState> _weapons;
 
-		public override void Init(Registry registry)
+		public override void Init(MassiveRegistry registry)
 		{
 			_registry = registry;
 			_weapons = registry.View<CharacterState, WeaponState>();
