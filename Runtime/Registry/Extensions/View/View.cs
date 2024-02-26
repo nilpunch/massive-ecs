@@ -16,9 +16,14 @@ namespace Massive.ECS
 			_entities = registry.Entities;
 		}
 
-		public ViewEnumerator GetEnumerator()
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void ForEach(EntityAction action)
 		{
-			return new ViewEnumerator(_registry, _entities.AliveIds);
+			var ids = _entities.AliveIds;
+			for (int dense = ids.Length - 1; dense >= 0; dense--)
+			{
+				action.Invoke(_registry.GetEntity(ids[dense]));
+			}
 		}
 	}
 }

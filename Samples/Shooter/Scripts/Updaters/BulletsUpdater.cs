@@ -13,19 +13,17 @@ namespace Massive.Samples.Shooter
 		
 		public override void UpdateWorld(float deltaTime)
 		{
-			foreach (var bullet in _bullets)
+			_bullets.ForEach((Entity entity, ref BulletState state) =>
 			{
-				ref BulletState state = ref bullet.Get<BulletState>();
-				
 				state.Lifetime -= deltaTime;
 				if (state.IsDestroyed)
 				{
-					bullet.Destroy();
-					continue;
+					entity.Destroy();
+					return;
 				}
 
 				state.Transform.Position += state.Velocity * deltaTime;
-			}
+			});
 		}
 	}
 }
