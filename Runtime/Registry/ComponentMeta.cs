@@ -18,5 +18,14 @@ namespace Massive.ECS
 				HasAnyFields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
 			}
 		}
+		
+#if UNITY_2020_3_OR_NEWER
+		[UnityEngine.Scripting.Preserve]
+#endif
+		static void VirtualGenericsHack()
+		{
+			new NormalSetFactory().CreateDataSet<T>();
+			new MassiveSetFactory().CreateDataSet<T>();
+		}
 	}
 }
