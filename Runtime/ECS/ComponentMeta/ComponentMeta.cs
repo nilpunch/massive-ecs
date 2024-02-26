@@ -9,7 +9,6 @@ namespace Massive.ECS
 	/// </summary>
 	public static class ComponentMeta<T> where T : unmanaged
 	{
-		public static int Id { get; }
 		public static int SizeInBytes { get; }
 		public static bool HasAnyFields { get; }
 
@@ -17,23 +16,8 @@ namespace Massive.ECS
 		{
 			unsafe
 			{
-				var type = typeof(T);
-				var typeFullName = type.FullName;
-				var id = typeFullName!.GetHashCode();
-
-				// May happen, but very unlikely
-				if (ComponentIds.UsedIds.Contains(id))
-				{
-					Debug.LogError($"Id collision happened with type: {typeFullName}");
-					Application.Quit();
-					return;
-				}
-
-				ComponentIds.UsedIds.Add(id);
-
-				Id = id;
 				SizeInBytes = sizeof(T);
-				HasAnyFields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
+				HasAnyFields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
 			}
 		}
 	}

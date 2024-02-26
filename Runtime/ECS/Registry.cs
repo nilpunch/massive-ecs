@@ -10,7 +10,7 @@ namespace Massive.ECS
 		private readonly int _entitiesCapacity;
 
 		private readonly MassiveSparseSet _entities;
-		private readonly Dictionary<int, IMassiveSet> _pools;
+		private readonly Dictionary<Type, IMassiveSet> _pools;
 		private readonly List<IMassiveSet> _massives;
 
 		public Registry(int framesCapacity = 121, int entitiesCapacity = 1000)
@@ -19,7 +19,7 @@ namespace Massive.ECS
 			_entitiesCapacity = entitiesCapacity;
 
 			_entities = new MassiveSparseSet(framesCapacity, entitiesCapacity);
-			_pools = new Dictionary<int, IMassiveSet>();
+			_pools = new Dictionary<Type, IMassiveSet>();
 			_massives = new List<IMassiveSet> { _entities };
 
 			// Save first empty frame to ensure we can rollback to it
@@ -85,7 +85,7 @@ namespace Massive.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has<T>(int entity) where T : unmanaged
 		{
-			if (_pools.TryGetValue(ComponentMeta<T>.Id, out var componentMassive))
+			if (_pools.TryGetValue(typeof(T), out var componentMassive))
 			{
 				return componentMassive.IsAlive(entity);
 			}
@@ -152,7 +152,7 @@ namespace Massive.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private IDataSet<T> GetOrCreateComponents<T>() where T : unmanaged
 		{
-			int id = ComponentMeta<T>.Id;
+			var id = typeof(T);
 
 			if (!_pools.TryGetValue(id, out var components))
 			{
@@ -171,7 +171,7 @@ namespace Massive.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private ISet GetOrCreateTags<T>() where T : unmanaged
 		{
-			int id = ComponentMeta<T>.Id;
+			var id = typeof(T);
 
 			if (!_pools.TryGetValue(id, out var tags))
 			{
