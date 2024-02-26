@@ -16,10 +16,11 @@ namespace Massive.Samples.Shooter
 
 		public override void UpdateWorld(float deltaTime)
 		{
-			_characters.ForEach((ref CharacterState characterState) =>
+			foreach (var character in _characters)
 			{
+				ref CharacterState characterState = ref character.Get<CharacterState>();
 				characterState.Transform.Rotation *= Quaternion.AngleAxis(_rotation * deltaTime, Vector3.forward);
-			});
+			}
 		}
 	}
 }

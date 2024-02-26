@@ -18,15 +18,15 @@ namespace Massive.Samples.Benchmark
 
 		protected override void Sample()
 		{
-			_entities.ForEach(entity =>
+			foreach (var entity in _entities)
 			{
 				entity.Add(new TestState() { Value = entity.Id + 1 });
-			});
+			}
 			
-			_entities.ForEach(entity =>
+			foreach (var entity in _entities)
 			{
 				entity.Remove<TestState>();
-			});
+			}
 		}
 	}
 }

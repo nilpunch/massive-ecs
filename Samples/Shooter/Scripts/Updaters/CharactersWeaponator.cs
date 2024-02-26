@@ -11,22 +11,25 @@ namespace Massive.Samples.Shooter
 		[SerializeField] private float _bulletLifetime = 2f;
 
 		private MassiveRegistry _registry;
-		private View<CharacterState, WeaponState> _weapons;
+		private View<CharacterState, WeaponState> _weaponizedCharacters;
 
 		public override void Init(MassiveRegistry registry)
 		{
 			_registry = registry;
-			_weapons = registry.View<CharacterState, WeaponState>();
+			_weaponizedCharacters = registry.View<CharacterState, WeaponState>();
 		}
 
 		public override void UpdateWorld(float deltaTime)
 		{
-			_weapons.ForEach((ref CharacterState characterState, ref WeaponState weaponState) =>
+			foreach (var character in _weaponizedCharacters)
 			{
+				ref CharacterState characterState = ref character.Get<CharacterState>();
+				ref WeaponState weaponState = ref character.Get<WeaponState>();
+				
 				weaponState.Cooldown -= deltaTime;
 				if (weaponState.Cooldown > 0)
 				{
-					return;
+					continue;
 				}
 
 				weaponState.Cooldown = _cooldown;
@@ -38,7 +41,7 @@ namespace Massive.Samples.Shooter
 					Lifetime = _bulletLifetime,
 					Damage = _bulletDamage
 				});
-			});
+			}
 		}
 	}
 }

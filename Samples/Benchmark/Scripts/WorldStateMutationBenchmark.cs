@@ -18,11 +18,12 @@ namespace Massive.Samples.Benchmark
 
 		protected override void Sample()
 		{
-			_testStates.ForEach((ref TestState state) =>
+			foreach (var entity in _testStates)
 			{
+				ref var state = ref entity.Get<TestState>();
 				state.Value += 1;
 				state.Data1 *= Quaternion.identity;
-			});
+			}
 		}
 	}
 }
