@@ -15,7 +15,7 @@ namespace Massive.Samples.Benchmark
 			
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				_registry.DestroyEntity(index);
+				_registry.Destroy(index);
 			}
 		}
 
@@ -23,12 +23,12 @@ namespace Massive.Samples.Benchmark
 		{
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				_registry.CreateEntity(new TestState() { Value = index + 1 });
+				_registry.Create(new TestState() { Value = index + 1 });
 			}
 
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				_registry.DestroyEntity(index);
+				_registry.Destroy(index);
 			}
 		}
 	}

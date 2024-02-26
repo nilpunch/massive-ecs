@@ -10,6 +10,18 @@ namespace Massive.ECS
 			return new Entity(registry, entityId);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Entity CreateEntity<T>(this Registry registry, T data) where T : unmanaged
+		{
+			return new Entity(registry, registry.Create(data));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Entity CreateEntity(this Registry registry)
+		{
+			return new Entity(registry, registry.Create());
+		}
+
 		public static Filter Filter(this Registry registry)
 		{
 			return new Filter(registry);

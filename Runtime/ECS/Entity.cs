@@ -17,7 +17,7 @@ namespace Massive.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy()
 		{
-			_owner.DestroyEntity(Id);
+			_owner.Destroy(Id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

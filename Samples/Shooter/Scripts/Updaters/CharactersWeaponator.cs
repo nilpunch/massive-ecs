@@ -31,15 +31,13 @@ namespace Massive.Samples.Shooter
 
 				weaponState.Cooldown = _cooldown;
 
-				BulletState bulletState = new BulletState
+				_registry.Create(new BulletState
 				{
 					Transform = characterState.Transform,
 					Velocity = characterState.Transform.Rotation * Vector3.up * _bulletVelocity,
 					Lifetime = _bulletLifetime,
 					Damage = _bulletDamage
-				};
-
-				_registry.CreateEntity(bulletState);
+				});
 			});
 		}
 	}

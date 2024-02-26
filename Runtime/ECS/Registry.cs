@@ -49,21 +49,21 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity CreateEntity<T>(T data) where T : unmanaged
+		public int Create<T>(T data) where T : unmanaged
 		{
 			int id = _entities.Create().Id;
 			Add(id, data);
-			return new Entity(this, id);
+			return id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity CreateEntity()
+		public int Create()
 		{
-			return new Entity(this, _entities.Create().Id);
+			return _entities.Create().Id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void DestroyEntity(int entityId)
+		public void Destroy(int entityId)
 		{
 			foreach (var massive in _massives)
 			{
