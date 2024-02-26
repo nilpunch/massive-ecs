@@ -49,69 +49,69 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int CreateEntity()
-		{
-			return _entities.Create().Id;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int CreateEntity<T>(T data) where T : unmanaged
+		public Entity CreateEntity<T>(T data) where T : unmanaged
 		{
 			int id = _entities.Create().Id;
 			Add(id, data);
-			return id;
+			return new Entity(this, id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void DeleteEntity(int entity)
+		public Entity CreateEntity()
+		{
+			return new Entity(this, _entities.Create().Id);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void DestroyEntity(int entityId)
 		{
 			foreach (var massive in _massives)
 			{
-				massive.Delete(entity);
+				massive.Delete(entityId);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref T Get<T>(int entity) where T : unmanaged
+		public ref T Get<T>(int entityId) where T : unmanaged
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
 				throw new Exception("Type has no fields!");
 			}
 
-			return ref GetOrCreateComponents<T>().Get(entity);
+			return ref GetOrCreateComponents<T>().Get(entityId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Has<T>(int entity) where T : unmanaged
+		public bool Has<T>(int entityId) where T : unmanaged
 		{
 			if (_pools.TryGetValue(typeof(T), out var componentMassive))
 			{
-				return componentMassive.IsAlive(entity);
+				return componentMassive.IsAlive(entityId);
 			}
 
 			return false;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add<T>(int entity, T data = default) where T : unmanaged
+		public void Add<T>(int entityId, T data = default) where T : unmanaged
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
 				var components = GetOrCreateComponents<T>();
-				components.Ensure(entity, data);
+				components.Ensure(entityId, data);
 			}
 			else
 			{
 				var tags = GetOrCreateTags<T>();
-				tags.Ensure(entity);
+				tags.Ensure(entityId);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove<T>(int entity) where T : unmanaged
+		public void Remove<T>(int entityId) where T : unmanaged
 		{
-			GetOrCreateComponents<T>().Delete(entity);
+			GetOrCreateComponents<T>().Delete(entityId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -152,16 +152,16 @@ namespace Massive.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private IDataSet<T> GetOrCreateComponents<T>() where T : unmanaged
 		{
-			var id = typeof(T);
+			var type = typeof(T);
 
-			if (!_pools.TryGetValue(id, out var components))
+			if (!_pools.TryGetValue(type, out var components))
 			{
 				components = new MassiveDataSet<T>(_framesCapacity, _entitiesCapacity);
 
 				// Save first empty frame to ensure we can rollback to it
 				components.SaveFrame();
 
-				_pools.Add(id, components);
+				_pools.Add(type, components);
 				_massives.Add(components);
 			}
 
@@ -171,16 +171,16 @@ namespace Massive.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private ISet GetOrCreateTags<T>() where T : unmanaged
 		{
-			var id = typeof(T);
+			var type = typeof(T);
 
-			if (!_pools.TryGetValue(id, out var tags))
+			if (!_pools.TryGetValue(type, out var tags))
 			{
 				tags = new MassiveSparseSet(_framesCapacity, _entitiesCapacity);
 
 				// Save first empty frame to ensure we can rollback to it
 				tags.SaveFrame();
 
-				_pools.Add(id, tags);
+				_pools.Add(type, tags);
 				_massives.Add(tags);
 			}
 

@@ -7,75 +7,73 @@ namespace Massive.Samples.Benchmark
 		public static Registry GetSimplyPackedRegistry(int framesCapacity, int entitiesCapacity)
 		{
 			Registry registry = new Registry(framesCapacity + 1, entitiesCapacity);
-			
+
 			for (int i = 0; i < entitiesCapacity; i++)
 			{
-				int entity = registry.CreateEntity();
-				registry.Add<TestState>(entity);
+				registry.CreateEntity().Add<TestState>();
 			}
 
 			return registry;
 		}
-		
+
 		public static Registry GetFullyPackedRegistry(int framesCapacity, int entitiesCapacity)
 		{
 			Registry registry = new Registry(framesCapacity + 1, entitiesCapacity);
-			
+
 			for (int i = 0; i < entitiesCapacity; i++)
 			{
-				int entity = registry.CreateEntity();
-				
 				// 50 different components
-				registry.Add<TestState>(entity);
-				registry.Add<TestState<float, byte, int>>(entity);
-				registry.Add<TestState<int, float, double>>(entity);
-				registry.Add<TestState<double, int, long>>(entity);
-				registry.Add<TestState<long, short, byte>>(entity);
-				registry.Add<TestState<short, ushort, int>>(entity);
-				registry.Add<TestState<ushort, ulong, float>>(entity);
-				registry.Add<TestState<ulong, double, decimal>>(entity);
-				registry.Add<TestState<decimal, char, byte>>(entity);
-				registry.Add<TestState<char, bool, int>>(entity);
-				registry.Add<TestState<bool, byte, sbyte>>(entity);
-				registry.Add<TestState<sbyte, float, ushort>>(entity);
-				registry.Add<TestState<int, double, bool>>(entity);
-				registry.Add<TestState<double, decimal, char>>(entity);
-				registry.Add<TestState<long, bool, float>>(entity);
-				registry.Add<TestState<short, int, ulong>>(entity);
-				registry.Add<TestState<ushort, sbyte, decimal>>(entity);
-				registry.Add<TestState<ulong, char, double>>(entity);
-				registry.Add<TestState<decimal, bool, short>>(entity);
-				registry.Add<TestState<char, int, byte>>(entity);
-				registry.Add<TestState<bool, ulong, sbyte>>(entity);
-				registry.Add<TestState<sbyte, short, ushort>>(entity);
-				registry.Add<TestState<float, ulong, int>>(entity);
-				registry.Add<TestState<double, sbyte, long>>(entity);
-				registry.Add<TestState<int, char, decimal>>(entity);
-				registry.Add<TestState<long, decimal, bool>>(entity);
-				registry.Add<TestState<short, double, byte>>(entity);
-				registry.Add<TestState<ushort, float, char>>(entity);
-				registry.Add<TestState<ulong, int, bool>>(entity);
-				registry.Add<TestState<decimal, short, ulong>>(entity);
-				registry.Add<TestState<char, ushort, float>>(entity);
-				registry.Add<TestState<bool, double, sbyte>>(entity);
-				registry.Add<TestState<sbyte, long, ushort>>(entity);
-				registry.Add<TestState<float, decimal, char>>(entity);
-				registry.Add<TestState<double, byte, int>>(entity);
-				registry.Add<TestState<int, sbyte, ulong>>(entity);
-				registry.Add<TestState<long, ushort, decimal>>(entity);
-				registry.Add<TestState<short, char, double>>(entity);
-				registry.Add<TestState<ushort, bool, float>>(entity);
-				registry.Add<TestState<ulong, byte, short>>(entity);
-				registry.Add<TestState<decimal, int, char>>(entity);
-				registry.Add<TestState<char, ulong, bool>>(entity);
-				registry.Add<TestState<bool, short, double>>(entity);
-				registry.Add<TestState<sbyte, decimal, ushort>>(entity);
-				registry.Add<TestState<float, bool, byte>>(entity);
-				registry.Add<TestState<double, ushort, sbyte>>(entity);
-				registry.Add<TestState<int, float, char>>(entity);
-				registry.Add<TestState<long, byte, ulong>>(entity);
-				registry.Add<TestState<short, decimal, bool>>(entity);
-				registry.Add<TestState<ushort, double, int>>(entity);
+				registry.CreateEntity()
+					.Add<TestState>()
+					.Add<TestState<float, byte, int>>()
+					.Add<TestState<int, float, double>>()
+					.Add<TestState<double, int, long>>()
+					.Add<TestState<long, short, byte>>()
+					.Add<TestState<short, ushort, int>>()
+					.Add<TestState<ushort, ulong, float>>()
+					.Add<TestState<ulong, double, decimal>>()
+					.Add<TestState<decimal, char, byte>>()
+					.Add<TestState<char, bool, int>>()
+					.Add<TestState<bool, byte, sbyte>>()
+					.Add<TestState<sbyte, float, ushort>>()
+					.Add<TestState<int, double, bool>>()
+					.Add<TestState<double, decimal, char>>()
+					.Add<TestState<long, bool, float>>()
+					.Add<TestState<short, int, ulong>>()
+					.Add<TestState<ushort, sbyte, decimal>>()
+					.Add<TestState<ulong, char, double>>()
+					.Add<TestState<decimal, bool, short>>()
+					.Add<TestState<char, int, byte>>()
+					.Add<TestState<bool, ulong, sbyte>>()
+					.Add<TestState<sbyte, short, ushort>>()
+					.Add<TestState<float, ulong, int>>()
+					.Add<TestState<double, sbyte, long>>()
+					.Add<TestState<int, char, decimal>>()
+					.Add<TestState<long, decimal, bool>>()
+					.Add<TestState<short, double, byte>>()
+					.Add<TestState<ushort, float, char>>()
+					.Add<TestState<ulong, int, bool>>()
+					.Add<TestState<decimal, short, ulong>>()
+					.Add<TestState<char, ushort, float>>()
+					.Add<TestState<bool, double, sbyte>>()
+					.Add<TestState<sbyte, long, ushort>>()
+					.Add<TestState<float, decimal, char>>()
+					.Add<TestState<double, byte, int>>()
+					.Add<TestState<int, sbyte, ulong>>()
+					.Add<TestState<long, ushort, decimal>>()
+					.Add<TestState<short, char, double>>()
+					.Add<TestState<ushort, bool, float>>()
+					.Add<TestState<ulong, byte, short>>()
+					.Add<TestState<decimal, int, char>>()
+					.Add<TestState<char, ulong, bool>>()
+					.Add<TestState<bool, short, double>>()
+					.Add<TestState<sbyte, decimal, ushort>>()
+					.Add<TestState<float, bool, byte>>()
+					.Add<TestState<double, ushort, sbyte>>()
+					.Add<TestState<int, float, char>>()
+					.Add<TestState<long, byte, ulong>>()
+					.Add<TestState<short, decimal, bool>>()
+					.Add<TestState<ushort, double, int>>();
 			}
 
 			return registry;

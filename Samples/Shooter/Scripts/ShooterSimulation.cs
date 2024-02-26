@@ -35,18 +35,17 @@ namespace Massive.Samples.Shooter
 
 			for (int i = 0; i < _charactersAmount; i++)
 			{
-				int character = _registry.CreateEntity(new CharacterState()
-				{
-					Transform = new EntityTransform()
+				_registry.CreateEntity(new CharacterState()
 					{
-						Position = Vector3.right * (i - _charactersAmount / 2f) * 1.5f,
-						Rotation = Quaternion.AngleAxis(180f * (i - _charactersAmount / 2f) / _charactersAmount, Vector3.forward)
-					}
-				});
-
-				_registry.Add(character, new WeaponState());
+						Transform = new EntityTransform()
+						{
+							Position = Vector3.right * (i - _charactersAmount / 2f) * 1.5f,
+							Rotation = Quaternion.AngleAxis(180f * (i - _charactersAmount / 2f) / _charactersAmount, Vector3.forward)
+						}
+					})
+					.Add(new WeaponState());
 			}
-			
+
 			_registry.SaveFrame();
 		}
 
@@ -68,7 +67,7 @@ namespace Massive.Samples.Shooter
 			_elapsedTime += Time.deltaTime;
 
 			float deltaTime = 1f / 60f;
-			
+
 			int targetFrame = Mathf.RoundToInt(_elapsedTime * 60);
 
 			while (_currentFrame < targetFrame)
@@ -93,9 +92,12 @@ namespace Massive.Samples.Shooter
 		private void OnGUI()
 		{
 			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_registry.CanRollbackFrames} Resimulations", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_registry.Component<CharacterState>().AliveCount} Characters", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_registry.Component<BulletState>().AliveCount} Bullets", new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_registry.CanRollbackFrames} Resimulations",
+				new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_registry.Component<CharacterState>().AliveCount} Characters",
+				new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
+			GUILayout.TextField($"{_registry.Component<BulletState>().AliveCount} Bullets",
+				new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}
 }

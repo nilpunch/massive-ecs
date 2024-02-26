@@ -13,19 +13,19 @@ namespace Massive.Samples.Benchmark
 		private void Start()
 		{
 			_registry = BenchmarkUtils.GetFullyPackedRegistry(121, _worldEntitiesCount);
-			_entities = new View(_registry.Entities);
+			_entities = _registry.View();
 		}
 
 		protected override void Sample()
 		{
 			_entities.ForEach(entity =>
 			{
-				_registry.Add(entity, new TestState() { Value = entity + 1 });
+				entity.Add(new TestState() { Value = entity.Id + 1 });
 			});
 			
 			_entities.ForEach(entity =>
 			{
-				_registry.Remove<TestState>(entity);
+				entity.Remove<TestState>();
 			});
 		}
 	}

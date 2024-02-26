@@ -11,7 +11,7 @@ namespace Massive.Samples.Shooter
 
 		public override void Init(Registry registry)
 		{
-			_characters = new View<CharacterState>(registry.Component<CharacterState>());
+			_characters = registry.View<CharacterState>();
 		}
 
 		public override void UpdateWorld(float deltaTime)
