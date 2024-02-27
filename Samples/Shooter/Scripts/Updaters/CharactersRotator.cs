@@ -7,19 +7,23 @@ namespace Massive.Samples.Shooter
 	{
 		[SerializeField] private float _rotation = 400f;
 
-		private View<CharacterState> _characters;
+		private IRegistry _registry;
+		private IDataSet<CharacterState> _characters;
 
-		public override void Init(MassiveRegistry registry)
+		public override void Init(IRegistry registry)
 		{
-			_characters = registry.View<CharacterState>();
+			_registry = registry;
+			_characters = registry.Component<CharacterState>();
 		}
 
 		public override void UpdateWorld(float deltaTime)
 		{
-			_characters.ForEach((ref CharacterState characterState) =>
+			var data = _characters.AliveData;
+			for (var i = 0; i < data.Length; i++)
 			{
+				ref var characterState = ref data[i];
 				characterState.Transform.Rotation *= Quaternion.AngleAxis(_rotation * deltaTime, Vector3.forward);
-			});
+			}
 		}
 	}
 }

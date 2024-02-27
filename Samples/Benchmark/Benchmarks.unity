@@ -151,7 +151,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1118741503}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 298d0f1e67724a00ae3d5a0692506b8b, type: 3}
   m_Name: 
@@ -182,15 +182,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1118741503}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23247d92a02543eaa2e17b029434177e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _identifier: Mutation
-  _drawOrder: 1
-  _iterations: 120
-  _worldEntitiesCount: 4000
+  _drawOrder: 0.75
+  _iterations: 1
+  _worldEntitiesCount: 500000
 --- !u!114 &1118741509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1118741503}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 191abfd3a1c244c09c71a2415baefb7d, type: 3}
   m_Name: 
@@ -206,7 +206,7 @@ MonoBehaviour:
   _identifier: Create Then Delete
   _drawOrder: 2
   _iterations: 120
-  _worldEntitiesCount: 10
+  _worldEntitiesCount: 100
 --- !u!114 &1118741510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,7 +214,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1118741503}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 74e8c46ad70f49d5989ff5dff394aee1, type: 3}
   m_Name: 
@@ -222,7 +222,7 @@ MonoBehaviour:
   _identifier: Add Then Remove
   _drawOrder: 3
   _iterations: 120
-  _worldEntitiesCount: 100
+  _worldEntitiesCount: 1000
 --- !u!114 &1118741511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,9 +236,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _identifier: Mutation2
-  _drawOrder: 1
-  _iterations: 120
-  _worldEntitiesCount: 4000
+  _drawOrder: 1.25
+  _iterations: 1
+  _worldEntitiesCount: 500000
 --- !u!1 &1660207770
 GameObject:
   m_ObjectHideFlags: 0

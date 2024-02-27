@@ -4,26 +4,33 @@ namespace Massive.Samples.Shooter
 {
 	public class BulletsUpdater : WorldUpdater
 	{
-		private View<BulletState> _bullets;
+		private IRegistry _registry;
+		private IDataSet<BulletState> _bullets;
 
-		public override void Init(MassiveRegistry registry)
+		public override void Init(IRegistry registry)
 		{
-			_bullets = registry.View<BulletState>();
+			_registry = registry;
+			_bullets = _registry.Component<BulletState>();
 		}
 		
 		public override void UpdateWorld(float deltaTime)
 		{
-			_bullets.ForEach((Entity entity, ref BulletState state) =>
+			var aliveData = _bullets.AliveData;
+			var aliveIds = _bullets.AliveIds;
+
+			for (int i = aliveData.Length - 1; i >= 0; i--)
 			{
+				ref BulletState state = ref aliveData[i];
+				
 				state.Lifetime -= deltaTime;
 				if (state.IsDestroyed)
 				{
-					entity.Destroy();
-					return;
+					_registry.Destroy(aliveIds[i]);
+					continue;
 				}
 
 				state.Transform.Position += state.Velocity * deltaTime;
-			});
+			}
 		}
 	}
 }

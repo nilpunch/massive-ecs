@@ -35,15 +35,15 @@ namespace Massive.Samples.Shooter
 
 			for (int i = 0; i < _charactersAmount; i++)
 			{
-				_registry.CreateEntity(new CharacterState()
+				int characterId = _registry.Create(new CharacterState()
+				{
+					Transform = new EntityTransform()
 					{
-						Transform = new EntityTransform()
-						{
-							Position = Vector3.right * (i - _charactersAmount / 2f) * 1.5f,
-							Rotation = Quaternion.AngleAxis(180f * (i - _charactersAmount / 2f) / _charactersAmount, Vector3.forward)
-						}
-					})
-					.Add(new WeaponState());
+						Position = Vector3.right * (i - _charactersAmount / 2f) * 1.5f,
+						Rotation = Quaternion.AngleAxis(180f * (i - _charactersAmount / 2f) / _charactersAmount, Vector3.forward)
+					}
+				});
+				_registry.Add(characterId, new WeaponState());
 			}
 
 			_registry.SaveFrame();

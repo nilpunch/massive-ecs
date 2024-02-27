@@ -8,25 +8,25 @@ namespace Massive.Samples.Benchmark
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 1000;
 		
 		private MassiveRegistry _registry;
-		private View _entities;
 
 		private void Start()
 		{
 			_registry = BenchmarkUtils.GetFullyPackedRegistry(121, _worldEntitiesCount);
-			_entities = _registry.View();
 		}
 
 		protected override void Sample()
 		{
-			_entities.ForEach(entity =>
+			var entitiesAliveIds = _registry.Entities.AliveIds;
+
+			foreach (var id in entitiesAliveIds)
 			{
-				entity.Add(new TestState() { Position = Vector3.one });
-			});
+				_registry.Add(id, new TestState() { Position = Vector3.one });
+			}
 			
-			_entities.ForEach(entity =>
+			foreach (var id in entitiesAliveIds)
 			{
-				entity.Remove<TestState>();
-			});
+				_registry.Remove<TestState>(id);
+			}
 		}
 	}
 }

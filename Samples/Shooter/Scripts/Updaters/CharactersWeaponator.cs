@@ -10,35 +10,48 @@ namespace Massive.Samples.Shooter
 		[SerializeField] private float _bulletDamage = 1f;
 		[SerializeField] private float _bulletLifetime = 2f;
 
-		private MassiveRegistry _registry;
-		private View<CharacterState, WeaponState> _weapons;
+		private IRegistry _registry;
+		private IDataSet<CharacterState> _characters;
+		private IDataSet<WeaponState> _weapons;
 
-		public override void Init(MassiveRegistry registry)
+		public override void Init(IRegistry registry)
 		{
 			_registry = registry;
-			_weapons = registry.View<CharacterState, WeaponState>();
+			_characters = registry.Component<CharacterState>();
+			_weapons = registry.Component<WeaponState>();
 		}
 
 		public override void UpdateWorld(float deltaTime)
 		{
-			_weapons.ForEach((ref CharacterState characterState, ref WeaponState weaponState) =>
+			var ids1 = _characters.AliveIds;
+			var data1 = _characters.AliveData;
+			var data2 = _weapons.AliveData;
+
+			for (int dense1 = 0; dense1 < ids1.Length; dense1++)
 			{
-				weaponState.Cooldown -= deltaTime;
-				if (weaponState.Cooldown > 0)
+				int id = ids1[dense1];
+				if (_weapons.TryGetDense(id, out var dense2))
 				{
-					return;
+					ref var characterState = ref data1[dense1];
+					ref var weaponState = ref data2[dense2];
+					
+					weaponState.Cooldown -= deltaTime;
+					if (weaponState.Cooldown > 0)
+					{
+						continue;
+					}
+
+					weaponState.Cooldown = _cooldown;
+
+					_registry.Create(new BulletState
+					{
+						Transform = characterState.Transform,
+						Velocity = characterState.Transform.Rotation * Vector3.up * _bulletVelocity,
+						Lifetime = _bulletLifetime,
+						Damage = _bulletDamage
+					});
 				}
-
-				weaponState.Cooldown = _cooldown;
-
-				_registry.Create(new BulletState
-				{
-					Transform = characterState.Transform,
-					Velocity = characterState.Transform.Rotation * Vector3.up * _bulletVelocity,
-					Lifetime = _bulletLifetime,
-					Damage = _bulletDamage
-				});
-			});
+			}
 		}
 	}
 }
