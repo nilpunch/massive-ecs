@@ -10,7 +10,7 @@ namespace Massive.ECS
 		{
 		}
 
-		public int CanRollbackFrames => Entities.CanRollbackFrames;
+		public int CanRollbackFrames => EntitySet.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()

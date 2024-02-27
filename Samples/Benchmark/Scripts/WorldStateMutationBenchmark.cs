@@ -8,21 +8,22 @@ namespace Massive.Samples.Benchmark
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
 		private MassiveRegistry _registry;
-		private View<TestState, TestState<float, byte, int>> _testStates;
+		private IDataSet<TestState> _testStates;
 
 		private void Start()
 		{
-			_registry = BenchmarkUtils.GetFullyPackedRegistry(121, _worldEntitiesCount);
-			_testStates = _registry.View<TestState, TestState<float, byte, int>>();
+			_registry = BenchmarkUtils.GetSimplyPackedRegistry(1, _worldEntitiesCount);
+			_testStates = _registry.Component<TestState>();
 		}
 
 		protected override void Sample()
 		{
-			_testStates.ForEach((ref TestState state) =>
+			var data = _testStates.AliveData;
+			for (int i = 0; i < data.Length; i++)
 			{
-				state.Value += 1;
-				state.Data1 *= Quaternion.identity;
-			});
+				ref TestState state = ref data[i];
+				state.Position += Vector3.one;
+			}
 		}
 	}
 }

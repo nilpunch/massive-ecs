@@ -20,7 +20,7 @@ namespace Massive.Samples.Benchmark
 		{
 			_entities.ForEach(entity =>
 			{
-				entity.Add(new TestState() { Value = entity.Id + 1 });
+				entity.Add(new TestState() { Position = Vector3.one });
 			});
 			
 			_entities.ForEach(entity =>

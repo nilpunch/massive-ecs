@@ -23,7 +23,7 @@ namespace Massive.Samples.Benchmark
 		{
 			for (int index = 0; index < _worldEntitiesCount; index++)
 			{
-				_registry.Create(new TestState() { Value = index + 1 });
+				_registry.Create(new TestState() { Position = Vector3.one });
 			}
 
 			for (int index = 0; index < _worldEntitiesCount; index++)

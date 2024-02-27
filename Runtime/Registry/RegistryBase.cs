@@ -6,7 +6,7 @@ namespace Massive.ECS
 {
 	public class RegistryBase<TSet> : IRegistry where TSet : ISet
 	{
-		protected TSet Entities { get; }
+		protected TSet EntitySet { get; }
 		protected List<TSet> AllSets { get; }
 
 		private readonly Dictionary<Type, TSet> _pools;
@@ -17,16 +17,16 @@ namespace Massive.ECS
 			_setFactory = setFactory;
 			_pools = new Dictionary<Type, TSet>();
 
-			Entities = setFactory.CreateSet();
-			AllSets = new List<TSet>() { Entities };
+			EntitySet = setFactory.CreateSet();
+			AllSets = new List<TSet>() { EntitySet };
 		}
 
-		ISet IRegistry.Entities => Entities;
+		public ISet Entities => EntitySet;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create()
 		{
-			return Entities.Create().Id;
+			return EntitySet.Create().Id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
