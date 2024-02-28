@@ -1,6 +1,6 @@
 ﻿namespace Massive.ECS
 {
-	public class NormalSetFactory : ISetFactory<ISet>
+	public class NormalSetFactory : ISetFactory
 	{
 		private readonly int _dataCapacity;
 

@@ -1,21 +1,27 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Massive.ECS
 {
-	public class MassiveRegistry : RegistryBase<IMassiveSet>, IMassive
+	public class MassiveRegistry : Registry, IMassive
 	{
+		private readonly MassiveSparseSet _entities;
+
 		public MassiveRegistry(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
 			: base(new MassiveSetFactory(framesCapacity, dataCapacity))
 		{
+			// Fetch instance from base
+			_entities = (MassiveSparseSet)Entities;
 		}
 
-		public int CanRollbackFrames => EntitySet.CanRollbackFrames;
+		public int CanRollbackFrames => _entities.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			foreach (var massive in AllSets)
+			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
+			foreach (IMassive massive in AllSets)
 			{
 				massive.SaveFrame();
 			}
@@ -24,7 +30,8 @@ namespace Massive.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			foreach (var massive in AllSets)
+			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
+			foreach (IMassive massive in AllSets)
 			{
 				massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 			}

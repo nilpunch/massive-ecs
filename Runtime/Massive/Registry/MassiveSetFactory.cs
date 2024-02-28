@@ -1,6 +1,6 @@
 ﻿namespace Massive.ECS
 {
-	public class MassiveSetFactory : ISetFactory<IMassiveSet>
+	public class MassiveSetFactory : ISetFactory
 	{
 		private readonly int _framesCapacity;
 		private readonly int _dataCapacity;
@@ -11,7 +11,7 @@
 			_dataCapacity = dataCapacity;
 		}
 
-		public IMassiveSet CreateSet()
+		public ISet CreateSet()
 		{
 			var massiveSparseSet = new MassiveSparseSet(_framesCapacity, _dataCapacity);
 
@@ -21,7 +21,7 @@
 			return massiveSparseSet;
 		}
 
-		public IMassiveSet CreateDataSet<T>() where T : unmanaged
+		public ISet CreateDataSet<T>() where T : unmanaged
 		{
 			var massiveDataSet = new MassiveDataSet<T>(_framesCapacity, _dataCapacity);
 

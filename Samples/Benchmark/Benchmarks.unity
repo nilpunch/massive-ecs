@@ -189,8 +189,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _identifier: Mutation
   _drawOrder: 0.75
-  _iterations: 1
-  _worldEntitiesCount: 500000
+  _iterations: 120
+  _worldEntitiesCount: 4000
 --- !u!114 &1118741509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,8 +237,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _identifier: Mutation2
   _drawOrder: 1.25
-  _iterations: 1
-  _worldEntitiesCount: 500000
+  _iterations: 120
+  _worldEntitiesCount: 4000
 --- !u!1 &1660207770
 GameObject:
   m_ObjectHideFlags: 0

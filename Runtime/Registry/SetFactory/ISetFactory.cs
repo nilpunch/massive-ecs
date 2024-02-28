@@ -1,8 +1,8 @@
 ﻿namespace Massive.ECS
 {
-	public interface ISetFactory<TSet> where TSet : ISet
+	public interface ISetFactory
 	{
-		TSet CreateSet();
-		TSet CreateDataSet<T>() where T : unmanaged;
+		ISet CreateSet();
+		ISet CreateDataSet<T>() where T : unmanaged;
 	}
 }
