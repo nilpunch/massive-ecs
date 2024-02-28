@@ -188,7 +188,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void SwapDense(int denseA, int denseB)
+		public void SwapDense(int denseA, int denseB)
 		{
 			int idA = Dense[denseA];
 			int idB = Dense[denseB];

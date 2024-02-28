@@ -91,6 +91,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SwapDense(int denseA, int denseB)
+		{
+			SparseSet.SwapDense(denseA, denseB);
+			(Data[denseA], Data[denseB]) = (Data[denseB], Data[denseA]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
 			return ref Data[SparseSet.GetDense(id)];

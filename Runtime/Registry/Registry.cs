@@ -12,18 +12,18 @@ namespace Massive.ECS
 		protected List<ISet> AllSets { get; }
 		public ISet Entities { get; }
 
-		public Registry(ISetFactory setFactory)
+		public Registry(int dataCapacity = Constants.DataCapacity)
+			: this(new NormalSetFactory(dataCapacity))
+		{
+		}
+
+		protected Registry(ISetFactory setFactory)
 		{
 			_setFactory = setFactory;
 			_pools = new Dictionary<Type, ISet>();
 
 			Entities = setFactory.CreateSet();
 			AllSets = new List<ISet>() { Entities };
-		}
-
-		public Registry(int dataCapacity = Constants.DataCapacity)
-			: this(new NormalSetFactory(dataCapacity))
-		{
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
