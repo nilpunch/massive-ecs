@@ -1,16 +1,25 @@
 ﻿{
   "name": "massive",
-  "version": "0.1.0",
-  "type": "library",
-  "displayName": "Data container with rollback.",
+  "version": "1.0.0",
+  "displayName": "Massive Sparse Set",
   "unity": "2021.2",
-  "description": "External data container for entities, featuring rollback.",
+  "description": "Sparse set library made for prediction-rollback netcode implementation.",
   "samples": [
-      {
-          "displayName": "Benchmark Sample",
-          "description": "Contains sample for monitoring performance.",
-          "path": "Samples/Benchmark"
-      }
+    {
+      "displayName": "Shooter",
+      "description": "More real world scenario.",
+      "path": "Samples/Shooter"
+    },
+    {
+      "displayName": "Simple Physics",
+      "description": "A simple custom physics with bruteforce collisions and some friction.",
+      "path": "Samples/Physics"
+    },
+    {
+      "displayName": "Benchmark",
+      "description": "Basic performance monitoring.",
+      "path": "Samples/Benchmark"
+    }
   ],
   "author": "https://github.com/nilpunch"
 }
