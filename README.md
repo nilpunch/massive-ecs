@@ -1,14 +1,15 @@
-# massive - Sparse Set, featuring rollbacks
+# massive - sparse set, featuring rollbacks
 
-Made for a fast paced online multiplayer games with prediction-rollback netcode.
+> [!NOTE]
+> ECS included!
 
-This is a **library**, not a framework. Thus, it doesn't try to take control of the user codebase or the main game loop.
+Made for competitive and fast paced online multiplayer games with prediction-rollback netcode.
 
-ECS extension will be available soon.
+This is **a library**, not a framework. Thus, it doesn't try to take control of the user codebase or the main game loop.
 
-# Samples
+## Samples
 
-## Shooter
+### Shooter
 
 Over 1000 bullets resimulating 120 frames per one frame at 60 FPS simulation.
 
@@ -18,7 +19,7 @@ That is 1000\*120 = 120.000 updates per frame, and 120.000\*60 = 7.200.000 updat
 
 Note that simulating 1000 bullets for 120 frames is **not the same** as simulating 120.000 bullets for one frame. The last case is highly parallelizable, while the resimulation case is sequential and in terms of computation can only be optimised via SIMD.
 
-## Physics
+### Physics
 
 Simple rigidbody physics (just a showcase, not well optimised for resimulations because of brute force collision detection)
 
