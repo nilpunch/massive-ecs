@@ -9,8 +9,8 @@
 		bool Has<T>(int entityId) where T : unmanaged;
 		void Add<T>(int entityId, T data = default) where T : unmanaged;
 		void Remove<T>(int entityId) where T : unmanaged;
-		DataSet<T> Component<T>() where T : unmanaged;
-		SparseSet Tag<T>() where T : unmanaged;
+		IDataSet<T> Component<T>() where T : unmanaged;
+		ISet Tag<T>() where T : unmanaged;
 		ISet AnySet<T>() where T : unmanaged;
 	}
 }

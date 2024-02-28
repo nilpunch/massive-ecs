@@ -135,7 +135,6 @@ GameObject:
   - component: {fileID: 1118741505}
   - component: {fileID: 1118741508}
   - component: {fileID: 1118741511}
-  - component: {fileID: 1118741512}
   - component: {fileID: 1118741509}
   - component: {fileID: 1118741510}
   m_Layer: 0
@@ -190,8 +189,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _identifier: Mutation
   _drawOrder: 0.75
-  _iterations: 120
-  _worldEntitiesCount: 4000
+  _iterations: 1
+  _worldEntitiesCount: 500000
 --- !u!114 &1118741509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,24 +237,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _identifier: Mutation2
   _drawOrder: 1.25
-  _iterations: 120
-  _worldEntitiesCount: 4000
---- !u!114 &1118741512
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1118741503}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b940946211743efa0bd035fe8752697, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _identifier: Mutation3
-  _drawOrder: 1.25
-  _iterations: 120
-  _worldEntitiesCount: 4000
+  _iterations: 1
+  _worldEntitiesCount: 500000
 --- !u!1 &1660207770
 GameObject:
   m_ObjectHideFlags: 0
