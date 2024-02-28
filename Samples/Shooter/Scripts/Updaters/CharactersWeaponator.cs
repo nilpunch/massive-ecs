@@ -17,8 +17,8 @@ namespace Massive.Samples.Shooter
 		public override void Init(IRegistry registry)
 		{
 			_registry = registry;
-			_characters = registry.Component<CharacterState>();
-			_weapons = registry.Component<WeaponState>();
+			_characters = registry.Components<CharacterState>();
+			_weapons = registry.Components<WeaponState>();
 		}
 
 		public override void UpdateWorld(float deltaTime)

@@ -13,7 +13,7 @@ namespace Massive.Samples.Shooter
 		public override void Init(IRegistry registry)
 		{
 			_registry = registry;
-			_characters = registry.Component<CharacterState>();
+			_characters = registry.Components<CharacterState>();
 		}
 
 		public override void UpdateWorld(float deltaTime)

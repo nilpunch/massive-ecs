@@ -81,8 +81,8 @@ namespace Massive.Samples.Shooter
 				_currentFrame++;
 			}
 
-			_characterSynchronisation.Synchronize(_registry.Component<CharacterState>());
-			_bulletSynchronisation.Synchronize(_registry.Component<BulletState>());
+			_characterSynchronisation.Synchronize(_registry.Components<CharacterState>());
+			_bulletSynchronisation.Synchronize(_registry.Components<BulletState>());
 
 			_debugTime = stopwatch.ElapsedMilliseconds;
 		}
@@ -94,9 +94,9 @@ namespace Massive.Samples.Shooter
 			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
 			GUILayout.TextField($"{_registry.CanRollbackFrames} Resimulations",
 				new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_registry.Component<CharacterState>().AliveCount} Characters",
+			GUILayout.TextField($"{_registry.Components<CharacterState>().AliveCount} Characters",
 				new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_registry.Component<BulletState>().AliveCount} Bullets",
+			GUILayout.TextField($"{_registry.Components<BulletState>().AliveCount} Bullets",
 				new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}

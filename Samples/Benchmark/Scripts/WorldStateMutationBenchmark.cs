@@ -13,7 +13,7 @@ namespace Massive.Samples.Benchmark
 		private void Start()
 		{
 			_registry = BenchmarkUtils.GetSimplyPackedRegistry(1, _worldEntitiesCount);
-			_testStates = _registry.Component<TestState>();
+			_testStates = _registry.Components<TestState>();
 		}
 
 		protected override void Sample()

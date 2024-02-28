@@ -9,11 +9,11 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SparseSet : ISet
 	{
-		protected int[] Dense { get; }
-		protected int[] Sparse { get; }
-		protected int MaxDense { get; set; }
-		protected int MaxId { get; set; }
-		public int AliveCount { get; protected set; }
+		public int[] Dense { get; }
+		public int[] Sparse { get; }
+		public int MaxDense { get; set; }
+		public int MaxId { get; set; }
+		public int AliveCount { get; set; }
 
 		public SparseSet(int dataCapacity = Constants.DataCapacity)
 		{

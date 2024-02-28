@@ -1,21 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Massive.ECS
 {
 	public class MassiveRegistry : Registry, IMassive
 	{
-		private readonly MassiveSparseSet _entities;
+		private readonly MassiveSparseSet _massiveEntities;
 
 		public MassiveRegistry(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
 			: base(new MassiveSetFactory(framesCapacity, dataCapacity))
 		{
 			// Fetch instance from base
-			_entities = (MassiveSparseSet)Entities;
+			_massiveEntities = (MassiveSparseSet)Entities;
 		}
 
-		public int CanRollbackFrames => _entities.CanRollbackFrames;
+		public int CanRollbackFrames => _massiveEntities.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()

@@ -6,11 +6,11 @@ namespace Massive.ECS
 {
 	public class Registry : IRegistry
 	{
-		private readonly Dictionary<Type, ISet> _pools;
 		private readonly ISetFactory _setFactory;
+		private readonly Dictionary<Type, ISet> _setsLookup;
 
 		protected List<ISet> AllSets { get; }
-		public ISet Entities { get; }
+		public SparseSet Entities { get; }
 
 		public Registry(int dataCapacity = Constants.DataCapacity)
 			: this(new NormalSetFactory(dataCapacity))
@@ -20,9 +20,9 @@ namespace Massive.ECS
 		protected Registry(ISetFactory setFactory)
 		{
 			_setFactory = setFactory;
-			_pools = new Dictionary<Type, ISet>();
+			_setsLookup = new Dictionary<Type, ISet>();
 
-			Entities = setFactory.CreateSet();
+			Entities = (SparseSet)setFactory.CreateSet();
 			AllSets = new List<ISet>() { Entities };
 		}
 
@@ -42,20 +42,31 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref T Get<T>(int entityId) where T : unmanaged
+		public void Add<T>(int entityId, T data = default) where T : unmanaged
 		{
-			if (!ComponentMeta<T>.HasAnyFields)
+			if (ComponentMeta<T>.HasAnyFields)
 			{
-				throw new Exception("Type has no fields!");
+				GetOrCreateComponents<T>().Ensure(entityId, data);
 			}
+			else
+			{
+				GetOrCreateTags<T>().Ensure(entityId);
+			}
+		}
 
-			return ref GetOrCreateComponentPool<T>().Get(entityId);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Remove<T>(int entityId) where T : unmanaged
+		{
+			if (_setsLookup.TryGetValue(typeof(T), out var anySet))
+			{
+				anySet.Delete(entityId);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has<T>(int entityId) where T : unmanaged
 		{
-			if (_pools.TryGetValue(typeof(T), out var component))
+			if (_setsLookup.TryGetValue(typeof(T), out var component))
 			{
 				return component.IsAlive(entityId);
 			}
@@ -64,47 +75,36 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add<T>(int entityId, T data = default) where T : unmanaged
-		{
-			if (ComponentMeta<T>.HasAnyFields)
-			{
-				GetOrCreateComponentPool<T>().Ensure(entityId, data);
-			}
-			else
-			{
-				GetOrCreateTagPool<T>().Ensure(entityId);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove<T>(int entityId) where T : unmanaged
-		{
-			if (_pools.TryGetValue(typeof(T), out var anySet))
-			{
-				anySet.Delete(entityId);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IDataSet<T> Component<T>() where T : unmanaged
+		public ref T Get<T>(int entityId) where T : unmanaged
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
-				throw new Exception($"Type has no fields! Use {nameof(Tag)} instead.");
+				throw new Exception("Type has no fields!");
 			}
 
-			return GetOrCreateComponentPool<T>();
+			return ref GetOrCreateComponents<T>().Get(entityId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet Tag<T>() where T : unmanaged
+		public DataSet<T> Components<T>() where T : unmanaged
+		{
+			if (!ComponentMeta<T>.HasAnyFields)
+			{
+				throw new Exception($"Type has no fields! Use {nameof(Tags)}<T>() instead.");
+			}
+
+			return GetOrCreateComponents<T>();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public SparseSet Tags<T>() where T : unmanaged
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
-				throw new Exception($"Type has fields! Use {nameof(Component)} instead.");
+				throw new Exception($"Type has fields! Use {nameof(Components)}<T>() instead.");
 			}
 
-			return GetOrCreateTagPool<T>();
+			return GetOrCreateTags<T>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -112,42 +112,42 @@ namespace Massive.ECS
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
-				return GetOrCreateComponentPool<T>();
+				return GetOrCreateComponents<T>();
 			}
 			else
 			{
-				return GetOrCreateTagPool<T>();
+				return GetOrCreateTags<T>();
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private IDataSet<T> GetOrCreateComponentPool<T>() where T : unmanaged
+		private DataSet<T> GetOrCreateComponents<T>() where T : unmanaged
 		{
 			var type = typeof(T);
 
-			if (!_pools.TryGetValue(type, out var components))
+			if (!_setsLookup.TryGetValue(type, out var components))
 			{
 				components = _setFactory.CreateDataSet<T>();
-				_pools.Add(type, components);
+				_setsLookup.Add(type, components);
 				AllSets.Add(components);
 			}
 
-			return (IDataSet<T>)components;
+			return (DataSet<T>)components;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private ISet GetOrCreateTagPool<T>() where T : unmanaged
+		private SparseSet GetOrCreateTags<T>() where T : unmanaged
 		{
 			var type = typeof(T);
 
-			if (!_pools.TryGetValue(type, out var tags))
+			if (!_setsLookup.TryGetValue(type, out var tags))
 			{
 				tags = _setFactory.CreateSet();
-				_pools.Add(type, tags);
+				_setsLookup.Add(type, tags);
 				AllSets.Add(tags);
 			}
 
-			return tags;
+			return (SparseSet)tags;
 		}
 	}
 }
