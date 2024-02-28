@@ -1,35 +1,17 @@
-using System;
-using System.Runtime.CompilerServices;
-using Unity.IL2CPP.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	/// <summary>
-	/// Data extension for any <see cref="Massive.ISet"/>.
-	/// </summary>
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class DataSetBase<T, TSparseSet> : IDataSet<T>
-		where T : unmanaged
-		where TSparseSet : ISet
+	public struct DataSetStorage<T>
 	{
-		protected readonly TSparseSet SparseSet;
-		protected readonly T[] Data;
+		public readonly T[] Data;
+		public SparseSetStorage SparseSet;
 
-		public DataSetBase(TSparseSet sparseSet)
+		public DataSetStorage(int dataCapacity = Constants.DataCapacity)
 		{
-			SparseSet = sparseSet;
-			Data = new T[sparseSet.Capacity];
+			Data = new T[dataCapacity];
+			SparseSet = new SparseSetStorage(dataCapacity);
 		}
-
-		public int Capacity => SparseSet.Capacity;
-
-		public int AliveCount => SparseSet.AliveCount;
-
-		public ReadOnlySpan<int> AliveIds => SparseSet.AliveIds;
-
-		public Span<T> AliveData => new Span<T>(Data, 0, SparseSet.AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CreateInfo Ensure(int id)

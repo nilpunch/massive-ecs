@@ -24,14 +24,12 @@ namespace Massive
 		{
 			_framesCapacity = framesCapacity;
 
-			_denseByFrames = new int[framesCapacity * Dense.Length];
-			_sparseByFrames = new int[framesCapacity * Sparse.Length];
+			_denseByFrames = new int[framesCapacity * Capacity];
+			_sparseByFrames = new int[framesCapacity * Capacity];
 			_maxDenseByFrames = new int[framesCapacity];
 			_maxIdByFrames = new int[framesCapacity];
 			_aliveCountByFrames = new int[framesCapacity];
 		}
-
-		public int CurrentFrame => _currentFrame;
 
 		/// <summary>
 		/// Can be negative, when there absolutely no saved frames to restore information.
@@ -41,14 +39,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			int currentMaxDense = MaxDense;
-			int currentMaxId = MaxId;
+			int currentMaxDense = Storage.MaxDense;
+			int currentMaxId = Storage.MaxId;
 			int currentAliveCount = AliveCount;
 			int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
 
 			// Copy everything from current state to next frame
-			Array.Copy(Dense, 0, _denseByFrames, nextFrame * Dense.Length, currentMaxDense);
-			Array.Copy(Sparse, 0, _sparseByFrames, nextFrame * Sparse.Length, currentMaxId);
+			Array.Copy(Storage.Dense, 0, _denseByFrames, nextFrame * Capacity, currentMaxDense);
+			Array.Copy(Storage.Sparse, 0, _sparseByFrames, nextFrame * Capacity, currentMaxId);
 			_maxDenseByFrames[nextFrame] = currentMaxDense;
 			_maxIdByFrames[nextFrame] = currentMaxId;
 			_aliveCountByFrames[nextFrame] = currentAliveCount;
@@ -75,11 +73,11 @@ namespace Massive
 			int rollbackFrame = _currentFrame;
 
 			// Copy last MaxDense and MaxId elements to ensure zeroing excess
-			Array.Copy(_denseByFrames, rollbackFrame * Dense.Length, Dense, 0, MaxDense);
-			Array.Copy(_sparseByFrames, rollbackFrame * Sparse.Length, Sparse, 0, MaxId);
-			MaxDense = rollbackMaxDense;
-			MaxId = rollbackMaxId;
-			AliveCount = rollbackAliveCount;
+			Array.Copy(_denseByFrames, rollbackFrame * Capacity, Storage.Dense, 0, Storage.MaxDense);
+			Array.Copy(_sparseByFrames, rollbackFrame * Capacity, Storage.Sparse, 0, Storage.MaxId);
+			Storage.MaxDense = rollbackMaxDense;
+			Storage.MaxId = rollbackMaxId;
+			Storage.AliveCount = rollbackAliveCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

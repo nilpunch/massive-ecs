@@ -9,15 +9,15 @@ namespace Massive.ECS
 		protected TSet EntitySet { get; }
 		protected List<TSet> AllSets { get; }
 
-		private readonly Dictionary<Type, TSet> _pools;
+		private readonly Dictionary<Type, ISet> _pools;
 		private readonly ISetFactory<TSet> _setFactory;
 
 		public RegistryBase(ISetFactory<TSet> setFactory)
 		{
 			_setFactory = setFactory;
-			_pools = new Dictionary<Type, TSet>();
+			_pools = new Dictionary<Type, ISet>();
 
-			EntitySet = setFactory.CreateSet();
+			EntitySet = (TSet)setFactory.CreateSet();
 			AllSets = new List<TSet>() { EntitySet };
 		}
 
@@ -83,7 +83,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IDataSet<T> Component<T>() where T : unmanaged
+		public DataSet<T> Component<T>() where T : unmanaged
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -94,7 +94,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet Tag<T>() where T : unmanaged
+		public SparseSet Tag<T>() where T : unmanaged
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
@@ -118,7 +118,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private IDataSet<T> GetOrCreateComponentPool<T>() where T : unmanaged
+		private DataSet<T> GetOrCreateComponentPool<T>() where T : unmanaged
 		{
 			var type = typeof(T);
 
@@ -126,14 +126,14 @@ namespace Massive.ECS
 			{
 				components = _setFactory.CreateDataSet<T>();
 				_pools.Add(type, components);
-				AllSets.Add(components);
+				AllSets.Add((TSet)components);
 			}
 
-			return (IDataSet<T>)components;
+			return (DataSet<T>)components;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private ISet GetOrCreateTagPool<T>() where T : unmanaged
+		private SparseSet GetOrCreateTagPool<T>() where T : unmanaged
 		{
 			var type = typeof(T);
 
@@ -141,10 +141,10 @@ namespace Massive.ECS
 			{
 				tags = _setFactory.CreateSet();
 				_pools.Add(type, tags);
-				AllSets.Add(tags);
+				AllSets.Add((TSet)tags);
 			}
 
-			return tags;
+			return (SparseSet)tags;
 		}
 	}
 }
