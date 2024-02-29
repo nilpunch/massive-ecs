@@ -1,24 +1,29 @@
 # Sparse set library, featuring rollbacks
 
 > [!NOTE]
-> ECS included!
+> Basic sparse set ECS included!
 
 Made for competitive and fast paced online multiplayer games with prediction-rollback netcode.
 
 ## How to use
+
 This is **a library**, not a framework. Thus, it doesn't try to take control of the user codebase or the main game loop.
 
-Types overview:
+Main types overview. You can use them if you don't need rollback functionality:
 
-- `SparseSet` - data container similar to `HashSet<int>`
+- `SparseSet` - data structure similar to `HashSet<int>`
 - `DataSet<T>` - data wrapper for `SparseSet`, similar to `Dictionary<int, T>`
-- `Registry` - container for entities, components and tags 
+- `Registry` - container for entities, components and tags
 
 Each type has a *Massive* counterpart with rollback functionality:
 
-- `MassiveSparseSet`
-- `MassiveDataSet<T>`
-- `MassiveRegistry`
+- `MassiveSparseSet` - counterpart to `SparseSet`
+- `MassiveDataSet<T>` - counterpart to `DataSet<T>`
+- `MassiveRegistry` - counterpart to `Registry`
+
+## How it works
+
+Each *Massive* data structure contains linear cyclic buffer. This allows for very fast saving and rollbacking, copying the entire data arrays at once. `MassiveRegistry` simply uses these *Massive* data structures internally, so we get the simplest possible ECS with rollbacks.
 
 ## Samples
 
