@@ -1,6 +1,7 @@
 ﻿{
   "name": "massive",
   "version": "1.0.0",
+  "type": "library",
   "displayName": "Massive Sparse Set",
   "unity": "2021.2",
   "description": "Sparse set library made for prediction-rollback netcode implementation.",
