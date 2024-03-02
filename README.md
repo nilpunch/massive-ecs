@@ -1,11 +1,37 @@
-# massive - sparse set, featuring rollbacks
+# Sparse set library, featuring rollbacks
 
 > [!NOTE]
-> ECS included!
+> Basic sparse set ECS included!
 
 Made for competitive and fast paced online multiplayer games with prediction-rollback netcode.
 
+## Installation
+
+Make sure you have standalone [Git](https://git-scm.com/downloads) installed first. Reboot after installation.  
+In Unity, open "Window" -> "Package Manager".  
+Click the "+" sign on top left corner -> "Add package from git URL..."  
+Paste this: `https://github.com/nilpunch/massive.git`  
+See minimum required Unity version in the `package.json` file.
+
+## How to use
+
 This is **a library**, not a framework. Thus, it doesn't try to take control of the user codebase or the main game loop.
+
+Main types overview. You can use them if you don't need rollback functionality:
+
+- `SparseSet` - data structure similar to `HashSet<int>`
+- `DataSet<T>` - data wrapper for `SparseSet`, similar to `Dictionary<int, T>`
+- `Registry` - container for entities, components and tags
+
+Each type has a *Massive* counterpart with rollback functionality:
+
+- `MassiveSparseSet` - counterpart to `SparseSet`
+- `MassiveDataSet<T>` - counterpart to `DataSet<T>`
+- `MassiveRegistry` - counterpart to `Registry`
+
+## How it works
+
+Each *Massive* data structure contains linear cyclic buffer. This allows for very fast saving and rollbacking, copying the entire data arrays at once. `MassiveRegistry` simply uses these *Massive* data structures internally, so we get the simplest possible ECS with rollbacks.
 
 ## Samples
 
