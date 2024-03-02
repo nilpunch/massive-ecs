@@ -15,12 +15,12 @@ namespace Massive.Samples.Physics
 			if (_firstTransform == null || _secondTransform == null)
 				return;
 
-			BoxCollider firstBox = new BoxCollider(0, _firstSize, new Transformation(), new PhysicMaterial())
+			PhysicsBoxCollider firstBox = new PhysicsBoxCollider(0, _firstSize, new Transformation(), new PhysicMaterial())
 			{
 				World = new Transformation(_firstTransform.position, _firstTransform.rotation)
 			};
 
-			BoxCollider secondBox = new BoxCollider(0, _secondSize, new Transformation(), new PhysicMaterial())
+			PhysicsBoxCollider secondBox = new PhysicsBoxCollider(0, _secondSize, new Transformation(), new PhysicMaterial())
 			{
 				World = new Transformation(_secondTransform.position, _secondTransform.rotation)
 			};

@@ -44,10 +44,10 @@ namespace Massive.Samples.Physics
 			inertiaTensor.SetRow(2, new Vector4(0f, 0f, i, 0f));
 			inertiaTensor.SetRow(3, new Vector4(0f, 0f, 0f, 1f)); // The last row is not used for MOI calculations
 
-			return Rigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Quaternion.identity, mass);
+			return PhysicsRigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Quaternion.identity, mass);
 		}
 
-		public static void UpdateWorldPositions(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<SphereCollider> colliders)
+		public static void UpdateWorldPositions(MassiveDataSet<PhysicsRigidbody> bodies, MassiveDataSet<SphereCollider> colliders)
 		{
 			var aliveColliders = colliders.AliveData;
 			for (int i = 0; i < aliveColliders.Length; i++)

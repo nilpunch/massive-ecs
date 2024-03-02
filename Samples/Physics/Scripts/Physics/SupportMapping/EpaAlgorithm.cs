@@ -119,7 +119,6 @@ namespace Massive.Samples.Physics
 
 			(float Distance, PolytopeFace Face) closestFace = default;
 
-			int iteration = 1;
 			for (int i = 0; i < maxIterations; i++)
 			{
 				closestFace = FindClosestFace(Faces);

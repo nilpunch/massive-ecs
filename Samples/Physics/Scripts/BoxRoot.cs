@@ -2,7 +2,7 @@
 
 namespace Massive.Samples.Physics
 {
-	public class BoxRoot : EntityRoot<BoxCollider>
+	public class BoxRoot : EntityRoot<PhysicsBoxCollider>
 	{
 	}
 }

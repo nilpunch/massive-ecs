@@ -9,7 +9,7 @@ namespace Massive.Samples.Physics
 
 		public static readonly List<Contact> Contacts = new List<Contact>();
 
-		public static void Solve(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<BoxCollider> boxes)
+		public static void Solve(MassiveDataSet<PhysicsRigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<PhysicsBoxCollider> boxes)
 		{
 			CollectContacts(bodies, spheres, boxes);
 
@@ -23,7 +23,7 @@ namespace Massive.Samples.Physics
 			}
 		}
 
-		private static void SolvePositionCollision(ref Rigidbody a, ref Rigidbody b, Contact contact)
+		private static void SolvePositionCollision(ref PhysicsRigidbody a, ref PhysicsRigidbody b, Contact contact)
 		{
 			float systemMass;
 			if (!a.IsStatic && !b.IsStatic)
@@ -42,7 +42,7 @@ namespace Massive.Samples.Physics
 				b.WorldCenterOfMass.Position += resolution * b.InverseMass;
 		}
 
-		private static void SolveVelocityCollision(ref Rigidbody a, ref Rigidbody b, Contact contact)
+		private static void SolveVelocityCollision(ref PhysicsRigidbody a, ref PhysicsRigidbody b, Contact contact)
 		{
 			var e = contact.Restitution;
 			var friction = contact.Friction;
@@ -108,7 +108,7 @@ namespace Massive.Samples.Physics
 			b.ApplyImpulseAtPoint(-frictionImpulse, contact.ContactPointB);
 		}
 
-		private static void CollectContacts(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<BoxCollider> boxes)
+		private static void CollectContacts(MassiveDataSet<PhysicsRigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<PhysicsBoxCollider> boxes)
 		{
 			Contacts.Clear();
 
@@ -147,7 +147,7 @@ namespace Massive.Samples.Physics
 
 				for (int j = 0; j < aliveBoxes.Length; ++j)
 				{
-					ref BoxCollider b = ref aliveBoxes[j];
+					ref PhysicsBoxCollider b = ref aliveBoxes[j];
 
 					if (a.RigidbodyId == b.RigidbodyId || bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
 					{
@@ -176,10 +176,10 @@ namespace Massive.Samples.Physics
 
 			for (int i = 0; i < aliveBoxes.Length; ++i)
 			{
-				BoxCollider a = aliveBoxes[i];
+				PhysicsBoxCollider a = aliveBoxes[i];
 				for (int j = i + 1; j < aliveBoxes.Length; ++j)
 				{
-					BoxCollider b = aliveBoxes[j];
+					PhysicsBoxCollider b = aliveBoxes[j];
 
 					if (a.RigidbodyId == b.RigidbodyId || bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
 					{

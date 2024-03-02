@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Massive.Samples.Physics
 {
-	public struct BoxCollider : ISupportMappable
+	public struct PhysicsBoxCollider : ISupportMappable
 	{
 		public readonly int RigidbodyId;
 
@@ -14,7 +14,7 @@ namespace Massive.Samples.Physics
 		public Vector3 Size;
 		public Vector3 HalfSize;
 
-		public BoxCollider(int rigidbodyId, Vector3 size, Transformation local, PhysicMaterial material)
+		public PhysicsBoxCollider(int rigidbodyId, Vector3 size, Transformation local, PhysicMaterial material)
 		{
 			RigidbodyId = rigidbodyId;
 			Size = size;
@@ -68,10 +68,10 @@ namespace Massive.Samples.Physics
 			inertiaTensor.SetRow(2, new Vector4(0f, 0f, iz, 0f));
 			inertiaTensor.SetRow(3, new Vector4(0f, 0f, 0f, 1f)); // The last row is not used for MOI calculations
 
-			return Rigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Local.Rotation, mass);
+			return PhysicsRigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Local.Rotation, mass);
 		}
 
-		public static void UpdateWorldPositions(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<BoxCollider> colliders)
+		public static void UpdateWorldPositions(MassiveDataSet<PhysicsRigidbody> bodies, MassiveDataSet<PhysicsBoxCollider> colliders)
 		{
 			var aliveColliders = colliders.AliveData;
 			for (int i = 0; i < aliveColliders.Length; i++)

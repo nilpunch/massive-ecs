@@ -8,9 +8,9 @@ namespace Massive.Samples.Physics
 		[SerializeField] private Vector3 _startImpulse;
 		[SerializeField] private Vector3 _startImpulsePoint;
 
-		public void Spawn(MassiveDataSet<Rigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<BoxCollider> boxes)
+		public void Spawn(MassiveDataSet<PhysicsRigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<PhysicsBoxCollider> boxes)
 		{
-			int bodyId = bodies.Create(new Rigidbody()
+			int bodyId = bodies.Create(new PhysicsRigidbody()
 			{
 				WorldCenterOfMass = new Transformation(transform.position, transform.rotation),
 				IsStatic = _static
@@ -26,12 +26,12 @@ namespace Massive.Samples.Physics
 
 			foreach (var boxCollider in GetComponentsInChildren<MassiveBoxCollider>())
 			{
-				boxes.Create(new BoxCollider(bodyId, boxCollider.Size,
+				boxes.Create(new PhysicsBoxCollider(bodyId, boxCollider.Size,
 					new Transformation(transform.InverseTransformPoint(boxCollider.transform.position), Quaternion.Inverse(transform.rotation) * boxCollider.transform.rotation),
 					boxCollider.Material));
 			}
 
-			Rigidbody.RecalculateAllInertia(bodies, boxes, spheres);
+			PhysicsRigidbody.RecalculateAllInertia(bodies, boxes, spheres);
 
 			bodies.Get(bodyId).ApplyImpulseAtPoint(_startImpulse, _startImpulsePoint);
 

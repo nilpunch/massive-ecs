@@ -29,7 +29,7 @@ namespace Massive.Samples.Physics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SphereVsBox(ref SphereCollider a, ref BoxCollider b, Vector3 offsetToB, Quaternion orientationOfB, ref ColliderContact colliderContact)
+		public static void SphereVsBox(ref SphereCollider a, ref PhysicsBoxCollider b, Vector3 offsetToB, Quaternion orientationOfB, ref ColliderContact colliderContact)
 		{
 			// Note that we're working with localOffsetB, which is the offset from A to B, even though conceptually we want to be operating on the offset from B to A
 			// Those offsets differ only by their sign, so are equivalent due to the symmetry of the box. The negation is left implicit

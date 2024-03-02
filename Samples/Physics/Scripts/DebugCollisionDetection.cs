@@ -18,7 +18,7 @@ namespace Massive.Samples.Physics
 				World = new Transformation(_sphere.position, _sphere.rotation)
 			};
 
-			BoxCollider boxCollider = new BoxCollider(0, _size, new Transformation(), new PhysicMaterial())
+			PhysicsBoxCollider boxCollider = new PhysicsBoxCollider(0, _size, new Transformation(), new PhysicMaterial())
 			{
 				World = new Transformation(transform.position, transform.rotation)
 			};

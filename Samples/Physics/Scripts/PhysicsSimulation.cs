@@ -7,15 +7,15 @@ namespace Massive.Samples.Physics
 	public class PhysicsWorld
 	{
 		public MassiveDataSet<SphereCollider> Spheres { get; }
-		public MassiveDataSet<BoxCollider> Boxes { get; }
-		public MassiveDataSet<Rigidbody> Bodies { get; }
+		public MassiveDataSet<PhysicsBoxCollider> Boxes { get; }
+		public MassiveDataSet<PhysicsRigidbody> Bodies { get; }
 		public MassiveDataSet<Contact> Contacts { get; }
 
 		public PhysicsWorld(int framesCapacity)
 		{
 			Spheres = new MassiveDataSet<SphereCollider>(framesCapacity);
-			Boxes = new MassiveDataSet<BoxCollider>(framesCapacity);
-			Bodies = new MassiveDataSet<Rigidbody>(framesCapacity);
+			Boxes = new MassiveDataSet<PhysicsBoxCollider>(framesCapacity);
+			Bodies = new MassiveDataSet<PhysicsRigidbody>(framesCapacity);
 			Contacts = new MassiveDataSet<Contact>(framesCapacity);
 		}
 	}
@@ -27,31 +27,31 @@ namespace Massive.Samples.Physics
 		[SerializeField] private int _particlesCapacity = 1000;
 
 		[Header("Physics")] [SerializeField] private EntityRoot<SphereCollider> _spherePrefab;
-		[SerializeField] private EntityRoot<BoxCollider> _boxPrefab;
+		[SerializeField] private EntityRoot<PhysicsBoxCollider> _boxPrefab;
 		[SerializeField] private int _substeps = 8;
 		[SerializeField] private float _gravity = 10f;
 
 		private MassiveDataSet<SphereCollider> _sphereColliders;
-		private MassiveDataSet<BoxCollider> _boxColliders;
-		private MassiveDataSet<Rigidbody> _bodies;
+		private MassiveDataSet<PhysicsBoxCollider> _boxColliders;
+		private MassiveDataSet<PhysicsRigidbody> _bodies;
 		private EntitySynchronisation<SphereCollider> _spheresSynchronisation;
-		private EntitySynchronisation<BoxCollider> _boxesSynchronisation;
+		private EntitySynchronisation<PhysicsBoxCollider> _boxesSynchronisation;
 
 		private void Awake()
 		{
 			_sphereColliders = new MassiveDataSet<SphereCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
-			_boxColliders = new MassiveDataSet<BoxCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
-			_bodies = new MassiveDataSet<Rigidbody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_boxColliders = new MassiveDataSet<PhysicsBoxCollider>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
+			_bodies = new MassiveDataSet<PhysicsRigidbody>(framesCapacity: _simulationsPerFrame, dataCapacity: _particlesCapacity);
 
 			_spheresSynchronisation = new EntitySynchronisation<SphereCollider>(new EntityFactory<SphereCollider>(_spherePrefab));
-			_boxesSynchronisation = new EntitySynchronisation<BoxCollider>(new EntityFactory<BoxCollider>(_boxPrefab));
+			_boxesSynchronisation = new EntitySynchronisation<PhysicsBoxCollider>(new EntityFactory<PhysicsBoxCollider>(_boxPrefab));
 
 			foreach (var massiveRigidbody in FindObjectsOfType<MassiveRigidbody>())
 			{
 				massiveRigidbody.Spawn(_bodies, _sphereColliders, _boxColliders);
 			}
 
-			Rigidbody.RecalculateAllInertia(_bodies, _boxColliders, _sphereColliders);
+			PhysicsRigidbody.RecalculateAllInertia(_bodies, _boxColliders, _sphereColliders);
 		}
 
 		private int _currentFrame;
@@ -80,12 +80,12 @@ namespace Massive.Samples.Physics
 
 				for (int i = 0; i < _substeps; i++)
 				{
-					Rigidbody.UpdateAllWorldInertia(_bodies);
+					PhysicsRigidbody.UpdateAllWorldInertia(_bodies);
 					SphereCollider.UpdateWorldPositions(_bodies, _sphereColliders);
-					BoxCollider.UpdateWorldPositions(_bodies, _boxColliders);
+					PhysicsBoxCollider.UpdateWorldPositions(_bodies, _boxColliders);
 					Collisions.Solve(_bodies, _sphereColliders, _boxColliders);
 					Gravity.Apply(_bodies, _gravity);
-					Rigidbody.IntegrateAll(_bodies, subStepDeltaTime);
+					PhysicsRigidbody.IntegrateAll(_bodies, subStepDeltaTime);
 				}
 
 				_sphereColliders.SaveFrame();
