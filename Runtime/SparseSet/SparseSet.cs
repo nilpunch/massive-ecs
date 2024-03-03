@@ -38,7 +38,7 @@ namespace Massive
 			int dense = Sparse[id];
 
 			// Check if element is paired
-			if (Dense[dense] == id)
+			if (dense < MaxDense && Dense[dense] == id)
 			{
 				// If dense is already alive, nothing to be done
 				if (dense < count)
