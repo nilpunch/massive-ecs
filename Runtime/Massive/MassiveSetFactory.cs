@@ -1,4 +1,4 @@
-﻿namespace Massive.ECS
+﻿namespace Massive
 {
 	public class MassiveSetFactory : ISetFactory
 	{

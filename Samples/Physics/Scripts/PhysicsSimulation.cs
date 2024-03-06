@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using Massive;
-using Massive.ECS;
 using Massive.Samples.Shooter;
 using UnityEngine;
 

@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Massive.ECS
+namespace Massive
 {
 	public class MassiveRegistry : Registry, IMassive
 	{

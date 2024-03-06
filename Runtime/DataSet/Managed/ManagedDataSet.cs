@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using Massive.ECS;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive

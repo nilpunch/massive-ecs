@@ -1,6 +1,4 @@
-﻿using Massive.ECS;
-
-namespace Massive.Samples.Shooter
+﻿namespace Massive.Samples.Shooter
 {
 	public class BulletsUpdater : WorldUpdater
 	{

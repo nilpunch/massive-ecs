@@ -2,8 +2,12 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Massive.ECS
+namespace Massive
 {
+	public delegate void InitializeManaged<T>(out T data) where T : struct;
+	public delegate void ResetManaged<T>(ref T data) where T : struct;
+	public delegate void CloneManaged<T>(in T source, ref T destination) where T : struct;
+	
 	/// <summary>
 	/// Cross-platform component information.
 	/// </summary>

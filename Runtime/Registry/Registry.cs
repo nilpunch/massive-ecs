@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Massive.ECS
+namespace Massive
 {
 	public class Registry : IRegistry
 	{

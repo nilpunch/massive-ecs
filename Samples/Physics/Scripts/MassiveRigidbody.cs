@@ -1,5 +1,4 @@
-﻿using Massive.ECS;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Massive.Samples.Physics
 {

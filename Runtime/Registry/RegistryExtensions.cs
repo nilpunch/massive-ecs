@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Massive.ECS
+namespace Massive
 {
 	public static class RegistryExtensions
 	{

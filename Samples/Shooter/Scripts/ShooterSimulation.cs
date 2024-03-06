@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
-using Massive.ECS;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace Massive.Samples.Shooter
 {

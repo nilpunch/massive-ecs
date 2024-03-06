@@ -1,6 +1,4 @@
-﻿using Massive.ECS;
-
-namespace Massive.Samples.Benchmark
+﻿namespace Massive.Samples.Benchmark
 {
 	public static class BenchmarkUtils
 	{
