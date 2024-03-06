@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveIdentifiers : Massive.Identifiers, IMassive
+	public class MassiveIdentifiers : Identifiers, IMassive
 	{
 		private readonly int[] _idsByFrames;
 		private readonly int[] _maxIdByFrames;

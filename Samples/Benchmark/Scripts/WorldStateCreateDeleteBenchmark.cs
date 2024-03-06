@@ -13,7 +13,7 @@ namespace Massive.Samples.Benchmark
 		{
 			_registry = BenchmarkUtils.GetFullyPackedRegistry(121, _worldEntitiesCount);
 
-			foreach (var id in _registry.Entities.UsedIds)
+			foreach (var id in _registry.Entities)
 			{
 				_registry.Destroy(id);
 			}

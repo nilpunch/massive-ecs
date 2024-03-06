@@ -27,8 +27,8 @@
 
 		public Il2CppSetOptionAttribute(Option option, object value)
 		{
-			this.Option = option;
-			this.Value = value;
+			Option = option;
+			Value = value;
 		}
 	}
 
