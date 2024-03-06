@@ -9,7 +9,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class Identifiers : IEnumerable<int>
+	public class Identifiers
 	{
 		public int[] Ids { get; }
 		public int MaxId { get; set; }
@@ -67,14 +67,13 @@ namespace Massive
 			return id < MaxId && Ids[id] == id;
 		}
 
-		IEnumerator<int> IEnumerable<int>.GetEnumerator() => GetEnumerator();
-
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator() => new Enumerator(Ids, MaxId);
 
-		public struct Enumerator : IEnumerator<int>
+		[Il2CppSetOption(Option.NullChecks, false)]
+		[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+		[Il2CppSetOption(Option.DivideByZeroChecks, false)]
+		public struct Enumerator
 		{
 			private readonly int[] _ids;
 			private readonly int _length;
@@ -89,7 +88,6 @@ namespace Massive
 
 			public bool MoveNext()
 			{
-				// Iterate until we find alive entity
 				while (++_currentIndex < _length && _ids[_currentIndex] != _currentIndex)
 				{
 				}
@@ -97,16 +95,9 @@ namespace Massive
 				return _currentIndex < _length;
 			}
 
-			public void Reset()
-			{
-				_currentIndex = -1;
-			}
+			public void Reset() => _currentIndex = -1;
 
 			public int Current => _ids[_currentIndex];
-			
-			object IEnumerator.Current => Current;
-
-			public void Dispose() { }
 		}
 	}
 }

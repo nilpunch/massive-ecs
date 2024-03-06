@@ -71,8 +71,7 @@ namespace Massive
 			int rollbackNext = _nextByFrames[_currentFrame];
 			int rollbackFrame = _currentFrame;
 
-			// Copy current MaxId elements to ensure zeroing excess
-			Array.Copy(_idsByFrames, rollbackFrame * Ids.Length, Ids, 0, MaxId);
+			Array.Copy(_idsByFrames, rollbackFrame * Ids.Length, Ids, 0, rollbackMaxId);
 			MaxId = rollbackMaxId;
 			Available = rollbackAvailable;
 			Next = rollbackNext;
