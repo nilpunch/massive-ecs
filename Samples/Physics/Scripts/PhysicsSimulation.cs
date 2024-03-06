@@ -55,6 +55,8 @@ namespace Massive.Samples.Physics
 			_bodies = _registry.Components<PhysicsRigidbody>();
 			_sphereColliders = _registry.Components<PhysicsSphereCollider>();
 			_boxColliders = _registry.Components<PhysicsBoxCollider>();
+			
+			_registry.SaveFrame();
 		}
 
 		private int _currentFrame;
@@ -67,8 +69,9 @@ namespace Massive.Samples.Physics
 
 			if (_registry.CanRollbackFrames >= 0)
 			{
-				_currentFrame -= _registry.CanRollbackFrames;
-				_registry.Rollback(_registry.CanRollbackFrames);
+				var previousFrameCount = _currentFrame;
+				_currentFrame = Mathf.Max(_currentFrame - _registry.CanRollbackFrames, 0);
+				_registry.Rollback(previousFrameCount - _currentFrame);
 			}
 
 			_elapsedTime += Time.deltaTime * _simulationSpeed;
