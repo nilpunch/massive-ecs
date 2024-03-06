@@ -27,7 +27,7 @@ namespace Massive.Tests
 		}
 
 		[Test]
-		public void Create_ShouldMakeStatesAlive()
+		public void Ensure_ShouldMakeStatesAlive()
 		{
 			var massiveData = new MassiveDataSet<TestState>(2, 4);
 
@@ -45,7 +45,7 @@ namespace Massive.Tests
 		}
 
 		[Test]
-		public void Create_ShouldInitializeData()
+		public void Ensure_ShouldInitializeData()
 		{
 			var massiveData = new MassiveDataSet<TestState>(2, 4);
 

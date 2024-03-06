@@ -9,7 +9,7 @@ namespace Massive.Tests
 	{
 		// ReSharper disable RedundantArgumentDefaultValue
 		private const int Capacity = 100;
-		
+
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
@@ -18,10 +18,10 @@ namespace Massive.Tests
 			var identifiers = new Identifiers(Capacity);
 
 			var isAlive = identifiers.IsAlive(id);
-			
+
 			Assert.IsFalse(isAlive);
 		}
-		
+
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
@@ -32,10 +32,10 @@ namespace Massive.Tests
 				identifiers.Create();
 
 			var isAlive = identifiers.IsAlive(id);
-			
+
 			Assert.IsTrue(isAlive);
 		}
-		
+
 		[TestCase(10)]
 		public void Create_ShouldGenerateDistinctIds(int createAmount)
 		{
@@ -45,10 +45,10 @@ namespace Massive.Tests
 				created.Add(identifiers.Create());
 
 			var distinctIds = created.Distinct().Count();
-			
+
 			Assert.AreEqual(distinctIds, createAmount);
 		}
-		
+
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
@@ -60,10 +60,10 @@ namespace Massive.Tests
 
 			identifiers.Delete(id);
 			var isAlive = identifiers.IsAlive(id);
-			
+
 			Assert.IsFalse(isAlive);
 		}
-		
+
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
@@ -75,23 +75,23 @@ namespace Massive.Tests
 
 			identifiers.Delete(id);
 			int createdId = identifiers.Create();
-			
+
 			Assert.AreEqual(createdId, id);
 		}
-		
+
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
 		public void CreateMany_ShouldMakeAlive(int id)
 		{
 			var identifiers = new Identifiers(Capacity);
-			
+
 			identifiers.CreateMany(id + 1);
 			var isAlive = identifiers.IsAlive(id);
-			
+
 			Assert.IsTrue(isAlive);
 		}
-		
+
 		[TestCase(10)]
 		public void CreateMany_ShouldGenerateDistinctIds(int createAmount)
 		{
@@ -100,7 +100,7 @@ namespace Massive.Tests
 
 			identifiers.CreateMany(createAmount, created.Add);
 			var distinctIds = created.Distinct().Count();
-			
+
 			Assert.AreEqual(distinctIds, createAmount);
 		}
 	}
