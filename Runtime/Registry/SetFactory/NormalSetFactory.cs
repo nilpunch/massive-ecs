@@ -18,5 +18,10 @@
 		{
 			return new DataSet<T>(_dataCapacity);
 		}
+
+		public Identifiers CreateIdentifiers()
+		{
+			return new Identifiers(_dataCapacity);
+		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Massive.ECS;
+﻿using System;
+using Massive.ECS;
 using UnityEngine;
 
 namespace Massive.Samples.Benchmark
@@ -16,14 +17,14 @@ namespace Massive.Samples.Benchmark
 
 		protected override void Sample()
 		{
-			var entitiesAliveIds = _registry.Entities.AliveIds;
+			var entitiesIds = _registry.Entities.UsedIds;
 
-			foreach (var id in entitiesAliveIds)
+			foreach (var id in entitiesIds)
 			{
 				_registry.Add(id, new TestState() { Position = Vector3.one });
 			}
 			
-			foreach (var id in entitiesAliveIds)
+			foreach (var id in entitiesIds)
 			{
 				_registry.Remove<TestState>(id);
 			}

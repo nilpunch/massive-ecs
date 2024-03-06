@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Massive.Samples.Physics
 {
-	public struct SphereCollider
+	public struct PhysicsSphereCollider
 	{
 		public readonly int RigidbodyId;
 
@@ -13,7 +13,7 @@ namespace Massive.Samples.Physics
 
 		public float Radius;
 
-		public SphereCollider(int rigidbodyId, float radius, Transformation local, PhysicMaterial material)
+		public PhysicsSphereCollider(int rigidbodyId, float radius, Transformation local, PhysicMaterial material)
 		{
 			RigidbodyId = rigidbodyId;
 			Radius = radius;
@@ -47,7 +47,7 @@ namespace Massive.Samples.Physics
 			return PhysicsRigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Quaternion.identity, mass);
 		}
 
-		public static void UpdateWorldPositions(MassiveDataSet<PhysicsRigidbody> bodies, MassiveDataSet<SphereCollider> colliders)
+		public static void UpdateWorldPositions(DataSet<PhysicsRigidbody> bodies, DataSet<PhysicsSphereCollider> colliders)
 		{
 			var aliveColliders = colliders.AliveData;
 			for (int i = 0; i < aliveColliders.Length; i++)

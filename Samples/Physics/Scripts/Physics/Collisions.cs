@@ -9,7 +9,7 @@ namespace Massive.Samples.Physics
 
 		public static readonly List<Contact> Contacts = new List<Contact>();
 
-		public static void Solve(MassiveDataSet<PhysicsRigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<PhysicsBoxCollider> boxes)
+		public static void Solve(DataSet<PhysicsRigidbody> bodies, DataSet<PhysicsSphereCollider> spheres, DataSet<PhysicsBoxCollider> boxes)
 		{
 			CollectContacts(bodies, spheres, boxes);
 
@@ -108,7 +108,7 @@ namespace Massive.Samples.Physics
 			b.ApplyImpulseAtPoint(-frictionImpulse, contact.ContactPointB);
 		}
 
-		private static void CollectContacts(MassiveDataSet<PhysicsRigidbody> bodies, MassiveDataSet<SphereCollider> spheres, MassiveDataSet<PhysicsBoxCollider> boxes)
+		private static void CollectContacts(DataSet<PhysicsRigidbody> bodies, DataSet<PhysicsSphereCollider> spheres, DataSet<PhysicsBoxCollider> boxes)
 		{
 			Contacts.Clear();
 
@@ -116,10 +116,10 @@ namespace Massive.Samples.Physics
 			var aliveBoxes = boxes.AliveData;
 			for (int i = 0; i < aliveSpheres.Length; ++i)
 			{
-				SphereCollider a = aliveSpheres[i];
+				PhysicsSphereCollider a = aliveSpheres[i];
 				for (int j = i + 1; j < aliveSpheres.Length; ++j)
 				{
-					SphereCollider b = aliveSpheres[j];
+					PhysicsSphereCollider b = aliveSpheres[j];
 
 					if (a.RigidbodyId == b.RigidbodyId || bodies.Get(a.RigidbodyId).IsStatic && bodies.Get(b.RigidbodyId).IsStatic)
 					{

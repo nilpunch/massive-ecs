@@ -24,9 +24,9 @@ namespace Massive.Tests
 		{
 			MassiveSparseSet massive = new MassiveSparseSet(2, 4);
 
-			int id1 = massive.Create().Id;
-			int id2 = massive.Create().Id;
-			int id3 = massive.Create().Id;
+			int id1 = massive.Ensure(0).Id;
+			int id2 = massive.Ensure(1).Id;
+			int id3 = massive.Ensure(2).Id;
 
 			massive.Delete(id2);
 
@@ -36,23 +36,7 @@ namespace Massive.Tests
 		}
 
 		[Test]
-		public void DeleteThenCreate_ShouldRecycleIds()
-		{
-			MassiveSparseSet massive = new MassiveSparseSet(2, 4);
-
-			int id1 = massive.Create().Id;
-			int id2 = massive.Create().Id;
-			int id3 = massive.Create().Id;
-
-			massive.Delete(id2);
-
-			int id = massive.Create().Id;
-
-			Assert.AreEqual(id, id2);
-		}
-
-		[Test]
-		public void Create_ShouldMakeStatesAlive()
+		public void Ensure_ShouldMakeStatesAlive()
 		{
 			MassiveSparseSet massive = new MassiveSparseSet(2, 4);
 
@@ -60,9 +44,9 @@ namespace Massive.Tests
 			Assert.IsFalse(massive.IsAlive(1));
 			Assert.IsFalse(massive.IsAlive(2));
 
-			int id1 = massive.Create().Id;
-			int id2 = massive.Create().Id;
-			int id3 = massive.Create().Id;
+			int id1 = massive.Ensure(0).Id;
+			int id2 = massive.Ensure(1).Id;
+			int id3 = massive.Ensure(2).Id;
 
 			Assert.IsTrue(massive.IsAlive(id1));
 			Assert.IsTrue(massive.IsAlive(id2));
@@ -74,9 +58,9 @@ namespace Massive.Tests
 		{
 			MassiveSparseSet massive = new MassiveSparseSet(2, 4);
 
-			int id1 = massive.Create().Id;
-			int id2 = massive.Create().Id;
-			int id3 = massive.Create().Id;
+			int id1 = massive.Ensure(0).Id;
+			int id2 = massive.Ensure(1).Id;
+			int id3 = massive.Ensure(2).Id;
 
 			massive.SaveFrame();
 
@@ -90,7 +74,7 @@ namespace Massive.Tests
 		{
 			MassiveSparseSet massive = new MassiveSparseSet(2, 2);
 
-			int id1 = massive.Create().Id;
+			int id1 = massive.Ensure(0).Id;
 
 			Assert.IsTrue(massive.IsAlive(id1));
 
@@ -112,8 +96,8 @@ namespace Massive.Tests
 
 			massive.SaveFrame();
 
-			int id1 = massive.Create().Id;
-			int id2 = massive.Create().Id;
+			int id1 = massive.Ensure(0).Id;
+			int id2 = massive.Ensure(1).Id;
 			massive.Delete(id2);
 
 			Assert.IsTrue(massive.IsAlive(id1));

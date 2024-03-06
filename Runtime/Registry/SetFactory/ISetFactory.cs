@@ -4,5 +4,6 @@
 	{
 		ISet CreateSet();
 		ISet CreateDataSet<T>() where T : unmanaged;
+		Identifiers CreateIdentifiers();
 	}
 }

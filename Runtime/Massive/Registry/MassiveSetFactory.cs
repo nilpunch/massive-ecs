@@ -30,5 +30,15 @@
 
 			return massiveDataSet;
 		}
+
+		public Identifiers CreateIdentifiers()
+		{
+			var massiveIdentifiers = new MassiveIdentifiers(_framesCapacity, _dataCapacity);
+
+			// Save first empty frame to ensure we can rollback to it
+			massiveIdentifiers.SaveFrame();
+
+			return massiveIdentifiers;
+		}
 	}
 }

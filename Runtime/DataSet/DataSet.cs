@@ -51,22 +51,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public CreateInfo Create()
-		{
-			var createInfo = SparseSet.Create();
-			Data[createInfo.Dense] = default;
-			return createInfo;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public CreateInfo Create(T data)
-		{
-			var createInfo = SparseSet.Create();
-			Data[createInfo.Dense] = data;
-			return createInfo;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DeleteInfo? Delete(int id)
 		{
 			var deleteInfo = SparseSet.Delete(id);

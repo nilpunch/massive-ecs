@@ -10,7 +10,7 @@ namespace Massive.ECS
 		private readonly Dictionary<Type, ISet> _setsLookup;
 
 		protected List<ISet> AllSets { get; }
-		public SparseSet Entities { get; }
+		public Identifiers Entities { get; }
 
 		public Registry(int dataCapacity = Constants.DataCapacity)
 			: this(new NormalSetFactory(dataCapacity))
@@ -21,20 +21,21 @@ namespace Massive.ECS
 		{
 			_setFactory = setFactory;
 			_setsLookup = new Dictionary<Type, ISet>();
+			AllSets = new List<ISet>();
 
-			Entities = (SparseSet)setFactory.CreateSet();
-			AllSets = new List<ISet>() { Entities };
+			Entities = setFactory.CreateIdentifiers();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create()
 		{
-			return Entities.Create().Id;
+			return Entities.Create();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int entityId)
 		{
+			Entities.Delete(entityId);
 			foreach (var set in AllSets)
 			{
 				set.Delete(entityId);

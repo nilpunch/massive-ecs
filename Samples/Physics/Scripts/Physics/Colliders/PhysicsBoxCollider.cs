@@ -71,7 +71,7 @@ namespace Massive.Samples.Physics
 			return PhysicsRigidbody.TransformInertiaTensor(inertiaTensor, Local.Position, Local.Rotation, mass);
 		}
 
-		public static void UpdateWorldPositions(MassiveDataSet<PhysicsRigidbody> bodies, MassiveDataSet<PhysicsBoxCollider> colliders)
+		public static void UpdateWorldPositions(DataSet<PhysicsRigidbody> bodies, DataSet<PhysicsBoxCollider> colliders)
 		{
 			var aliveColliders = colliders.AliveData;
 			for (int i = 0; i < aliveColliders.Length; i++)

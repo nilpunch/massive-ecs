@@ -2,12 +2,12 @@
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
-namespace Massive.Plugins.massive.Runtime.Identifiers
+namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveIdentifiers : Identifiers, IMassive
+	public class MassiveIdentifiers : Massive.Identifiers, IMassive
 	{
 		private readonly int[] _idsByFrames;
 		private readonly int[] _maxIdByFrames;

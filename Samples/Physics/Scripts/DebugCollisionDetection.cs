@@ -13,7 +13,7 @@ namespace Massive.Samples.Physics
 			if (_sphere == null)
 				return;
 
-			SphereCollider sphereCollider = new SphereCollider(0, _sphereRadius, new Transformation(), new PhysicMaterial())
+			PhysicsSphereCollider sphereCollider = new PhysicsSphereCollider(0, _sphereRadius, new Transformation(), new PhysicMaterial())
 			{
 				World = new Transformation(_sphere.position, _sphere.rotation)
 			};
@@ -23,7 +23,7 @@ namespace Massive.Samples.Physics
 				World = new Transformation(transform.position, transform.rotation)
 			};
 
-			SphereCollider sphereCollider2 = new SphereCollider(0, _sphereRadius, new Transformation(), new PhysicMaterial())
+			PhysicsSphereCollider sphereCollider2 = new PhysicsSphereCollider(0, _sphereRadius, new Transformation(), new PhysicMaterial())
 			{
 				World = new Transformation(transform.position, transform.rotation)
 			};

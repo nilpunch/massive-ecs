@@ -11,8 +11,6 @@ namespace Massive
 	{
 		public int[] Dense { get; }
 		public int[] Sparse { get; }
-		public int MaxDense { get; set; }
-		public int MaxId { get; set; }
 		public int AliveCount { get; set; }
 
 		public SparseSet(int dataCapacity = Constants.DataCapacity)
@@ -37,73 +35,17 @@ namespace Massive
 			int count = AliveCount;
 			int dense = Sparse[id];
 
-			// Check if element is paired
-			if (dense < MaxDense && Dense[dense] == id)
+			// Check if element is alive then do nothing
+			if (dense < AliveCount && Dense[dense] == id)
 			{
-				// If dense is already alive, nothing to be done
-				if (dense < count)
-				{
-					return new CreateInfo() { Id = id, Dense = dense };
-				}
-
-				// If dense is not alive, swap it with the first unused element
-				// First unused element is now last used element
-				SwapDense(dense, count);
-				AliveCount += 1;
-
-				return new CreateInfo() { Id = id, Dense = count };
+				return new CreateInfo() { Id = id, Dense = dense };
 			}
 
-			// Add new element to dense array and pair it with sparse
-			MaxDense += 1;
 			AliveCount += 1;
-			MaxId = Math.Max(MaxId, id + 1);
-
-			// If there are unused elements in the dense,
-			// move the first unused element to the end
-			int lastDense = MaxDense - 1;
-			if (count < lastDense)
-			{
-				int unusedId = Dense[count];
-				AssignIndex(unusedId, lastDense);
-			}
 
 			AssignIndex(id, count);
 
 			return new CreateInfo() { Id = id, Dense = count };
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public CreateInfo Create()
-		{
-			int count = AliveCount;
-			if (count == Dense.Length)
-			{
-				throw new InvalidOperationException($"Exceeded limit of data! Limit: {Dense.Length}.");
-			}
-
-			// If there are unused elements in the dense array, return last
-			var maxDense = MaxDense;
-			if (count < maxDense)
-			{
-				AliveCount += 1;
-				return new CreateInfo() { Id = Dense[count], Dense = count };
-			}
-
-			var maxId = MaxId;
-			if (maxId == Sparse.Length)
-			{
-				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Sparse.Length}.");
-			}
-
-			// Add new element to dense array and pair it with a new element from sparse
-			AliveCount += 1;
-			MaxId += 1;
-			MaxDense += 1;
-
-			AssignIndex(maxId, maxDense);
-
-			return new CreateInfo() { Id = maxId, Dense = maxDense };
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -165,7 +107,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryGetDense(int id, out int dense)
 		{
-			if (id >= MaxId)
+			if (id >= Sparse.Length)
 			{
 				dense = default;
 				return false;
@@ -179,7 +121,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			if (id >= MaxId)
+			if (id >= Sparse.Length)
 				return false;
 
 			int dense = Sparse[id];

@@ -6,7 +6,7 @@ namespace Massive.Samples.Physics
 	public static class CollisionTester
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SphereVsSphere(ref SphereCollider a, ref SphereCollider b, Vector3 offsetToB, ref ColliderContact colliderContact)
+		public static void SphereVsSphere(ref PhysicsSphereCollider a, ref PhysicsSphereCollider b, Vector3 offsetToB, ref ColliderContact colliderContact)
 		{
 			var centerDistance = offsetToB.magnitude;
 
@@ -29,7 +29,7 @@ namespace Massive.Samples.Physics
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SphereVsBox(ref SphereCollider a, ref PhysicsBoxCollider b, Vector3 offsetToB, Quaternion orientationOfB, ref ColliderContact colliderContact)
+		public static void SphereVsBox(ref PhysicsSphereCollider a, ref PhysicsBoxCollider b, Vector3 offsetToB, Quaternion orientationOfB, ref ColliderContact colliderContact)
 		{
 			// Note that we're working with localOffsetB, which is the offset from A to B, even though conceptually we want to be operating on the offset from B to A
 			// Those offsets differ only by their sign, so are equivalent due to the symmetry of the box. The negation is left implicit

@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
-namespace Massive.Plugins.massive.Runtime.Identifiers
+namespace Massive
 {
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class Identifiers
 	{
 		public int[] Ids { get; }
@@ -18,28 +22,30 @@ namespace Massive.Plugins.massive.Runtime.Identifiers
 			Next = dataCapacity;
 		}
 
+		public ReadOnlySpan<int> UsedIds => new ReadOnlySpan<int>(Ids, 0, MaxId);
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create()
 		{
-			int maxId = MaxId;
-
-			if (maxId >= Ids.Length)
-			{
-				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Ids.Length}.");
-			}
-
 			if (Available == 0)
 			{
+				int maxId = MaxId;
+
+				if (maxId >= Ids.Length)
+				{
+					throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Ids.Length}.");
+				}
+
 				MaxId += 1;
 				Ids[maxId] = maxId;
 				return maxId;
 			}
 			else
 			{
-				var recycledId = Next;
-				Next = Ids[Next];
+				var nextId = Next;
+				(Next, Ids[nextId]) = (Ids[nextId], nextId);
 				Available -= 1;
-				return recycledId;
+				return nextId;
 			}
 		}
 
