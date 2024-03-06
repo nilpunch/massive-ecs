@@ -1,27 +1,32 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="Massive.MassiveSparseSet"/>.
+	/// Data extension for <see cref="Massive.MassiveSparseSet"/> with custom managed data support.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveDataSet<T> : DataSet<T>, IMassive where T : struct
+	public class MassiveManagedDataSet<T> : ManagedDataSet<T>, IMassive where T : struct
 	{
 		private readonly MassiveSparseSet _massiveSparseSet;
 		private readonly T[] _dataByFrames;
 
-		public MassiveDataSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
-			: base(new MassiveSparseSet(framesCapacity, dataCapacity))
+		public MassiveManagedDataSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity, IManagedCloner<T> cloner = null)
+			: base(new MassiveSparseSet(framesCapacity, dataCapacity), cloner)
 		{
 			// Fetch instance from base
 			_massiveSparseSet = (MassiveSparseSet)SparseSet;
 
 			_dataByFrames = new T[framesCapacity * Data.Length];
+
+			for (int i = 0; i < _dataByFrames.Length; i++)
+			{
+				Cloner.Initialize(out _dataByFrames[i]);
+			}
 		}
 
 		public int CanRollbackFrames => _massiveSparseSet.CanRollbackFrames;
@@ -32,7 +37,11 @@ namespace Massive
 			_massiveSparseSet.SaveFrame();
 
 			// We can sync saving with MassiveSparseSet saving, using its CurrentFrame
-			Array.Copy(Data, 0, _dataByFrames, _massiveSparseSet.CurrentFrame * Data.Length, AliveCount);
+			int destinationIndex = _massiveSparseSet.CurrentFrame * Data.Length;
+			for (int i = 0; i < AliveCount; i++)
+			{
+				Cloner.Clone(Data[i], ref _dataByFrames[destinationIndex + i]);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -41,7 +50,11 @@ namespace Massive
 			_massiveSparseSet.Rollback(frames);
 
 			// Similarly to saving, we can sync rollback with MassiveSparseSet rollback
-			Array.Copy(_dataByFrames, _massiveSparseSet.CurrentFrame * Data.Length, Data, 0, AliveCount);
+			int destinationIndex = _massiveSparseSet.CurrentFrame * Data.Length;
+			for (int i = 0; i < AliveCount; i++)
+			{
+				Cloner.Clone(_dataByFrames[destinationIndex + i], ref Data[i]);
+			}
 		}
 	}
 }

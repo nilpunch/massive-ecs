@@ -21,7 +21,7 @@
 			return massiveSparseSet;
 		}
 
-		public ISet CreateDataSet<T>() where T : unmanaged
+		public ISet CreateDataSet<T>() where T : struct
 		{
 			var massiveDataSet = new MassiveDataSet<T>(_framesCapacity, _dataCapacity);
 

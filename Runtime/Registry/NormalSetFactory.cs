@@ -14,7 +14,7 @@
 			return new SparseSet(_dataCapacity);
 		}
 
-		public ISet CreateDataSet<T>() where T : unmanaged
+		public ISet CreateDataSet<T>() where T : struct
 		{
 			return new DataSet<T>(_dataCapacity);
 		}

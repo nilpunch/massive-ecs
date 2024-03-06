@@ -44,7 +44,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add<T>(int entityId, T data = default) where T : unmanaged
+		public void Add<T>(int entityId, T data = default) where T : struct
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
@@ -57,7 +57,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove<T>(int entityId) where T : unmanaged
+		public void Remove<T>(int entityId) where T : struct
 		{
 			if (SetsLookup.TryGetValue(typeof(T), out var anySet))
 			{
@@ -66,7 +66,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Has<T>(int entityId) where T : unmanaged
+		public bool Has<T>(int entityId) where T : struct
 		{
 			if (SetsLookup.TryGetValue(typeof(T), out var component))
 			{
@@ -77,7 +77,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref T Get<T>(int entityId) where T : unmanaged
+		public ref T Get<T>(int entityId) where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -88,7 +88,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public DataSet<T> Components<T>() where T : unmanaged
+		public DataSet<T> Components<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -99,7 +99,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Tags<T>() where T : unmanaged
+		public SparseSet Tags<T>() where T : struct
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
@@ -110,7 +110,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet AnySet<T>() where T : unmanaged
+		public ISet AnySet<T>() where T : struct
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
@@ -123,7 +123,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private DataSet<T> GetOrCreateComponents<T>() where T : unmanaged
+		private DataSet<T> GetOrCreateComponents<T>() where T : struct
 		{
 			var type = typeof(T);
 
@@ -138,7 +138,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private SparseSet GetOrCreateTags<T>() where T : unmanaged
+		private SparseSet GetOrCreateTags<T>() where T : struct
 		{
 			var type = typeof(T);
 

@@ -5,25 +5,32 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for any <see cref="Massive.ISet"/>.
+	/// Data extension for any <see cref="Massive.ISet"/> with custom managed data support.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class DataSet<T> : IDataSet<T> where T : struct
+	public class ManagedDataSet<T> : IDataSet<T> where T : struct
 	{
+		public IManagedCloner<T> Cloner { get; }
 		public SparseSet SparseSet { get; }
 		public T[] Data { get; }
 
-		public DataSet(int dataCapacity = Constants.DataCapacity)
-			: this(new SparseSet(dataCapacity))
+		public ManagedDataSet(int dataCapacity = Constants.DataCapacity, IManagedCloner<T> cloner = null)
+			: this(new SparseSet(dataCapacity), cloner)
 		{
 		}
 
-		protected DataSet(SparseSet sparseSet)
+		protected ManagedDataSet(SparseSet sparseSet, IManagedCloner<T> cloner = null)
 		{
 			SparseSet = sparseSet;
 			Data = new T[sparseSet.Capacity];
+			Cloner = cloner ?? new DefaultManagedCloner<T>();
+
+			for (int i = 0; i < Data.Length; i++)
+			{
+				Cloner.Initialize(out Data[i]);
+			}
 		}
 
 		public int Capacity => SparseSet.Capacity;
@@ -38,7 +45,7 @@ namespace Massive
 		public CreateInfo Ensure(int id)
 		{
 			var createInfo = SparseSet.Ensure(id);
-			Data[createInfo.Dense] = default;
+			Cloner.Reset(ref Data[createInfo.Dense]);
 			return createInfo;
 		}
 
@@ -46,7 +53,7 @@ namespace Massive
 		public CreateInfo Ensure(int id, T data)
 		{
 			var createInfo = SparseSet.Ensure(id);
-			Data[createInfo.Dense] = data;
+			Cloner.Clone(data, ref Data[createInfo.Dense]);
 			return createInfo;
 		}
 
@@ -56,7 +63,7 @@ namespace Massive
 			var deleteInfo = SparseSet.Delete(id);
 			if (deleteInfo.HasValue)
 			{
-				Data[deleteInfo.Value.DenseTarget] = Data[deleteInfo.Value.DenseSource];
+				Cloner.Clone(Data[deleteInfo.Value.DenseSource], ref Data[deleteInfo.Value.DenseTarget]);
 			}
 
 			return deleteInfo;
@@ -68,7 +75,7 @@ namespace Massive
 			var deleteInfo = SparseSet.DeleteDense(denseIndex);
 			if (deleteInfo.HasValue)
 			{
-				Data[deleteInfo.Value.DenseTarget] = Data[deleteInfo.Value.DenseSource];
+				Cloner.Clone(in Data[deleteInfo.Value.DenseSource], ref Data[deleteInfo.Value.DenseTarget]);
 			}
 
 			return deleteInfo;
@@ -102,7 +109,11 @@ namespace Massive
 		public void SwapDense(int denseA, int denseB)
 		{
 			SparseSet.SwapDense(denseA, denseB);
-			(Data[denseA], Data[denseB]) = (Data[denseB], Data[denseA]);
+			
+			Cloner.Initialize(out var temp);
+			Cloner.Clone(Data[denseA], ref temp);
+			Cloner.Clone(Data[denseB], ref Data[denseA]);
+			Cloner.Clone(temp, ref Data[denseB]);
 		}
 	}
 }

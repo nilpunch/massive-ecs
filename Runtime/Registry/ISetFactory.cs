@@ -3,7 +3,7 @@
 	public interface ISetFactory
 	{
 		ISet CreateSet();
-		ISet CreateDataSet<T>() where T : unmanaged;
+		ISet CreateDataSet<T>() where T : struct;
 		Identifiers CreateIdentifiers();
 	}
 }
