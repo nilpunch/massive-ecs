@@ -10,7 +10,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class ManagedDataSet<T> : IDataSet<T> where T : struct
+	public class ManagedDataSet<T> : IDataSet<T> where T : struct, IManaged<T>
 	{
 		private T _swapBuffer;
 
@@ -29,10 +29,10 @@ namespace Massive
 
 			for (int i = 0; i < Data.Length; i++)
 			{
-				ComponentMeta<T>.Initialize(out Data[i]);
+				Data[i].Initialize();
 			}
 
-			ComponentMeta<T>.Initialize(out _swapBuffer);
+			_swapBuffer.Initialize();
 		}
 
 		public int Capacity => SparseSet.Capacity;
@@ -47,7 +47,7 @@ namespace Massive
 		public CreateInfo Ensure(int id)
 		{
 			var createInfo = SparseSet.Ensure(id);
-			ComponentMeta<T>.Reset(ref Data[createInfo.Dense]);
+			Data[createInfo.Dense].Reset();
 			return createInfo;
 		}
 
@@ -55,7 +55,7 @@ namespace Massive
 		public CreateInfo Ensure(int id, T data)
 		{
 			var createInfo = SparseSet.Ensure(id);
-			ComponentMeta<T>.Clone(data, ref Data[createInfo.Dense]);
+			data.CopyTo(ref Data[createInfo.Dense]);
 			return createInfo;
 		}
 
@@ -65,7 +65,7 @@ namespace Massive
 			var deleteInfo = SparseSet.Delete(id);
 			if (deleteInfo.HasValue)
 			{
-				ComponentMeta<T>.Clone(Data[deleteInfo.Value.DenseSource], ref Data[deleteInfo.Value.DenseTarget]);
+				Data[deleteInfo.Value.DenseSource].CopyTo(ref Data[deleteInfo.Value.DenseTarget]);
 			}
 
 			return deleteInfo;
@@ -77,7 +77,7 @@ namespace Massive
 			var deleteInfo = SparseSet.DeleteDense(denseIndex);
 			if (deleteInfo.HasValue)
 			{
-				ComponentMeta<T>.Clone(in Data[deleteInfo.Value.DenseSource], ref Data[deleteInfo.Value.DenseTarget]);
+				Data[deleteInfo.Value.DenseSource].CopyTo(ref Data[deleteInfo.Value.DenseTarget]);
 			}
 
 			return deleteInfo;
@@ -112,9 +112,9 @@ namespace Massive
 		{
 			SparseSet.SwapDense(denseA, denseB);
 			
-			ComponentMeta<T>.Clone(Data[denseA], ref _swapBuffer);
-			ComponentMeta<T>.Clone(Data[denseB], ref Data[denseA]);
-			ComponentMeta<T>.Clone(_swapBuffer, ref Data[denseB]);
+			Data[denseA].CopyTo(ref _swapBuffer);
+			Data[denseB].CopyTo(ref Data[denseA]);
+			_swapBuffer.CopyTo(ref Data[denseB]);
 		}
 	}
 }

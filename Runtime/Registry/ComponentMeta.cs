@@ -17,28 +17,11 @@ namespace Massive
 
 		public static bool IsManaged { get; }
 
-		public static InitializeManaged<T> Initialize { get; }
-		public static ResetManaged<T> Reset { get; }
-		public static CloneManaged<T> Clone { get; }
-
 		static ComponentMeta()
 		{
 			HasAnyFields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
 
 			IsManaged = typeof(IManaged<T>).IsAssignableFrom(typeof(T));
-
-			if (IsManaged)
-			{
-				Initialize = CreateDelegateFromManagedMethod<InitializeManaged<T>>(nameof(IManaged<T>.Initialize));
-				Reset = CreateDelegateFromManagedMethod<ResetManaged<T>>(nameof(IManaged<T>.Reset));
-				Clone = CreateDelegateFromManagedMethod<CloneManaged<T>>(nameof(IManaged<T>.Clone));
-			}
-			else
-			{
-				Initialize = (out T data) => data = default;
-				Reset = (ref T data) => data = default;
-				Clone = (in T source, ref T destination) => destination = source;
-			}
 		}
 
 #if UNITY_2020_3_OR_NEWER
@@ -50,9 +33,10 @@ namespace Massive
 			new MassiveSetFactory().CreateDataSet<T>();
 			if (_managedInstance is IManaged<T> managed)
 			{
-				managed.Initialize(out var value);
-				managed.Reset(ref value);
-				managed.Clone(value, ref value);
+				var value = new T();
+				managed.Initialize();
+				managed.Reset();
+				managed.CopyTo(ref value);
 			}
 		}
 

@@ -9,7 +9,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveManagedDataSet<T> : ManagedDataSet<T>, IMassive where T : struct
+	public class MassiveManagedDataSet<T> : ManagedDataSet<T>, IMassive where T : struct, IManaged<T>
 	{
 		private readonly MassiveSparseSet _massiveSparseSet;
 		private readonly T[] _dataByFrames;
@@ -24,7 +24,7 @@ namespace Massive
 
 			for (int i = 0; i < _dataByFrames.Length; i++)
 			{
-				ComponentMeta<T>.Initialize(out _dataByFrames[i]);
+				_dataByFrames[i].Initialize();
 			}
 		}
 
@@ -39,7 +39,7 @@ namespace Massive
 			int destinationIndex = _massiveSparseSet.CurrentFrame * Data.Length;
 			for (int i = 0; i < AliveCount; i++)
 			{
-				ComponentMeta<T>.Clone(Data[i], ref _dataByFrames[destinationIndex + i]);
+				Data[i].CopyTo(ref _dataByFrames[destinationIndex + i]);
 			}
 		}
 
@@ -52,7 +52,7 @@ namespace Massive
 			int destinationIndex = _massiveSparseSet.CurrentFrame * Data.Length;
 			for (int i = 0; i < AliveCount; i++)
 			{
-				ComponentMeta<T>.Clone(_dataByFrames[destinationIndex + i], ref Data[i]);
+				_dataByFrames[destinationIndex + i].CopyTo(ref Data[i]);
 			}
 		}
 	}
