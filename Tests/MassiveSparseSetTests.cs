@@ -8,9 +8,9 @@ namespace Massive.Tests
 		[Test]
 		public void Ensure_ShouldMakeAlive()
 		{
-			MassiveSparseSet massive = new MassiveSparseSet(2, 4);
+			var massive = new MassiveSparseSet(2, 4);
 
-			int id = 2;
+			var id = 2;
 
 			Assert.IsFalse(massive.IsAlive(id));
 
@@ -22,11 +22,11 @@ namespace Massive.Tests
 		[Test]
 		public void Delete_ShouldMakeNotAlive()
 		{
-			MassiveSparseSet massive = new MassiveSparseSet(2, 4);
+			var massive = new MassiveSparseSet(2, 4);
 
-			int id1 = massive.Ensure(0).Id;
-			int id2 = massive.Ensure(1).Id;
-			int id3 = massive.Ensure(2).Id;
+			var id1 = massive.Ensure(0).Id;
+			var id2 = massive.Ensure(1).Id;
+			var id3 = massive.Ensure(2).Id;
 
 			massive.Delete(id2);
 
@@ -38,15 +38,15 @@ namespace Massive.Tests
 		[Test]
 		public void Ensure_ShouldMakeStatesAlive()
 		{
-			MassiveSparseSet massive = new MassiveSparseSet(2, 4);
+			var massive = new MassiveSparseSet(2, 4);
 
 			Assert.IsFalse(massive.IsAlive(0));
 			Assert.IsFalse(massive.IsAlive(1));
 			Assert.IsFalse(massive.IsAlive(2));
 
-			int id1 = massive.Ensure(0).Id;
-			int id2 = massive.Ensure(1).Id;
-			int id3 = massive.Ensure(2).Id;
+			var id1 = massive.Ensure(0).Id;
+			var id2 = massive.Ensure(1).Id;
+			var id3 = massive.Ensure(2).Id;
 
 			Assert.IsTrue(massive.IsAlive(id1));
 			Assert.IsTrue(massive.IsAlive(id2));
@@ -56,11 +56,11 @@ namespace Massive.Tests
 		[Test]
 		public void SaveFrame_ShouldPreserveLiveliness()
 		{
-			MassiveSparseSet massive = new MassiveSparseSet(2, 4);
+			var massive = new MassiveSparseSet(2, 4);
 
-			int id1 = massive.Ensure(0).Id;
-			int id2 = massive.Ensure(1).Id;
-			int id3 = massive.Ensure(2).Id;
+			var id1 = massive.Ensure(0).Id;
+			var id2 = massive.Ensure(1).Id;
+			var id3 = massive.Ensure(2).Id;
 
 			massive.SaveFrame();
 
@@ -72,9 +72,9 @@ namespace Massive.Tests
 		[Test]
 		public void RollbackZero_ShouldResetCurrentFrameChanges()
 		{
-			MassiveSparseSet massive = new MassiveSparseSet(2, 2);
+			var massive = new MassiveSparseSet(2, 2);
 
-			int id1 = massive.Ensure(0).Id;
+			var id1 = massive.Ensure(0).Id;
 
 			Assert.IsTrue(massive.IsAlive(id1));
 
@@ -92,12 +92,12 @@ namespace Massive.Tests
 		[Test]
 		public void IsAlive_ShouldWorkCorrectWithRollback()
 		{
-			MassiveSparseSet massive = new MassiveSparseSet(2, 2);
+			var massive = new MassiveSparseSet(2, 2);
 
 			massive.SaveFrame();
 
-			int id1 = massive.Ensure(0).Id;
-			int id2 = massive.Ensure(1).Id;
+			var id1 = massive.Ensure(0).Id;
+			var id2 = massive.Ensure(1).Id;
 			massive.Delete(id2);
 
 			Assert.IsTrue(massive.IsAlive(id1));

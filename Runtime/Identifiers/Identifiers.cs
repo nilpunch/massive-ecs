@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -23,6 +22,8 @@ namespace Massive
 			Ids = new int[dataCapacity];
 			Next = dataCapacity;
 		}
+
+		public int CanCreateAmount => Ids.Length - MaxId + Available;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create()
@@ -59,6 +60,36 @@ namespace Massive
 
 			(Next, Ids[id]) = (id, Next);
 			Available += 1;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CreateMany(int amount, [MaybeNull] Action<int> action = null)
+		{
+			int needToCreate = amount;
+
+			if (needToCreate >= CanCreateAmount)
+			{
+				throw new InvalidOperationException($"Exceeded limit of ids! CanCreate: {CanCreateAmount}.");
+			}
+
+			while (Available > 0)
+			{
+				var nextId = Next;
+				(Next, Ids[nextId]) = (Ids[nextId], nextId);
+				Available -= 1;
+
+				action?.Invoke(nextId);
+				needToCreate -= 1;
+			}
+
+			for (int i = 0; i < needToCreate; i++)
+			{
+				int maxId = MaxId;
+				MaxId += 1;
+				Ids[maxId] = maxId;
+
+				action?.Invoke(maxId);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
