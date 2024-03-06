@@ -2,7 +2,7 @@
 {
 	public struct DeleteInfo
 	{
-		public int DenseSwapSource;
-		public int DenseSwapTarget;
+		public int DenseSource;
+		public int DenseTarget;
 	}
 }

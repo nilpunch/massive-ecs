@@ -56,7 +56,7 @@ namespace Massive
 			var deleteInfo = SparseSet.Delete(id);
 			if (deleteInfo.HasValue)
 			{
-				Data[deleteInfo.Value.DenseSwapTarget] = Data[deleteInfo.Value.DenseSwapSource];
+				Data[deleteInfo.Value.DenseTarget] = Data[deleteInfo.Value.DenseSource];
 			}
 
 			return deleteInfo;
@@ -68,7 +68,7 @@ namespace Massive
 			var deleteInfo = SparseSet.DeleteDense(denseIndex);
 			if (deleteInfo.HasValue)
 			{
-				Data[deleteInfo.Value.DenseSwapTarget] = Data[deleteInfo.Value.DenseSwapSource];
+				Data[deleteInfo.Value.DenseTarget] = Data[deleteInfo.Value.DenseSource];
 			}
 
 			return deleteInfo;

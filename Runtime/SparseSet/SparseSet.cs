@@ -67,10 +67,10 @@ namespace Massive
 				return default;
 			}
 
-			int swapDense = aliveCount - 1;
-			SwapDense(dense, swapDense);
+			int lastElement = aliveCount - 1;
+			SwapDense(dense, lastElement);
 
-			return new DeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
+			return new DeleteInfo() { DenseTarget = dense, DenseSource = lastElement };
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,10 +92,10 @@ namespace Massive
 				return default;
 			}
 
-			int swapDense = aliveCount - 1;
-			SwapDense(dense, swapDense);
+			int lastElement = aliveCount - 1;
+			SwapDense(dense, lastElement);
 
-			return new DeleteInfo() { DenseSwapTarget = dense, DenseSwapSource = swapDense };
+			return new DeleteInfo() { DenseTarget = dense, DenseSource = lastElement };
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -122,7 +122,9 @@ namespace Massive
 		public bool IsAlive(int id)
 		{
 			if (id >= Sparse.Length)
+			{
 				return false;
+			}
 
 			int dense = Sparse[id];
 
