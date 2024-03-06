@@ -9,8 +9,8 @@
 		void Remove<T>(int entityId) where T : struct;
 		bool Has<T>(int entityId) where T : struct;
 		ref T Get<T>(int entityId) where T : struct;
-		DataSet<T> Components<T>() where T : struct;
-		SparseSet Tags<T>() where T : struct;
+		IDataSet<T> Components<T>() where T : struct;
+		ISet Tags<T>() where T : struct;
 		ISet AnySet<T>() where T : struct;
 	}
 }

@@ -18,7 +18,7 @@
 		{
 			if (ComponentMeta<T>.IsManaged)
 			{
-				return new DataSet<T>(_dataCapacity);
+				return new ManagedDataSet<T>(_dataCapacity);
 			}
 			else
 			{

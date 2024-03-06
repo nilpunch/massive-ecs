@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 
 namespace Massive.ECS
@@ -24,18 +25,9 @@ namespace Massive.ECS
 
 			if (IsManaged)
 			{
-				var initializeMethod = typeof(T).GetMethod(nameof(IManaged<T>.Initialize), BindingFlags.Public | BindingFlags.Instance);
-				var resetMethod = typeof(T).GetMethod(nameof(IManaged<T>.Reset), BindingFlags.Public | BindingFlags.Instance);
-				var cloneMethod = typeof(T).GetMethod(nameof(IManaged<T>.Clone), BindingFlags.Public | BindingFlags.Instance);
-
-				Initialize = (InitializeManaged<T>)Delegate.CreateDelegate(
-					typeof(InitializeManaged<T>), _unusedInstance, initializeMethod!);
-
-				Reset = (ResetManaged<T>)Delegate.CreateDelegate(
-					typeof(ResetManaged<T>), _unusedInstance, resetMethod!);
-
-				Clone = (CloneManaged<T>)Delegate.CreateDelegate(
-					typeof(CloneManaged<T>), _unusedInstance, cloneMethod!);
+				Initialize = CreateDelegateFromManagedMethod<InitializeManaged<T>>(nameof(IManaged<T>.Initialize));
+				Reset = CreateDelegateFromManagedMethod<ResetManaged<T>>(nameof(IManaged<T>.Reset));
+				Clone = CreateDelegateFromManagedMethod<CloneManaged<T>>(nameof(IManaged<T>.Clone));
 			}
 			else
 			{
@@ -45,8 +37,6 @@ namespace Massive.ECS
 			}
 		}
 
-		static readonly T _unusedInstance = default;
-
 #if UNITY_2020_3_OR_NEWER
 		[UnityEngine.Scripting.Preserve]
 #endif
@@ -54,12 +44,37 @@ namespace Massive.ECS
 		{
 			new NormalSetFactory().CreateDataSet<T>();
 			new MassiveSetFactory().CreateDataSet<T>();
-			if (_unusedInstance is IManaged<T> managed)
+			if (_managedInstance is IManaged<T> managed)
 			{
 				managed.Initialize(out var value);
 				managed.Reset(ref value);
 				managed.Clone(value, ref value);
 			}
+		}
+
+		static readonly T _managedInstance = default;
+
+		private static TDelegate CreateDelegateFromManagedMethod<TDelegate>(string methodName) where TDelegate : Delegate
+		{
+			return (TDelegate)Delegate.CreateDelegate(typeof(TDelegate), _managedInstance, GetManagedMethod(methodName));
+		}
+
+		private static MethodInfo GetManagedMethod(string methodName)
+		{
+			var implicitMethod = typeof(T).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+			var explicitMethod = typeof(T).GetMethod($"{GetFullTypeName(typeof(IManaged<T>))}.{methodName}", BindingFlags.NonPublic | BindingFlags.Instance);
+			return implicitMethod ?? explicitMethod;
+		}
+
+		private static string GetFullTypeName(Type type)
+		{
+			if(type.IsGenericType)
+			{
+				string genericArguments = string.Join(",", type.GetGenericArguments().Select(GetFullTypeName));
+				string typeItself = type.FullName!.Substring(0, type.FullName.IndexOf("`", StringComparison.Ordinal));
+				return $"{typeItself}<{genericArguments}>";
+			}
+			return type.FullName;
 		}
 	}
 }

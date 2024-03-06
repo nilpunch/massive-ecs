@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using Massive.ECS;
 using Unity.IL2CPP.CompilerServices;
@@ -6,12 +5,12 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="Massive.MassiveSparseSet"/> with custom managed data support.
+	/// Data extension for <see cref="Massive.MassiveSparseSet"/> with managed data support.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveManagedDataSet<T> : DataSet<T>, IMassive where T : struct
+	public class MassiveManagedDataSet<T> : ManagedDataSet<T>, IMassive where T : struct
 	{
 		private readonly MassiveSparseSet _massiveSparseSet;
 		private readonly T[] _dataByFrames;

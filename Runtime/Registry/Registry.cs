@@ -88,7 +88,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public DataSet<T> Components<T>() where T : struct
+		public IDataSet<T> Components<T>() where T : struct
 		{
 			if (!ComponentMeta<T>.HasAnyFields)
 			{
@@ -99,7 +99,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Tags<T>() where T : struct
+		public ISet Tags<T>() where T : struct
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
@@ -123,7 +123,7 @@ namespace Massive.ECS
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private DataSet<T> GetOrCreateComponents<T>() where T : struct
+		private IDataSet<T> GetOrCreateComponents<T>() where T : struct
 		{
 			var type = typeof(T);
 
@@ -134,11 +134,11 @@ namespace Massive.ECS
 				AllSets.Add(components);
 			}
 
-			return (DataSet<T>)components;
+			return (IDataSet<T>)components;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private SparseSet GetOrCreateTags<T>() where T : struct
+		private ISet GetOrCreateTags<T>() where T : struct
 		{
 			var type = typeof(T);
 
@@ -149,7 +149,7 @@ namespace Massive.ECS
 				AllSets.Add(tags);
 			}
 
-			return (SparseSet)tags;
+			return tags;
 		}
 	}
 }

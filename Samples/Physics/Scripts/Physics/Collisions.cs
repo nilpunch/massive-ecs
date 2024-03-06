@@ -9,7 +9,7 @@ namespace Massive.Samples.Physics
 
 		public static readonly List<Contact> Contacts = new List<Contact>();
 
-		public static void Solve(DataSet<PhysicsRigidbody> bodies, DataSet<PhysicsSphereCollider> spheres, DataSet<PhysicsBoxCollider> boxes)
+		public static void Solve(IDataSet<PhysicsRigidbody> bodies, IDataSet<PhysicsSphereCollider> spheres, IDataSet<PhysicsBoxCollider> boxes)
 		{
 			CollectContacts(bodies, spheres, boxes);
 
@@ -108,7 +108,7 @@ namespace Massive.Samples.Physics
 			b.ApplyImpulseAtPoint(-frictionImpulse, contact.ContactPointB);
 		}
 
-		private static void CollectContacts(DataSet<PhysicsRigidbody> bodies, DataSet<PhysicsSphereCollider> spheres, DataSet<PhysicsBoxCollider> boxes)
+		private static void CollectContacts(IDataSet<PhysicsRigidbody> bodies, IDataSet<PhysicsSphereCollider> spheres, IDataSet<PhysicsBoxCollider> boxes)
 		{
 			Contacts.Clear();
 

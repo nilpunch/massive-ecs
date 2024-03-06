@@ -6,13 +6,15 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for any <see cref="Massive.ISet"/> with custom managed data support.
+	/// Data extension for any <see cref="Massive.ISet"/> with managed data support.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class ManagedDataSet<T> : IDataSet<T> where T : struct
 	{
+		private T _swapBuffer;
+
 		public SparseSet SparseSet { get; }
 		public T[] Data { get; }
 
@@ -30,6 +32,8 @@ namespace Massive
 			{
 				ComponentMeta<T>.Initialize(out Data[i]);
 			}
+
+			ComponentMeta<T>.Initialize(out _swapBuffer);
 		}
 
 		public int Capacity => SparseSet.Capacity;
@@ -109,10 +113,9 @@ namespace Massive
 		{
 			SparseSet.SwapDense(denseA, denseB);
 			
-			ComponentMeta<T>.Initialize(out var temp);
-			ComponentMeta<T>.Clone(Data[denseA], ref temp);
+			ComponentMeta<T>.Clone(Data[denseA], ref _swapBuffer);
 			ComponentMeta<T>.Clone(Data[denseB], ref Data[denseA]);
-			ComponentMeta<T>.Clone(temp, ref Data[denseB]);
+			ComponentMeta<T>.Clone(_swapBuffer, ref Data[denseB]);
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Massive.Samples.Shooter
 {
-	public struct BulletState : IManaged<BulletState>
+	public struct BulletState
 	{
 		public EntityTransform Transform;
 
@@ -13,20 +13,5 @@ namespace Massive.Samples.Shooter
 		public float Lifetime;
 
 		public bool IsDestroyed => Lifetime <= 0f;
-		
-		public void Initialize(out BulletState data)
-		{
-			data = default;
-		}
-
-		public void Reset(ref BulletState data)
-		{
-			data = default;
-		}
-
-		public void Clone(in BulletState source, ref BulletState destination)
-		{
-			destination = source;
-		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Massive;
 using Massive.ECS;
 using Massive.Samples.Shooter;
 using UnityEngine;
@@ -33,9 +34,9 @@ namespace Massive.Samples.Physics
 		[SerializeField] private float _gravity = 10f;
 
 		private MassiveRegistry _registry;
-		private DataSet<PhysicsRigidbody> _bodies;
-		private DataSet<PhysicsSphereCollider> _sphereColliders;
-		private DataSet<PhysicsBoxCollider> _boxColliders;
+		private IDataSet<PhysicsRigidbody> _bodies;
+		private IDataSet<PhysicsSphereCollider> _sphereColliders;
+		private IDataSet<PhysicsBoxCollider> _boxColliders;
 		private EntitySynchronisation<PhysicsSphereCollider> _spheresSynchronisation;
 		private EntitySynchronisation<PhysicsBoxCollider> _boxesSynchronisation;
 
