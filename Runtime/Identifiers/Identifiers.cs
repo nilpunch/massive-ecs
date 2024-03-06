@@ -35,19 +35,16 @@ namespace Massive
 				Available -= 1;
 				return nextId;
 			}
-			else
+
+			int maxId = MaxId;
+			if (MaxId >= Ids.Length + Available)
 			{
-				int maxId = MaxId;
-
-				if (maxId >= Ids.Length)
-				{
-					throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Ids.Length}.");
-				}
-
-				MaxId += 1;
-				Ids[maxId] = maxId;
-				return maxId;
+				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Ids.Length}.");
 			}
+
+			MaxId += 1;
+			Ids[maxId] = maxId;
+			return maxId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -66,7 +63,6 @@ namespace Massive
 		public void CreateMany(int amount, [MaybeNull] Action<int> action = null)
 		{
 			int needToCreate = amount;
-
 			if (needToCreate >= CanCreateAmount)
 			{
 				throw new InvalidOperationException($"Exceeded limit of ids! CanCreate: {CanCreateAmount}.");

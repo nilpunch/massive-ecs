@@ -51,7 +51,7 @@ namespace Massive
 		{
 			if (frames > CanRollbackFrames)
 			{
-				throw new InvalidOperationException($"Can't rollback this far. CanRollback:{CanRollbackFrames}, Requested: {frames}.");
+				throw new ArgumentOutOfRangeException(nameof(frames), frames, $"Can't rollback this far. CanRollbackFrames: {CanRollbackFrames}.");
 			}
 
 			_savedFrames -= frames;

@@ -36,6 +36,7 @@ namespace Massive.ECS
 		public void Destroy(int entityId)
 		{
 			Entities.Delete(entityId);
+
 			foreach (var set in AllSets)
 			{
 				set.Delete(entityId);
