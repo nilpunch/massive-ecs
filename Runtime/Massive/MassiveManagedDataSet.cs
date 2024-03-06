@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using Massive.ECS;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -10,13 +11,13 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveManagedDataSet<T> : ManagedDataSet<T>, IMassive where T : struct
+	public class MassiveManagedDataSet<T> : DataSet<T>, IMassive where T : struct
 	{
 		private readonly MassiveSparseSet _massiveSparseSet;
 		private readonly T[] _dataByFrames;
 
-		public MassiveManagedDataSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity, IManagedCloner<T> cloner = null)
-			: base(new MassiveSparseSet(framesCapacity, dataCapacity), cloner)
+		public MassiveManagedDataSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
+			: base(new MassiveSparseSet(framesCapacity, dataCapacity))
 		{
 			// Fetch instance from base
 			_massiveSparseSet = (MassiveSparseSet)SparseSet;
@@ -25,7 +26,7 @@ namespace Massive
 
 			for (int i = 0; i < _dataByFrames.Length; i++)
 			{
-				Cloner.Initialize(out _dataByFrames[i]);
+				ComponentMeta<T>.Initialize(out _dataByFrames[i]);
 			}
 		}
 
@@ -40,7 +41,7 @@ namespace Massive
 			int destinationIndex = _massiveSparseSet.CurrentFrame * Data.Length;
 			for (int i = 0; i < AliveCount; i++)
 			{
-				Cloner.Clone(Data[i], ref _dataByFrames[destinationIndex + i]);
+				ComponentMeta<T>.Clone(Data[i], ref _dataByFrames[destinationIndex + i]);
 			}
 		}
 
@@ -53,7 +54,7 @@ namespace Massive
 			int destinationIndex = _massiveSparseSet.CurrentFrame * Data.Length;
 			for (int i = 0; i < AliveCount; i++)
 			{
-				Cloner.Clone(_dataByFrames[destinationIndex + i], ref Data[i]);
+				ComponentMeta<T>.Clone(_dataByFrames[destinationIndex + i], ref Data[i]);
 			}
 		}
 	}

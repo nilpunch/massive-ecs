@@ -16,7 +16,14 @@
 
 		public ISet CreateDataSet<T>() where T : struct
 		{
-			return new DataSet<T>(_dataCapacity);
+			if (ComponentMeta<T>.IsManaged)
+			{
+				return new DataSet<T>(_dataCapacity);
+			}
+			else
+			{
+				return new DataSet<T>(_dataCapacity);
+			}
 		}
 
 		public Identifiers CreateIdentifiers()
