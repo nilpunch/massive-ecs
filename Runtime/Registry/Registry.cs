@@ -6,8 +6,8 @@ namespace Massive.ECS
 {
 	public class Registry : IRegistry
 	{
-		private readonly ISetFactory _setFactory;
-		private readonly Dictionary<Type, ISet> _setsLookup;
+		private ISetFactory SetFactory { get; }
+		private Dictionary<Type, ISet> SetsLookup { get; }
 
 		protected List<ISet> AllSets { get; }
 		public Identifiers Entities { get; }
@@ -19,8 +19,8 @@ namespace Massive.ECS
 
 		protected Registry(ISetFactory setFactory)
 		{
-			_setFactory = setFactory;
-			_setsLookup = new Dictionary<Type, ISet>();
+			SetFactory = setFactory;
+			SetsLookup = new Dictionary<Type, ISet>();
 			AllSets = new List<ISet>();
 
 			Entities = setFactory.CreateIdentifiers();
@@ -58,7 +58,7 @@ namespace Massive.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove<T>(int entityId) where T : unmanaged
 		{
-			if (_setsLookup.TryGetValue(typeof(T), out var anySet))
+			if (SetsLookup.TryGetValue(typeof(T), out var anySet))
 			{
 				anySet.Delete(entityId);
 			}
@@ -67,7 +67,7 @@ namespace Massive.ECS
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has<T>(int entityId) where T : unmanaged
 		{
-			if (_setsLookup.TryGetValue(typeof(T), out var component))
+			if (SetsLookup.TryGetValue(typeof(T), out var component))
 			{
 				return component.IsAlive(entityId);
 			}
@@ -126,10 +126,10 @@ namespace Massive.ECS
 		{
 			var type = typeof(T);
 
-			if (!_setsLookup.TryGetValue(type, out var components))
+			if (!SetsLookup.TryGetValue(type, out var components))
 			{
-				components = _setFactory.CreateDataSet<T>();
-				_setsLookup.Add(type, components);
+				components = SetFactory.CreateDataSet<T>();
+				SetsLookup.Add(type, components);
 				AllSets.Add(components);
 			}
 
@@ -141,10 +141,10 @@ namespace Massive.ECS
 		{
 			var type = typeof(T);
 
-			if (!_setsLookup.TryGetValue(type, out var tags))
+			if (!SetsLookup.TryGetValue(type, out var tags))
 			{
-				tags = _setFactory.CreateSet();
-				_setsLookup.Add(type, tags);
+				tags = SetFactory.CreateSet();
+				SetsLookup.Add(type, tags);
 				AllSets.Add(tags);
 			}
 

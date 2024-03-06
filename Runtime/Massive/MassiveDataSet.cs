@@ -10,7 +10,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveDataSet<T> : DataSet<T>, IMassiveSet where T : unmanaged
+	public class MassiveDataSet<T> : DataSet<T>, IMassive where T : unmanaged
 	{
 		private readonly MassiveSparseSet _massiveSparseSet;
 		private readonly T[] _dataByFrames;

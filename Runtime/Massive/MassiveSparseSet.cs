@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveSparseSet : SparseSet, IMassiveSet
+	public class MassiveSparseSet : SparseSet, IMassive
 	{
 		private readonly int[] _denseByFrames;
 		private readonly int[] _sparseByFrames;
@@ -29,9 +29,6 @@ namespace Massive
 
 		public int CurrentFrame => _currentFrame;
 
-		/// <summary>
-		/// Can be negative, when there absolutely no saved frames to restore information.
-		/// </summary>
 		public int CanRollbackFrames => _savedFrames - 1;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

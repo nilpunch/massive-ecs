@@ -29,11 +29,6 @@ namespace Massive
 			_nextByFrames = new int[framesCapacity];
 		}
 
-		public int CurrentFrame => _currentFrame;
-
-		/// <summary>
-		/// Can be negative, when there absolutely no saved frames to restore information.
-		/// </summary>
 		public int CanRollbackFrames => _savedFrames - 1;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
