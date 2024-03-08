@@ -1,7 +1,4 @@
-# Sparse set library, featuring rollbacks
-
-> [!NOTE]
-> Basic sparse set ECS included!
+# Sparse set ECS library= with rollbacks
 
 Made for competitive and fast paced online multiplayer games with prediction-rollback netcode.
 
