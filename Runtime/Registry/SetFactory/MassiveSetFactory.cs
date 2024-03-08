@@ -26,9 +26,9 @@
 
 		public ISet CreateDataSet<T>() where T : struct
 		{
-			if (Managed.IsManaged<T>())
+			if (ManagedUtils.IsManaged<T>())
 			{
-				var massiveManagedDataSet = Managed.CreateMassiveDataSet<T>(_framesCapacity, _dataCapacity);
+				var massiveManagedDataSet = ManagedUtils.CreateMassiveDataSet<T>(_framesCapacity, _dataCapacity);
 				((IMassive)massiveManagedDataSet).SaveFrame();
 				return massiveManagedDataSet;
 			}

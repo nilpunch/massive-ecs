@@ -16,9 +16,9 @@
 
 		public ISet CreateDataSet<T>() where T : struct
 		{
-			if (Managed.IsManaged<T>())
+			if (ManagedUtils.IsManaged<T>())
 			{
-				return Managed.CreateDataSet<T>(_dataCapacity);
+				return ManagedUtils.CreateDataSet<T>(_dataCapacity);
 			}
 			else
 			{

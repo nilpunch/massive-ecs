@@ -1,6 +1,6 @@
 ﻿{
   "name": "massive",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "library",
   "displayName": "Massive Sparse Set",
   "unity": "2021.2",
