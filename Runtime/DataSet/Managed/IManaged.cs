@@ -1,6 +1,6 @@
 namespace Massive
 {
-	public interface IManaged<T> where T : struct
+	public partial interface IManaged<T> where T : struct, IManaged<T>
 	{
 		void Initialize();
 		void Reset();

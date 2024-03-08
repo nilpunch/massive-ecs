@@ -23,22 +23,14 @@
 
 		public ISet CreateDataSet<T>() where T : struct
 		{
-			var massiveDataSet = new MassiveDataSet<T>(_framesCapacity, _dataCapacity);
-
-			// Save first empty frame to ensure we can rollback to it
-			massiveDataSet.SaveFrame();
-
-			return massiveDataSet;
-		}
-
-		public ISet CreateManagedDataSet<T>() where T : struct, IManaged<T>
-		{
-			var massiveManagedDataSet = new MassiveManagedDataSet<T>(_framesCapacity, _dataCapacity);
-
-			// Save first empty frame to ensure we can rollback to it
-			massiveManagedDataSet.SaveFrame();
-
-			return massiveManagedDataSet;
+			if (ComponentMeta<T>.IsManaged)
+			{
+				return CreateMassiveManagedDataSet<T>();
+			}
+			else
+			{
+				return CreateMassiveNormalDataSet<T>();
+			}
 		}
 
 		public Identifiers CreateIdentifiers()
@@ -49,6 +41,26 @@
 			massiveIdentifiers.SaveFrame();
 
 			return massiveIdentifiers;
+		}
+
+		private ISet CreateMassiveNormalDataSet<T>() where T : struct
+		{
+			var massiveDataSet = new MassiveDataSet<T>(_framesCapacity, _dataCapacity);
+
+			// Save first empty frame to ensure we can rollback to it
+			massiveDataSet.SaveFrame();
+
+			return massiveDataSet;
+		}
+
+		private ISet CreateMassiveManagedDataSet<T>() where T : struct
+		{
+			var massiveManagedDataSet = Managed.CreateMassiveDataSet<T>(_framesCapacity, _dataCapacity);
+
+			// Save first empty frame to ensure we can rollback to it
+			((IMassive)massiveManagedDataSet).SaveFrame();
+
+			return massiveManagedDataSet;
 		}
 	}
 }
