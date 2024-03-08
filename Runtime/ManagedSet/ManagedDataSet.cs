@@ -18,9 +18,7 @@ namespace Massive
 		public T[] Data { get; }
 
 		public ManagedDataSet(int dataCapacity = Constants.DataCapacity)
-			: this(new SparseSet(dataCapacity))
-		{
-		}
+			: this(new SparseSet(dataCapacity)) { }
 
 		protected ManagedDataSet(SparseSet sparseSet)
 		{
@@ -31,7 +29,6 @@ namespace Massive
 			{
 				Data[i].Initialize();
 			}
-
 			_swapBuffer.Initialize();
 		}
 
@@ -111,7 +108,7 @@ namespace Massive
 		public void SwapDense(int denseA, int denseB)
 		{
 			SparseSet.SwapDense(denseA, denseB);
-			
+
 			Data[denseA].CopyTo(ref _swapBuffer);
 			Data[denseB].CopyTo(ref Data[denseA]);
 			_swapBuffer.CopyTo(ref Data[denseB]);

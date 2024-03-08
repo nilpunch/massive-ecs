@@ -115,9 +115,7 @@ namespace Massive
 
 			public bool MoveNext()
 			{
-				while (++_currentIndex < _length && _ids[_currentIndex] != _currentIndex)
-				{
-				}
+				while (++_currentIndex < _length && _ids[_currentIndex] != _currentIndex) { }
 
 				return _currentIndex < _length;
 			}

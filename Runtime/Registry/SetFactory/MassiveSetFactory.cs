@@ -1,5 +1,11 @@
 ﻿namespace Massive
 {
+	/// <summary>
+	/// Factory for data structures with rollbacks.
+	/// </summary>
+	/// <remarks>
+	/// Created structures have first empty frame saved so that you can rollback to it.
+	/// </remarks>
 	public class MassiveSetFactory : ISetFactory
 	{
 		private readonly int _framesCapacity;
@@ -14,53 +20,31 @@
 		public ISet CreateSet()
 		{
 			var massiveSparseSet = new MassiveSparseSet(_framesCapacity, _dataCapacity);
-
-			// Save first empty frame to ensure we can rollback to it
 			massiveSparseSet.SaveFrame();
-
 			return massiveSparseSet;
 		}
 
 		public ISet CreateDataSet<T>() where T : struct
 		{
-			if (ComponentMeta<T>.IsManaged)
+			if (Managed.IsManaged<T>())
 			{
-				return CreateMassiveManagedDataSet<T>();
+				var massiveManagedDataSet = Managed.CreateMassiveDataSet<T>(_framesCapacity, _dataCapacity);
+				((IMassive)massiveManagedDataSet).SaveFrame();
+				return massiveManagedDataSet;
 			}
 			else
 			{
-				return CreateMassiveNormalDataSet<T>();
+				var massiveDataSet = new MassiveDataSet<T>(_framesCapacity, _dataCapacity);
+				massiveDataSet.SaveFrame();
+				return massiveDataSet;
 			}
 		}
 
 		public Identifiers CreateIdentifiers()
 		{
 			var massiveIdentifiers = new MassiveIdentifiers(_framesCapacity, _dataCapacity);
-
-			// Save first empty frame to ensure we can rollback to it
 			massiveIdentifiers.SaveFrame();
-
 			return massiveIdentifiers;
-		}
-
-		private ISet CreateMassiveNormalDataSet<T>() where T : struct
-		{
-			var massiveDataSet = new MassiveDataSet<T>(_framesCapacity, _dataCapacity);
-
-			// Save first empty frame to ensure we can rollback to it
-			massiveDataSet.SaveFrame();
-
-			return massiveDataSet;
-		}
-
-		private ISet CreateMassiveManagedDataSet<T>() where T : struct
-		{
-			var massiveManagedDataSet = Managed.CreateMassiveDataSet<T>(_framesCapacity, _dataCapacity);
-
-			// Save first empty frame to ensure we can rollback to it
-			((IMassive)massiveManagedDataSet).SaveFrame();
-
-			return massiveManagedDataSet;
 		}
 	}
 }

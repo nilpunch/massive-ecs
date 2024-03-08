@@ -5,7 +5,7 @@
 #if UNITY_2020_3_OR_NEWER
 		[UnityEngine.Scripting.Preserve]
 #endif
-		static void VirtualGenericsHack()
+		static void GenericsCompilerHint()
 		{
 			new ManagedDataSet<T>();
 			new MassiveManagedDataSet<T>();

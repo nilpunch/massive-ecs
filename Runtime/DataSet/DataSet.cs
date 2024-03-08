@@ -16,9 +16,7 @@ namespace Massive
 		public T[] Data { get; }
 
 		public DataSet(int dataCapacity = Constants.DataCapacity)
-			: this(new SparseSet(dataCapacity))
-		{
-		}
+			: this(new SparseSet(dataCapacity)) { }
 
 		protected DataSet(SparseSet sparseSet)
 		{
