@@ -13,7 +13,9 @@ namespace Massive
 		public Identifiers Entities { get; }
 
 		public Registry(int dataCapacity = Constants.DataCapacity)
-			: this(new NormalSetFactory(dataCapacity)) { }
+			: this(new NormalSetFactory(dataCapacity))
+		{
+		}
 
 		protected Registry(ISetFactory setFactory)
 		{

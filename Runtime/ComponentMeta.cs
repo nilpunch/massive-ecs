@@ -7,6 +7,7 @@ namespace Massive
 	/// </summary>
 	public static class ComponentMeta<T> where T : struct
 	{
+		// ReSharper disable once StaticMemberInGenericType
 		public static bool HasAnyFields { get; }
 
 		static ComponentMeta()
@@ -17,8 +18,9 @@ namespace Massive
 #if UNITY_2020_3_OR_NEWER
 		[UnityEngine.Scripting.Preserve]
 #endif
-		static void VirtualGenericsCompilerHint()
+		private static void VirtualGenericsCompilerHint()
 		{
+			// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			new NormalSetFactory().CreateDataSet<T>();
 			new MassiveSetFactory().CreateDataSet<T>();
 		}

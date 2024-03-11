@@ -18,7 +18,9 @@ namespace Massive
 		public T[] Data { get; }
 
 		public ManagedDataSet(int dataCapacity = Constants.DataCapacity)
-			: this(new SparseSet(dataCapacity)) { }
+			: this(new SparseSet(dataCapacity))
+		{
+		}
 
 		protected ManagedDataSet(SparseSet sparseSet)
 		{
@@ -29,6 +31,7 @@ namespace Massive
 			{
 				Data[i].Initialize();
 			}
+
 			_swapBuffer.Initialize();
 		}
 

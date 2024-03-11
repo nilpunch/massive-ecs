@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -88,6 +89,7 @@ namespace Massive
 			}
 		}
 
+		[Pure]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
@@ -115,7 +117,9 @@ namespace Massive
 
 			public bool MoveNext()
 			{
-				while (++_currentIndex < _length && _ids[_currentIndex] != _currentIndex) { }
+				while (++_currentIndex < _length && _ids[_currentIndex] != _currentIndex)
+				{
+				}
 
 				return _currentIndex < _length;
 			}
