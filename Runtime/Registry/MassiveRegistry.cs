@@ -7,8 +7,8 @@ namespace Massive
 	{
 		private readonly MassiveIdentifiers _massiveEntities;
 
-		public MassiveRegistry(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
-			: base(new MassiveSetFactory(framesCapacity, dataCapacity))
+		public MassiveRegistry(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
+			: base(new MassiveSetFactory(dataCapacity, framesCapacity))
 		{
 			// Fetch instance from base
 			_massiveEntities = (MassiveIdentifiers)Entities;

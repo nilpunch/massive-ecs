@@ -20,7 +20,7 @@ namespace Massive.Samples.Shooter
 
 		private void Awake()
 		{
-			_registry = new MassiveRegistry(_simulationsPerFrame + 1, _entitiesCapacity);
+			_registry = new MassiveRegistry(dataCapacity: _entitiesCapacity, framesCapacity: _simulationsPerFrame + 1);
 
 			_worldUpdaters = FindObjectsOfType<WorldUpdater>();
 			foreach (var worldUpdaters in _worldUpdaters)

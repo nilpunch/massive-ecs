@@ -8,10 +8,10 @@
 	/// </remarks>
 	public class MassiveSetFactory : ISetFactory
 	{
-		private readonly int _framesCapacity;
 		private readonly int _dataCapacity;
+		private readonly int _framesCapacity;
 
-		public MassiveSetFactory(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
+		public MassiveSetFactory(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 		{
 			_framesCapacity = framesCapacity;
 			_dataCapacity = dataCapacity;
@@ -19,7 +19,7 @@
 
 		public ISet CreateSet()
 		{
-			var massiveSparseSet = new MassiveSparseSet(_framesCapacity, _dataCapacity);
+			var massiveSparseSet = new MassiveSparseSet(_dataCapacity, _framesCapacity);
 			massiveSparseSet.SaveFrame();
 			return massiveSparseSet;
 		}
@@ -34,7 +34,7 @@
 			}
 			else
 			{
-				var massiveDataSet = new MassiveDataSet<T>(_framesCapacity, _dataCapacity);
+				var massiveDataSet = new MassiveDataSet<T>(_dataCapacity, _framesCapacity);
 				massiveDataSet.SaveFrame();
 				return massiveDataSet;
 			}
@@ -42,7 +42,7 @@
 
 		public Identifiers CreateIdentifiers()
 		{
-			var massiveIdentifiers = new MassiveIdentifiers(dataCapacity: _dataCapacity, framesCapacity: _framesCapacity);
+			var massiveIdentifiers = new MassiveIdentifiers(_dataCapacity, _framesCapacity);
 			massiveIdentifiers.SaveFrame();
 			return massiveIdentifiers;
 		}

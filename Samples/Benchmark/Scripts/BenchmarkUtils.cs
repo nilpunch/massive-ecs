@@ -2,9 +2,9 @@
 {
 	public static class BenchmarkUtils
 	{
-		public static MassiveRegistry GetSimplyPackedRegistry(int framesCapacity, int entitiesCapacity)
+		public static MassiveRegistry GetSimplyPackedRegistry(int entitiesCapacity, int framesCapacity)
 		{
-			MassiveRegistry registry = new MassiveRegistry(framesCapacity + 1, entitiesCapacity);
+			MassiveRegistry registry = new MassiveRegistry(entitiesCapacity, framesCapacity + 1);
 
 			for (int i = 0; i < entitiesCapacity; i++)
 			{
@@ -14,9 +14,9 @@
 			return registry;
 		}
 
-		public static MassiveRegistry GetFullyPackedRegistry(int framesCapacity, int entitiesCapacity)
+		public static MassiveRegistry GetFullyPackedRegistry(int entitiesCapacity, int framesCapacity)
 		{
-			MassiveRegistry registry = new MassiveRegistry(framesCapacity + 1, entitiesCapacity);
+			MassiveRegistry registry = new MassiveRegistry(entitiesCapacity, framesCapacity + 1);
 
 			for (int i = 0; i < entitiesCapacity; i++)
 			{

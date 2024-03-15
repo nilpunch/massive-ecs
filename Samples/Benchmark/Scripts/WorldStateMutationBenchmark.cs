@@ -11,7 +11,7 @@ namespace Massive.Samples.Benchmark
 
 		private void Start()
 		{
-			_registry = BenchmarkUtils.GetSimplyPackedRegistry(1, _worldEntitiesCount);
+			_registry = BenchmarkUtils.GetSimplyPackedRegistry(_worldEntitiesCount, 1);
 			_testStates = _registry.Components<TestState>();
 		}
 

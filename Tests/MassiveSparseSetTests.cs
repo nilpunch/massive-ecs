@@ -8,7 +8,7 @@ namespace Massive.Tests
 		[Test]
 		public void Ensure_ShouldMakeAlive()
 		{
-			var massive = new MassiveSparseSet(2, 4);
+			var massive = new MassiveSparseSet(dataCapacity: 4, framesCapacity: 2);
 
 			var id = 2;
 
@@ -22,7 +22,7 @@ namespace Massive.Tests
 		[Test]
 		public void Delete_ShouldMakeNotAlive()
 		{
-			var massive = new MassiveSparseSet(2, 4);
+			var massive = new MassiveSparseSet(dataCapacity: 4, framesCapacity: 2);
 
 			var id1 = massive.Ensure(0).Id;
 			var id2 = massive.Ensure(1).Id;
@@ -38,7 +38,7 @@ namespace Massive.Tests
 		[Test]
 		public void Ensure_ShouldMakeStatesAlive()
 		{
-			var massive = new MassiveSparseSet(2, 4);
+			var massive = new MassiveSparseSet(dataCapacity: 4, framesCapacity: 2);
 
 			Assert.IsFalse(massive.IsAlive(0));
 			Assert.IsFalse(massive.IsAlive(1));
@@ -56,7 +56,7 @@ namespace Massive.Tests
 		[Test]
 		public void SaveFrame_ShouldPreserveLiveliness()
 		{
-			var massive = new MassiveSparseSet(2, 4);
+			var massive = new MassiveSparseSet(dataCapacity: 4, framesCapacity: 2);
 
 			var id1 = massive.Ensure(0).Id;
 			var id2 = massive.Ensure(1).Id;
@@ -72,7 +72,7 @@ namespace Massive.Tests
 		[Test]
 		public void RollbackZero_ShouldResetCurrentFrameChanges()
 		{
-			var massive = new MassiveSparseSet(2, 2);
+			var massive = new MassiveSparseSet(dataCapacity: 2, framesCapacity: 2);
 
 			var id1 = massive.Ensure(0).Id;
 
@@ -92,7 +92,7 @@ namespace Massive.Tests
 		[Test]
 		public void IsAlive_ShouldWorkCorrectWithRollback()
 		{
-			var massive = new MassiveSparseSet(2, 2);
+			var massive = new MassiveSparseSet(dataCapacity: 2, framesCapacity: 2);
 
 			massive.SaveFrame();
 

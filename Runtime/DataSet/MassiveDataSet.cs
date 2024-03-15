@@ -15,8 +15,8 @@ namespace Massive
 		private readonly MassiveSparseSet _massiveSparseSet;
 		private readonly T[] _dataByFrames;
 
-		public MassiveDataSet(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
-			: base(new MassiveSparseSet(framesCapacity, dataCapacity))
+		public MassiveDataSet(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
+			: base(new MassiveSparseSet(dataCapacity, framesCapacity))
 		{
 			// Fetch instance from base
 			_massiveSparseSet = (MassiveSparseSet)SparseSet;

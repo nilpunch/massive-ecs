@@ -4,22 +4,6 @@ using UnityEngine;
 
 namespace Massive.Samples.Physics
 {
-	public class PhysicsWorld
-	{
-		public MassiveDataSet<PhysicsSphereCollider> Spheres { get; }
-		public MassiveDataSet<PhysicsBoxCollider> Boxes { get; }
-		public MassiveDataSet<PhysicsRigidbody> Bodies { get; }
-		public MassiveDataSet<Contact> Contacts { get; }
-
-		public PhysicsWorld(int framesCapacity)
-		{
-			Spheres = new MassiveDataSet<PhysicsSphereCollider>(framesCapacity);
-			Boxes = new MassiveDataSet<PhysicsBoxCollider>(framesCapacity);
-			Bodies = new MassiveDataSet<PhysicsRigidbody>(framesCapacity);
-			Contacts = new MassiveDataSet<Contact>(framesCapacity);
-		}
-	}
-
 	public class PhysicsSimulation : MonoBehaviour
 	{
 		[SerializeField, Range(0.01f, 10f)] private float _simulationSpeed = 1f;
@@ -40,7 +24,7 @@ namespace Massive.Samples.Physics
 
 		private void Awake()
 		{
-			_registry = new MassiveRegistry(_simulationsPerFrame + 1, _particlesCapacity);
+			_registry = new MassiveRegistry(_particlesCapacity, _simulationsPerFrame + 1);
 			_spheresSynchronisation = new EntitySynchronisation<PhysicsSphereCollider>(new EntityFactory<PhysicsSphereCollider>(_spherePrefab));
 			_boxesSynchronisation = new EntitySynchronisation<PhysicsBoxCollider>(new EntityFactory<PhysicsBoxCollider>(_boxPrefab));
 

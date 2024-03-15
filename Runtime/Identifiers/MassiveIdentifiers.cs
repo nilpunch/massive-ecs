@@ -18,7 +18,7 @@ namespace Massive
 		private int _currentFrame;
 		private int _savedFrames;
 
-		public MassiveIdentifiers(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity)
+		public MassiveIdentifiers(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(dataCapacity)
 		{
 			_framesCapacity = framesCapacity;

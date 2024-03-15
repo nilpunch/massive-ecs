@@ -10,7 +10,7 @@ namespace Massive.Samples.Benchmark
 
 		private void Start()
 		{
-			_registry = BenchmarkUtils.GetFullyPackedRegistry(121, _worldEntitiesCount);
+			_registry = BenchmarkUtils.GetFullyPackedRegistry(_worldEntitiesCount, 121);
 
 			foreach (var id in _registry.Entities)
 			{
