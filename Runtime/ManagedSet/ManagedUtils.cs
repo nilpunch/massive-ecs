@@ -12,7 +12,7 @@ namespace Massive
 				.Any(x => x.GetGenericTypeDefinition().MakeGenericType(typeof(T)).IsAssignableFrom(typeof(T)));
 		}
 
-		public static ISet CreateDataSet<T>(int dataCapacity = Constants.DataCapacity) where T : struct
+		public static ISet CreateManagedDataSet<T>(int dataCapacity = Constants.DataCapacity) where T : struct
 		{
 			Type constructedType = typeof(ManagedDataSet<>)
 				.GetGenericTypeDefinition()
@@ -21,7 +21,7 @@ namespace Massive
 			return (ISet)Activator.CreateInstance(constructedType, dataCapacity);
 		}
 
-		public static ISet CreateMassiveDataSet<T>(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity) where T : struct
+		public static ISet CreateMassiveManagedDataSet<T>(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity) where T : struct
 		{
 			Type constructedType = typeof(MassiveManagedDataSet<>)
 				.GetGenericTypeDefinition()

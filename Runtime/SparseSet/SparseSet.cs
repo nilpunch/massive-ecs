@@ -25,7 +25,7 @@ namespace Massive
 		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public CreateInfo Ensure(int id)
+		public EnsureInfo Ensure(int id)
 		{
 			if (id >= Sparse.Length)
 			{
@@ -38,14 +38,14 @@ namespace Massive
 			// Check if element is alive then do nothing
 			if (dense < AliveCount && Dense[dense] == id)
 			{
-				return new CreateInfo() { Id = id, Dense = dense };
+				return new EnsureInfo() { Id = id, Dense = dense };
 			}
 
 			AliveCount += 1;
 
 			AssignIndex(id, count);
 
-			return new CreateInfo() { Id = id, Dense = count };
+			return new EnsureInfo() { Id = id, Dense = count };
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -5,22 +5,16 @@ namespace Massive
 {
 	public interface IReadOnlySet
 	{
-		[Pure]
-		int Capacity { get; }
+		[Pure] int Capacity { get; }
 
-		[Pure]
-		int AliveCount { get; }
+		[Pure] int AliveCount { get; }
 
-		[Pure]
-		ReadOnlySpan<int> AliveIds { get; }
+		[Pure] ReadOnlySpan<int> AliveIds { get; }
 
-		[Pure]
-		int GetDense(int id);
+		[Pure] int GetDense(int id);
 
-		[Pure]
-		bool TryGetDense(int id, out int dense);
+		[Pure] bool TryGetDense(int id, out int dense);
 
-		[Pure]
-		bool IsAlive(int id);
+		[Pure] bool IsAlive(int id);
 	}
 }

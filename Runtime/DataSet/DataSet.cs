@@ -35,7 +35,7 @@ namespace Massive
 		public Span<T> AliveData => new Span<T>(Data, 0, SparseSet.AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public CreateInfo Ensure(int id)
+		public EnsureInfo Ensure(int id)
 		{
 			var createInfo = SparseSet.Ensure(id);
 			Data[createInfo.Dense] = default;
@@ -43,7 +43,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public CreateInfo Ensure(int id, T data)
+		public EnsureInfo Ensure(int id, T data)
 		{
 			var createInfo = SparseSet.Ensure(id);
 			Data[createInfo.Dense] = data;

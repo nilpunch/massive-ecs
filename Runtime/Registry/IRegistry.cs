@@ -4,8 +4,7 @@ namespace Massive
 {
 	public interface IRegistry
 	{
-		[Pure]
-		Identifiers Entities { get; }
+		[Pure] Identifiers Entities { get; }
 
 		int Create();
 
@@ -15,19 +14,14 @@ namespace Massive
 
 		void Remove<T>(int entityId) where T : struct;
 
-		[Pure]
-		bool Has<T>(int entityId) where T : struct;
+		[Pure] bool Has<T>(int entityId) where T : struct;
 
-		[Pure]
-		ref T Get<T>(int entityId) where T : struct;
+		[Pure] ref T Get<T>(int entityId) where T : struct;
 
-		[Pure]
-		IDataSet<T> Components<T>() where T : struct;
+		[Pure] IDataSet<T> Components<T>() where T : struct;
 
-		[Pure]
-		ISet Tags<T>() where T : struct;
+		[Pure] ISet Tags<T>() where T : struct;
 
-		[Pure]
-		ISet AnySet<T>() where T : struct;
+		[Pure] ISet AnySet<T>() where T : struct;
 	}
 }

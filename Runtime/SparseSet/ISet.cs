@@ -2,7 +2,7 @@ namespace Massive
 {
 	public interface ISet : IReadOnlySet
 	{
-		CreateInfo Ensure(int id);
+		EnsureInfo Ensure(int id);
 
 		DeleteInfo? Delete(int id);
 

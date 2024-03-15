@@ -28,7 +28,7 @@
 		{
 			if (ManagedUtils.IsManaged<T>())
 			{
-				var massiveManagedDataSet = ManagedUtils.CreateMassiveDataSet<T>(_framesCapacity, _dataCapacity);
+				var massiveManagedDataSet = ManagedUtils.CreateMassiveManagedDataSet<T>(_framesCapacity, _dataCapacity);
 				((IMassive)massiveManagedDataSet).SaveFrame();
 				return massiveManagedDataSet;
 			}
@@ -42,7 +42,7 @@
 
 		public Identifiers CreateIdentifiers()
 		{
-			var massiveIdentifiers = new MassiveIdentifiers(_framesCapacity, _dataCapacity);
+			var massiveIdentifiers = new MassiveIdentifiers(dataCapacity: _dataCapacity, framesCapacity: _framesCapacity);
 			massiveIdentifiers.SaveFrame();
 			return massiveIdentifiers;
 		}

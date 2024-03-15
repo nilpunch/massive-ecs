@@ -18,7 +18,7 @@
 		{
 			if (ManagedUtils.IsManaged<T>())
 			{
-				return ManagedUtils.CreateDataSet<T>(_dataCapacity);
+				return ManagedUtils.CreateManagedDataSet<T>(_dataCapacity);
 			}
 			else
 			{
