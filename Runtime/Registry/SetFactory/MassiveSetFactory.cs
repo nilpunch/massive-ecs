@@ -13,8 +13,8 @@
 
 		public MassiveSetFactory(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 		{
-			_framesCapacity = framesCapacity;
 			_dataCapacity = dataCapacity;
+			_framesCapacity = framesCapacity;
 		}
 
 		public ISet CreateSet()
@@ -28,7 +28,7 @@
 		{
 			if (ManagedUtils.IsManaged<T>())
 			{
-				var massiveManagedDataSet = ManagedUtils.CreateMassiveManagedDataSet<T>(_framesCapacity, _dataCapacity);
+				var massiveManagedDataSet = ManagedUtils.CreateMassiveManagedDataSet<T>(_dataCapacity, _framesCapacity);
 				((IMassive)massiveManagedDataSet).SaveFrame();
 				return massiveManagedDataSet;
 			}

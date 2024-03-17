@@ -21,13 +21,13 @@ namespace Massive
 			return (ISet)Activator.CreateInstance(constructedType, dataCapacity);
 		}
 
-		public static ISet CreateMassiveManagedDataSet<T>(int framesCapacity = Constants.FramesCapacity, int dataCapacity = Constants.DataCapacity) where T : struct
+		public static ISet CreateMassiveManagedDataSet<T>(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity) where T : struct
 		{
 			Type constructedType = typeof(MassiveManagedDataSet<>)
 				.GetGenericTypeDefinition()
 				.MakeGenericType(typeof(T));
 
-			return (ISet)Activator.CreateInstance(constructedType, framesCapacity, dataCapacity);
+			return (ISet)Activator.CreateInstance(constructedType, dataCapacity, framesCapacity);
 		}
 	}
 }

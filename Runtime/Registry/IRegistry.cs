@@ -22,6 +22,6 @@ namespace Massive
 
 		[Pure] ISet Tags<T>() where T : struct;
 
-		[Pure] ISet AnySet<T>() where T : struct;
+		[Pure] ISet Any<T>() where T : struct;
 	}
 }

@@ -110,7 +110,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet AnySet<T>() where T : struct
+		public ISet Any<T>() where T : struct
 		{
 			if (ComponentMeta<T>.HasAnyFields)
 			{
