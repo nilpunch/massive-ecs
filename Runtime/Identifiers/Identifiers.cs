@@ -38,12 +38,13 @@ namespace Massive
 			}
 
 			int maxId = MaxId;
-			if (MaxId >= Ids.Length + Available)
+			if (maxId >= Ids.Length + Available)
 			{
 				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Ids.Length}.");
 			}
 
 			MaxId += 1;
+
 			Ids[maxId] = maxId;
 			return maxId;
 		}

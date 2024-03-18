@@ -27,20 +27,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EnsureInfo Ensure(int id)
 		{
-			if (id >= Sparse.Length)
-			{
-				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Sparse.Length}.");
-			}
-
-			int count = AliveCount;
-			int dense = Sparse[id];
-
-			// Check if element is alive then do nothing
-			if (dense < AliveCount && Dense[dense] == id)
+			// If element is alive then do nothing
+			if (TryGetDense(id, out var dense))
 			{
 				return new EnsureInfo() { Id = id, Dense = dense };
 			}
 
+			int count = AliveCount;
 			AliveCount += 1;
 
 			AssignIndex(id, count);
@@ -51,23 +44,22 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DeleteInfo? Delete(int id)
 		{
-			int aliveCount = AliveCount;
-
 			// If element is not alive, nothing to be done
 			if (!TryGetDense(id, out var dense))
 			{
 				return default;
 			}
 
+			int count = AliveCount;
 			AliveCount -= 1;
 
 			// If dense is the last used element, decreasing alive count is enough
-			if (dense == aliveCount - 1)
+			if (dense == count - 1)
 			{
 				return default;
 			}
 
-			int lastElement = aliveCount - 1;
+			int lastElement = count - 1;
 			SwapDense(dense, lastElement);
 
 			return new DeleteInfo() { DenseTarget = dense, DenseSource = lastElement };
@@ -76,10 +68,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DeleteInfo? DeleteDense(int dense)
 		{
-			int aliveCount = AliveCount;
+			int count = AliveCount;
 
-			// Element is not alive, nothing to be done
-			if (dense >= aliveCount)
+			// If element is not alive, nothing to be done
+			if (dense >= count)
 			{
 				return default;
 			}
@@ -87,12 +79,12 @@ namespace Massive
 			AliveCount -= 1;
 
 			// If dense is the last used element, decreasing alive count is enough
-			if (dense == aliveCount - 1)
+			if (dense == count - 1)
 			{
 				return default;
 			}
 
-			int lastElement = aliveCount - 1;
+			int lastElement = count - 1;
 			SwapDense(dense, lastElement);
 
 			return new DeleteInfo() { DenseTarget = dense, DenseSource = lastElement };
