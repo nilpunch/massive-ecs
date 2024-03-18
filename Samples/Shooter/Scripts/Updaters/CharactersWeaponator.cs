@@ -20,22 +20,24 @@ namespace Massive.Samples.Shooter
 
 		public override void UpdateWorld(float deltaTime)
 		{
-			_characters.ForEachExtra(deltaTime, (int entity, ref CharacterState characterState, ref WeaponState weaponState, float innerDeltaTime) =>
+			_characters.ForEachExtra((_registry, deltaTime, _cooldown, _bulletVelocity, _bulletDamage, _bulletLifetime),
+				(int entity, ref CharacterState characterState, ref WeaponState weaponState,
+					(IRegistry Registry, float DeltaTime, float DefaultCooldown, float BulletVelocity, float BulletDamage, float BulletLifetime) inner) =>
 			{
-				weaponState.Cooldown -= innerDeltaTime;
+				weaponState.Cooldown -= inner.DeltaTime;
 				if (weaponState.Cooldown > 0)
 				{
 					return;
 				}
 
-				weaponState.Cooldown = _cooldown;
+				weaponState.Cooldown = inner.DefaultCooldown;
 
-				_registry.Create(new BulletState
+				inner.Registry.Create(new BulletState
 				{
 					Transform = characterState.Transform,
-					Velocity = characterState.Transform.Rotation * Vector3.up * _bulletVelocity,
-					Lifetime = _bulletLifetime,
-					Damage = _bulletDamage
+					Velocity = characterState.Transform.Rotation * Vector3.up * inner.BulletVelocity,
+					Lifetime = inner.BulletLifetime,
+					Damage = inner.BulletDamage
 				});
 			});
 		}

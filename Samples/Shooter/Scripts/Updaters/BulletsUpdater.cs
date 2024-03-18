@@ -13,16 +13,16 @@
 		
 		public override void UpdateWorld(float deltaTime)
 		{
-			_bullets.ForEachExtra(deltaTime, (int entity, ref BulletState state, float innerDeltaTime) =>
+			_bullets.ForEachExtra((_registry, deltaTime), (int entity, ref BulletState state, (IRegistry Registry, float DeltaTime) inner) =>
 			{
-				state.Lifetime -= innerDeltaTime;
+				state.Lifetime -= inner.DeltaTime;
 				if (state.IsDestroyed)
 				{
-					_registry.Destroy(entity);
+					inner.Registry.Destroy(entity);
 					return;
 				}
 
-				state.Transform.Position += state.Velocity * innerDeltaTime;
+				state.Transform.Position += state.Velocity * inner.DeltaTime;
 			});
 		}
 	}
