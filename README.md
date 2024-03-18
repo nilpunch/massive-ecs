@@ -17,7 +17,6 @@ Provided features:
 ## Code Examples
 
 ```cs
-using System;
 using Massive;
 
 struct Position
@@ -81,7 +80,7 @@ class Program
         }
 
         Update(registry, 1f / 60f);
-    }  
+    }
 }
 ```
 
