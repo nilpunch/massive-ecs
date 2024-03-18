@@ -1,20 +1,19 @@
 using System;
-using System.Diagnostics.Contracts;
 
 namespace Massive
 {
 	public interface IReadOnlySet
 	{
-		[Pure] int Capacity { get; }
+		int Capacity { get; }
 
-		[Pure] int AliveCount { get; }
+		int AliveCount { get; }
 
-		[Pure] ReadOnlySpan<int> AliveIds { get; }
+		ReadOnlySpan<int> AliveIds { get; }
 
-		[Pure] int GetDense(int id);
+		int GetDense(int id);
 
-		[Pure] bool TryGetDense(int id, out int dense);
+		bool TryGetDense(int id, out int dense);
 
-		[Pure] bool IsAlive(int id);
+		bool IsAlive(int id);
 	}
 }
