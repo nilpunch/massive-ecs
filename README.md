@@ -37,18 +37,18 @@ class Program
     {
         var view = new View<Position, Velocity>(registry);
 
-        // Iterate using view with a callback
+        // Iterate using view
         view.ForEach((int entity, ref Position position, ref Velocity velocity) =>
         {
             position.Y += velocity.Magnitude * deltaTime;
-
-            if (position.Y > 5f) // You can create and destroy entities during iteration
+            if (position.Y > 5f)
             {
+                // Create and destroy entities during iteration
                 registry.Destroy(entity);
             }
         });
 
-        // Also you can write closure with no boxing and GC allocations
+        // Version without boxing and GC allocations
         view.ForEachExtra((registry, deltaTime),
             (int entity, ref Position position, ref Velocity velocity,
                 (IRegistry Registry, float DeltaTime) passedArguments) =>
@@ -56,7 +56,7 @@ class Program
             // ...
         });
 
-        // Or iterate manually over packed data, using Span<T>
+        // Iterate manually over packed data, using Span<T>
         var velocities = registry.Components<Velocity>.AliveData;
         for (int i = 0; i < velocities.Length; ++i)
         {
@@ -109,6 +109,8 @@ Each type has a *Massive* counterpart with added rollback functionality:
 ### How it works
 
 Each *Massive* data structure contains linear cyclic buffer. This allows for very fast saving and rollbacking, copying the entire data arrays at once. `MassiveRegistry` simply uses these *Massive* data structures internally, so we get the simplest possible ECS with rollbacks.
+
+## Test Samples
 
 ### Shooter
 
