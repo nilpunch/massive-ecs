@@ -11,8 +11,78 @@ Provided features:
 - Fast and simple ECS without code generation and type announcements
 - Ultra-fast saving and rollbacking
 - Zero GC allocations during runtime
-- Support for managed data like arrays
+- Support for components with managed data, like arrays
 - IL2CPP friendly, tested on PC | Android | WebGL
+
+## Code Examples
+
+```cs
+using System;
+using Massive;
+
+struct Position
+{
+    public float X;
+    public float Y;
+}
+
+struct Velocity
+{
+    public float Magnitude;
+}
+
+class Program
+{
+    static void Update(Registry registry, float deltaTime)
+    {
+        var view = new View<Position, Velocity>(registry);
+
+        // Iterate using view with a callback
+        view.ForEach((int entity, ref Position position, ref Velocity velocity) =>
+        {
+            position.Y += velocity.Magnitude * deltaTime;
+
+            if (position.Y > 5f) // You can create and destroy entities during iteration
+            {
+                registry.Destroy(entity);
+            }
+        });
+
+        // Also you can write closure with no boxing and GC allocations
+        view.ForEachExtra((registry, deltaTime),
+            (int entity, ref Position position, ref Velocity velocity,
+                (IRegistry Registry, float DeltaTime) passedArguments) =>
+        {
+            // ...
+        });
+
+        // Or iterate manually over packed data, using Span<T>
+        var velocities = registry.Components<Velocity>.AliveData;
+        for (int i = 0; i < velocities.Length; ++i)
+        {
+            ref var velocity = ref velocities[i];
+            // ...
+        }
+    }
+
+    static void Main()
+    {
+        var registry = new Registry();
+
+        for (int i = 0; i < 10; ++i)
+        {
+            var entity = registry.Create();
+            registry.Add<Position>(entity, new Position() { X = i * 10f });
+            if (i % 2 == 0)
+            {
+                registry.Add<Velocity>(entity, new Vecloty() { Magnitude = i * 10f });
+            }
+        }
+
+        Update(registry, 1f / 60f);
+    }  
+}
+```
 
 ## Installation
 
@@ -22,9 +92,9 @@ Click the "+" sign on top left corner -> "Add package from git URL..."
 Paste this: `https://github.com/nilpunch/massive.git`  
 See minimum required Unity version in the `package.json` file.
 
-## How to use
+## Types Overview
 
-Main types overview. You can use just them if you don't need rollback functionality:
+You can use just them if you don't need rollback functionality:
 
 - `SparseSet` - data structure similar to `HashSet<int>`
 - `DataSet<T>` - data wrapper for `SparseSet`, similar to `Dictionary<int, T>`
@@ -36,7 +106,7 @@ Each type has a *Massive* counterpart with added rollback functionality:
 - `MassiveDataSet<T>` - counterpart to `DataSet<T>`
 - `MassiveRegistry` - counterpart to `Registry`
 
-## How it works
+### How it works
 
 Each *Massive* data structure contains linear cyclic buffer. This allows for very fast saving and rollbacking, copying the entire data arrays at once. `MassiveRegistry` simply uses these *Massive* data structures internally, so we get the simplest possible ECS with rollbacks.
 
