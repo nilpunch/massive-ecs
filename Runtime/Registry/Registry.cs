@@ -7,19 +7,21 @@ namespace Massive
 	public class Registry : IRegistry
 	{
 		private ISetFactory SetFactory { get; }
+		private bool StoreTagsAsComponents { get; }
 		private Dictionary<Type, ISet> SetsLookup { get; }
 
 		protected List<ISet> AllSets { get; }
 		public Identifiers Entities { get; }
 
-		public Registry(int dataCapacity = Constants.DataCapacity)
-			: this(new NormalSetFactory(dataCapacity))
+		public Registry(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
+			: this(new NormalSetFactory(dataCapacity), storeTagsAsComponents)
 		{
 		}
 
-		protected Registry(ISetFactory setFactory)
+		protected Registry(ISetFactory setFactory, bool storeTagsAsComponents = false)
 		{
 			SetFactory = setFactory;
+			StoreTagsAsComponents = storeTagsAsComponents;
 			SetsLookup = new Dictionary<Type, ISet>();
 			AllSets = new List<ISet>();
 
@@ -46,7 +48,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add<T>(int entityId, T data = default) where T : struct
 		{
-			if (ComponentMeta<T>.HasAnyFields)
+			if (IsComponent<T>())
 			{
 				GetOrCreateComponents<T>().Ensure(entityId, data);
 			}
@@ -59,18 +61,18 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove<T>(int entityId) where T : struct
 		{
-			if (SetsLookup.TryGetValue(typeof(T), out var anySet))
+			if (SetsLookup.TryGetValue(typeof(T), out var set))
 			{
-				anySet.Delete(entityId);
+				set.Delete(entityId);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has<T>(int entityId) where T : struct
 		{
-			if (SetsLookup.TryGetValue(typeof(T), out var component))
+			if (SetsLookup.TryGetValue(typeof(T), out var set))
 			{
-				return component.IsAlive(entityId);
+				return set.IsAlive(entityId);
 			}
 
 			return false;
@@ -79,9 +81,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get<T>(int entityId) where T : struct
 		{
-			if (!ComponentMeta<T>.HasAnyFields)
+			if (!IsComponent<T>())
 			{
-				throw new Exception("Type has no fields!");
+				throw new Exception("Type has no associated data!");
 			}
 
 			return ref GetOrCreateComponents<T>().Get(entityId);
@@ -90,29 +92,18 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IDataSet<T> Components<T>() where T : struct
 		{
-			if (!ComponentMeta<T>.HasAnyFields)
+			if (!IsComponent<T>())
 			{
-				throw new Exception($"Type has no fields! Use {nameof(Tags)}<T>() instead.");
+				throw new Exception($"Type has no associated data! Use {nameof(Any)}<T>() instead.");
 			}
 
 			return GetOrCreateComponents<T>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet Tags<T>() where T : struct
-		{
-			if (ComponentMeta<T>.HasAnyFields)
-			{
-				throw new Exception($"Type has fields! Use {nameof(Components)}<T>() instead.");
-			}
-
-			return GetOrCreateTags<T>();
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ISet Any<T>() where T : struct
 		{
-			if (ComponentMeta<T>.HasAnyFields)
+			if (IsComponent<T>())
 			{
 				return GetOrCreateComponents<T>();
 			}
@@ -120,6 +111,12 @@ namespace Massive
 			{
 				return GetOrCreateTags<T>();
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private bool IsComponent<T>() where T : struct
+		{
+			return Type<T>.HasAnyFields || StoreTagsAsComponents;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

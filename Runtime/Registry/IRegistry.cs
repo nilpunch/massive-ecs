@@ -20,8 +20,6 @@ namespace Massive
 
 		[Pure] IDataSet<T> Components<T>() where T : struct;
 
-		[Pure] ISet Tags<T>() where T : struct;
-
 		[Pure] ISet Any<T>() where T : struct;
 	}
 }
