@@ -41,6 +41,7 @@ class Program
         view.ForEach((int entity, ref Position position, ref Velocity velocity) =>
         {
             position.Y += velocity.Magnitude * deltaTime;
+
             if (position.Y > 5f)
             {
                 // Create and destroy entities during iteration
@@ -57,7 +58,7 @@ class Program
         });
 
         // Iterate manually over packed data, using Span<T>
-        var velocities = registry.Components<Velocity>.AliveData;
+        var velocities = registry.Components<Velocity>().AliveData;
         for (int i = 0; i < velocities.Length; ++i)
         {
             ref var velocity = ref velocities[i];
@@ -75,7 +76,7 @@ class Program
             registry.Add<Position>(entity, new Position() { X = i * 10f });
             if (i % 2 == 0)
             {
-                registry.Add<Velocity>(entity, new Vecloty() { Magnitude = i * 10f });
+                registry.Add<Velocity>(entity, new Velocity() { Magnitude = i * 10f });
             }
         }
 
