@@ -9,80 +9,28 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveSparseSet : SparseSet, IMassive
 	{
-		private readonly int[] _denseByFrames;
-		private readonly int[] _sparseByFrames;
-		private readonly int[] _aliveCountByFrames;
-
-		private readonly int _framesCapacity;
-		private int _currentFrame;
-		private int _savedFrames;
+		private readonly SparseSetFrames _sparseSetFrames;
 
 		public MassiveSparseSet(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(dataCapacity)
 		{
-			_framesCapacity = framesCapacity;
-
-			_denseByFrames = new int[framesCapacity * Dense.Length];
-			_sparseByFrames = new int[framesCapacity * Sparse.Length];
-			_aliveCountByFrames = new int[framesCapacity];
+			_sparseSetFrames = new SparseSetFrames(this, framesCapacity);
 		}
 
-		public int CurrentFrame => _currentFrame;
+		public int CurrentFrame => _sparseSetFrames.CurrentFrame;
 
-		public int CanRollbackFrames => _savedFrames - 1;
+		public int CanRollbackFrames => _sparseSetFrames.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			int currentAliveCount = AliveCount;
-			int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
-
-			// Copy everything from current state to next frame
-			Array.Copy(Dense, 0, _denseByFrames, nextFrame * Dense.Length, currentAliveCount);
-			Array.Copy(Sparse, 0, _sparseByFrames, nextFrame * Sparse.Length, Sparse.Length);
-			_aliveCountByFrames[nextFrame] = currentAliveCount;
-
-			_currentFrame = nextFrame;
-			_savedFrames = Math.Min(_savedFrames + 1, _framesCapacity);
+			_sparseSetFrames.SaveFrame();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			if (frames > CanRollbackFrames)
-			{
-				throw new ArgumentOutOfRangeException(nameof(frames), frames, $"Can't rollback this far. CanRollbackFrames: {CanRollbackFrames}.");
-			}
-
-			_savedFrames -= frames;
-			_currentFrame = LoopNegative(_currentFrame - frames, _framesCapacity);
-
-			// Copy everything from rollback frame to current state
-			int rollbackAliveCount = _aliveCountByFrames[_currentFrame];
-			int rollbackFrame = _currentFrame;
-
-			Array.Copy(_denseByFrames, rollbackFrame * Dense.Length, Dense, 0, rollbackAliveCount);
-			Array.Copy(_sparseByFrames, rollbackFrame * Sparse.Length, Sparse, 0, Sparse.Length);
-			AliveCount = rollbackAliveCount;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static int Loop(int a, int b)
-		{
-			return a % b;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static int LoopNegative(int a, int b)
-		{
-			int result = a % b;
-
-			if (result < 0)
-			{
-				return result + b;
-			}
-
-			return result;
+			_sparseSetFrames.Rollback(frames);
 		}
 	}
 }

@@ -11,14 +11,13 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveManagedDataSet<T> : ManagedDataSet<T>, IMassive where T : struct, IManaged<T>
 	{
-		private readonly MassiveSparseSet _massiveSparseSet;
+		private readonly SparseSetFrames _sparseSetFrames;
 		private readonly T[] _dataByFrames;
 
 		public MassiveManagedDataSet(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
-			: base(new MassiveSparseSet(dataCapacity, framesCapacity))
+			: base(dataCapacity)
 		{
-			// Fetch instance from base
-			_massiveSparseSet = (MassiveSparseSet)SparseSet;
+			_sparseSetFrames = new SparseSetFrames(this, framesCapacity);
 
 			_dataByFrames = new T[framesCapacity * Data.Length];
 
@@ -28,15 +27,15 @@ namespace Massive
 			}
 		}
 
-		public int CanRollbackFrames => _massiveSparseSet.CanRollbackFrames;
+		public int CanRollbackFrames => _sparseSetFrames.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			_massiveSparseSet.SaveFrame();
+			_sparseSetFrames.SaveFrame();
 
 			// We can sync saving with MassiveSparseSet saving, using its CurrentFrame
-			int destinationIndex = _massiveSparseSet.CurrentFrame * Data.Length;
+			int destinationIndex = _sparseSetFrames.CurrentFrame * Data.Length;
 			for (int i = 0; i < AliveCount; i++)
 			{
 				Data[i].CopyTo(ref _dataByFrames[destinationIndex + i]);
@@ -46,10 +45,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			_massiveSparseSet.Rollback(frames);
+			_sparseSetFrames.Rollback(frames);
 
 			// Similarly to saving, we can sync rollback with MassiveSparseSet rollback
-			int destinationIndex = _massiveSparseSet.CurrentFrame * Data.Length;
+			int destinationIndex = _sparseSetFrames.CurrentFrame * Data.Length;
 			for (int i = 0; i < AliveCount; i++)
 			{
 				_dataByFrames[destinationIndex + i].CopyTo(ref Data[i]);

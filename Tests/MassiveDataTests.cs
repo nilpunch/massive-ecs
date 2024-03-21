@@ -15,15 +15,15 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
 
-			var id1 = massiveData.Ensure(0, new TestState { Value = 1 }).Id;
-			var id2 = massiveData.Ensure(1, new TestState { Value = 2 }).Id;
-			var id3 = massiveData.Ensure(2, new TestState { Value = 3 }).Id;
+			massiveData.Ensure(0, new TestState { Value = 1 });
+			massiveData.Ensure(1, new TestState { Value = 2 });
+			massiveData.Ensure(2, new TestState { Value = 3 });
 
-			massiveData.Delete(id2);
+			massiveData.Delete(1);
 
-			Assert.IsTrue(massiveData.IsAlive(id1));
-			Assert.IsFalse(massiveData.IsAlive(id2));
-			Assert.IsTrue(massiveData.IsAlive(id3));
+			Assert.IsTrue(massiveData.IsAlive(0));
+			Assert.IsFalse(massiveData.IsAlive(1));
+			Assert.IsTrue(massiveData.IsAlive(2));
 		}
 
 		[Test]
@@ -35,13 +35,13 @@ namespace Massive.Tests
 			Assert.IsFalse(massiveData.IsAlive(1));
 			Assert.IsFalse(massiveData.IsAlive(2));
 
-			var id1 = massiveData.Ensure(0, new TestState { Value = 1 }).Id;
-			var id2 = massiveData.Ensure(1, new TestState { Value = 2 }).Id;
-			var id3 = massiveData.Ensure(2, new TestState { Value = 3 }).Id;
+			massiveData.Ensure(0, new TestState { Value = 1 });
+			massiveData.Ensure(1, new TestState { Value = 2 });
+			massiveData.Ensure(2, new TestState { Value = 3 });
 
-			Assert.IsTrue(massiveData.IsAlive(id1));
-			Assert.IsTrue(massiveData.IsAlive(id2));
-			Assert.IsTrue(massiveData.IsAlive(id3));
+			Assert.IsTrue(massiveData.IsAlive(0));
+			Assert.IsTrue(massiveData.IsAlive(1));
+			Assert.IsTrue(massiveData.IsAlive(2));
 		}
 
 		[Test]
@@ -49,13 +49,13 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
 
-			var id1 = massiveData.Ensure(0, new TestState { Value = 1 }).Id;
-			var id2 = massiveData.Ensure(1, new TestState { Value = 2 }).Id;
-			var id3 = massiveData.Ensure(2, new TestState { Value = 3 }).Id;
+			massiveData.Ensure(0, new TestState { Value = 1 });
+			massiveData.Ensure(1, new TestState { Value = 2 });
+			massiveData.Ensure(2, new TestState { Value = 3 });
 
-			Assert.AreEqual(massiveData.Get(id1).Value, 1);
-			Assert.AreEqual(massiveData.Get(id2).Value, 2);
-			Assert.AreEqual(massiveData.Get(id3).Value, 3);
+			Assert.AreEqual(massiveData.Get(0).Value, 1);
+			Assert.AreEqual(massiveData.Get(1).Value, 2);
+			Assert.AreEqual(massiveData.Get(2).Value, 3);
 		}
 
 		[Test]
@@ -63,11 +63,11 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 2, framesCapacity: 2);
 
-			var id1 = massiveData.Ensure(0, new TestState { Value = 1 }).Id;
+			massiveData.Ensure(0, new TestState { Value = 1 });
 
-			massiveData.Get(id1).Value = 2;
+			massiveData.Get(0).Value = 2;
 
-			Assert.AreEqual(massiveData.Get(id1).Value, 2);
+			Assert.AreEqual(massiveData.Get(0).Value, 2);
 		}
 
 		[Test]
@@ -75,15 +75,15 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
 
-			var id1 = massiveData.Ensure(0, new TestState { Value = 1 }).Id;
-			var id2 = massiveData.Ensure(1, new TestState { Value = 2 }).Id;
-			var id3 = massiveData.Ensure(2, new TestState { Value = 3 }).Id;
+			massiveData.Ensure(0, new TestState { Value = 1 });
+			massiveData.Ensure(1, new TestState { Value = 2 });
+			massiveData.Ensure(2, new TestState { Value = 3 });
 
 			massiveData.SaveFrame();
 
-			Assert.AreEqual(massiveData.Get(id1).Value, 1);
-			Assert.AreEqual(massiveData.Get(id2).Value, 2);
-			Assert.AreEqual(massiveData.Get(id3).Value, 3);
+			Assert.AreEqual(massiveData.Get(0).Value, 1);
+			Assert.AreEqual(massiveData.Get(1).Value, 2);
+			Assert.AreEqual(massiveData.Get(2).Value, 3);
 		}
 
 		[Test]
@@ -91,13 +91,13 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 2, framesCapacity: 2);
 
-			var id1 = massiveData.Ensure(0, new TestState { Value = 1 }).Id;
+			massiveData.Ensure(0, new TestState { Value = 1 });
 			massiveData.SaveFrame();
 
-			massiveData.Get(id1).Value = 2;
+			massiveData.Get(0).Value = 2;
 			massiveData.Rollback(0);
 
-			Assert.AreEqual(massiveData.Get(id1).Value, 1);
+			Assert.AreEqual(massiveData.Get(0).Value, 1);
 		}
 
 		[Test]
@@ -107,22 +107,22 @@ namespace Massive.Tests
 
 			massiveData.SaveFrame();
 
-			var id1 = massiveData.Ensure(0, new TestState { Value = 1 }).Id;
-			var id2 = massiveData.Ensure(1, new TestState { Value = 2 }).Id;
-			massiveData.Delete(id2);
+			massiveData.Ensure(0, new TestState { Value = 1 });
+			massiveData.Ensure(1, new TestState { Value = 2 });
+			massiveData.Delete(1);
 
-			Assert.IsTrue(massiveData.IsAlive(id1));
-			Assert.IsFalse(massiveData.IsAlive(id2));
+			Assert.IsTrue(massiveData.IsAlive(0));
+			Assert.IsFalse(massiveData.IsAlive(1));
 
 			massiveData.SaveFrame();
 
-			Assert.IsTrue(massiveData.IsAlive(id1));
-			Assert.IsFalse(massiveData.IsAlive(id2));
+			Assert.IsTrue(massiveData.IsAlive(0));
+			Assert.IsFalse(massiveData.IsAlive(1));
 
 			massiveData.Rollback(1);
 
-			Assert.IsFalse(massiveData.IsAlive(id1));
-			Assert.IsFalse(massiveData.IsAlive(id2));
+			Assert.IsFalse(massiveData.IsAlive(0));
+			Assert.IsFalse(massiveData.IsAlive(1));
 		}
 	}
 }

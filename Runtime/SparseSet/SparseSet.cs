@@ -15,22 +15,19 @@ namespace Massive
 
 		public SparseSet(int dataCapacity = Constants.DataCapacity)
 		{
-			Capacity = dataCapacity;
 			Dense = new int[dataCapacity];
 			Sparse = new int[dataCapacity];
 		}
 
-		public int Capacity { get; }
-
 		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public EnsureInfo Ensure(int id)
+		public int Ensure(int id)
 		{
 			// If element is alive then do nothing
 			if (TryGetDense(id, out var dense))
 			{
-				return new EnsureInfo() { Id = id, Dense = dense };
+				return dense;
 			}
 
 			int count = AliveCount;
@@ -38,16 +35,16 @@ namespace Massive
 
 			AssignIndex(id, count);
 
-			return new EnsureInfo() { Id = id, Dense = count };
+			return count;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public DeleteInfo? Delete(int id)
+		public void Delete(int id)
 		{
 			// If element is not alive, nothing to be done
 			if (!TryGetDense(id, out var dense))
 			{
-				return default;
+				return;
 			}
 
 			int count = AliveCount;
@@ -56,24 +53,22 @@ namespace Massive
 			// If dense is the last used element, decreasing alive count is enough
 			if (dense == count - 1)
 			{
-				return default;
+				return;
 			}
 
 			int lastElement = count - 1;
-			SwapDense(dense, lastElement);
-
-			return new DeleteInfo() { DenseTarget = dense, DenseSource = lastElement };
+			CopyDense(lastElement, dense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public DeleteInfo? DeleteDense(int dense)
+		public void DeleteDense(int dense)
 		{
 			int count = AliveCount;
 
 			// If element is not alive, nothing to be done
 			if (dense >= count)
 			{
-				return default;
+				return;
 			}
 
 			AliveCount -= 1;
@@ -81,19 +76,11 @@ namespace Massive
 			// If dense is the last used element, decreasing alive count is enough
 			if (dense == count - 1)
 			{
-				return default;
+				return;
 			}
 
 			int lastElement = count - 1;
-			SwapDense(dense, lastElement);
-
-			return new DeleteInfo() { DenseTarget = dense, DenseSource = lastElement };
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetDense(int id)
-		{
-			return Sparse[id];
+			CopyDense(lastElement, dense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -124,12 +111,20 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SwapDense(int denseA, int denseB)
+		public virtual void SwapDense(int denseA, int denseB)
 		{
 			int idA = Dense[denseA];
 			int idB = Dense[denseB];
 			AssignIndex(idA, denseB);
 			AssignIndex(idB, denseA);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected virtual void CopyDense(int source, int destination)
+		{
+			int sourceId = Dense[source];
+			Dense[destination] = sourceId;
+			Sparse[sourceId] = destination;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
