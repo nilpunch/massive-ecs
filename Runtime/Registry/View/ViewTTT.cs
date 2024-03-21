@@ -5,7 +5,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public readonly struct View<T1, T2, T3>
 		where T1 : struct
 		where T2 : struct

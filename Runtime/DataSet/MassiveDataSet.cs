@@ -9,7 +9,6 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveDataSet<T> : DataSet<T>, IMassive where T : struct
 	{
 		private readonly SparseSetFrames _sparseSetFrames;

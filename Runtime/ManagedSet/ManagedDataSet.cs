@@ -9,7 +9,6 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class ManagedDataSet<T> : SparseSet, IDataSet<T> where T : struct, IManaged<T>
 	{
 		private T _swapBuffer;
