@@ -8,8 +8,8 @@ This is **a library**, not a framework. Thus, it doesn't try to take control of 
 
 Provided features:
 
-- Fast and simple ECS without code generation and type announcements
-- Ultra-fast saving and rollbacking
+- Fast and simple ECS without any code generation or types announcement
+- Ultra-fast saving and rollbacking with cyclic buffer
 - Zero GC allocations during runtime
 - Support for components with managed data, like arrays
 - IL2CPP friendly, tested on PC | Android | WebGL
@@ -114,7 +114,7 @@ Each type has a *Massive* counterpart with added rollback functionality:
 
 ### How it works
 
-Each *Massive* data structure contains linear cyclic buffer. This allows for very fast saving and rollbacking, copying the entire data arrays at once. `MassiveRegistry` simply uses these *Massive* data structures internally, so we get the simplest possible ECS with rollbacks.
+Each *Massive* data structure contains cyclic buffer in linear memory. This allows for very fast saving and rollbacking, copying the entire data arrays at once. `MassiveRegistry` simply uses these *Massive* data structures internally, so we get the simplest possible ECS with rollbacks.
 
 ## Test Samples
 
