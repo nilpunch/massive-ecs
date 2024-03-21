@@ -4,7 +4,7 @@ Made for competitive and fast paced online multiplayer games with prediction-rol
 
 ## Overview
 
-This is **a library**, not a framework. Thus, it doesn't try to take control of the user codebase or the main game loop.
+This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.
 
 Provided features:
 
