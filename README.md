@@ -32,7 +32,7 @@ struct Velocity
 
 class Program
 {
-    static void Update(Registry registry, float deltaTime)
+    static void Update(IRegistry registry, float deltaTime)
     {
         var view = new View<Position, Velocity>(registry);
 
@@ -67,7 +67,7 @@ class Program
 
     static void Main()
     {
-        var registry = new Registry();
+        var registry = new MassiveRegistry();
 
         for (int i = 0; i < 10; ++i)
         {
@@ -79,7 +79,13 @@ class Program
             }
         }
 
+        // Saves everything in one call
+        registry.SaveFrame();
+
         Update(registry, 1f / 60f);
+
+        // Restores everything up to the last SaveFrame() call
+        registry.Rollback(0);
     }
 }
 ```
