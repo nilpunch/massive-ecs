@@ -23,7 +23,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Ensure(int id)
 		{
-			// If element is alive then do nothing
+			if (id < 0 || id >= Sparse.Length)
+			{
+				throw new ArgumentOutOfRangeException(nameof(id), id, $"Id must be in range [0, {Sparse.Length}).");
+			}
+
+			// If element is alive, nothing to be done
 			if (TryGetDense(id, out var dense))
 			{
 				return dense;
@@ -65,7 +70,7 @@ namespace Massive
 			int count = AliveCount;
 
 			// If element is not alive, nothing to be done
-			if (dense >= count)
+			if (dense < 0 || dense >= count)
 			{
 				return;
 			}
@@ -85,7 +90,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryGetDense(int id, out int dense)
 		{
-			if (id >= Sparse.Length)
+			if (id < 0 || id >= Sparse.Length)
 			{
 				dense = default;
 				return false;
@@ -99,7 +104,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			if (id >= Sparse.Length)
+			if (id < 0 || id >= Sparse.Length)
 			{
 				return false;
 			}

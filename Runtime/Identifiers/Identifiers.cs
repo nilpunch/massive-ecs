@@ -27,6 +27,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create()
 		{
+			int maxId = MaxId;
+			if (maxId >= Ids.Length + Available)
+			{
+				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Ids.Length}.");
+			}
+
 			if (Available > 0)
 			{
 				var nextId = Next;
@@ -35,14 +41,7 @@ namespace Massive
 				return nextId;
 			}
 
-			int maxId = MaxId;
-			if (maxId >= Ids.Length + Available)
-			{
-				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Ids.Length}.");
-			}
-
 			MaxId += 1;
-
 			Ids[maxId] = maxId;
 			return maxId;
 		}
@@ -50,6 +49,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Delete(int id)
 		{
+			// If element is not alive, nothing to be done
 			if (!IsAlive(id))
 			{
 				return;
@@ -91,7 +91,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			return id < MaxId && Ids[id] == id;
+			return id >= 0 && id < MaxId && Ids[id] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
