@@ -48,7 +48,7 @@ class Program
             }
         });
 
-        // Version without boxing and GC allocations
+        // Iterate version without boxing and GC allocations
         view.ForEachExtra((registry, deltaTime),
             (int entity, ref Position position, ref Velocity velocity,
                 (IRegistry Registry, float DeltaTime) passedArguments) =>
