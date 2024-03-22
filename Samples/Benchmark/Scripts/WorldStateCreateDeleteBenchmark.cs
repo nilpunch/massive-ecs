@@ -5,15 +5,16 @@ namespace Massive.Samples.Benchmark
 	public class WorldStateCreateDeleteBenchmark : MonoProfiler
 	{
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
-		
+
 		private MassiveRegistry _registry;
 
 		private void Start()
 		{
 			_registry = BenchmarkUtils.GetFullyPackedRegistry(_worldEntitiesCount, 121);
 
-			foreach (var id in _registry.Entities)
+			for (var i = _registry.Entities.AliveIds.Length - 1; i >= 0; i--)
 			{
+				var id = _registry.Entities.AliveIds[i];
 				_registry.Destroy(id);
 			}
 		}

@@ -8,10 +8,10 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class MassiveIdentifiers : Identifiers, IMassive
 	{
-		private readonly int[] _idsByFrames;
+		private readonly int[] _denseByFrames;
+		private readonly int[] _sparseByFrames;
 		private readonly int[] _maxIdByFrames;
-		private readonly int[] _availableByFrames;
-		private readonly int[] _nextByFrames;
+		private readonly int[] _aliveCountByFrames;
 
 		private readonly int _framesCapacity;
 		private int _currentFrame;
@@ -22,10 +22,10 @@ namespace Massive
 		{
 			_framesCapacity = framesCapacity;
 
-			_idsByFrames = new int[framesCapacity * Ids.Length];
+			_denseByFrames = new int[framesCapacity * Dense.Length];
+			_sparseByFrames = new int[framesCapacity * Sparse.Length];
 			_maxIdByFrames = new int[framesCapacity];
-			_availableByFrames = new int[framesCapacity];
-			_nextByFrames = new int[framesCapacity];
+			_aliveCountByFrames = new int[framesCapacity];
 		}
 
 		public int CanRollbackFrames => _savedFrames - 1;
@@ -33,16 +33,15 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
+			int currentAliveCount = AliveCount;
 			int currentMaxId = MaxId;
-			int currentAvailable = Available;
-			int currentNext = Next;
 			int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
 
 			// Copy everything from current state to next frame
-			Array.Copy(Ids, 0, _idsByFrames, nextFrame * Ids.Length, currentMaxId);
+			Array.Copy(Dense, 0, _denseByFrames, nextFrame * Dense.Length, currentMaxId);
+			Array.Copy(Sparse, 0, _sparseByFrames, nextFrame * Sparse.Length, currentMaxId);
+			_aliveCountByFrames[nextFrame] = currentAliveCount;
 			_maxIdByFrames[nextFrame] = currentMaxId;
-			_availableByFrames[nextFrame] = currentAvailable;
-			_nextByFrames[nextFrame] = currentNext;
 
 			_currentFrame = nextFrame;
 			_savedFrames = Math.Min(_savedFrames + 1, _framesCapacity);
@@ -60,15 +59,14 @@ namespace Massive
 			_currentFrame = LoopNegative(_currentFrame - frames, _framesCapacity);
 
 			// Copy everything from rollback frame to current state
+			int rollbackAliveCount = _aliveCountByFrames[_currentFrame];
 			int rollbackMaxId = _maxIdByFrames[_currentFrame];
-			int rollbackAvailable = _availableByFrames[_currentFrame];
-			int rollbackNext = _nextByFrames[_currentFrame];
 			int rollbackFrame = _currentFrame;
 
-			Array.Copy(_idsByFrames, rollbackFrame * Ids.Length, Ids, 0, rollbackMaxId);
+			Array.Copy(_denseByFrames, rollbackFrame * Dense.Length, Dense, 0, rollbackMaxId);
+			Array.Copy(_sparseByFrames, rollbackFrame * Sparse.Length, Sparse, 0, rollbackMaxId);
+			AliveCount = rollbackAliveCount;
 			MaxId = rollbackMaxId;
-			Available = rollbackAvailable;
-			Next = rollbackNext;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

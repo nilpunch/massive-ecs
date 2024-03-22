@@ -13,8 +13,10 @@ namespace Massive.Samples.Benchmark
 		private void Start()
 		{
 			_registry = BenchmarkUtils.GetSimplyPackedRegistry(_worldEntitiesCount, 1);
-			foreach (var id in _registry.Entities)
+			foreach (var id in _registry.Entities.AliveIds)
+			{
 				_registry.Add<TestState2>(id);
+			}
 
 			_testStates1 = _registry.Components<TestState>();
 			_testStates2 = _registry.Components<TestState2>();
