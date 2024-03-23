@@ -3,17 +3,18 @@ using Unity.PerformanceTesting;
 
 namespace Massive.PerformanceTests
 {
-	[TestFixture(1000)]
+	[TestFixture]
 	public class ViewPerformanceTest
 	{
+		private const int EntitiesCount = 1000;
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
 
 		private readonly IRegistry _registry;
 
-		public ViewPerformanceTest(int entitiesCount)
+		public ViewPerformanceTest()
 		{
-			_registry = new Registry(entitiesCount).FillRegistryWith50Components();
+			_registry = new Registry(EntitiesCount).FillRegistryWith50Components();
 		}
 
 		[Test, Performance]
