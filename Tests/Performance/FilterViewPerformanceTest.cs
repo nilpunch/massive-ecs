@@ -34,7 +34,7 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void FilterView_Performance()
+		public void FilterView_ForEach()
 		{
 			FilterView view = new FilterView(_registry);
 
@@ -45,7 +45,7 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void FilterView_WithFilter_Performance()
+		public void FilterView_WithFilter_ForEach()
 		{
 			FilterView view = new FilterView(_registry, _includeFilter, _excludeFilter);
 
@@ -56,7 +56,7 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void FilterViewT_Performance()
+		public void FilterViewT_ForEach()
 		{
 			FilterView<TestState64> view = new FilterView<TestState64>(_registry);
 
@@ -65,9 +65,9 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
-		
+
 		[Test, Performance]
-		public void FilterViewT_WithFilter_Performance()
+		public void FilterViewT_WithFilter_ForEach()
 		{
 			FilterView<TestState64> view = new FilterView<TestState64>(_registry, _includeFilter, _excludeFilter);
 
@@ -78,7 +78,7 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void FilterViewTT_Performance()
+		public void FilterViewTT_ForEach()
 		{
 			FilterView<TestState64, TestState64_2> view = new FilterView<TestState64, TestState64_2>(_registry);
 
@@ -89,7 +89,7 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void FilterViewTT_WithFilter_Performance()
+		public void FilterViewTT_WithFilter_ForEach()
 		{
 			FilterView<TestState64, TestState64_2> view = new FilterView<TestState64, TestState64_2>(_registry, _includeFilter, _excludeFilter);
 
@@ -98,9 +98,9 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
-		
+
 		[Test, Performance]
-		public void FilterViewTTT_Performance()
+		public void FilterViewTTT_ForEach()
 		{
 			FilterView<TestState64, TestState64_2, TestState64_3> view = new FilterView<TestState64, TestState64_2, TestState64_3>(_registry);
 
@@ -109,9 +109,9 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
-		
+
 		[Test, Performance]
-		public void FilterViewTTT_WithFilter_Performance()
+		public void FilterViewTTT_WithFilter_ForEach()
 		{
 			FilterView<TestState64, TestState64_2, TestState64_3> view = new FilterView<TestState64, TestState64_2, TestState64_3>(_registry, _includeFilter, _excludeFilter);
 

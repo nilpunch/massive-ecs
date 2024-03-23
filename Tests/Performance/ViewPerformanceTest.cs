@@ -18,9 +18,9 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void View_Performance()
+		public void View_ForEach()
 		{
-			View view = new View(_registry);
+			var view = new View(_registry);
 
 			Measure.Method(() => view.ForEach((_) => { }))
 				.MeasurementCount(MeasurementCount)
@@ -29,9 +29,9 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void ViewT_Performance()
+		public void ViewT_ForEach()
 		{
-			View<TestState64> view = new View<TestState64>(_registry);
+			var view = new View<TestState64>(_registry);
 
 			Measure.Method(() => view.ForEach((int _, ref TestState64 _) => { }))
 				.MeasurementCount(MeasurementCount)
@@ -40,9 +40,9 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void ViewTT_Performance()
+		public void ViewTT_ForEach()
 		{
-			View<TestState64, TestState64_2> view = new View<TestState64, TestState64_2>(_registry);
+			var view = new View<TestState64, TestState64_2>(_registry);
 
 			Measure.Method(() => view.ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
 				.MeasurementCount(MeasurementCount)
@@ -51,9 +51,9 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void ViewTTT_Performance()
+		public void ViewTTT_ForEach()
 		{
-			View<TestState64, TestState64_2, TestState64_3> view = new View<TestState64, TestState64_2, TestState64_3>(_registry);
+			var view = new View<TestState64, TestState64_2, TestState64_3>(_registry);
 
 			Measure.Method(() => view.ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
 				.MeasurementCount(MeasurementCount)
