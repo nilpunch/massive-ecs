@@ -14,9 +14,12 @@ namespace Massive
 
 		public FilterView(IRegistry registry, ISet[] include = null, ISet[] exclude = null)
 		{
+			include ??= Array.Empty<ISet>();
+			exclude ??= Array.Empty<ISet>();
+
 			_entities = registry.Entities;
-			_include = include ?? Array.Empty<ISet>();
-			_exclude = exclude ?? Array.Empty<ISet>();
+			_include = include;
+			_exclude = exclude;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -19,10 +19,13 @@ namespace Massive
 
 		public FilterView(IRegistry registry, ISet[] include = null, ISet[] exclude = null)
 		{
+			include ??= Array.Empty<ISet>();
+			exclude ??= Array.Empty<ISet>();
+
 			_components1 = registry.Components<T1>();
 			_components2 = registry.Components<T2>();
 			_components3 = registry.Components<T3>();
-			_exclude = exclude ?? Array.Empty<ISet>();
+			_exclude = exclude;
 			_componentsAndInclude = new ISet[include.Length + 3];
 			_componentsAndInclude[0] = _components1;
 			_componentsAndInclude[1] = _components2;

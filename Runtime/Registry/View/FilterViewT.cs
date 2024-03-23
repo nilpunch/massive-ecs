@@ -14,8 +14,11 @@ namespace Massive
 
 		public FilterView(IRegistry registry, ISet[] include = null, ISet[] exclude = null)
 		{
+			include ??= Array.Empty<ISet>();
+			exclude ??= Array.Empty<ISet>();
+
 			_components = registry.Components<T>();
-			_exclude = exclude ?? Array.Empty<ISet>();
+			_exclude = exclude;
 			_componentsAndInclude = new ISet[include.Length + 1];
 			_componentsAndInclude[0] = _components;
 			include.CopyTo(_componentsAndInclude, 1);
