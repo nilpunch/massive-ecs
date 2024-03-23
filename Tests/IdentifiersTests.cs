@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
@@ -22,6 +23,17 @@ namespace Massive.Tests
 			Assert.IsFalse(isAlive);
 		}
 
+		[TestCase(200)]
+		[TestCase(-1)]
+		public void IsAlive_WhenOutOfBounds_ShouldNotThrow(int id)
+		{
+			var identifiers = new Identifiers(Capacity);
+
+			Assert.DoesNotThrow(CheckAlive);
+
+			void CheckAlive() => identifiers.IsAlive(id);
+		}
+
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
@@ -34,6 +46,20 @@ namespace Massive.Tests
 			var isAlive = identifiers.IsAlive(id);
 
 			Assert.IsTrue(isAlive);
+		}
+
+		[TestCase(Capacity + 1)]
+		public void Create_WhenOutOfBounds_ShouldThrow(int id)
+		{
+			var identifiers = new Identifiers(Capacity);
+
+			Assert.Throws<InvalidOperationException>(CreateCheck);
+
+			void CreateCheck()
+			{
+				for (var i = 0; i <= id; i++)
+					identifiers.Create();
+			}
 		}
 
 		[TestCase(10)]
@@ -64,6 +90,17 @@ namespace Massive.Tests
 			Assert.IsFalse(isAlive);
 		}
 
+		[TestCase(200)]
+		[TestCase(-1)]
+		public void Delete_WhenOutOfBounds_ShouldNotThrow(int id)
+		{
+			var identifiers = new Identifiers(Capacity);
+
+			Assert.DoesNotThrow(CheckDelete);
+
+			void CheckDelete() => identifiers.Delete(id);
+		}
+
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
@@ -90,6 +127,19 @@ namespace Massive.Tests
 			var isAlive = identifiers.IsAlive(id);
 
 			Assert.IsTrue(isAlive);
+		}
+
+		[TestCase(Capacity + 1)]
+		public void CreateMany_WhenOutOfBounds_ShouldThrow(int id)
+		{
+			var identifiers = new Identifiers(Capacity);
+
+			Assert.Throws<InvalidOperationException>(CreateManyCheck);
+
+			void CreateManyCheck()
+			{
+				identifiers.CreateMany(id);
+			}
 		}
 
 		[TestCase(10)]

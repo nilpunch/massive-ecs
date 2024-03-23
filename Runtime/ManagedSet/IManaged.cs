@@ -4,8 +4,6 @@ namespace Massive
 	{
 		void Initialize();
 
-		void Reset();
-
 		void CopyTo(ref T destination);
 
 #if UNITY_2020_3_OR_NEWER

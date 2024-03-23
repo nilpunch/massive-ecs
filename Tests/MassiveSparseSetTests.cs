@@ -24,15 +24,15 @@ namespace Massive.Tests
 		{
 			var massive = new MassiveSparseSet(dataCapacity: 4, framesCapacity: 2);
 
-			var id1 = massive.Ensure(0).Id;
-			var id2 = massive.Ensure(1).Id;
-			var id3 = massive.Ensure(2).Id;
+			massive.Ensure(0);
+			massive.Ensure(1);
+			massive.Ensure(2);
 
-			massive.Delete(id2);
+			massive.Delete(1);
 
-			Assert.IsTrue(massive.IsAlive(id1));
-			Assert.IsFalse(massive.IsAlive(id2));
-			Assert.IsTrue(massive.IsAlive(id3));
+			Assert.IsTrue(massive.IsAlive(0));
+			Assert.IsFalse(massive.IsAlive(1));
+			Assert.IsTrue(massive.IsAlive(2));
 		}
 
 		[Test]
@@ -44,13 +44,13 @@ namespace Massive.Tests
 			Assert.IsFalse(massive.IsAlive(1));
 			Assert.IsFalse(massive.IsAlive(2));
 
-			var id1 = massive.Ensure(0).Id;
-			var id2 = massive.Ensure(1).Id;
-			var id3 = massive.Ensure(2).Id;
+			massive.Ensure(0);
+			massive.Ensure(1);
+			massive.Ensure(2);
 
-			Assert.IsTrue(massive.IsAlive(id1));
-			Assert.IsTrue(massive.IsAlive(id2));
-			Assert.IsTrue(massive.IsAlive(id3));
+			Assert.IsTrue(massive.IsAlive(0));
+			Assert.IsTrue(massive.IsAlive(1));
+			Assert.IsTrue(massive.IsAlive(2));
 		}
 
 		[Test]
@@ -58,15 +58,15 @@ namespace Massive.Tests
 		{
 			var massive = new MassiveSparseSet(dataCapacity: 4, framesCapacity: 2);
 
-			var id1 = massive.Ensure(0).Id;
-			var id2 = massive.Ensure(1).Id;
-			var id3 = massive.Ensure(2).Id;
+			massive.Ensure(0);
+			massive.Ensure(1);
+			massive.Ensure(2);
 
 			massive.SaveFrame();
 
-			Assert.IsTrue(massive.IsAlive(id1));
-			Assert.IsTrue(massive.IsAlive(id2));
-			Assert.IsTrue(massive.IsAlive(id3));
+			Assert.IsTrue(massive.IsAlive(0));
+			Assert.IsTrue(massive.IsAlive(1));
+			Assert.IsTrue(massive.IsAlive(2));
 		}
 
 		[Test]
@@ -74,19 +74,19 @@ namespace Massive.Tests
 		{
 			var massive = new MassiveSparseSet(dataCapacity: 2, framesCapacity: 2);
 
-			var id1 = massive.Ensure(0).Id;
+			massive.Ensure(0);
 
-			Assert.IsTrue(massive.IsAlive(id1));
+			Assert.IsTrue(massive.IsAlive(0));
 
 			massive.SaveFrame();
 
-			massive.Delete(id1);
+			massive.Delete(0);
 
-			Assert.IsFalse(massive.IsAlive(id1));
+			Assert.IsFalse(massive.IsAlive(0));
 
 			massive.Rollback(0);
 
-			Assert.IsTrue(massive.IsAlive(id1));
+			Assert.IsTrue(massive.IsAlive(0));
 		}
 
 		[Test]
@@ -96,22 +96,22 @@ namespace Massive.Tests
 
 			massive.SaveFrame();
 
-			var id1 = massive.Ensure(0).Id;
-			var id2 = massive.Ensure(1).Id;
-			massive.Delete(id2);
+			massive.Ensure(0);
+			massive.Ensure(1);
+			massive.Delete(1);
 
-			Assert.IsTrue(massive.IsAlive(id1));
-			Assert.IsFalse(massive.IsAlive(id2));
+			Assert.IsTrue(massive.IsAlive(0));
+			Assert.IsFalse(massive.IsAlive(1));
 
 			massive.SaveFrame();
 
-			Assert.IsTrue(massive.IsAlive(id1));
-			Assert.IsFalse(massive.IsAlive(id2));
+			Assert.IsTrue(massive.IsAlive(0));
+			Assert.IsFalse(massive.IsAlive(1));
 
 			massive.Rollback(1);
 
-			Assert.IsFalse(massive.IsAlive(id1));
-			Assert.IsFalse(massive.IsAlive(id2));
+			Assert.IsFalse(massive.IsAlive(0));
+			Assert.IsFalse(massive.IsAlive(1));
 		}
 	}
 }

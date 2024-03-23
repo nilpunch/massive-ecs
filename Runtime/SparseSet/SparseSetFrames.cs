@@ -6,42 +6,42 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class MassiveIdentifiers : Identifiers, IMassive
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
+	public class SparseSetFrames
 	{
 		private readonly int[] _denseByFrames;
 		private readonly int[] _sparseByFrames;
-		private readonly int[] _maxIdByFrames;
 		private readonly int[] _aliveCountByFrames;
 
+		private readonly SparseSet _sparseSet;
 		private readonly int _framesCapacity;
 		private int _currentFrame;
 		private int _savedFrames;
 
-		public MassiveIdentifiers(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
-			: base(dataCapacity)
+		public SparseSetFrames(SparseSet sparseSet, int framesCapacity = Constants.FramesCapacity)
 		{
+			_sparseSet = sparseSet;
 			_framesCapacity = framesCapacity;
 
-			_denseByFrames = new int[framesCapacity * Dense.Length];
-			_sparseByFrames = new int[framesCapacity * Sparse.Length];
-			_maxIdByFrames = new int[framesCapacity];
+			_denseByFrames = new int[framesCapacity * sparseSet.Dense.Length];
+			_sparseByFrames = new int[framesCapacity * sparseSet.Sparse.Length];
 			_aliveCountByFrames = new int[framesCapacity];
 		}
+
+		public int CurrentFrame => _currentFrame;
 
 		public int CanRollbackFrames => _savedFrames - 1;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			int currentAliveCount = AliveCount;
-			int currentMaxId = MaxId;
+			int currentAliveCount = _sparseSet.AliveCount;
 			int nextFrame = Loop(_currentFrame + 1, _framesCapacity);
 
 			// Copy everything from current state to next frame
-			Array.Copy(Dense, 0, _denseByFrames, nextFrame * Dense.Length, currentMaxId);
-			Array.Copy(Sparse, 0, _sparseByFrames, nextFrame * Sparse.Length, currentMaxId);
+			Array.Copy(_sparseSet.Dense, 0, _denseByFrames, nextFrame * _sparseSet.Dense.Length, currentAliveCount);
+			Array.Copy(_sparseSet.Sparse, 0, _sparseByFrames, nextFrame * _sparseSet.Sparse.Length, _sparseSet.Sparse.Length);
 			_aliveCountByFrames[nextFrame] = currentAliveCount;
-			_maxIdByFrames[nextFrame] = currentMaxId;
 
 			_currentFrame = nextFrame;
 			_savedFrames = Math.Min(_savedFrames + 1, _framesCapacity);
@@ -60,13 +60,11 @@ namespace Massive
 
 			// Copy everything from rollback frame to current state
 			int rollbackAliveCount = _aliveCountByFrames[_currentFrame];
-			int rollbackMaxId = _maxIdByFrames[_currentFrame];
 			int rollbackFrame = _currentFrame;
 
-			Array.Copy(_denseByFrames, rollbackFrame * Dense.Length, Dense, 0, rollbackMaxId);
-			Array.Copy(_sparseByFrames, rollbackFrame * Sparse.Length, Sparse, 0, rollbackMaxId);
-			AliveCount = rollbackAliveCount;
-			MaxId = rollbackMaxId;
+			Array.Copy(_denseByFrames, rollbackFrame * _sparseSet.Dense.Length, _sparseSet.Dense, 0, rollbackAliveCount);
+			Array.Copy(_sparseByFrames, rollbackFrame * _sparseSet.Sparse.Length, _sparseSet.Sparse, 0, _sparseSet.Sparse.Length);
+			_sparseSet.AliveCount = rollbackAliveCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

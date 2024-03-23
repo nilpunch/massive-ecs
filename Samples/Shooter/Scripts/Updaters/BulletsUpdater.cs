@@ -3,32 +3,27 @@
 	public class BulletsUpdater : WorldUpdater
 	{
 		private IRegistry _registry;
-		private IDataSet<BulletState> _bullets;
+		private View<BulletState> _bullets;
 
 		public override void Init(IRegistry registry)
 		{
 			_registry = registry;
-			_bullets = _registry.Components<BulletState>();
+			_bullets = new View<BulletState>(registry);
 		}
 		
 		public override void UpdateWorld(float deltaTime)
 		{
-			var aliveData = _bullets.AliveData;
-			var aliveIds = _bullets.AliveIds;
-
-			for (int i = aliveData.Length - 1; i >= 0; i--)
+			_bullets.ForEachExtra((_registry, deltaTime), (int entity, ref BulletState state, (IRegistry Registry, float DeltaTime) inner) =>
 			{
-				ref BulletState state = ref aliveData[i];
-				
-				state.Lifetime -= deltaTime;
+				state.Lifetime -= inner.DeltaTime;
 				if (state.IsDestroyed)
 				{
-					_registry.Destroy(aliveIds[i]);
-					continue;
+					inner.Registry.Destroy(entity);
+					return;
 				}
 
-				state.Transform.Position += state.Velocity * deltaTime;
-			}
+				state.Transform.Position += state.Velocity * inner.DeltaTime;
+			});
 		}
 	}
 }

@@ -1,10 +1,8 @@
-﻿using System.Diagnostics.Contracts;
-
-namespace Massive
+﻿namespace Massive
 {
 	public interface IRegistry
 	{
-		[Pure] Identifiers Entities { get; }
+		Identifiers Entities { get; }
 
 		int Create();
 
@@ -14,14 +12,12 @@ namespace Massive
 
 		void Remove<T>(int entityId) where T : struct;
 
-		[Pure] bool Has<T>(int entityId) where T : struct;
+		bool Has<T>(int entityId) where T : struct;
 
-		[Pure] ref T Get<T>(int entityId) where T : struct;
+		ref T Get<T>(int entityId) where T : struct;
 
-		[Pure] IDataSet<T> Components<T>() where T : struct;
+		IDataSet<T> Components<T>() where T : struct;
 
-		[Pure] ISet Tags<T>() where T : struct;
-
-		[Pure] ISet Any<T>() where T : struct;
+		ISet Any<T>() where T : struct;
 	}
 }

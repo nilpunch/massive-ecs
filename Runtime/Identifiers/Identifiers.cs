@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -8,56 +7,69 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class Identifiers
 	{
-		public int[] Ids { get; }
+		public int[] Dense { get; }
+		public int[] Sparse { get; }
+		public int AliveCount { get; set; }
 		public int MaxId { get; set; }
-
-		// Recycling
-		public int Available { get; set; }
-		public int Next { get; set; }
 
 		public Identifiers(int dataCapacity = Constants.DataCapacity)
 		{
-			Ids = new int[dataCapacity];
-			Next = dataCapacity;
+			Dense = new int[dataCapacity];
+			Sparse = new int[dataCapacity];
 		}
 
-		public int CanCreateAmount => Ids.Length - MaxId + Available;
+		public int CanCreateAmount => Dense.Length - AliveCount;
+
+		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create()
 		{
-			if (Available > 0)
+			if (AliveCount == Dense.Length)
 			{
-				var nextId = Next;
-				(Next, Ids[nextId]) = (Ids[nextId], nextId);
-				Available -= 1;
-				return nextId;
+				throw new InvalidOperationException($"Exceeded limit of data! Limit: {Dense.Length}.");
 			}
 
+			int count = AliveCount;
+			AliveCount += 1;
+
+			// If there are unused elements in the dense array, return last
 			int maxId = MaxId;
-			if (MaxId >= Ids.Length + Available)
+			if (count < maxId)
 			{
-				throw new InvalidOperationException($"Exceeded limit of ids! Limit: {Ids.Length}.");
+				return Dense[count];
 			}
 
 			MaxId += 1;
-			Ids[maxId] = maxId;
+			AssignIndex(maxId, count);
+
 			return maxId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Delete(int id)
 		{
-			if (!IsAlive(id))
+			// If element is not alive, nothing to be done
+			if (!TryGetDense(id, out var dense))
 			{
 				return;
 			}
 
-			(Next, Ids[id]) = (id, Next);
-			Available += 1;
+			int count = AliveCount;
+			AliveCount -= 1;
+
+			// If dense is the last used element, decreasing alive count is enough
+			if (dense == count - 1)
+			{
+				return;
+			}
+
+			// Swap dense with last element
+			int lastDense = count - 1;
+			AssignIndex(Dense[lastDense], dense);
+			AssignIndex(id, lastDense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -69,64 +81,57 @@ namespace Massive
 				throw new InvalidOperationException($"Exceeded limit of ids! CanCreate: {CanCreateAmount}.");
 			}
 
-			while (Available > 0)
+			while (AliveCount < MaxId && needToCreate > 0)
 			{
-				var nextId = Next;
-				(Next, Ids[nextId]) = (Ids[nextId], nextId);
-				Available -= 1;
-
-				action?.Invoke(nextId);
+				int count = AliveCount;
+				AliveCount += 1;
+				action?.Invoke(Dense[count]);
 				needToCreate -= 1;
 			}
 
 			for (int i = 0; i < needToCreate; i++)
 			{
+				int count = AliveCount;
 				int maxId = MaxId;
+				AliveCount += 1;
 				MaxId += 1;
-				Ids[maxId] = maxId;
-
+				AssignIndex(maxId, count);
 				action?.Invoke(maxId);
 			}
 		}
 
-		[Pure]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(int id)
+		public bool TryGetDense(int id, out int dense)
 		{
-			return id < MaxId && Ids[id] == id;
+			if (id < 0 || id >= MaxId)
+			{
+				dense = default;
+				return false;
+			}
+
+			dense = Sparse[id];
+
+			return dense < AliveCount && Dense[dense] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Enumerator GetEnumerator() => new Enumerator(Ids, MaxId);
-
-		[Il2CppSetOption(Option.NullChecks, false)]
-		[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-		[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-		public struct Enumerator
+		public bool IsAlive(int id)
 		{
-			private readonly int[] _ids;
-			private readonly int _length;
-			private int _currentIndex;
-
-			public Enumerator(int[] ids, int length)
+			if (id < 0 || id >= MaxId)
 			{
-				_ids = ids;
-				_length = length;
-				_currentIndex = -1;
+				return false;
 			}
 
-			public bool MoveNext()
-			{
-				while (++_currentIndex < _length && _ids[_currentIndex] != _currentIndex)
-				{
-				}
+			int dense = Sparse[id];
 
-				return _currentIndex < _length;
-			}
+			return dense < AliveCount && Dense[dense] == id;
+		}
 
-			public void Reset() => _currentIndex = -1;
-
-			public int Current => _ids[_currentIndex];
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void AssignIndex(int id, int dense)
+		{
+			Sparse[id] = dense;
+			Dense[dense] = id;
 		}
 	}
 }

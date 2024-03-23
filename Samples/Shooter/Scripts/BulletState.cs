@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Massive.Samples.Shooter
 {
-	public struct BulletState : IManaged<BulletState>
+	public struct BulletState// : IManaged<BulletState>
 	{
 		public EntityTransform Transform;
 

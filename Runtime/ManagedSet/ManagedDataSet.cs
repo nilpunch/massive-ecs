@@ -9,23 +9,16 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class ManagedDataSet<T> : IDataSet<T> where T : struct, IManaged<T>
+	public class ManagedDataSet<T> : SparseSet, IDataSet<T> where T : struct, IManaged<T>
 	{
 		private T _swapBuffer;
 
-		public SparseSet SparseSet { get; }
 		public T[] Data { get; }
 
 		public ManagedDataSet(int dataCapacity = Constants.DataCapacity)
-			: this(new SparseSet(dataCapacity))
+			: base(dataCapacity)
 		{
-		}
-
-		protected ManagedDataSet(SparseSet sparseSet)
-		{
-			SparseSet = sparseSet;
-			Data = new T[sparseSet.Capacity];
+			Data = new T[Dense.Length];
 
 			for (int i = 0; i < Data.Length; i++)
 			{
@@ -35,86 +28,36 @@ namespace Massive
 			_swapBuffer.Initialize();
 		}
 
-		public int Capacity => SparseSet.Capacity;
-
-		public int AliveCount => SparseSet.AliveCount;
-
-		public ReadOnlySpan<int> AliveIds => SparseSet.AliveIds;
-
-		public Span<T> AliveData => new Span<T>(Data, 0, SparseSet.AliveCount);
+		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public EnsureInfo Ensure(int id)
+		public int Ensure(int id, T data)
 		{
-			var createInfo = SparseSet.Ensure(id);
-			Data[createInfo.Dense].Reset();
-			return createInfo;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public EnsureInfo Ensure(int id, T data)
-		{
-			var createInfo = SparseSet.Ensure(id);
-			data.CopyTo(ref Data[createInfo.Dense]);
-			return createInfo;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public DeleteInfo? Delete(int id)
-		{
-			var deleteInfo = SparseSet.Delete(id);
-			if (deleteInfo.HasValue)
-			{
-				Data[deleteInfo.Value.DenseSource].CopyTo(ref Data[deleteInfo.Value.DenseTarget]);
-			}
-
-			return deleteInfo;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public DeleteInfo? DeleteDense(int denseIndex)
-		{
-			var deleteInfo = SparseSet.DeleteDense(denseIndex);
-			if (deleteInfo.HasValue)
-			{
-				Data[deleteInfo.Value.DenseSource].CopyTo(ref Data[deleteInfo.Value.DenseTarget]);
-			}
-
-			return deleteInfo;
+			var dense = base.Ensure(id);
+			data.CopyTo(ref Data[dense]);
+			return dense;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			return ref Data[SparseSet.GetDense(id)];
+			return ref Data[Sparse[id]];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetDense(int id)
+		public override void SwapDense(int denseA, int denseB)
 		{
-			return SparseSet.GetDense(id);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool TryGetDense(int id, out int dense)
-		{
-			return SparseSet.TryGetDense(id, out dense);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(int id)
-		{
-			return SparseSet.IsAlive(id);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SwapDense(int denseA, int denseB)
-		{
-			SparseSet.SwapDense(denseA, denseB);
-
+			base.SwapDense(denseA, denseB);
 			Data[denseA].CopyTo(ref _swapBuffer);
 			Data[denseB].CopyTo(ref Data[denseA]);
 			_swapBuffer.CopyTo(ref Data[denseB]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected override void CopyDense(int source, int destination)
+		{
+			base.CopyDense(source, destination);
+			Data[source].CopyTo(ref Data[destination]);
 		}
 	}
 }
