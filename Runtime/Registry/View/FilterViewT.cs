@@ -6,22 +6,21 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct FilterView<T> where T : struct
+	public class FilterView<T> where T : struct
 	{
 		private readonly IDataSet<T> _components;
 		private readonly ISet[] _exclude;
+		private readonly ISet[] _include;
 		private readonly ISet[] _componentsAndInclude;
 
 		public FilterView(IRegistry registry, ISet[] include = null, ISet[] exclude = null)
 		{
-			include ??= Array.Empty<ISet>();
-			exclude ??= Array.Empty<ISet>();
-
 			_components = registry.Components<T>();
-			_exclude = exclude;
-			_componentsAndInclude = new ISet[include.Length + 1];
+			_include = include ?? Array.Empty<ISet>();
+			_exclude = exclude ?? Array.Empty<ISet>();
+			_componentsAndInclude = new ISet[_include.Length + 1];
 			_componentsAndInclude[0] = _components;
-			include.CopyTo(_componentsAndInclude, 1);
+			_include.CopyTo(_componentsAndInclude, 1);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -29,16 +28,18 @@ namespace Massive
 		{
 			var data = _components.AliveData;
 			var ids = ViewUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
-			Span<int> allDense = stackalloc int[_componentsAndInclude.Length];
 
 			for (int i = ids.Length - 1; i >= 0; i--)
-			{
-				int id = ids[i];
-				if (ViewUtils.TryGetAllDense(id, _componentsAndInclude, allDense) && ViewUtils.NotAliveInAll(id, _exclude))
-				{
-					action.Invoke(id, ref data[allDense[0]]);
-				}
-			}
+            {
+            	int id = ids[i];
+            	if (_components.TryGetDense(id, out var dense))
+            	{
+            		if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+            		{
+            			action.Invoke(id, ref data[dense]);
+            		}
+            	}
+            }
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -46,14 +47,16 @@ namespace Massive
 		{
 			var data = _components.AliveData;
 			var ids = ViewUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
-			Span<int> dense = stackalloc int[_componentsAndInclude.Length];
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				int id = ids[i];
-				if (ViewUtils.TryGetAllDense(id, _componentsAndInclude, dense) && ViewUtils.NotAliveInAll(id, _exclude))
+				if (_components.TryGetDense(id, out var dense))
 				{
-					action.Invoke(id, ref data[dense[0]], extra);
+					if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+					{
+						action.Invoke(id, ref data[dense], extra);
+					}
 				}
 			}
 		}

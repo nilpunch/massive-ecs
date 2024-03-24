@@ -24,7 +24,7 @@
 			return massiveSparseSet;
 		}
 
-		public ISet CreateDataSet<T>() where T : struct
+		public IDataSet<T> CreateDataSet<T>() where T : struct
 		{
 			if (ManagedUtils.IsManaged<T>())
 			{

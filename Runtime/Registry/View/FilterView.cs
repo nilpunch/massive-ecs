@@ -6,7 +6,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct FilterView
+	public class FilterView
 	{
 		private readonly Identifiers _entities;
 		private readonly ISet[] _include;
@@ -14,12 +14,9 @@ namespace Massive
 
 		public FilterView(IRegistry registry, ISet[] include = null, ISet[] exclude = null)
 		{
-			include ??= Array.Empty<ISet>();
-			exclude ??= Array.Empty<ISet>();
-
 			_entities = registry.Entities;
-			_include = include;
-			_exclude = exclude;
+			_include = include ?? Array.Empty<ISet>();
+			_exclude = exclude ?? Array.Empty<ISet>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

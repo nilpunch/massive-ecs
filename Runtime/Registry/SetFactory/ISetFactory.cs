@@ -4,7 +4,7 @@
 	{
 		ISet CreateSet();
 
-		ISet CreateDataSet<T>() where T : struct;
+		IDataSet<T> CreateDataSet<T>() where T : struct;
 
 		Identifiers CreateIdentifiers();
 	}

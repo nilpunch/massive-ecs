@@ -6,7 +6,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct FilterView<T1, T2, T3>
+	public class FilterView<T1, T2, T3>
 		where T1 : struct
 		where T2 : struct
 		where T3 : struct
@@ -14,23 +14,22 @@ namespace Massive
 		private readonly IDataSet<T1> _components1;
 		private readonly IDataSet<T2> _components2;
 		private readonly IDataSet<T3> _components3;
+		private readonly ISet[] _include;
 		private readonly ISet[] _exclude;
 		private readonly ISet[] _componentsAndInclude;
 
 		public FilterView(IRegistry registry, ISet[] include = null, ISet[] exclude = null)
 		{
-			include ??= Array.Empty<ISet>();
-			exclude ??= Array.Empty<ISet>();
-
 			_components1 = registry.Components<T1>();
 			_components2 = registry.Components<T2>();
 			_components3 = registry.Components<T3>();
-			_exclude = exclude;
-			_componentsAndInclude = new ISet[include.Length + 3];
+			_include = include ?? Array.Empty<ISet>();
+			_exclude = exclude ?? Array.Empty<ISet>();
+			_componentsAndInclude = new ISet[_include.Length + 3];
 			_componentsAndInclude[0] = _components1;
 			_componentsAndInclude[1] = _components2;
 			_componentsAndInclude[2] = _components3;
-			include.CopyTo(_componentsAndInclude, 3);
+			_include.CopyTo(_componentsAndInclude, 3);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -40,14 +39,18 @@ namespace Massive
 			var data2 = _components2.AliveData;
 			var data3 = _components3.AliveData;
 			var ids = ViewUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
-			Span<int> allDense = stackalloc int[_componentsAndInclude.Length];
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				int id = ids[i];
-				if (ViewUtils.TryGetAllDense(id, _componentsAndInclude, allDense) && ViewUtils.NotAliveInAll(id, _exclude))
+				if (_components1.TryGetDense(id, out var dense1)
+				    && _components2.TryGetDense(id, out var dense2)
+				    && _components3.TryGetDense(id, out var dense3))
 				{
-					action.Invoke(id, ref data1[allDense[0]], ref data2[allDense[1]], ref data3[allDense[2]]);
+					if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+					{
+						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
+					}
 				}
 			}
 		}
@@ -59,14 +62,18 @@ namespace Massive
 			var data2 = _components2.AliveData;
 			var data3 = _components3.AliveData;
 			var ids = ViewUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
-			Span<int> allDense = stackalloc int[_componentsAndInclude.Length];
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				int id = ids[i];
-				if (ViewUtils.TryGetAllDense(id, _componentsAndInclude, allDense) && ViewUtils.NotAliveInAll(id, _exclude))
+				if (_components1.TryGetDense(id, out var dense1)
+				    && _components2.TryGetDense(id, out var dense2)
+				    && _components3.TryGetDense(id, out var dense3))
 				{
-					action.Invoke(id, ref data1[allDense[0]], ref data2[allDense[1]], ref data3[allDense[2]], extra);
+					if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+					{
+						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3], extra);
+					}
 				}
 			}
 		}
