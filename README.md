@@ -1,6 +1,8 @@
-# Sparse set ECS with rollbacks
+# Massive ECS - sparse set ECS with rollbacks
 
-Made for competitive and fast paced online multiplayer games with prediction-rollback netcode.
+Made for games with deterministic prediction-rollback netcode.
+
+Prediction-rollback netcode have very stable nature, and is mainly used in fast paced online multiplayer games, such as Overwatch and Rocket League.
 
 ## Overview
 
@@ -48,7 +50,7 @@ class Program
             }
         });
 
-        // Iterate version without boxing and GC allocations
+        // Pass extra arguments to avoid boxing
         view.ForEachExtra((registry, deltaTime),
             (int entity, ref Position position, ref Velocity velocity,
                 (IRegistry Registry, float DeltaTime) passedArguments) =>
@@ -79,12 +81,11 @@ class Program
             }
         }
 
-        // Saves everything in one call
         registry.SaveFrame();
 
         Update(registry, 1f / 60f);
 
-        // Restores everything up to the last SaveFrame() call
+        // Restore everything up to the last SaveFrame() call
         registry.Rollback(0);
     }
 }
