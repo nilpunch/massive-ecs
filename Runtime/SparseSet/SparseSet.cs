@@ -63,13 +63,14 @@ namespace Massive
 			// If dense is the last used element, decreasing alive count is enough
 			if (dense == count - 1)
 			{
+				Removed?.Invoke((id, dense));
 				return;
 			}
 
 			int lastElement = count - 1;
 			CopyDense(lastElement, dense);
 
-			Removed?.Invoke((id, count));
+			Removed?.Invoke((id, dense));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -88,6 +89,7 @@ namespace Massive
 			// If dense is the last used element, decreasing alive count is enough
 			if (dense == count - 1)
 			{
+				Removed?.Invoke((Dense[dense], dense));
 				return;
 			}
 
