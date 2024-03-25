@@ -45,7 +45,7 @@ namespace Massive
 
 			Added?.Invoke(id);
 
-			return count;
+			return Sparse[id];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
