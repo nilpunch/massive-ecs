@@ -7,7 +7,7 @@ namespace Massive
 	/// </summary>
 	public static class Type<T> where T : struct
 	{
-		// ReSharper disable once StaticMemberInGenericType
+		// ReSharper disable StaticMemberInGenericType
 		public static bool HasAnyFields { get; }
 		public static bool HasNoFields { get; }
 
@@ -23,8 +23,8 @@ namespace Massive
 		private static void VirtualGenericsCompilerHint()
 		{
 			// ReSharper disable ReturnValueOfPureMethodIsNotUsed
-			new NormalSetFactory().CreateSet<T>();
-			new MassiveSetFactory().CreateSet<T>();
+			new NormalSetFactory().CreateAppropriateSet<T>();
+			new MassiveSetFactory().CreateAppropriateSet<T>();
 		}
 	}
 }

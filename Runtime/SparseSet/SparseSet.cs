@@ -20,6 +20,10 @@ namespace Massive
 
 		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 
+		public event Action<int> Added;
+
+		public event Action<(int Id, int Dense)> Removed;
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Ensure(int id)
 		{
@@ -38,6 +42,8 @@ namespace Massive
 			AliveCount += 1;
 
 			AssignIndex(id, count);
+
+			Added?.Invoke(id);
 
 			return count;
 		}
@@ -62,6 +68,8 @@ namespace Massive
 
 			int lastElement = count - 1;
 			CopyDense(lastElement, dense);
+
+			Removed?.Invoke((id, count));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -85,6 +93,14 @@ namespace Massive
 
 			int lastElement = count - 1;
 			CopyDense(lastElement, dense);
+
+			Removed?.Invoke((Dense[dense], dense));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int GetDense(int id)
+		{
+			return Sparse[id];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

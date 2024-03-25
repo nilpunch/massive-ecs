@@ -19,15 +19,32 @@
 			_storeTagsAsComponents = storeTagsAsComponents;
 		}
 
-		public ISet CreateSet<T>() where T : struct
+		public Identifiers CreateIdentifiers()
+		{
+			var massiveIdentifiers = new MassiveIdentifiers(_dataCapacity, _framesCapacity);
+			massiveIdentifiers.SaveFrame();
+			return massiveIdentifiers;
+		}
+
+		public ISet CreateAppropriateSet<T>() where T : struct
 		{
 			if (Type<T>.HasNoFields && !_storeTagsAsComponents)
 			{
-				var massiveSparseSet = new MassiveSparseSet(_dataCapacity, _framesCapacity);
-				massiveSparseSet.SaveFrame();
-				return massiveSparseSet;
+				return CreateSparseSet();
 			}
 
+			return CreateDataSet<T>();
+		}
+
+		public ISet CreateSparseSet()
+		{
+			var massiveSparseSet = new MassiveSparseSet(_dataCapacity, _framesCapacity);
+			massiveSparseSet.SaveFrame();
+			return massiveSparseSet;
+		}
+
+		public ISet CreateDataSet<T>() where T : struct
+		{
 			if (ManagedUtils.IsManaged<T>())
 			{
 				var massiveManagedDataSet = ManagedUtils.CreateMassiveManagedDataSet<T>(_dataCapacity, _framesCapacity);
@@ -40,13 +57,6 @@
 				massiveDataSet.SaveFrame();
 				return massiveDataSet;
 			}
-		}
-
-		public Identifiers CreateIdentifiers()
-		{
-			var massiveIdentifiers = new MassiveIdentifiers(_dataCapacity, _framesCapacity);
-			massiveIdentifiers.SaveFrame();
-			return massiveIdentifiers;
 		}
 	}
 }

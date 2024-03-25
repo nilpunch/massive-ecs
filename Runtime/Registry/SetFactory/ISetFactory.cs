@@ -2,8 +2,12 @@
 {
 	public interface ISetFactory
 	{
-		ISet CreateSet<T>() where T : struct;
-
 		Identifiers CreateIdentifiers();
+
+		ISet CreateAppropriateSet<T>() where T : struct;
+
+		ISet CreateSparseSet();
+
+		ISet CreateDataSet<T>() where T : struct;
 	}
 }

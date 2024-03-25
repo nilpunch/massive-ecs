@@ -6,7 +6,7 @@ namespace Massive
 {
 	public class Registry : IRegistry
 	{
-		private ISetFactory SetFactory { get; }
+		public ISetFactory SetFactory { get; }
 		public Dictionary<Type, ISet> SetsLookup { get; }
 		public List<ISet> AllSets { get; }
 		public Identifiers Entities { get; }
@@ -110,7 +110,7 @@ namespace Massive
 
 			if (!SetsLookup.TryGetValue(type, out var set))
 			{
-				set = SetFactory.CreateSet<T>();
+				set = SetFactory.CreateAppropriateSet<T>();
 				SetsLookup.Add(type, set);
 				AllSets.Add(set);
 			}
