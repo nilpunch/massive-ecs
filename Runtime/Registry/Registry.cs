@@ -7,24 +7,20 @@ namespace Massive
 	public class Registry : IRegistry
 	{
 		private ISetFactory SetFactory { get; }
-		private bool StoreTagsAsComponents { get; }
-		private Dictionary<Type, ISet> SetsLookup { get; }
-
-		protected List<ISet> AllSets { get; }
+		public Dictionary<Type, ISet> SetsLookup { get; }
+		public List<ISet> AllSets { get; }
 		public Identifiers Entities { get; }
 
 		public Registry(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
-			: this(new NormalSetFactory(dataCapacity), storeTagsAsComponents)
+			: this(new NormalSetFactory(dataCapacity, storeTagsAsComponents))
 		{
 		}
 
-		protected Registry(ISetFactory setFactory, bool storeTagsAsComponents = false)
+		protected Registry(ISetFactory setFactory)
 		{
 			SetFactory = setFactory;
-			StoreTagsAsComponents = storeTagsAsComponents;
 			SetsLookup = new Dictionary<Type, ISet>();
 			AllSets = new List<ISet>();
-
 			Entities = setFactory.CreateIdentifiers();
 		}
 
@@ -48,13 +44,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add<T>(int entityId, T data = default) where T : struct
 		{
-			if (IsComponent<T>())
+			var set = GetOrCreateSet<T>();
+			if (set is IDataSet<T> dataSet)
 			{
-				GetOrCreateComponents<T>().Ensure(entityId, data);
+				dataSet.Ensure(entityId, data);
 			}
 			else
 			{
-				GetOrCreateTags<T>().Ensure(entityId);
+				set.Ensure(entityId);
 			}
 		}
 
@@ -81,72 +78,44 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get<T>(int entityId) where T : struct
 		{
-			if (!IsComponent<T>())
+			if (GetOrCreateSet<T>() is not IDataSet<T> dataSet)
 			{
 				throw new Exception("Type has no associated data!");
 			}
 
-			return ref GetOrCreateComponents<T>().Get(entityId);
+			return ref dataSet.Get(entityId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IDataSet<T> Components<T>() where T : struct
 		{
-			if (!IsComponent<T>())
+			if (GetOrCreateSet<T>() is not IDataSet<T> dataSet)
 			{
 				throw new Exception($"Type has no associated data! Use {nameof(Any)}<T>() instead.");
 			}
 
-			return GetOrCreateComponents<T>();
+			return dataSet;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ISet Any<T>() where T : struct
 		{
-			if (IsComponent<T>())
-			{
-				return GetOrCreateComponents<T>();
-			}
-			else
-			{
-				return GetOrCreateTags<T>();
-			}
+			return GetOrCreateSet<T>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private bool IsComponent<T>() where T : struct
-		{
-			return Type<T>.HasAnyFields || StoreTagsAsComponents;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private IDataSet<T> GetOrCreateComponents<T>() where T : struct
+		private ISet GetOrCreateSet<T>() where T : struct
 		{
 			var type = typeof(T);
 
-			if (!SetsLookup.TryGetValue(type, out var components))
+			if (!SetsLookup.TryGetValue(type, out var set))
 			{
-				components = SetFactory.CreateDataSet<T>();
-				SetsLookup.Add(type, components);
-				AllSets.Add(components);
+				set = SetFactory.CreateSet<T>();
+				SetsLookup.Add(type, set);
+				AllSets.Add(set);
 			}
 
-			return (IDataSet<T>)components;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private ISet GetOrCreateTags<T>() where T : struct
-		{
-			var type = typeof(T);
-
-			if (!SetsLookup.TryGetValue(type, out var tags))
-			{
-				tags = SetFactory.CreateSet();
-				SetsLookup.Add(type, tags);
-				AllSets.Add(tags);
-			}
-
-			return tags;
+			return set;
 		}
 	}
 }

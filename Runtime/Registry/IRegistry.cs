@@ -1,7 +1,12 @@
-﻿namespace Massive
+﻿using System;
+using System.Collections.Generic;
+
+namespace Massive
 {
 	public interface IRegistry
 	{
+		Dictionary<Type, ISet> SetsLookup { get; }
+		List<ISet> AllSets { get; }
 		Identifiers Entities { get; }
 
 		int Create();

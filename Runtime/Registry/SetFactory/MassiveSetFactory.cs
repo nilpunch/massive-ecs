@@ -10,22 +10,24 @@
 	{
 		private readonly int _dataCapacity;
 		private readonly int _framesCapacity;
+		private readonly bool _storeTagsAsComponents;
 
-		public MassiveSetFactory(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
+		public MassiveSetFactory(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeTagsAsComponents = false)
 		{
 			_dataCapacity = dataCapacity;
 			_framesCapacity = framesCapacity;
+			_storeTagsAsComponents = storeTagsAsComponents;
 		}
 
-		public ISet CreateSet()
+		public ISet CreateSet<T>() where T : struct
 		{
-			var massiveSparseSet = new MassiveSparseSet(_dataCapacity, _framesCapacity);
-			massiveSparseSet.SaveFrame();
-			return massiveSparseSet;
-		}
+			if (Type<T>.HasNoFields && !_storeTagsAsComponents)
+			{
+				var massiveSparseSet = new MassiveSparseSet(_dataCapacity, _framesCapacity);
+				massiveSparseSet.SaveFrame();
+				return massiveSparseSet;
+			}
 
-		public IDataSet<T> CreateDataSet<T>() where T : struct
-		{
 			if (ManagedUtils.IsManaged<T>())
 			{
 				var massiveManagedDataSet = ManagedUtils.CreateMassiveManagedDataSet<T>(_dataCapacity, _framesCapacity);

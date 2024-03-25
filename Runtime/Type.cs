@@ -9,10 +9,12 @@ namespace Massive
 	{
 		// ReSharper disable once StaticMemberInGenericType
 		public static bool HasAnyFields { get; }
+		public static bool HasNoFields { get; }
 
 		static Type()
 		{
 			HasAnyFields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
+			HasNoFields = !HasAnyFields;
 		}
 
 #if UNITY_2020_3_OR_NEWER
@@ -21,8 +23,8 @@ namespace Massive
 		private static void VirtualGenericsCompilerHint()
 		{
 			// ReSharper disable ReturnValueOfPureMethodIsNotUsed
-			new NormalSetFactory().CreateDataSet<T>();
-			new MassiveSetFactory().CreateDataSet<T>();
+			new NormalSetFactory().CreateSet<T>();
+			new MassiveSetFactory().CreateSet<T>();
 		}
 	}
 }

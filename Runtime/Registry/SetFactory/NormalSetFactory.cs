@@ -3,10 +3,12 @@
 	public class NormalSetFactory : ISetFactory
 	{
 		private readonly int _dataCapacity;
+		private readonly bool _storeTagsAsComponents;
 
-		public NormalSetFactory(int dataCapacity = Constants.DataCapacity)
+		public NormalSetFactory(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
 		{
 			_dataCapacity = dataCapacity;
+			_storeTagsAsComponents = storeTagsAsComponents;
 		}
 
 		public ISet CreateSet()
@@ -14,8 +16,13 @@
 			return new SparseSet(_dataCapacity);
 		}
 
-		public IDataSet<T> CreateDataSet<T>() where T : struct
+		public ISet CreateSet<T>() where T : struct
 		{
+			if (Type<T>.HasNoFields && !_storeTagsAsComponents)
+			{
+				return new SparseSet(_dataCapacity);
+			}
+
 			if (ManagedUtils.IsManaged<T>())
 			{
 				return ManagedUtils.CreateManagedDataSet<T>(_dataCapacity);

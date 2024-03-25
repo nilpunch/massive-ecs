@@ -2,9 +2,7 @@
 {
 	public interface ISetFactory
 	{
-		ISet CreateSet();
-
-		IDataSet<T> CreateDataSet<T>() where T : struct;
+		ISet CreateSet<T>() where T : struct;
 
 		Identifiers CreateIdentifiers();
 	}
