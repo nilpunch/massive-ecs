@@ -11,7 +11,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class DataSet<T> : SparseSet, IDataSet<T> where T : struct
 	{
-		public T[] Data { get; }
+		protected T[] Data { get; }
 
 		public DataSet(int dataCapacity = Constants.DataCapacity)
 			: base(dataCapacity)
@@ -22,7 +22,7 @@ namespace Massive
 		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Ensure(int id, in T data)
+		public void Ensure(int id, T data)
 		{
 			base.Ensure(id);
 			Data[Sparse[id]] = data;

@@ -9,10 +9,10 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Identifiers
 	{
-		public int[] Dense { get; }
-		public int[] Sparse { get; }
-		public int AliveCount { get; set; }
-		public int MaxId { get; set; }
+		protected int[] Dense { get; }
+		protected int[] Sparse { get; }
+		protected int AliveCount { get; set; }
+		protected int MaxId { get; set; }
 
 		public Identifiers(int dataCapacity = Constants.DataCapacity)
 		{

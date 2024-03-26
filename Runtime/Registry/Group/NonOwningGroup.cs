@@ -2,11 +2,11 @@
 {
 	public class NonOwningGroup : IGroup
 	{
-		public IFilter Filter { get; }
-		public ISet[] Other { get; }
-		public ISet Group { get; }
+		private IFilter Filter { get; }
+		private ISet[] Other { get; }
+		protected ISet Group { get; }
 
-		public bool IsWaken { get; protected set; }
+		protected bool IsSynced { get; set; }
 
 		public int Length => Group.AliveCount;
 
@@ -28,30 +28,30 @@
 			}
 		}
 
-		public void Wake()
+		public void EnsureSynced()
 		{
-			if (IsWaken)
+			if (IsSynced)
 			{
 				return;
 			}
 
 			SortGroup();
-			IsWaken = true;
+			IsSynced = true;
 		}
 
 		private void SortGroup()
 		{
 			Group.Clear();
 			var minimal = SetUtils.GetMinimalSet(Other).AliveIds;
-			for (var i = 0; i < minimal.Length; i++)
+			foreach (var id in minimal)
 			{
-				OnAfterAdded(minimal[i]);
+				OnAfterAdded(id);
 			}
 		}
 
 		private void OnAfterAdded(int id)
 		{
-			if (IsWaken && SetUtils.AliveInAll(id, Other) && Filter.Contains(id))
+			if (IsSynced && SetUtils.AliveInAll(id, Other) && Filter.Contains(id))
 			{
 				Group.Ensure(id);
 			}
@@ -59,7 +59,7 @@
 
 		private void OnBeforeDeleted(int id)
 		{
-			if (IsWaken)
+			if (IsSynced)
 			{
 				Group.Delete(id);
 			}

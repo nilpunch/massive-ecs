@@ -13,7 +13,7 @@ namespace Massive
 	{
 		private T _swapBuffer;
 
-		public T[] Data { get; }
+		protected T[] Data { get; }
 
 		public ManagedDataSet(int dataCapacity = Constants.DataCapacity)
 			: base(dataCapacity)
@@ -31,7 +31,7 @@ namespace Massive
 		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Ensure(int id, in T data)
+		public void Ensure(int id, T data)
 		{
 			base.Ensure(id);
 			data.CopyTo(ref Data[Sparse[id]]);

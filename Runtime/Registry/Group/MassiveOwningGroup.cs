@@ -7,8 +7,8 @@ namespace Massive
 		private readonly int _framesCapacity;
 		private int _currentFrame;
 
-		public MassiveOwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null, int framesCapacity = Constants.FramesCapacity) : base(owned, other,
-			filter)
+		public MassiveOwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null, int framesCapacity = Constants.FramesCapacity)
+			: base(owned, other, filter)
 		{
 			_framesCapacity = framesCapacity;
 		}
@@ -18,7 +18,7 @@ namespace Massive
 		public void SaveFrame()
 		{
 			// If _currentFrame == _framesCapacity + 1,
-			// Then this is group is safe forever
+			// Then this is group is safe from been de-synced forever
 			_currentFrame = Math.Min(_currentFrame + 1, _framesCapacity + 1);
 		}
 
@@ -28,7 +28,7 @@ namespace Massive
 
 			if (_currentFrame <= 0)
 			{
-				IsWaken = false;
+				IsSynced = false;
 			}
 		}
 	}

@@ -4,8 +4,6 @@ namespace Massive
 	{
 		private readonly IMassive _massiveGroup;
 
-		private int _currentFrame;
-
 		public MassiveNonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(other, new MassiveSparseSet(dataCapacity, framesCapacity), filter)
 		{
@@ -26,7 +24,7 @@ namespace Massive
 
 			if (CanRollbackFrames == 0)
 			{
-				IsWaken = false;
+				IsSynced = false;
 			}
 		}
 	}

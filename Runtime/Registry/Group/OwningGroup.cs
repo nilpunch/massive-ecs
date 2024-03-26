@@ -5,12 +5,12 @@ namespace Massive
 {
 	public class OwningGroup : IGroup
 	{
-		public IFilter Filter { get; }
-		public ISet[] Owned { get; }
-		public ISet[] Other { get; }
-		public ISet[] All { get; }
+		private IFilter Filter { get; }
+		private ISet[] Owned { get; }
+		private ISet[] Other { get; }
+		private ISet[] All { get; }
 
-		public bool IsWaken { get; protected set; }
+		protected bool IsSynced { get; set; }
 
 		public int Length { get; private set; }
 
@@ -29,31 +29,30 @@ namespace Massive
 			}
 		}
 
-		public void Wake()
+		public void EnsureSynced()
 		{
-			if (IsWaken)
+			if (IsSynced)
 			{
 				return;
 			}
 
 			SortOwned();
-			IsWaken = true;
+			IsSynced = true;
 		}
 
 		private void SortOwned()
 		{
 			Length = 0;
 			var minimal = SetUtils.GetMinimalSet(All).AliveIds;
-			for (var i = 0; i < minimal.Length; i++)
+			foreach (var id in minimal)
 			{
-				var id = minimal[i];
 				OnAfterAdded(id);
 			}
 		}
 
 		private void OnAfterAdded(int id)
 		{
-			if (IsWaken && SetUtils.AliveInAll(id, All) && Filter.Contains(id))
+			if (IsSynced && SetUtils.AliveInAll(id, All) && Filter.Contains(id))
 			{
 				SwapEntry(id, Length);
 				Length += 1;
@@ -62,7 +61,7 @@ namespace Massive
 
 		private void OnBeforeDeleted(int id)
 		{
-			if (IsWaken && Owned[0].TryGetDense(id, out var dense) && dense < Length)
+			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense < Length)
 			{
 				Length -= 1;
 				SwapEntry(id, Length);
@@ -71,9 +70,8 @@ namespace Massive
 
 		private void SwapEntry(int entryId, int swapDense)
 		{
-			for (var i = 0; i < Owned.Length; i++)
+			foreach (var set in Owned)
 			{
-				var set = Owned[i];
 				set.SwapDense(set.GetDense(entryId), swapDense);
 			}
 		}

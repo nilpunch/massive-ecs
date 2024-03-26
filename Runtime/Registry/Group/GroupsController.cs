@@ -9,7 +9,7 @@ namespace Massive
 		private readonly HashSet<ISet> _ownedSets = new HashSet<ISet>();
 		private readonly Dictionary<int, IGroup> _groupsLookup = new Dictionary<int, IGroup>();
 
-		public List<IGroup> CreatedGroups { get; } = new List<IGroup>();
+		protected List<IGroup> CreatedGroups { get; } = new List<IGroup>();
 
 		public GroupsController(int nonOwningDataCapacity = Constants.DataCapacity)
 		{
@@ -27,27 +27,28 @@ namespace Massive
 			int filterCode = GetFilterHash(filter);
 			int groupCode = CombineHashOrdered(CombineHashOrdered(ownedCode, otherCode), filterCode);
 
-			if (_groupsLookup.TryGetValue(groupCode, out var group))
+			if (!_groupsLookup.TryGetValue(groupCode, out var group))
 			{
-				return group;
-			}
-
-			if (owned.Length == 0)
-			{
-				group = CreateNonOwningGroup(other, filter, _nonOwningDataCapacity);
-			}
-			else
-			{
-				ThrowIfOwningConflicting(owned);
-				for (int i = 0; i < owned.Length; i++)
+				if (owned.Length == 0)
 				{
-					_ownedSets.Add(owned[i]);
+					group = CreateNonOwningGroup(other, filter, _nonOwningDataCapacity);
 				}
-				group = CreateOwningGroup(owned, other, filter);
+				else
+				{
+					ThrowIfOwningConflicting(owned);
+					for (int i = 0; i < owned.Length; i++)
+					{
+						_ownedSets.Add(owned[i]);
+					}
+					group = CreateOwningGroup(owned, other, filter);
+				}
+
+				_groupsLookup.Add(groupCode, group);
+				CreatedGroups.Add(group);
 			}
 
-			_groupsLookup.Add(groupCode, group);
-			CreatedGroups.Add(group);
+			group.EnsureSynced();
+
 			return group;
 		}
 

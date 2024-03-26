@@ -4,6 +4,6 @@ namespace Massive
 	{
 		int Length { get; }
 
-		void Wake();
+		void EnsureSynced();
 	}
 }
