@@ -6,7 +6,7 @@ namespace Massive
 
 		private int _currentFrame;
 
-		public MassiveNonOwningGroup(ISet[] other, int dataCapacity, int framesCapacity = Constants.FramesCapacity, IFilter filter = null)
+		public MassiveNonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(other, new MassiveSparseSet(dataCapacity, framesCapacity), filter)
 		{
 			// Fetch instance from base

@@ -10,7 +10,7 @@
 
 		public int Length => Group.AliveCount;
 
-		public NonOwningGroup(ISet[] other, int dataCapacity = Constants.DataCapacity, IFilter filter = null)
+		public NonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
 			: this(other, new SparseSet(dataCapacity), filter)
 		{
 		}

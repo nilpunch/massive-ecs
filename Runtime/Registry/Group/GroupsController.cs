@@ -34,7 +34,7 @@ namespace Massive
 
 			if (owned.Length == 0)
 			{
-				group = CreateNonOwningGroup(other, _nonOwningDataCapacity, filter);
+				group = CreateNonOwningGroup(other, filter, _nonOwningDataCapacity);
 			}
 			else
 			{
@@ -45,7 +45,7 @@ namespace Massive
 				}
 				group = CreateOwningGroup(owned, other, filter);
 			}
-			
+
 			_groupsLookup.Add(groupCode, group);
 			CreatedGroups.Add(group);
 			return group;
@@ -56,9 +56,9 @@ namespace Massive
 			return new OwningGroup(owned, other, filter);
 		}
 
-		protected virtual IGroup CreateNonOwningGroup(ISet[] other, int dataCapacity, IFilter filter = null)
+		protected virtual IGroup CreateNonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
 		{
-			return new NonOwningGroup(other, dataCapacity, filter);
+			return new NonOwningGroup(other, filter, dataCapacity);
 		}
 
 		private void ThrowIfOwningConflicting(ISet[] owned)
@@ -71,7 +71,7 @@ namespace Massive
 				}
 			}
 		}
-		
+
 		private static int GetFilterHash(IFilter filter)
 		{
 			int include = GetUnorderedHash(filter.Include);

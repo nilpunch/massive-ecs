@@ -39,12 +39,12 @@ namespace Massive
 
 		protected override IGroup CreateOwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null)
 		{
-			return new MassiveOwningGroup(owned, other, _framesCapacity, filter);
+			return new MassiveOwningGroup(owned, other, filter, _framesCapacity);
 		}
 
-		protected override IGroup CreateNonOwningGroup(ISet[] other, int dataCapacity, IFilter filter = null)
+		protected override IGroup CreateNonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
 		{
-			return base.CreateNonOwningGroup(other, dataCapacity, filter);
+			return new MassiveNonOwningGroup(other, filter, dataCapacity, _framesCapacity);
 		}
 	}
 }

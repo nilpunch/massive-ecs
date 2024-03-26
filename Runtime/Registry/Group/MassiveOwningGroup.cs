@@ -7,7 +7,7 @@ namespace Massive
 		private readonly int _framesCapacity;
 		private int _currentFrame;
 
-		public MassiveOwningGroup(ISet[] owned, ISet[] other = null, int framesCapacity = Constants.FramesCapacity, IFilter filter = null) : base(owned, other,
+		public MassiveOwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null, int framesCapacity = Constants.FramesCapacity) : base(owned, other,
 			filter)
 		{
 			_framesCapacity = framesCapacity;
