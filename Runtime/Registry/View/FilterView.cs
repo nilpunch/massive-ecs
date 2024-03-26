@@ -6,14 +6,14 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct FilterView
+	public class FilterView
 	{
-		private readonly Filter _filter;
+		private readonly IFilter _filter;
 		private readonly Identifiers _entities;
 
-		public FilterView(IRegistry registry, Filter filter)
+		public FilterView(IRegistry registry, IFilter filter = null)
 		{
-			_filter = filter;
+			_filter = filter ?? new EmptyFilter();
 			_entities = registry.Entities;
 		}
 

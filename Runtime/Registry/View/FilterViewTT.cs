@@ -10,14 +10,14 @@ namespace Massive
 		where T1 : struct
 		where T2 : struct
 	{
-		private readonly Filter _filter;
+		private readonly IFilter _filter;
 		private readonly IDataSet<T1> _components1;
 		private readonly IDataSet<T2> _components2;
 		private readonly ISet[] _componentsAndInclude;
 
-		public FilterView(IRegistry registry, Filter filter)
+		public FilterView(IRegistry registry, IFilter filter = null)
 		{
-			_filter = filter;
+			_filter = filter ?? new EmptyFilter();
 			_components1 = registry.Components<T1>();
 			_components2 = registry.Components<T2>();
 			_componentsAndInclude = new ISet[_filter.Include.Length + 2];

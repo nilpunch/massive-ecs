@@ -8,13 +8,13 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class FilterView<T> where T : struct
 	{
-		private readonly Filter _filter;
+		private readonly IFilter _filter;
 		private readonly IDataSet<T> _components;
 		private readonly ISet[] _componentsAndInclude;
 
-		public FilterView(IRegistry registry, Filter filter)
+		public FilterView(IRegistry registry, IFilter filter = null)
 		{
-			_filter = filter;
+			_filter = filter ?? new EmptyFilter();
 			_components = registry.Components<T>();
 			_componentsAndInclude = new ISet[_filter.Include.Length + 1];
 			_componentsAndInclude[0] = _components;
