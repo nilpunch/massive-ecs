@@ -33,7 +33,7 @@ namespace Massive
 		{
 			var data1 = _components1.AliveData;
 			var data2 = _components2.AliveData;
-			var ids = ViewUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
+			var ids = SetUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
             {
@@ -41,7 +41,7 @@ namespace Massive
             	if (_components1.TryGetDense(id, out var dense1)
             	    && _components2.TryGetDense(id, out var dense2))
             	{
-            		if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+            		if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
             		{
             			action.Invoke(id, ref data1[dense1], ref data2[dense2]);
             		}
@@ -54,7 +54,7 @@ namespace Massive
 		{
 			var data1 = _components1.AliveData;
 			var data2 = _components2.AliveData;
-			var ids = ViewUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
+			var ids = SetUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
@@ -62,7 +62,7 @@ namespace Massive
 				if (_components1.TryGetDense(id, out var dense1)
 				    && _components2.TryGetDense(id, out var dense2))
 				{
-					if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+					if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
 					{
 						action.Invoke(id, ref data1[dense1], ref data2[dense2], extra);
 					}

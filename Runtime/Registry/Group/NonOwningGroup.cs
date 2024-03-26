@@ -1,44 +1,40 @@
 ﻿namespace Massive
 {
-	public class NonOwningGroup<TFirst, TSecond>
-		where TFirst : struct
-		where TSecond : struct
+	public class NonOwningGroup
 	{
-		private ISet First { get; }
-		private ISet Second { get; }
-		private ISet Group { get; }
+		public ISet[] Other { get; }
+		public ISet Group { get; }
 
 		public int GroupSize => Group.AliveCount;
 
-		public NonOwningGroup(IRegistry registry)
+		public NonOwningGroup(IRegistry registry, ISet[] other)
 		{
-			First = registry.Any<TFirst>();
-			Second = registry.Any<TSecond>();
+			Other = other;
 
 			Group = registry.SetFactory.CreateSparseSet();
 			registry.AllSets.Add(Group);
 
-			First.AfterAdded += OnAdded;
-			Second.AfterAdded += OnAdded;
+			foreach (var set in Other)
+			{
+				set.AfterAdded += OnAfterAdded;
+				set.BeforeDeleted += OnBeforeDeleted;
+			}
 
-			First.BeforeDeleted += OnBeforeDeleted;
-			Second.BeforeDeleted += OnBeforeDeleted;
-
-			InitGroup();
+			SortGroup();
 		}
 
-		private void InitGroup()
+		private void SortGroup()
 		{
-			var minimal = ViewUtils.GetMinimalSet(new[] { First, Second });
+			var minimal = SetUtils.GetMinimalSet(Other);
 			foreach (var id in minimal.AliveIds)
 			{
-				OnAdded(id);
+				OnAfterAdded(id);
 			}
 		}
 
-		private void OnAdded(int id)
+		private void OnAfterAdded(int id)
 		{
-			if (First.IsAlive(id) && Second.IsAlive(id))
+			if (SetUtils.AliveInAll(id, Other))
 			{
 				Group.Ensure(id);
 			}

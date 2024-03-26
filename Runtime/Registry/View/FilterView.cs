@@ -24,12 +24,12 @@ namespace Massive
 		{
 			var ids = _include.Length == 0
 				? _entities.AliveIds
-				: ViewUtils.GetMinimalSet(_include).AliveIds;
+				: SetUtils.GetMinimalSet(_include).AliveIds;
 
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+				if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
 				{
 					action.Invoke(id);
 				}
@@ -41,12 +41,12 @@ namespace Massive
 		{
 			var ids = _include.Length == 0
 				? _entities.AliveIds
-				: ViewUtils.GetMinimalSet(_include).AliveIds;
+				: SetUtils.GetMinimalSet(_include).AliveIds;
 
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+				if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
 				{
 					action.Invoke(id, extra);
 				}

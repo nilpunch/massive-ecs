@@ -1,40 +1,44 @@
-﻿namespace Massive
+﻿using System;
+using System.Linq;
+
+namespace Massive
 {
-	public abstract class OwningGroup<TFirst, TSecond>
-		where TFirst : struct
-		where TSecond : struct
+	public class OwningGroup
 	{
-		public ISet First { get; }
-		public ISet Second { get; }
+		public ISet[] Owned { get; }
+		public ISet[] Other { get; }
+		public ISet[] All { get; }
 
 		public int GroupSize { get; private set; }
 
-		public OwningGroup(IRegistry registry)
+		public OwningGroup(ISet[] owned, ISet[] other = null)
 		{
-			First = registry.Any<TFirst>();
-			Second = registry.Any<TSecond>();
+			Owned = owned;
+			Other = other ?? Array.Empty<ISet>();
 
-			First.AfterAdded += OnAdded;
-			Second.AfterAdded += OnAdded;
+			All = Owned.Concat(Other).ToArray();
 
-			First.BeforeDeleted += OnBeforeDeleted;
-			Second.BeforeDeleted += OnBeforeDeleted;
+			foreach (var set in All)
+			{
+				set.AfterAdded += OnAfterAdded;
+				set.BeforeDeleted += OnBeforeDeleted;
+			}
 
-			SortDense();
+			SortOwned();
 		}
 
-		private void SortDense()
+		private void SortOwned()
 		{
-			var minimal = ViewUtils.GetMinimalSet(new[] { First, Second });
+			var minimal = SetUtils.GetMinimalSet(All);
 			foreach (var id in minimal.AliveIds)
 			{
-				OnAdded(id);
+				OnAfterAdded(id);
 			}
 		}
 
-		private void OnAdded(int id)
+		private void OnAfterAdded(int id)
 		{
-			if (First.IsAlive(id) && Second.IsAlive(id))
+			if (SetUtils.AliveInAll(id, All))
 			{
 				SwapEntry(id, GroupSize);
 				GroupSize += 1;
@@ -43,13 +47,19 @@
 
 		private void OnBeforeDeleted(int id)
 		{
-			if (First.TryGetDense(id, out var dense) && dense < GroupSize)
+			if (Owned[0].TryGetDense(id, out var dense) && dense < GroupSize)
 			{
 				GroupSize -= 1;
 				SwapEntry(id, GroupSize);
 			}
 		}
 
-		protected abstract void SwapEntry(int entryId, int position);
+		private void SwapEntry(int entryId, int swapDense)
+		{
+			foreach (var set in Owned)
+			{
+				set.SwapDense(set.GetDense(entryId), swapDense);
+			}
+		}
 	}
 }

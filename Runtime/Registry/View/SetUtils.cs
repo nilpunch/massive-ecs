@@ -6,14 +6,14 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public static class ViewUtils
+	public static class SetUtils
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AliveInAll(int id, ISet[] sets)
 		{
-			for (int i = 0; i < sets.Length; i++)
+			foreach (var set in sets)
 			{
-				if (!sets[i].IsAlive(id))
+				if (!set.IsAlive(id))
 				{
 					return false;
 				}
@@ -25,9 +25,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool NotAliveInAll(int id, ISet[] sets)
 		{
-			for (int i = 0; i < sets.Length; i++)
+			foreach (var set in sets)
 			{
-				if (sets[i].IsAlive(id))
+				if (set.IsAlive(id))
 				{
 					return false;
 				}
@@ -50,24 +50,6 @@ namespace Massive
 			}
 
 			return minimal;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetAllDense(int id, ISet[] sets, Span<int> allDense)
-		{
-			for (int i = 0; i < sets.Length; i++)
-			{
-				if (sets[i].TryGetDense(id, out var dense))
-				{
-					allDense[i] = dense;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			return true;
 		}
 	}
 }

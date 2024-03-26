@@ -27,14 +27,14 @@ namespace Massive
 		public void ForEach(EntityActionRef<T> action)
 		{
 			var data = _components.AliveData;
-			var ids = ViewUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
+			var ids = SetUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
             {
             	int id = ids[i];
             	if (_components.TryGetDense(id, out var dense))
             	{
-            		if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+            		if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
             		{
             			action.Invoke(id, ref data[dense]);
             		}
@@ -46,14 +46,14 @@ namespace Massive
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T, TExtra> action)
 		{
 			var data = _components.AliveData;
-			var ids = ViewUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
+			var ids = SetUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				int id = ids[i];
 				if (_components.TryGetDense(id, out var dense))
 				{
-					if (ViewUtils.AliveInAll(id, _include) && ViewUtils.NotAliveInAll(id, _exclude))
+					if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
 					{
 						action.Invoke(id, ref data[dense], extra);
 					}
