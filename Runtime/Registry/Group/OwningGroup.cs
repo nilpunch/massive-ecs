@@ -18,7 +18,7 @@ namespace Massive
 		{
 			Owned = owned;
 			Other = other ?? Array.Empty<ISet>();
-			Filter = filter ?? new EmptyFilter();
+			Filter = filter ?? EmptyFilter.Instance;
 
 			All = Owned.Concat(Other).ToArray();
 

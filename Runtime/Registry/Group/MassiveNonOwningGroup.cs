@@ -1,31 +1,30 @@
-using System;
-
 namespace Massive
 {
 	public class MassiveNonOwningGroup : NonOwningGroup, IMassive
 	{
-		private readonly int _framesCapacity;
+		private readonly IMassive _massiveGroup;
+
 		private int _currentFrame;
 
-		public MassiveNonOwningGroup(IRegistry registry, ISet[] other, int framesCapacity = Constants.FramesCapacity) : base(registry, other)
+		public MassiveNonOwningGroup(ISet[] other, int dataCapacity, int framesCapacity = Constants.FramesCapacity, IFilter filter = null)
+			: base(other, new MassiveSparseSet(dataCapacity, framesCapacity), filter)
 		{
-			_framesCapacity = framesCapacity;
+			// Fetch instance from base
+			_massiveGroup = (IMassive)Group;
 		}
 
-		public int CanRollbackFrames => _currentFrame;
+		public int CanRollbackFrames => _massiveGroup.CanRollbackFrames;
 
 		public void SaveFrame()
 		{
-			// If _currentFrame == _framesCapacity + 1,
-			// Then this is group is safe forever
-			_currentFrame = Math.Min(_currentFrame + 1, _framesCapacity + 1);
+			_massiveGroup.SaveFrame();
 		}
 
 		public void Rollback(int frames)
 		{
-			_currentFrame -= frames;
+			_massiveGroup.Rollback(frames);
 
-			if (_currentFrame <= 0)
+			if (CanRollbackFrames == 0)
 			{
 				IsWaken = false;
 			}

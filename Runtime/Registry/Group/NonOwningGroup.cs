@@ -10,13 +10,16 @@
 
 		public int Length => Group.AliveCount;
 
-		public NonOwningGroup(IRegistry registry, ISet[] other, IFilter filter = null)
+		public NonOwningGroup(ISet[] other, int dataCapacity = Constants.DataCapacity, IFilter filter = null)
+			: this(other, new SparseSet(dataCapacity), filter)
+		{
+		}
+
+		protected NonOwningGroup(ISet[] other, ISet group, IFilter filter = null)
 		{
 			Other = other;
-			Filter = filter ?? new EmptyFilter();
-
-			Group = registry.SetFactory.CreateSparseSet();
-			registry.AllSets.Add(Group);
+			Group = group;
+			Filter = filter ?? EmptyFilter.Instance;
 
 			foreach (var set in Other)
 			{

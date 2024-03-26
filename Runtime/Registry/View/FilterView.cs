@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -13,7 +12,7 @@ namespace Massive
 
 		public FilterView(IRegistry registry, IFilter filter = null)
 		{
-			_filter = filter ?? new EmptyFilter();
+			_filter = filter ?? EmptyFilter.Instance;
 			_entities = registry.Entities;
 		}
 
