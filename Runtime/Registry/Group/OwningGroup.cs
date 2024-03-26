@@ -3,13 +3,15 @@ using System.Linq;
 
 namespace Massive
 {
-	public class OwningGroup
+	public class OwningGroup : IGroup
 	{
 		public ISet[] Owned { get; }
 		public ISet[] Other { get; }
 		public ISet[] All { get; }
 
-		public int GroupSize { get; private set; }
+		public bool IsSorted { get; protected set; }
+
+		public int Length { get; private set; }
 
 		public OwningGroup(ISet[] owned, ISet[] other = null)
 		{
@@ -23,12 +25,22 @@ namespace Massive
 				set.AfterAdded += OnAfterAdded;
 				set.BeforeDeleted += OnBeforeDeleted;
 			}
+		}
+
+		public void Wake()
+		{
+			if (IsSorted)
+			{
+				return;
+			}
 
 			SortOwned();
+			IsSorted = true;
 		}
 
 		private void SortOwned()
 		{
+			Length = 0;
 			var minimal = SetUtils.GetMinimalSet(All);
 			foreach (var id in minimal.AliveIds)
 			{
@@ -38,19 +50,19 @@ namespace Massive
 
 		private void OnAfterAdded(int id)
 		{
-			if (SetUtils.AliveInAll(id, All))
+			if (IsSorted && SetUtils.AliveInAll(id, All))
 			{
-				SwapEntry(id, GroupSize);
-				GroupSize += 1;
+				SwapEntry(id, Length);
+				Length += 1;
 			}
 		}
 
 		private void OnBeforeDeleted(int id)
 		{
-			if (Owned[0].TryGetDense(id, out var dense) && dense < GroupSize)
+			if (IsSorted && Owned[0].TryGetDense(id, out var dense) && dense < Length)
 			{
-				GroupSize -= 1;
-				SwapEntry(id, GroupSize);
+				Length -= 1;
+				SwapEntry(id, Length);
 			}
 		}
 

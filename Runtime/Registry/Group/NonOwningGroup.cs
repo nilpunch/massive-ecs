@@ -1,11 +1,13 @@
 ﻿namespace Massive
 {
-	public class NonOwningGroup
+	public class NonOwningGroup : IGroup
 	{
 		public ISet[] Other { get; }
 		public ISet Group { get; }
 
-		public int GroupSize => Group.AliveCount;
+		public bool IsWaken { get; protected set; }
+
+		public int Length => Group.AliveCount;
 
 		public NonOwningGroup(IRegistry registry, ISet[] other)
 		{
@@ -19,12 +21,22 @@
 				set.AfterAdded += OnAfterAdded;
 				set.BeforeDeleted += OnBeforeDeleted;
 			}
+		}
+
+		public void Wake()
+		{
+			if (IsWaken)
+			{
+				return;
+			}
 
 			SortGroup();
+			IsWaken = true;
 		}
 
 		private void SortGroup()
 		{
+			Group.Clear();
 			var minimal = SetUtils.GetMinimalSet(Other);
 			foreach (var id in minimal.AliveIds)
 			{
@@ -34,7 +46,7 @@
 
 		private void OnAfterAdded(int id)
 		{
-			if (SetUtils.AliveInAll(id, Other))
+			if (IsWaken && SetUtils.AliveInAll(id, Other))
 			{
 				Group.Ensure(id);
 			}
@@ -42,7 +54,10 @@
 
 		private void OnBeforeDeleted(int id)
 		{
-			Group.Delete(id);
+			if (IsWaken)
+			{
+				Group.Delete(id);
+			}
 		}
 	}
 }

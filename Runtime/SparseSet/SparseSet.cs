@@ -71,6 +71,17 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Clear()
+		{
+			var ids = AliveIds;
+			for (int i = ids.Length - 1; i >= 0; i--)
+			{
+				BeforeDeleted?.Invoke(ids[i]);
+				AliveCount -= 1;
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetDense(int id)
 		{
 			return Sparse[id];

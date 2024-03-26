@@ -6,6 +6,8 @@ namespace Massive
 
 		void Delete(int id);
 
+		void Clear();
+
 		void SwapDense(int denseA, int denseB);
 	}
 }
