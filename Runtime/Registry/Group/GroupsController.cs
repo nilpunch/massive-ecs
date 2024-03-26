@@ -7,8 +7,7 @@ namespace Massive
 	{
 		private readonly int _nonOwningDataCapacity;
 		private readonly HashSet<ISet> _ownedSets = new HashSet<ISet>();
-		private readonly Dictionary<int, IGroup> _owningGroups = new Dictionary<int, IGroup>();
-		private readonly Dictionary<int, IGroup> _nonOwningGroups = new Dictionary<int, IGroup>();
+		private readonly Dictionary<int, IGroup> _groupsLookup = new Dictionary<int, IGroup>();
 
 		public List<IGroup> CreatedGroups { get; } = new List<IGroup>();
 
@@ -17,53 +16,39 @@ namespace Massive
 			_nonOwningDataCapacity = nonOwningDataCapacity;
 		}
 
-		public IGroup EnsureOwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null)
+		public IGroup EnsureGroup(ISet[] owned = null, ISet[] other = null, IFilter filter = null)
 		{
-			int ownedCode = CombineHashCodeUnordered(owned);
-			int otherCode = CombineHashCodeUnordered(other ?? Array.Empty<ISet>());
-			int filterCode = FilterHashCode(filter ?? EmptyFilter.Instance);
+			owned ??= Array.Empty<ISet>();
+			other ??= Array.Empty<ISet>();
+			filter ??= EmptyFilter.Instance;
 
-			int groupCode = CombineHashCodeOrdered(CombineHashCodeOrdered(ownedCode, otherCode), filterCode);
+			int ownedCode = GetUnorderedHash(owned);
+			int otherCode = GetUnorderedHash(other);
+			int filterCode = GetFilterHash(filter);
+			int groupCode = CombineHashOrdered(CombineHashOrdered(ownedCode, otherCode), filterCode);
 
-			if (_owningGroups.TryGetValue(groupCode, out var group))
+			if (_groupsLookup.TryGetValue(groupCode, out var group))
 			{
 				return group;
 			}
 
-			for (int i = 0; i < owned.Length; i++)
+			if (owned.Length == 0)
 			{
-				if (_ownedSets.Contains(owned[i]))
+				group = CreateNonOwningGroup(other, _nonOwningDataCapacity, filter);
+			}
+			else
+			{
+				ThrowIfOwningConflicting(owned);
+				for (int i = 0; i < owned.Length; i++)
 				{
-					throw new Exception("Conflicting groups.");
+					_ownedSets.Add(owned[i]);
 				}
+				group = CreateOwningGroup(owned, other, filter);
 			}
-
-			var newGroup = CreateOwningGroup(owned, other, filter);
-			for (int i = 0; i < owned.Length; i++)
-			{
-				_ownedSets.Add(owned[i]);
-			}
-			_owningGroups.Add(groupCode, newGroup);
-			CreatedGroups.Add(newGroup);
-			return newGroup;
-		}
-
-		public IGroup EnsureNonOwningGroup(ISet[] other, IFilter filter = null)
-		{
-			int otherCode = CombineHashCodeUnordered(other ?? Array.Empty<ISet>());
-			int filterCode = FilterHashCode(filter ?? EmptyFilter.Instance);
-
-			int groupCode = CombineHashCodeOrdered(otherCode, filterCode);
-
-			if (_nonOwningGroups.TryGetValue(groupCode, out var group))
-			{
-				return group;
-			}
-
-			var newGroup = CreateNonOwningGroup(other, _nonOwningDataCapacity, filter);
-			_nonOwningGroups.Add(groupCode, newGroup);
-			CreatedGroups.Add(newGroup);
-			return newGroup;
+			
+			_groupsLookup.Add(groupCode, group);
+			CreatedGroups.Add(group);
+			return group;
 		}
 
 		protected virtual IGroup CreateOwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null)
@@ -76,14 +61,25 @@ namespace Massive
 			return new NonOwningGroup(other, dataCapacity, filter);
 		}
 
-		private static int FilterHashCode(IFilter filter)
+		private void ThrowIfOwningConflicting(ISet[] owned)
 		{
-			int include = CombineHashCodeUnordered(filter.Include);
-			int exclude = CombineHashCodeUnordered(filter.Exclude);
-			return CombineHashCodeOrdered(include, exclude);
+			for (int i = 0; i < owned.Length; i++)
+			{
+				if (_ownedSets.Contains(owned[i]))
+				{
+					throw new Exception("Conflicting groups.");
+				}
+			}
+		}
+		
+		private static int GetFilterHash(IFilter filter)
+		{
+			int include = GetUnorderedHash(filter.Include);
+			int exclude = GetUnorderedHash(filter.Exclude);
+			return CombineHashOrdered(include, exclude);
 		}
 
-		private static int CombineHashCodeUnordered(ISet[] sets)
+		private static int GetUnorderedHash(ISet[] sets)
 		{
 			int hash = 0;
 			for (var i = 0; i < sets.Length; i++)
@@ -93,7 +89,7 @@ namespace Massive
 			return hash;
 		}
 
-		private static int CombineHashCodeOrdered(int a, int b)
+		private static int CombineHashOrdered(int a, int b)
 		{
 			unchecked
 			{
@@ -102,7 +98,6 @@ namespace Massive
 				hash = hash * 31 + b;
 				return hash;
 			}
-			;
 		}
 	}
 }
