@@ -10,29 +10,27 @@ namespace Massive.PerformanceTests
 		private const int IterationsPerMeasurement = 120;
 
 		private readonly IRegistry _registry;
-		private readonly ISet[] _includeFilter;
-		private readonly ISet[] _excludeFilter;
 		private readonly IFilter _filter;
 
 		public FilterView3Include3IgnorePerformanceTest()
 		{
 			_registry = new Registry(EntitiesCount).FillRegistryWith50Components();
 
-			_includeFilter = new ISet[]
+			var includeFilter = new ISet[]
 			{
 				_registry.Any<TestState64>(),
 				_registry.Any<TestState64_2>(),
 				_registry.Any<TestState64_3>(),
 			};
 
-			_excludeFilter = new ISet[]
+			var excludeFilter = new ISet[]
 			{
 				_registry.Any<TestState64<byte, int, int>>(),
 				_registry.Any<TestState64<int, byte, int>>(),
 				_registry.Any<TestState64<int, int, byte>>(),
 			};
 			
-			_filter = new Filter(_includeFilter, _excludeFilter);
+			_filter = new Filter(includeFilter, excludeFilter);
 		}
 
 		[Test, Performance]
