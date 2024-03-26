@@ -22,11 +22,10 @@ namespace Massive
 		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Ensure(int id, T data)
+		public void Ensure(int id, in T data)
 		{
-			var dense = base.Ensure(id);
-			Data[dense] = data;
-			return dense;
+			base.Ensure(id);
+			Data[Sparse[id]] = data;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -8,9 +8,9 @@ namespace Massive
 
 		ReadOnlySpan<int> AliveIds { get; }
 
-		event Action<int> Added;
+		event Action<int> AfterAdded;
 
-		event Action<(int Id, int Dense)> Removed;
+		event Action<int> BeforeDeleted;
 
 		int GetDense(int id);
 

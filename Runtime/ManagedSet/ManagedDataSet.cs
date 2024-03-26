@@ -31,11 +31,10 @@ namespace Massive
 		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Ensure(int id, T data)
+		public void Ensure(int id, in T data)
 		{
-			var dense = base.Ensure(id);
-			data.CopyTo(ref Data[dense]);
-			return dense;
+			base.Ensure(id);
+			data.CopyTo(ref Data[Sparse[id]]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

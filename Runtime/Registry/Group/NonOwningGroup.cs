@@ -18,11 +18,11 @@
 			Group = registry.SetFactory.CreateSparseSet();
 			registry.AllSets.Add(Group);
 
-			First.Added += OnAdded;
-			Second.Added += OnAdded;
+			First.AfterAdded += OnAdded;
+			Second.AfterAdded += OnAdded;
 
-			First.Removed += OnRemoved;
-			Second.Removed += OnRemoved;
+			First.BeforeDeleted += OnBeforeDeleted;
+			Second.BeforeDeleted += OnBeforeDeleted;
 
 			InitGroup();
 		}
@@ -44,9 +44,9 @@
 			}
 		}
 
-		private void OnRemoved((int Id, int Dense) entry)
+		private void OnBeforeDeleted(int id)
 		{
-			Group.Delete(entry.Id);
+			Group.Delete(id);
 		}
 	}
 }

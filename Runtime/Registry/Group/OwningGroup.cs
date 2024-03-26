@@ -14,11 +14,11 @@
 			First = registry.Any<TFirst>();
 			Second = registry.Any<TSecond>();
 
-			First.Added += OnAdded;
-			Second.Added += OnAdded;
+			First.AfterAdded += OnAdded;
+			Second.AfterAdded += OnAdded;
 
-			First.Removed += OnRemoved;
-			Second.Removed += OnRemoved;
+			First.BeforeDeleted += OnBeforeDeleted;
+			Second.BeforeDeleted += OnBeforeDeleted;
 
 			SortDense();
 		}
@@ -41,12 +41,12 @@
 			}
 		}
 
-		private void OnRemoved((int Id, int Dense) entry)
+		private void OnBeforeDeleted(int id)
 		{
-			if (entry.Dense < GroupSize)
+			if (First.TryGetDense(id, out var dense) && dense < GroupSize)
 			{
 				GroupSize -= 1;
-				SwapEntry(entry.Id, GroupSize);
+				SwapEntry(id, GroupSize);
 			}
 		}
 

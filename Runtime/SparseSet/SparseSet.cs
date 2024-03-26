@@ -20,12 +20,12 @@ namespace Massive
 
 		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
 
-		public event Action<int> Added;
+		public event Action<int> AfterAdded;
 
-		public event Action<(int Id, int Dense)> Removed;
+		public event Action<int> BeforeDeleted;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Ensure(int id)
+		public void Ensure(int id)
 		{
 			if (id < 0 || id >= Sparse.Length)
 			{
@@ -33,9 +33,9 @@ namespace Massive
 			}
 
 			// If element is alive, nothing to be done
-			if (TryGetDense(id, out var dense))
+			if (IsAlive(id))
 			{
-				return dense;
+				return;
 			}
 
 			int count = AliveCount;
@@ -43,14 +43,14 @@ namespace Massive
 
 			AssignIndex(id, count);
 
-			Added?.Invoke(id);
-
-			return Sparse[id];
+			AfterAdded?.Invoke(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Delete(int id)
 		{
+			BeforeDeleted?.Invoke(id);
+
 			// If element is not alive, nothing to be done
 			if (!TryGetDense(id, out var dense))
 			{
@@ -63,40 +63,11 @@ namespace Massive
 			// If dense is the last used element, decreasing alive count is enough
 			if (dense == count - 1)
 			{
-				Removed?.Invoke((id, dense));
 				return;
 			}
 
 			int lastElement = count - 1;
 			CopyDense(lastElement, dense);
-
-			Removed?.Invoke((id, dense));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void DeleteDense(int dense)
-		{
-			int count = AliveCount;
-
-			// If element is not alive, nothing to be done
-			if (dense < 0 || dense >= count)
-			{
-				return;
-			}
-
-			AliveCount -= 1;
-
-			// If dense is the last used element, decreasing alive count is enough
-			if (dense == count - 1)
-			{
-				Removed?.Invoke((Dense[dense], dense));
-				return;
-			}
-
-			int lastElement = count - 1;
-			CopyDense(lastElement, dense);
-
-			Removed?.Invoke((Dense[dense], dense));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
