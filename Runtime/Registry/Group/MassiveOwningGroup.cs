@@ -6,7 +6,7 @@ namespace Massive
 	{
 		private readonly int _framesCapacity;
 		private int _currentFrame;
-		
+
 		public MassiveOwningGroup(ISet[] owned, ISet[] other = null, int framesCapacity = Constants.FramesCapacity) : base(owned, other)
 		{
 			_framesCapacity = framesCapacity;
@@ -27,7 +27,7 @@ namespace Massive
 
 			if (_currentFrame <= 0)
 			{
-				IsSorted = false;
+				IsWaken = false;
 			}
 		}
 	}

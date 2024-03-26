@@ -8,19 +8,17 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class FilterView<T> where T : struct
 	{
+		private readonly Filter _filter;
 		private readonly IDataSet<T> _components;
-		private readonly ISet[] _exclude;
-		private readonly ISet[] _include;
 		private readonly ISet[] _componentsAndInclude;
 
-		public FilterView(IRegistry registry, ISet[] include = null, ISet[] exclude = null)
+		public FilterView(IRegistry registry, Filter filter)
 		{
+			_filter = filter;
 			_components = registry.Components<T>();
-			_include = include ?? Array.Empty<ISet>();
-			_exclude = exclude ?? Array.Empty<ISet>();
-			_componentsAndInclude = new ISet[_include.Length + 1];
+			_componentsAndInclude = new ISet[_filter.Include.Length + 1];
 			_componentsAndInclude[0] = _components;
-			_include.CopyTo(_componentsAndInclude, 1);
+			_filter.Include.CopyTo(_componentsAndInclude, 1);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -30,16 +28,16 @@ namespace Massive
 			var ids = SetUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
-            {
-            	int id = ids[i];
-            	if (_components.TryGetDense(id, out var dense))
-            	{
-            		if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
-            		{
-            			action.Invoke(id, ref data[dense]);
-            		}
-            	}
-            }
+			{
+				int id = ids[i];
+				if (_components.TryGetDense(id, out var dense))
+				{
+					if (_filter.Contains(id))
+					{
+						action.Invoke(id, ref data[dense]);
+					}
+				}
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -53,7 +51,7 @@ namespace Massive
 				int id = ids[i];
 				if (_components.TryGetDense(id, out var dense))
 				{
-					if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
+					if (_filter.Contains(id))
 					{
 						action.Invoke(id, ref data[dense], extra);
 					}

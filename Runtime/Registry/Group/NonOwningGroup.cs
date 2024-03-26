@@ -2,6 +2,7 @@
 {
 	public class NonOwningGroup : IGroup
 	{
+		public IFilter Filter { get; }
 		public ISet[] Other { get; }
 		public ISet Group { get; }
 
@@ -9,9 +10,10 @@
 
 		public int Length => Group.AliveCount;
 
-		public NonOwningGroup(IRegistry registry, ISet[] other)
+		public NonOwningGroup(IRegistry registry, ISet[] other, IFilter filter = null)
 		{
 			Other = other;
+			Filter = filter ?? new EmptyFilter();
 
 			Group = registry.SetFactory.CreateSparseSet();
 			registry.AllSets.Add(Group);
@@ -37,16 +39,16 @@
 		private void SortGroup()
 		{
 			Group.Clear();
-			var minimal = SetUtils.GetMinimalSet(Other);
-			foreach (var id in minimal.AliveIds)
+			var minimal = SetUtils.GetMinimalSet(Other).AliveIds;
+			for (var i = 0; i < minimal.Length; i++)
 			{
-				OnAfterAdded(id);
+				OnAfterAdded(minimal[i]);
 			}
 		}
 
 		private void OnAfterAdded(int id)
 		{
-			if (IsWaken && SetUtils.AliveInAll(id, Other))
+			if (IsWaken && SetUtils.AliveInAll(id, Other) && Filter.Contains(id))
 			{
 				Group.Ensure(id);
 			}

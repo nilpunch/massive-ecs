@@ -6,30 +6,28 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class FilterView
+	public readonly struct FilterView
 	{
+		private readonly Filter _filter;
 		private readonly Identifiers _entities;
-		private readonly ISet[] _include;
-		private readonly ISet[] _exclude;
 
-		public FilterView(IRegistry registry, ISet[] include = null, ISet[] exclude = null)
+		public FilterView(IRegistry registry, Filter filter)
 		{
+			_filter = filter;
 			_entities = registry.Entities;
-			_include = include ?? Array.Empty<ISet>();
-			_exclude = exclude ?? Array.Empty<ISet>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action)
 		{
-			var ids = _include.Length == 0
+			var ids = _filter.Include.Length == 0
 				? _entities.AliveIds
-				: SetUtils.GetMinimalSet(_include).AliveIds;
+				: SetUtils.GetMinimalSet(_filter.Include).AliveIds;
 
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
+				if (_filter.Contains(id))
 				{
 					action.Invoke(id);
 				}
@@ -39,14 +37,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionExtra<TExtra> action)
 		{
-			var ids = _include.Length == 0
+			var ids = _filter.Include.Length == 0
 				? _entities.AliveIds
-				: SetUtils.GetMinimalSet(_include).AliveIds;
+				: SetUtils.GetMinimalSet(_filter.Include).AliveIds;
 
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
+				if (_filter.Contains(id))
 				{
 					action.Invoke(id, extra);
 				}

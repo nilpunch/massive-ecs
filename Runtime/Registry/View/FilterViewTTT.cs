@@ -11,25 +11,23 @@ namespace Massive
 		where T2 : struct
 		where T3 : struct
 	{
+		private readonly Filter _filter;
 		private readonly IDataSet<T1> _components1;
 		private readonly IDataSet<T2> _components2;
 		private readonly IDataSet<T3> _components3;
-		private readonly ISet[] _include;
-		private readonly ISet[] _exclude;
 		private readonly ISet[] _componentsAndInclude;
 
-		public FilterView(IRegistry registry, ISet[] include = null, ISet[] exclude = null)
+		public FilterView(IRegistry registry, Filter filter)
 		{
+			_filter = filter;
 			_components1 = registry.Components<T1>();
 			_components2 = registry.Components<T2>();
 			_components3 = registry.Components<T3>();
-			_include = include ?? Array.Empty<ISet>();
-			_exclude = exclude ?? Array.Empty<ISet>();
-			_componentsAndInclude = new ISet[_include.Length + 3];
+			_componentsAndInclude = new ISet[_filter.Include.Length + 3];
 			_componentsAndInclude[0] = _components1;
 			_componentsAndInclude[1] = _components2;
 			_componentsAndInclude[2] = _components3;
-			_include.CopyTo(_componentsAndInclude, 3);
+			_filter.Include.CopyTo(_componentsAndInclude, 3);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -47,7 +45,7 @@ namespace Massive
 				    && _components2.TryGetDense(id, out var dense2)
 				    && _components3.TryGetDense(id, out var dense3))
 				{
-					if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
+					if (_filter.Contains(id))
 					{
 						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
 					}
@@ -70,7 +68,7 @@ namespace Massive
 				    && _components2.TryGetDense(id, out var dense2)
 				    && _components3.TryGetDense(id, out var dense3))
 				{
-					if (SetUtils.AliveInAll(id, _include) && SetUtils.NotAliveInAll(id, _exclude))
+					if (_filter.Contains(id))
 					{
 						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3], extra);
 					}
