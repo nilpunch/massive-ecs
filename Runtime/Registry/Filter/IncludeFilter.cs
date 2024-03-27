@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace Massive
 {
@@ -28,15 +27,7 @@ namespace Massive
 
 		public bool IsSubsetOf(IFilter other)
 		{
-			for (int i = 0; i < Include.Length; i++)
-			{
-				if (!other.Include.Contains(Include[i]))
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return Include.IsSubsetOf(other.Include);
 		}
 	}
 }

@@ -16,20 +16,20 @@ namespace Massive
 			_nonOwningDataCapacity = nonOwningDataCapacity;
 		}
 
-		public IGroup EnsureGroup(IReadOnlyList<ISet> owned = null, IReadOnlyList<IReadOnlySet> other = null, IFilter filter = null)
+		public IGroup EnsureGroup(ISet[] owned = null, IReadOnlySet[] other = null, IFilter filter = null)
 		{
 			owned ??= Array.Empty<ISet>();
 			other ??= Array.Empty<IReadOnlySet>();
 			filter ??= EmptyFilter.Instance;
 
-			int ownedCode = GetUnorderedHash(owned);
-			int otherCode = GetUnorderedHash(other);
+			int ownedCode = owned.GetUnorderedHashCode();
+			int otherCode = other.GetUnorderedHashCode();
 			int filterCode = GetFilterHash(filter);
 			int groupCode = CombineHashOrdered(CombineHashOrdered(ownedCode, otherCode), filterCode);
 
 			if (!_groupsLookup.TryGetValue(groupCode, out var group))
 			{
-				if (owned.Count == 0)
+				if (owned.Length == 0)
 				{
 					group = CreateNonOwningGroup(other, filter, _nonOwningDataCapacity);
 				}
@@ -37,7 +37,7 @@ namespace Massive
 				{
 					ThrowIfGroupsConflicting(owned);
 					group = CreateOwningGroup(owned, other, filter);
-					for (int i = 0; i < owned.Count; i++)
+					for (int i = 0; i < owned.Length; i++)
 					{
 						_ownedSets.Add(owned[i], group);
 					}
@@ -52,19 +52,45 @@ namespace Massive
 			return group;
 		}
 
-		protected virtual IGroup CreateOwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> other = null, IFilter filter = null)
+		protected virtual IGroup CreateOwningGroup(ISet[] owned, IReadOnlySet[] other = null, IFilter filter = null)
 		{
 			return new OwningGroup(owned, other, filter);
 		}
 
-		protected virtual IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
+		protected virtual IGroup CreateNonOwningGroup(IReadOnlySet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
 		{
 			return new NonOwningGroup(other, filter, dataCapacity);
 		}
 
-		private void ThrowIfGroupsConflicting(IReadOnlyList<ISet> owned)
+		private IGroup FindSubset(ISet[] owned = null, IReadOnlySet[] other = null, IFilter filter = null)
 		{
-			for (int i = 0; i < owned.Count; i++)
+			foreach (var group in CreatedGroups)
+			{
+				if (group.Filter.IsSubsetOf(filter) && group.Owned.IsSubsetOf(owned) && group.Other.IsSubsetOf(other))
+				{
+					return group;
+				}
+			}
+
+			return null;
+		}
+
+		private IGroup FindSuperset(ISet[] owned = null, IReadOnlySet[] other = null, IFilter filter = null)
+		{
+			foreach (var group in CreatedGroups)
+			{
+				if (filter.IsSubsetOf(group.Filter) && owned.IsSubsetOf(group.Owned) && other.IsSubsetOf(group.Other))
+				{
+					return group;
+				}
+			}
+
+			return null;
+		}
+
+		private void ThrowIfGroupsConflicting(ISet[] owned)
+		{
+			for (int i = 0; i < owned.Length; i++)
 			{
 				if (_ownedSets.ContainsKey(owned[i]))
 				{
@@ -75,19 +101,9 @@ namespace Massive
 
 		private static int GetFilterHash(IFilter filter)
 		{
-			int include = GetUnorderedHash(filter.Include);
-			int exclude = GetUnorderedHash(filter.Exclude);
+			int include = filter.Include.GetUnorderedHashCode();
+			int exclude = filter.Exclude.GetUnorderedHashCode();
 			return CombineHashOrdered(include, exclude);
-		}
-
-		private static int GetUnorderedHash(IReadOnlyList<IReadOnlySet> sets)
-		{
-			int hash = 0;
-			for (var i = 0; i < sets.Count; i++)
-			{
-				hash ^= sets[i].GetHashCode();
-			}
-			return hash;
 		}
 
 		private static int CombineHashOrdered(int a, int b)

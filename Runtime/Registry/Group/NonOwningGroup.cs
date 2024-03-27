@@ -5,20 +5,25 @@ namespace Massive
 {
 	public class NonOwningGroup : IGroup
 	{
-		private IFilter Filter { get; }
-		private IReadOnlyList<IReadOnlySet> Other { get; }
 		protected ISet GroupSet { get; }
-
 		protected bool IsSynced { get; set; }
+
+		public IFilter Filter { get; }
+
+		public ISet[] Owned => Array.Empty<ISet>();
+
+		public IReadOnlySet[] Other { get; }
+
+		public List<IGroup> Children { get; } = new List<IGroup>();
 
 		public ReadOnlySpan<int> GroupIds => GroupSet.AliveIds;
 
-		public NonOwningGroup(IReadOnlyList<IReadOnlySet> other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
+		public NonOwningGroup(IReadOnlySet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
 			: this(other, new SparseSet(dataCapacity), filter)
 		{
 		}
 
-		protected NonOwningGroup(IReadOnlyList<IReadOnlySet> other, ISet groupSet, IFilter filter = null)
+		protected NonOwningGroup(IReadOnlySet[] other, ISet groupSet, IFilter filter = null)
 		{
 			Other = other;
 			GroupSet = groupSet;
@@ -28,6 +33,11 @@ namespace Massive
 		public bool IsOwning(IReadOnlySet set)
 		{
 			return false;
+		}
+
+		public bool IsSubsetOf(IGroup group)
+		{
+			return Filter.IsSubsetOf(group.Filter) && Other.IsSubsetOf(group.Other);
 		}
 
 		public void EnsureSynced()

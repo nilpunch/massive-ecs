@@ -44,23 +44,7 @@ namespace Massive
 
 		public bool IsSubsetOf(IFilter other)
 		{
-			for (int i = 0; i < Include.Length; i++)
-			{
-				if (!other.Include.Contains(Include[i]))
-				{
-					return false;
-				}
-			}
-
-			for (int i = 0; i < Exclude.Length; i++)
-			{
-				if (!other.Exclude.Contains(Exclude[i]))
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return Include.IsSubsetOf(other.Include) && Exclude.IsSubsetOf(other.Exclude);
 		}
 	}
 }

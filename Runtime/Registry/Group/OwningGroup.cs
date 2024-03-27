@@ -6,18 +6,22 @@ namespace Massive
 {
 	public class OwningGroup : IGroup
 	{
-		private IFilter Filter { get; }
-		private IReadOnlyList<ISet> Owned { get; }
-		private IReadOnlyList<IReadOnlySet> Other { get; }
-		private IReadOnlyList<IReadOnlySet> All { get; }
+		private IReadOnlySet[] All { get; }
 
-		protected bool IsSynced { get; set; }
-
+		protected bool IsSynced { set; get; }
 		protected int GroupLength { get; set; }
+
+		public IFilter Filter { get; }
+
+		public ISet[] Owned { get; }
+
+		public IReadOnlySet[] Other { get; }
+
+		public List<IGroup> Children { get; } = new List<IGroup>();
 
 		public ReadOnlySpan<int> GroupIds => Owned[0].AliveIds.Slice(0, GroupLength);
 
-		public OwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> other = null, IFilter filter = null)
+		public OwningGroup(ISet[] owned, IReadOnlySet[] other = null, IFilter filter = null)
 		{
 			Owned = owned;
 			Other = other ?? Array.Empty<IReadOnlySet>();
@@ -35,6 +39,11 @@ namespace Massive
 		public bool IsOwning(IReadOnlySet set)
 		{
 			return Owned.Contains(set);
+		}
+
+		public bool IsSubsetOf(IGroup group)
+		{
+			return Filter.IsSubsetOf(group.Filter) && Owned.IsSubsetOf(group.Owned) && Other.IsSubsetOf(group.Other);
 		}
 
 		public void EnsureSynced()

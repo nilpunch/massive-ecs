@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -9,7 +8,7 @@ namespace Massive
 	public static class SetUtils
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AliveInAll(int id, IReadOnlyList<IReadOnlySet> sets)
+		public static bool AliveInAll(int id, IReadOnlySet[] sets)
 		{
 			foreach (var set in sets)
 			{
@@ -23,7 +22,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool NotAliveInAll(int id, IReadOnlyList<IReadOnlySet> sets)
+		public static bool NotAliveInAll(int id, IReadOnlySet[] sets)
 		{
 			foreach (var set in sets)
 			{
@@ -37,11 +36,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReadOnlySet GetMinimalSet(IReadOnlyList<IReadOnlySet> sets)
+		public static IReadOnlySet GetMinimalSet(IReadOnlySet[] sets)
 		{
 			IReadOnlySet minimal = sets[0];
 
-			for (int i = 1; i < sets.Count; i++)
+			for (int i = 1; i < sets.Length; i++)
 			{
 				if (minimal.AliveCount > sets[i].AliveCount)
 				{
