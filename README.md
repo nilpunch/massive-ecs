@@ -14,6 +14,7 @@ Provided features:
 - Ultra-fast saving and rollbacking with cyclic buffer
 - Zero GC allocations during runtime
 - Support for components with managed data, like arrays
+- Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - IL2CPP friendly, tested on PC | Android | WebGL
 
 ## Code Examples
