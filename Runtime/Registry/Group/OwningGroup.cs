@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Massive
@@ -6,9 +7,9 @@ namespace Massive
 	public class OwningGroup : IGroup
 	{
 		private IFilter Filter { get; }
-		private ISet[] Owned { get; }
-		private ISet[] Other { get; }
-		private ISet[] All { get; }
+		private IReadOnlyList<ISet> Owned { get; }
+		private IReadOnlyList<IReadOnlySet> Other { get; }
+		private IReadOnlyList<IReadOnlySet> All { get; }
 
 		protected bool IsSynced { get; set; }
 
@@ -16,24 +17,24 @@ namespace Massive
 
 		public ReadOnlySpan<int> GroupIds => Owned[0].AliveIds.Slice(0, GroupLength);
 
-		public OwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null)
+		public OwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> other = null, IFilter filter = null)
 		{
 			Owned = owned;
-			Other = other ?? Array.Empty<ISet>();
+			Other = other ?? Array.Empty<IReadOnlySet>();
 			Filter = filter ?? EmptyFilter.Instance;
 
 			All = Owned.Concat(Other).ToArray();
 
 			foreach (var set in All)
 			{
-				set.AfterAdded += OnAfterAdded;
-				set.BeforeDeleted += OnBeforeDeleted;
+				set.AfterAdded += AddEntity;
+				set.BeforeDeleted += RemoveEntity;
 			}
 		}
 
 		public bool IsOwning(IReadOnlySet set)
 		{
-			return Array.IndexOf(Owned, set) != -1;
+			return Owned.Contains(set);
 		}
 
 		public void EnsureSynced()
@@ -48,11 +49,11 @@ namespace Massive
 			var minimal = SetUtils.GetMinimalSet(All).AliveIds;
 			foreach (var id in minimal)
 			{
-				OnAfterAdded(id);
+				AddEntity(id);
 			}
 		}
 
-		private void OnAfterAdded(int id)
+		public void AddEntity(int id)
 		{
 			if (IsSynced && SetUtils.AliveInAll(id, All) && Filter.Contains(id))
 			{
@@ -61,7 +62,7 @@ namespace Massive
 			}
 		}
 
-		private void OnBeforeDeleted(int id)
+		public void RemoveEntity(int id)
 		{
 			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense < GroupLength)
 			{

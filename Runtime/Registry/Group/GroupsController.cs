@@ -6,7 +6,7 @@ namespace Massive
 	public class GroupsController : IGroupsController
 	{
 		private readonly int _nonOwningDataCapacity;
-		private readonly HashSet<ISet> _ownedSets = new HashSet<ISet>();
+		private readonly Dictionary<ISet, IGroup> _ownedSets = new Dictionary<ISet, IGroup>();
 		private readonly Dictionary<int, IGroup> _groupsLookup = new Dictionary<int, IGroup>();
 
 		protected List<IGroup> CreatedGroups { get; } = new List<IGroup>();
@@ -16,10 +16,10 @@ namespace Massive
 			_nonOwningDataCapacity = nonOwningDataCapacity;
 		}
 
-		public IGroup EnsureGroup(ISet[] owned = null, ISet[] other = null, IFilter filter = null)
+		public IGroup EnsureGroup(IReadOnlyList<ISet> owned = null, IReadOnlyList<IReadOnlySet> other = null, IFilter filter = null)
 		{
 			owned ??= Array.Empty<ISet>();
-			other ??= Array.Empty<ISet>();
+			other ??= Array.Empty<IReadOnlySet>();
 			filter ??= EmptyFilter.Instance;
 
 			int ownedCode = GetUnorderedHash(owned);
@@ -29,18 +29,18 @@ namespace Massive
 
 			if (!_groupsLookup.TryGetValue(groupCode, out var group))
 			{
-				if (owned.Length == 0)
+				if (owned.Count == 0)
 				{
 					group = CreateNonOwningGroup(other, filter, _nonOwningDataCapacity);
 				}
 				else
 				{
 					ThrowIfGroupsConflicting(owned);
-					for (int i = 0; i < owned.Length; i++)
-					{
-						_ownedSets.Add(owned[i]);
-					}
 					group = CreateOwningGroup(owned, other, filter);
+					for (int i = 0; i < owned.Count; i++)
+					{
+						_ownedSets.Add(owned[i], group);
+					}
 				}
 
 				_groupsLookup.Add(groupCode, group);
@@ -52,21 +52,21 @@ namespace Massive
 			return group;
 		}
 
-		protected virtual IGroup CreateOwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null)
+		protected virtual IGroup CreateOwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> other = null, IFilter filter = null)
 		{
 			return new OwningGroup(owned, other, filter);
 		}
 
-		protected virtual IGroup CreateNonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
+		protected virtual IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
 		{
 			return new NonOwningGroup(other, filter, dataCapacity);
 		}
 
-		private void ThrowIfGroupsConflicting(ISet[] owned)
+		private void ThrowIfGroupsConflicting(IReadOnlyList<ISet> owned)
 		{
-			for (int i = 0; i < owned.Length; i++)
+			for (int i = 0; i < owned.Count; i++)
 			{
-				if (_ownedSets.Contains(owned[i]))
+				if (_ownedSets.ContainsKey(owned[i]))
 				{
 					throw new Exception("Set is already owned by another group.");
 				}

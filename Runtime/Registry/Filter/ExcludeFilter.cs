@@ -4,12 +4,12 @@ namespace Massive
 {
 	public class ExcludeFilter : IFilter
 	{
-		public IReadOnlySet[] Include => Array.Empty<ISet>();
+		public IReadOnlySet[] Include => Array.Empty<IReadOnlySet>();
 		public IReadOnlySet[] Exclude { get; }
 
-		public ExcludeFilter(ISet[] exclude = null)
+		public ExcludeFilter(IReadOnlySet[] exclude = null)
 		{
-			Exclude = exclude ?? Array.Empty<ISet>();
+			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
 		}
 
 		public bool Contains(int id)
@@ -17,6 +17,19 @@ namespace Massive
 			for (int i = 0; i < Exclude.Length; i++)
 			{
 				if (Exclude[i].IsAlive(id))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		public bool IsSubsetOf(IFilter other)
+		{
+			for (int i = 0; i < Exclude.Length; i++)
+			{
+				if (!other.Exclude.Contains(Exclude[i]))
 				{
 					return false;
 				}

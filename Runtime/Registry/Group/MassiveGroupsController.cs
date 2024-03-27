@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Massive
 {
@@ -37,14 +38,14 @@ namespace Massive
 			}
 		}
 
-		protected override IGroup CreateOwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null)
+		protected override IGroup CreateOwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> other = null, IFilter filter = null)
 		{
 			var massiveOwningGroup = new MassiveOwningGroup(owned, other, filter, _framesCapacity);
 			massiveOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
 			return massiveOwningGroup;
 		}
 
-		protected override IGroup CreateNonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
+		protected override IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
 		{
 			var massiveNonOwningGroup = new MassiveNonOwningGroup(other, filter, dataCapacity, _framesCapacity);
 			massiveNonOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it

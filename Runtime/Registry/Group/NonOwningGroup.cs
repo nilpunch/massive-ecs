@@ -1,33 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Massive
 {
 	public class NonOwningGroup : IGroup
 	{
 		private IFilter Filter { get; }
-		private ISet[] Other { get; }
+		private IReadOnlyList<IReadOnlySet> Other { get; }
 		protected ISet GroupSet { get; }
 
 		protected bool IsSynced { get; set; }
 
 		public ReadOnlySpan<int> GroupIds => GroupSet.AliveIds;
 
-		public NonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
+		public NonOwningGroup(IReadOnlyList<IReadOnlySet> other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
 			: this(other, new SparseSet(dataCapacity), filter)
 		{
 		}
 
-		protected NonOwningGroup(ISet[] other, ISet groupSet, IFilter filter = null)
+		protected NonOwningGroup(IReadOnlyList<IReadOnlySet> other, ISet groupSet, IFilter filter = null)
 		{
 			Other = other;
 			GroupSet = groupSet;
 			Filter = filter ?? EmptyFilter.Instance;
-
-			foreach (var set in Other)
-			{
-				set.AfterAdded += OnAfterAdded;
-				set.BeforeDeleted += OnBeforeDeleted;
-			}
 		}
 
 		public bool IsOwning(IReadOnlySet set)
@@ -48,23 +43,23 @@ namespace Massive
 			var minimal = SetUtils.GetMinimalSet(Other).AliveIds;
 			foreach (var id in minimal)
 			{
-				OnAfterAdded(id);
+				AddEntity(id);
 			}
 		}
 
-		private void OnAfterAdded(int id)
+		public void AddEntity(int entityId)
 		{
-			if (IsSynced && SetUtils.AliveInAll(id, Other) && Filter.Contains(id))
+			if (IsSynced && SetUtils.AliveInAll(entityId, Other) && Filter.Contains(entityId))
 			{
-				GroupSet.Ensure(id);
+				GroupSet.Ensure(entityId);
 			}
 		}
 
-		private void OnBeforeDeleted(int id)
+		public void RemoveEntity(int entityId)
 		{
 			if (IsSynced)
 			{
-				GroupSet.Delete(id);
+				GroupSet.Delete(entityId);
 			}
 		}
 	}

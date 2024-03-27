@@ -9,5 +9,9 @@ namespace Massive
 		void EnsureSynced();
 
 		bool IsOwning(IReadOnlySet set);
+
+		void AddEntity(int entityId);
+		
+		void RemoveEntity(int entityId);
 	}
 }

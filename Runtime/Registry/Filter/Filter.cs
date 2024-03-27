@@ -11,6 +11,14 @@ namespace Massive
 		{
 			Include = include ?? Array.Empty<IReadOnlySet>();
 			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
+
+			for (int i = 0; i < Exclude.Length; i++)
+			{
+				if (Include.Contains(Exclude[i]))
+				{
+					throw new Exception("Conflicting include and exclude filter!");
+				}
+			}
 		}
 
 		public bool Contains(int id)
@@ -26,6 +34,27 @@ namespace Massive
 			for (int i = 0; i < Exclude.Length; i++)
 			{
 				if (Exclude[i].IsAlive(id))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		public bool IsSubsetOf(IFilter other)
+		{
+			for (int i = 0; i < Include.Length; i++)
+			{
+				if (!other.Include.Contains(Include[i]))
+				{
+					return false;
+				}
+			}
+
+			for (int i = 0; i < Exclude.Length; i++)
+			{
+				if (!other.Exclude.Contains(Exclude[i]))
 				{
 					return false;
 				}
