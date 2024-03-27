@@ -35,7 +35,7 @@ namespace Massive
 				}
 				else
 				{
-					ThrowIfOwningConflicting(owned);
+					ThrowIfGroupsConflicting(owned);
 					for (int i = 0; i < owned.Length; i++)
 					{
 						_ownedSets.Add(owned[i]);
@@ -62,13 +62,13 @@ namespace Massive
 			return new NonOwningGroup(other, filter, dataCapacity);
 		}
 
-		private void ThrowIfOwningConflicting(ISet[] owned)
+		private void ThrowIfGroupsConflicting(ISet[] owned)
 		{
 			for (int i = 0; i < owned.Length; i++)
 			{
 				if (_ownedSets.Contains(owned[i]))
 				{
-					throw new Exception("Conflicting groups.");
+					throw new Exception("Set is already owned by another group.");
 				}
 			}
 		}
