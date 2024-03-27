@@ -26,7 +26,9 @@ namespace Massive
 			_massiveGroup.SaveFrame();
 			_cyclicFrameCounter.SaveFrame();
 
-			_syncedByFrames[_cyclicFrameCounter.CurrentFrame] = IsSynced;
+			var currentFrame = _cyclicFrameCounter.CurrentFrame;
+
+			_syncedByFrames[currentFrame] = IsSynced;
 		}
 
 		public void Rollback(int frames)
@@ -34,7 +36,9 @@ namespace Massive
 			_massiveGroup.Rollback(frames);
 			_cyclicFrameCounter.Rollback(frames);
 
-			IsSynced = _syncedByFrames[_cyclicFrameCounter.CurrentFrame];
+			var rollbackFrame = _cyclicFrameCounter.CurrentFrame;
+
+			IsSynced = _syncedByFrames[rollbackFrame];
 		}
 	}
 }
