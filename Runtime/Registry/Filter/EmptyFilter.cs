@@ -6,8 +6,8 @@ namespace Massive
 	{
 		public static EmptyFilter Instance { get; } = new EmptyFilter();
 
-		public ISet[] Include => Array.Empty<ISet>();
-		public ISet[] Exclude => Array.Empty<ISet>();
+		public IReadOnlySet[] Include => Array.Empty<ISet>();
+		public IReadOnlySet[] Exclude => Array.Empty<ISet>();
 
 		private EmptyFilter()
 		{

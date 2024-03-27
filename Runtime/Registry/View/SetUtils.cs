@@ -8,7 +8,7 @@ namespace Massive
 	public static class SetUtils
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AliveInAll(int id, ISet[] sets)
+		public static bool AliveInAll(int id, IReadOnlySet[] sets)
 		{
 			foreach (var set in sets)
 			{
@@ -22,7 +22,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool NotAliveInAll(int id, ISet[] sets)
+		public static bool NotAliveInAll(int id, IReadOnlySet[] sets)
 		{
 			foreach (var set in sets)
 			{
@@ -36,9 +36,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ISet GetMinimalSet(ISet[] sets)
+		public static IReadOnlySet GetMinimalSet(IReadOnlySet[] sets)
 		{
-			ISet minimal = sets[0];
+			IReadOnlySet minimal = sets[0];
 
 			for (int i = 1; i < sets.Length; i++)
 			{

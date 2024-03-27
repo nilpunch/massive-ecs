@@ -9,8 +9,8 @@ namespace Massive
 		where T1 : struct
 		where T2 : struct
 	{
-		private readonly IDataSet<T1> _components1;
-		private readonly IDataSet<T2> _components2;
+		private readonly IReadOnlyDataSet<T1> _components1;
+		private readonly IReadOnlyDataSet<T2> _components2;
 
 		public View(IRegistry registry)
 		{

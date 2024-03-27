@@ -10,16 +10,16 @@ namespace Massive
 		where T2 : struct
 	{
 		private readonly IFilter _filter;
-		private readonly IDataSet<T1> _components1;
-		private readonly IDataSet<T2> _components2;
-		private readonly ISet[] _componentsAndInclude;
+		private readonly IReadOnlyDataSet<T1> _components1;
+		private readonly IReadOnlyDataSet<T2> _components2;
+		private readonly IReadOnlySet[] _componentsAndInclude;
 
 		public FilterView(IRegistry registry, IFilter filter = null)
 		{
 			_filter = filter ?? EmptyFilter.Instance;
 			_components1 = registry.Components<T1>();
 			_components2 = registry.Components<T2>();
-			_componentsAndInclude = new ISet[_filter.Include.Length + 2];
+			_componentsAndInclude = new IReadOnlySet[_filter.Include.Length + 2];
 			_componentsAndInclude[0] = _components1;
 			_componentsAndInclude[1] = _components2;
 			_filter.Include.CopyTo(_componentsAndInclude, 2);

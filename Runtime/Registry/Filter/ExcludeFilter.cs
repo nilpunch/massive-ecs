@@ -4,8 +4,8 @@ namespace Massive
 {
 	public class ExcludeFilter : IFilter
 	{
-		public ISet[] Include => Array.Empty<ISet>();
-		public ISet[] Exclude { get; }
+		public IReadOnlySet[] Include => Array.Empty<ISet>();
+		public IReadOnlySet[] Exclude { get; }
 
 		public ExcludeFilter(ISet[] exclude = null)
 		{

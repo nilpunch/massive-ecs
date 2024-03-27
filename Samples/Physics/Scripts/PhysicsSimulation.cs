@@ -16,9 +16,9 @@ namespace Massive.Samples.Physics
 		[SerializeField] private float _gravity = 10f;
 
 		private MassiveRegistry _registry;
-		private IDataSet<PhysicsRigidbody> _bodies;
-		private IDataSet<PhysicsSphereCollider> _sphereColliders;
-		private IDataSet<PhysicsBoxCollider> _boxColliders;
+		private IReadOnlyDataSet<PhysicsRigidbody> _bodies;
+		private IReadOnlyDataSet<PhysicsSphereCollider> _sphereColliders;
+		private IReadOnlyDataSet<PhysicsBoxCollider> _boxColliders;
 		private EntitySynchronisation<PhysicsSphereCollider> _spheresSynchronisation;
 		private EntitySynchronisation<PhysicsBoxCollider> _boxesSynchronisation;
 

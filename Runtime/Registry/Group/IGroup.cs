@@ -8,6 +8,6 @@ namespace Massive
 
 		void EnsureSynced();
 
-		bool IsOwning(ISet set);
+		bool IsOwning(IReadOnlySet set);
 	}
 }

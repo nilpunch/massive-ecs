@@ -10,8 +10,8 @@ namespace Massive
 		where T2 : struct
 	{
 		private readonly IGroup _group;
-		private readonly IDataSet<T1> _components1;
-		private readonly IDataSet<T2> _components2;
+		private readonly IReadOnlyDataSet<T1> _components1;
+		private readonly IReadOnlyDataSet<T2> _components2;
 
 		public GroupView(IRegistry registry, IGroup group)
 		{

@@ -4,13 +4,13 @@ namespace Massive
 {
 	public class Filter : IFilter
 	{
-		public ISet[] Include { get; }
-		public ISet[] Exclude { get; }
+		public IReadOnlySet[] Include { get; }
+		public IReadOnlySet[] Exclude { get; }
 
-		public Filter(ISet[] include = null, ISet[] exclude = null)
+		public Filter(IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
 		{
-			Include = include ?? Array.Empty<ISet>();
-			Exclude = exclude ?? Array.Empty<ISet>();
+			Include = include ?? Array.Empty<IReadOnlySet>();
+			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
 		}
 
 		public bool Contains(int id)

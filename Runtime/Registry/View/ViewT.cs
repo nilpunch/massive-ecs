@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct View<T> where T : struct
 	{
-		private readonly IDataSet<T> _components;
+		private readonly IReadOnlyDataSet<T> _components;
 
 		public View(IRegistry registry)
 		{

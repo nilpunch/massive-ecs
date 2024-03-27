@@ -12,7 +12,7 @@ namespace Massive.Samples.Shooter
 			_entities = new AvailableEntities<TState>(entityFactory);
 		}
 
-		public void Synchronize(IDataSet<TState> data)
+		public void Synchronize(IReadOnlyDataSet<TState> data)
 		{
 			var aliveCount = data.AliveCount;
 

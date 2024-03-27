@@ -31,7 +31,7 @@ namespace Massive
 			}
 		}
 
-		public bool IsOwning(ISet set)
+		public bool IsOwning(IReadOnlySet set)
 		{
 			return Array.IndexOf(Owned, set) != -1;
 		}

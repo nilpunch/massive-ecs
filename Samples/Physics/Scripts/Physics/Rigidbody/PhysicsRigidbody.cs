@@ -79,7 +79,7 @@ namespace Massive.Samples.Physics
 			return Velocity + Vector3.Cross(AngularVelocity, point - WorldCenterOfMass.Position);
 		}
 
-		public static void IntegrateAll(IDataSet<PhysicsRigidbody> bodies, float deltaTime)
+		public static void IntegrateAll(IReadOnlyDataSet<PhysicsRigidbody> bodies, float deltaTime)
 		{
 			var aliveRigidbodies = bodies.AliveData;
 			for (var i = 0; i < aliveRigidbodies.Length; i++)
@@ -88,7 +88,7 @@ namespace Massive.Samples.Physics
 			}
 		}
 
-		public static void UpdateAllWorldInertia(IDataSet<PhysicsRigidbody> bodies)
+		public static void UpdateAllWorldInertia(IReadOnlyDataSet<PhysicsRigidbody> bodies)
 		{
 			var bodiesAlive = bodies.AliveData;
 			for (int i = 0; i < bodiesAlive.Length; i++)
@@ -97,7 +97,7 @@ namespace Massive.Samples.Physics
 			}
 		}
 
-		public static void RecalculateAllInertia(IDataSet<PhysicsRigidbody> bodies, IDataSet<PhysicsBoxCollider> boxes, IDataSet<PhysicsSphereCollider> spheres)
+		public static void RecalculateAllInertia(IReadOnlyDataSet<PhysicsRigidbody> bodies, IReadOnlyDataSet<PhysicsBoxCollider> boxes, IReadOnlyDataSet<PhysicsSphereCollider> spheres)
 		{
 			var bodiesAlive = bodies.AliveData;
 			var boxesAlive = boxes.AliveData;

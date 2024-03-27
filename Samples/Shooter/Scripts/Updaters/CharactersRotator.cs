@@ -7,7 +7,7 @@ namespace Massive.Samples.Shooter
 		[SerializeField] private float _rotation = 400f;
 
 		private IRegistry _registry;
-		private IDataSet<CharacterState> _characters;
+		private IReadOnlyDataSet<CharacterState> _characters;
 
 		public override void Init(IRegistry registry)
 		{

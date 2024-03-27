@@ -2,8 +2,8 @@ namespace Massive
 {
 	public interface IFilter
 	{
-		ISet[] Include { get; }
-		ISet[] Exclude { get; }
+		IReadOnlySet[] Include { get; }
+		IReadOnlySet[] Exclude { get; }
 
 		bool Contains(int id);
 	}

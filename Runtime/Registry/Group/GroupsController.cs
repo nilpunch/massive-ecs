@@ -80,10 +80,10 @@ namespace Massive
 			return CombineHashOrdered(include, exclude);
 		}
 
-		private static int GetUnorderedHash(ISet[] sets)
+		private static int GetUnorderedHash(IReadOnlyList<IReadOnlySet> sets)
 		{
 			int hash = 0;
-			for (var i = 0; i < sets.Length; i++)
+			for (var i = 0; i < sets.Count; i++)
 			{
 				hash ^= sets[i].GetHashCode();
 			}

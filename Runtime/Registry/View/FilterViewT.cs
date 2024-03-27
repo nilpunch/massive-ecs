@@ -8,14 +8,14 @@ namespace Massive
 	public class FilterView<T> where T : struct
 	{
 		private readonly IFilter _filter;
-		private readonly IDataSet<T> _components;
-		private readonly ISet[] _componentsAndInclude;
+		private readonly IReadOnlyDataSet<T> _components;
+		private readonly IReadOnlySet[] _componentsAndInclude;
 
 		public FilterView(IRegistry registry, IFilter filter = null)
 		{
 			_filter = filter ?? EmptyFilter.Instance;
 			_components = registry.Components<T>();
-			_componentsAndInclude = new ISet[_filter.Include.Length + 1];
+			_componentsAndInclude = new IReadOnlySet[_filter.Include.Length + 1];
 			_componentsAndInclude[0] = _components;
 			_filter.Include.CopyTo(_componentsAndInclude, 1);
 		}

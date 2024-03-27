@@ -7,8 +7,8 @@ namespace Massive.Samples.Benchmark
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
 		private MassiveRegistry _registry;
-		private IDataSet<TestState> _testStates1;
-		private IDataSet<TestState2> _testStates2;
+		private IReadOnlyDataSet<TestState> _testStates1;
+		private IReadOnlyDataSet<TestState2> _testStates2;
 
 		private void Start()
 		{

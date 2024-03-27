@@ -16,14 +16,14 @@ namespace Massive.PerformanceTests
 		{
 			_registry = new Registry(EntitiesCount).FillRegistryWith50Components();
 
-			var includeFilter = new ISet[]
+			var includeFilter = new IReadOnlySet[]
 			{
 				_registry.Any<TestState64>(),
 				_registry.Any<TestState64_2>(),
 				_registry.Any<TestState64_3>(),
 			};
 
-			var excludeFilter = new ISet[]
+			var excludeFilter = new IReadOnlySet[]
 			{
 				_registry.Any<TestState64<byte, int, int>>(),
 				_registry.Any<TestState64<int, byte, int>>(),

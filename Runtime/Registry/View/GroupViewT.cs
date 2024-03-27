@@ -8,7 +8,7 @@ namespace Massive
 	public readonly struct GroupView<T> where T : struct
 	{
 		private readonly IGroup _group;
-		private readonly IDataSet<T> _components;
+		private readonly IReadOnlyDataSet<T> _components;
 
 		public GroupView(IRegistry registry, IGroup group)
 		{
