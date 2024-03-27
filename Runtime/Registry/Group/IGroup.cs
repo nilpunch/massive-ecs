@@ -6,8 +6,6 @@ namespace Massive
 	{
 		ReadOnlySpan<int> GroupIds { get; }
 
-		int Length { get; }
-
 		void EnsureSynced();
 
 		bool IsOwning(ISet set);

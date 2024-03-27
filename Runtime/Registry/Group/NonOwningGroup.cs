@@ -6,23 +6,21 @@ namespace Massive
 	{
 		private IFilter Filter { get; }
 		private ISet[] Other { get; }
-		protected ISet Group { get; }
+		protected ISet GroupSet { get; }
 
 		protected bool IsSynced { get; set; }
 
-		public ReadOnlySpan<int> GroupIds => Group.AliveIds;
-
-		public int Length => Group.AliveCount;
+		public ReadOnlySpan<int> GroupIds => GroupSet.AliveIds;
 
 		public NonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
 			: this(other, new SparseSet(dataCapacity), filter)
 		{
 		}
 
-		protected NonOwningGroup(ISet[] other, ISet group, IFilter filter = null)
+		protected NonOwningGroup(ISet[] other, ISet groupSet, IFilter filter = null)
 		{
 			Other = other;
-			Group = group;
+			GroupSet = groupSet;
 			Filter = filter ?? EmptyFilter.Instance;
 
 			foreach (var set in Other)
@@ -44,7 +42,7 @@ namespace Massive
 				return;
 			}
 
-			Group.Clear();
+			GroupSet.Clear();
 			var minimal = SetUtils.GetMinimalSet(Other).AliveIds;
 			foreach (var id in minimal)
 			{
@@ -58,7 +56,7 @@ namespace Massive
 		{
 			if (IsSynced && SetUtils.AliveInAll(id, Other) && Filter.Contains(id))
 			{
-				Group.Ensure(id);
+				GroupSet.Ensure(id);
 			}
 		}
 
@@ -66,7 +64,7 @@ namespace Massive
 		{
 			if (IsSynced)
 			{
-				Group.Delete(id);
+				GroupSet.Delete(id);
 			}
 		}
 	}
