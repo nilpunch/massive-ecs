@@ -6,18 +6,20 @@ namespace Massive
 {
 	public class Registry : IRegistry
 	{
+		public IGroupsController Groups { get; }
 		public ISetFactory SetFactory { get; }
 		public Dictionary<Type, ISet> SetsLookup { get; }
 		public List<ISet> AllSets { get; }
 		public Identifiers Entities { get; }
 
 		public Registry(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
-			: this(new NormalSetFactory(dataCapacity, storeTagsAsComponents))
+			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeTagsAsComponents))
 		{
 		}
 
-		protected Registry(ISetFactory setFactory)
+		protected Registry(IGroupsController groups, ISetFactory setFactory)
 		{
+			Groups = groups;
 			SetFactory = setFactory;
 			SetsLookup = new Dictionary<Type, ISet>();
 			AllSets = new List<ISet>();

@@ -5,6 +5,7 @@ namespace Massive
 {
 	public interface IRegistry
 	{
+		IGroupsController Groups { get; }
 		ISetFactory SetFactory { get; }
 		Dictionary<Type, ISet> SetsLookup { get; }
 		List<ISet> AllSets { get; }
