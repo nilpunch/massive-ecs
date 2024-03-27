@@ -12,6 +12,8 @@ namespace Massive
 
 		protected bool IsSynced { get; set; }
 
+		public ReadOnlySpan<int> GroupIds => Owned[0].AliveIds.Slice(0, Length);
+
 		public int Length { get; private set; }
 
 		public OwningGroup(ISet[] owned, ISet[] other = null, IFilter filter = null)
@@ -29,6 +31,11 @@ namespace Massive
 			}
 		}
 
+		public bool IsOwning(ISet set)
+		{
+			return Array.IndexOf(Owned, set) != -1;
+		}
+
 		public void EnsureSynced()
 		{
 			if (IsSynced)
@@ -36,18 +43,14 @@ namespace Massive
 				return;
 			}
 
-			SortOwned();
-			IsSynced = true;
-		}
-
-		private void SortOwned()
-		{
 			Length = 0;
 			var minimal = SetUtils.GetMinimalSet(All).AliveIds;
 			foreach (var id in minimal)
 			{
 				OnAfterAdded(id);
 			}
+
+			IsSynced = true;
 		}
 
 		private void OnAfterAdded(int id)

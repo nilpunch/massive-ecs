@@ -4,7 +4,8 @@ namespace Massive
 	{
 		private readonly IMassive _massiveGroup;
 
-		public MassiveNonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
+		public MassiveNonOwningGroup(ISet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity,
+			int framesCapacity = Constants.FramesCapacity)
 			: base(other, new MassiveSparseSet(dataCapacity, framesCapacity), filter)
 		{
 			// Fetch instance from base

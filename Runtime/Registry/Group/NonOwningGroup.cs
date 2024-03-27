@@ -1,4 +1,6 @@
-﻿namespace Massive
+﻿using System;
+
+namespace Massive
 {
 	public class NonOwningGroup : IGroup
 	{
@@ -7,6 +9,8 @@
 		protected ISet Group { get; }
 
 		protected bool IsSynced { get; set; }
+
+		public ReadOnlySpan<int> GroupIds => Group.AliveIds;
 
 		public int Length => Group.AliveCount;
 
@@ -28,6 +32,11 @@
 			}
 		}
 
+		public bool IsOwning(ISet set)
+		{
+			return false;
+		}
+
 		public void EnsureSynced()
 		{
 			if (IsSynced)
@@ -35,18 +44,14 @@
 				return;
 			}
 
-			SortGroup();
-			IsSynced = true;
-		}
-
-		private void SortGroup()
-		{
 			Group.Clear();
 			var minimal = SetUtils.GetMinimalSet(Other).AliveIds;
 			foreach (var id in minimal)
 			{
 				OnAfterAdded(id);
 			}
+
+			IsSynced = true;
 		}
 
 		private void OnAfterAdded(int id)
