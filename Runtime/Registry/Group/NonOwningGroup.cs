@@ -42,14 +42,14 @@ namespace Massive
 				return;
 			}
 
+			IsSynced = true;
+
 			GroupSet.Clear();
 			var minimal = SetUtils.GetMinimalSet(Other).AliveIds;
 			foreach (var id in minimal)
 			{
 				OnAfterAdded(id);
 			}
-
-			IsSynced = true;
 		}
 
 		private void OnAfterAdded(int id)

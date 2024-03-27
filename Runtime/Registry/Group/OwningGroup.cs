@@ -43,13 +43,13 @@ namespace Massive
 				return;
 			}
 
+			IsSynced = true;
+
 			var minimal = SetUtils.GetMinimalSet(All).AliveIds;
 			foreach (var id in minimal)
 			{
 				OnAfterAdded(id);
 			}
-
-			IsSynced = true;
 		}
 
 		private void OnAfterAdded(int id)
