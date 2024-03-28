@@ -7,7 +7,7 @@ namespace Massive
 	public class GroupsController : IGroupsController
 	{
 		private readonly int _nonOwningDataCapacity;
-		private readonly Dictionary<ISet, IGroup> _ownedSupersets = new Dictionary<ISet, IGroup>();
+		private readonly Dictionary<ISet, IGroup> _ownedBase = new Dictionary<ISet, IGroup>();
 		private readonly Dictionary<int, IGroup> _groupsLookup = new Dictionary<int, IGroup>();
 
 		protected List<IGroup> CreatedGroups { get; } = new List<IGroup>();
@@ -34,7 +34,7 @@ namespace Massive
 				group.EnsureSynced();
 				return group;
 			}
-			
+
 			// If non-owning, then just create new one
 			if (owned.Length == 0)
 			{
@@ -50,7 +50,7 @@ namespace Massive
 				group = CreateOwningGroup(owned, other, filter);
 				for (int i = 0; i < owned.Length; i++)
 				{
-					_ownedSupersets.Add(owned[i], group);
+					_ownedBase.Add(owned[i], group);
 				}
 				_groupsLookup.Add(groupCode, group);
 				CreatedGroups.Add(group);
@@ -60,11 +60,7 @@ namespace Massive
 				return group;
 			}
 
-			throw new NotImplementedException();
-			
-			// Everything beneath this line is WIP
-			
-			var superset = _ownedSupersets[owned[0]];
+			var superset = _ownedBase[owned[0]];
 
 			if (superset.BaseForGroup(owned, other, filter))
 			{
@@ -73,20 +69,18 @@ namespace Massive
 					superset = superset.ExtendedGroup;
 				}
 
+				if (superset.ExtendedGroup != null && !superset.ExtendedGroup.ExtendsGroup(owned, other, filter))
+				{
+					throw new Exception("Conflicting groups.");
+				}
+
 				if (superset.ExtendedGroup != null)
 				{
-					if (superset.ExtendedGroup.ExtendsGroup(owned, other, filter))
-					{
-						group = CreateOwningGroup(owned, other, filter);
+					group = CreateOwningGroup(owned, other, filter);
 
-						var supersetExtendedGroup = superset.ExtendedGroup;
-						supersetExtendedGroup.ExtendedGroup = group;
-						group.ExtendedGroup = supersetExtendedGroup;
-					}
-					else
-					{
-						throw new Exception("Conflicting groups.");
-					}
+					var supersetExtendedGroup = superset.ExtendedGroup;
+					supersetExtendedGroup.ExtendedGroup = group;
+					group.ExtendedGroup = supersetExtendedGroup;
 				}
 				else
 				{
@@ -106,7 +100,12 @@ namespace Massive
 			{
 				group = CreateOwningGroup(owned, other, filter);
 				group.ExtendedGroup = superset;
-				_ownedSupersets[owned[0]] = group;
+				
+				for (int i = 0; i < owned.Length; i++)
+				{
+					_ownedBase[owned[i]] = group;
+				}
+				
 				_groupsLookup.Add(groupCode, group);
 				CreatedGroups.Add(group);
 				
@@ -114,7 +113,6 @@ namespace Massive
 				
 				return group;
 			}
-
 
 			return group;
 		}
@@ -141,7 +139,7 @@ namespace Massive
 		{
 			for (int i = 0; i < owned.Length; i++)
 			{
-				if (_ownedSupersets.ContainsKey(owned[i]))
+				if (_ownedBase.ContainsKey(owned[i]))
 				{
 					return true;
 				}

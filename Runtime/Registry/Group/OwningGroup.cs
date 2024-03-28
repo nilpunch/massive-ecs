@@ -64,12 +64,14 @@ namespace Massive
 			}
 
 			IsSynced = true;
-
+			
 			var minimal = SetUtils.GetMinimalSet(All).AliveIds;
 			foreach (var id in minimal)
 			{
 				AddEntity(id);
 			}
+
+			ExtendedGroup?.EnsureSynced();
 		}
 
 		public void AddEntity(int id)
@@ -78,6 +80,8 @@ namespace Massive
 			{
 				SwapEntry(id, GroupLength);
 				GroupLength += 1;
+				
+				ExtendedGroup?.AddEntity(id);
 			}
 		}
 
@@ -85,6 +89,8 @@ namespace Massive
 		{
 			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense < GroupLength)
 			{
+				ExtendedGroup?.RemoveEntity(id);
+				
 				GroupLength -= 1;
 				SwapEntry(id, GroupLength);
 			}
