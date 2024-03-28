@@ -38,7 +38,7 @@ namespace Massive
 				if (_components1.TryGetDense(id, out var dense1)
 				    && _components2.TryGetDense(id, out var dense2))
 				{
-					if (_filter.Contains(id))
+					if (_filter.ContainsId(id))
 					{
 						action.Invoke(id, ref data1[dense1], ref data2[dense2]);
 					}
@@ -59,7 +59,7 @@ namespace Massive
 				if (_components1.TryGetDense(id, out var dense1)
 				    && _components2.TryGetDense(id, out var dense2))
 				{
-					if (_filter.Contains(id))
+					if (_filter.ContainsId(id))
 					{
 						action.Invoke(id, ref data1[dense1], ref data2[dense2], extra);
 					}

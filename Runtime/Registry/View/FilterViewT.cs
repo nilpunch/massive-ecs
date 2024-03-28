@@ -31,7 +31,7 @@ namespace Massive
 				int id = ids[i];
 				if (_components.TryGetDense(id, out var dense))
 				{
-					if (_filter.Contains(id))
+					if (_filter.ContainsId(id))
 					{
 						action.Invoke(id, ref data[dense]);
 					}
@@ -50,7 +50,7 @@ namespace Massive
 				int id = ids[i];
 				if (_components.TryGetDense(id, out var dense))
 				{
-					if (_filter.Contains(id))
+					if (_filter.ContainsId(id))
 					{
 						action.Invoke(id, ref data[dense], extra);
 					}

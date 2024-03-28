@@ -5,8 +5,8 @@ namespace Massive
 		IReadOnlySet[] Include { get; }
 		IReadOnlySet[] Exclude { get; }
 
-		bool Contains(int id);
+		bool ContainsId(int id);
 
-		bool IsSubsetOf(IFilter other);
+		bool Contains(IFilter other);
 	}
 }

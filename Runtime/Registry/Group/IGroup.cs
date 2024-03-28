@@ -11,7 +11,7 @@ namespace Massive
 
 		IReadOnlySet[] Other { get; }
 
-		List<IGroup> Children { get; }
+		IGroup ExtendedGroup { get; set; }
 
 		ReadOnlySpan<int> GroupIds { get; }
 
@@ -19,8 +19,12 @@ namespace Massive
 
 		bool IsOwning(IReadOnlySet set);
 
-		bool IsSubsetOf(IGroup group);
+		bool ExtendsGroup(IGroup group);
+		
+		bool ExtendsGroup(ISet[] owned, IReadOnlySet[] other, IFilter filter);
 
+		bool BaseForGroup(ISet[] owned, IReadOnlySet[] other, IFilter filter);
+		
 		void AddEntity(int entityId);
 
 		void RemoveEntity(int entityId);

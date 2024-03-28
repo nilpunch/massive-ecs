@@ -13,14 +13,14 @@ namespace Massive
 		{
 		}
 
-		public bool Contains(int id)
+		public bool ContainsId(int id)
 		{
 			return true;
 		}
 
-		public bool IsSubsetOf(IFilter other)
+		public bool Contains(IFilter other)
 		{
-			return true;
+			return other.Include.Length == 0 && other.Exclude.Length == 0;
 		}
 	}
 }

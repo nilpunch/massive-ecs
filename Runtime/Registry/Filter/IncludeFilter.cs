@@ -12,7 +12,7 @@ namespace Massive
 			Include = include ?? Array.Empty<IReadOnlySet>();
 		}
 
-		public bool Contains(int id)
+		public bool ContainsId(int id)
 		{
 			for (int i = 0; i < Include.Length; i++)
 			{
@@ -25,9 +25,9 @@ namespace Massive
 			return true;
 		}
 
-		public bool IsSubsetOf(IFilter other)
+		public bool Contains(IFilter other)
 		{
-			return Include.IsSubsetOf(other.Include);
+			return Include.Contains(other.Include);
 		}
 	}
 }

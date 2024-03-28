@@ -26,7 +26,7 @@ namespace Massive
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				if (_filter.Contains(id))
+				if (_filter.ContainsId(id))
 				{
 					action.Invoke(id);
 				}
@@ -43,7 +43,7 @@ namespace Massive
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				if (_filter.Contains(id))
+				if (_filter.ContainsId(id))
 				{
 					action.Invoke(id, extra);
 				}

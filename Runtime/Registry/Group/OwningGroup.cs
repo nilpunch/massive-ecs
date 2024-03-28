@@ -17,7 +17,7 @@ namespace Massive
 
 		public IReadOnlySet[] Other { get; }
 
-		public List<IGroup> Children { get; } = new List<IGroup>();
+		public IGroup ExtendedGroup { get; set; }
 
 		public ReadOnlySpan<int> GroupIds => Owned[0].AliveIds.Slice(0, GroupLength);
 
@@ -41,9 +41,19 @@ namespace Massive
 			return Owned.Contains(set);
 		}
 
-		public bool IsSubsetOf(IGroup group)
+		public bool ExtendsGroup(IGroup group)
 		{
-			return Filter.IsSubsetOf(group.Filter) && Owned.IsSubsetOf(group.Owned) && Other.IsSubsetOf(group.Other);
+			return ExtendsGroup(group.Owned, group.Other, group.Filter);
+		}
+
+		public bool ExtendsGroup(ISet[] owned, IReadOnlySet[] other, IFilter filter)
+		{
+			return Owned.Contains(owned) && Other.Contains(other) && Filter.Contains(filter);
+		}
+
+		public bool BaseForGroup(ISet[] owned, IReadOnlySet[] other, IFilter filter)
+		{
+			return owned.Contains(Owned) && other.Contains(Other) && filter.Contains(Filter);
 		}
 
 		public void EnsureSynced()
@@ -64,7 +74,7 @@ namespace Massive
 
 		public void AddEntity(int id)
 		{
-			if (IsSynced && SetUtils.AliveInAll(id, All) && Filter.Contains(id))
+			if (IsSynced && SetUtils.AliveInAll(id, All) && Filter.ContainsId(id))
 			{
 				SwapEntry(id, GroupLength);
 				GroupLength += 1;

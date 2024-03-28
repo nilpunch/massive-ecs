@@ -21,7 +21,7 @@ namespace Massive
 			}
 		}
 
-		public bool Contains(int id)
+		public bool ContainsId(int id)
 		{
 			for (int i = 0; i < Include.Length; i++)
 			{
@@ -42,9 +42,9 @@ namespace Massive
 			return true;
 		}
 
-		public bool IsSubsetOf(IFilter other)
+		public bool Contains(IFilter other)
 		{
-			return Include.IsSubsetOf(other.Include) && Exclude.IsSubsetOf(other.Exclude);
+			return Include.Contains(other.Include) && Exclude.Contains(other.Exclude);
 		}
 	}
 }
