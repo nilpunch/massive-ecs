@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Massive
 {
 	public class GroupsController : IGroupsController
 	{
 		private readonly int _nonOwningDataCapacity;
-		private readonly Dictionary<ISet, IGroup> _ownedBase = new Dictionary<ISet, IGroup>();
+		private readonly Dictionary<ISet, LinkedList<IGroup>> _ownedBase = new Dictionary<ISet, LinkedList<IGroup>>();
 		private readonly Dictionary<int, IGroup> _groupsLookup = new Dictionary<int, IGroup>();
 
 		protected List<IGroup> CreatedGroups { get; } = new List<IGroup>();
@@ -17,16 +16,16 @@ namespace Massive
 			_nonOwningDataCapacity = nonOwningDataCapacity;
 		}
 
-		public IGroup EnsureGroup(ISet[] owned = null, IReadOnlySet[] other = null, IFilter filter = null)
+		public IGroup EnsureGroup(ISet[] owned = null, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
 		{
 			owned ??= Array.Empty<ISet>();
-			other ??= Array.Empty<IReadOnlySet>();
-			filter ??= EmptyFilter.Instance;
+			include ??= Array.Empty<IReadOnlySet>();
+			exclude ??= Array.Empty<IReadOnlySet>();
 
 			int ownedCode = owned.GetUnorderedHashCode();
-			int otherCode = other.GetUnorderedHashCode();
-			int filterCode = GetFilterHash(filter);
-			int groupCode = CombineHashOrdered(CombineHashOrdered(ownedCode, otherCode), filterCode);
+			int includeCode = include.GetUnorderedHashCode();
+			int excludeCode = exclude.GetUnorderedHashCode();
+			int groupCode = CombineHashOrdered(CombineHashOrdered(ownedCode, includeCode), excludeCode);
 
 			// Try get existing
 			if (_groupsLookup.TryGetValue(groupCode, out var group))
@@ -38,121 +37,83 @@ namespace Massive
 			// If non-owning, then just create new one
 			if (owned.Length == 0)
 			{
-				group = CreateNonOwningGroup(other, filter, _nonOwningDataCapacity);
-				group.EnsureSynced();
-				_groupsLookup.Add(groupCode, group);
-				CreatedGroups.Add(group);
-				return group;
+				group = CreateNonOwningGroup(include, exclude, _nonOwningDataCapacity);
 			}
-
-			if (!IsConflicting(owned))
+			// Create new owning group if there is no conflicts
+			else if (!_ownedBase.TryGetValue(owned[0], out var owningGroups))
 			{
-				group = CreateOwningGroup(owned, other, filter);
-				for (int i = 0; i < owned.Length; i++)
+				group = CreateOwningGroup(owned, include, exclude);
+				owningGroups = new LinkedList<IGroup>(new[] { group });
+				foreach (var set in owned)
 				{
-					_ownedBase.Add(owned[i], group);
+					_ownedBase.Add(set, owningGroups);
 				}
-				_groupsLookup.Add(groupCode, group);
-				CreatedGroups.Add(group);
-	
-				group.EnsureSynced();
-
-				return group;
 			}
-
-			var superset = _ownedBase[owned[0]];
-
-			if (superset.BaseForGroup(owned, other, filter))
+			// Try to create new group as nested
+			else if (owningGroups.First.Value.BaseForGroup(owned, include, exclude))
 			{
-				while (superset.ExtendedGroup != null && superset.ExtendedGroup.BaseForGroup(owned, other, filter))
+				var owningList = _ownedBase[owned[0]];
+				var baseGroupNode = owningList.First;
+				
+				// Find most nested group that is base for our
+				while (baseGroupNode.Next != null && baseGroupNode.Next.Value.BaseForGroup(owned, include, exclude))
 				{
-					superset = superset.ExtendedGroup;
+					baseGroupNode = baseGroupNode.Next;
 				}
-
-				if (superset.ExtendedGroup != null && !superset.ExtendedGroup.ExtendsGroup(owned, other, filter))
+				
+				// Check if the next group extends ours
+				if (baseGroupNode.Next != null && !baseGroupNode.Next.Value.ExtendsGroup(owned, include, exclude))
 				{
 					throw new Exception("Conflicting groups.");
 				}
-
-				if (superset.ExtendedGroup != null)
-				{
-					group = CreateOwningGroup(owned, other, filter);
-
-					var supersetExtendedGroup = superset.ExtendedGroup;
-					supersetExtendedGroup.ExtendedGroup = group;
-					group.ExtendedGroup = supersetExtendedGroup;
-				}
-				else
-				{
-					group = CreateOwningGroup(owned, other, filter);
-					superset.ExtendedGroup = group;
-				}
 				
-				_groupsLookup.Add(groupCode, group);
-				CreatedGroups.Add(group);
-				
-				group.EnsureSynced();
-				
-				return group;
+				group = CreateOwningGroup(owned, include, exclude);
+				owningList.AddAfter(baseGroupNode, group);
 			}
-
-			if (superset.ExtendsGroup(owned, other, filter))
+			// Try to create group as base one
+			else if (owningGroups.First.Value.ExtendsGroup(owned, include, exclude))
 			{
-				group = CreateOwningGroup(owned, other, filter);
-				group.ExtendedGroup = superset;
+				group = CreateOwningGroup(owned, include, exclude);
+				owningGroups.AddBefore(owningGroups.First, group);
 				
-				for (int i = 0; i < owned.Length; i++)
+				foreach (var set in owned)
 				{
-					_ownedBase[owned[i]] = group;
+					_ownedBase[set] = owningGroups;
 				}
-				
-				_groupsLookup.Add(groupCode, group);
-				CreatedGroups.Add(group);
-				
-				group.EnsureSynced();
-				
-				return group;
+			}
+			else
+			{
+				throw new Exception("Conflicting groups.");
 			}
 
+			_groupsLookup.Add(groupCode, group);
+			CreatedGroups.Add(group);
+			group.EnsureSynced();
+			
 			return group;
 		}
 
-		protected virtual IGroup CreateOwningGroup(ISet[] owned, IReadOnlySet[] other = null, IFilter filter = null)
+		protected virtual IGroup CreateOwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
 		{
-			return new OwningGroup(owned, other, filter);
+			return new OwningGroup(owned, include, exclude);
 		}
 
-		protected virtual IGroup CreateNonOwningGroup(IReadOnlySet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
+		protected virtual IGroup CreateNonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = Constants.DataCapacity)
 		{
-			return new NonOwningGroup(other, filter, dataCapacity);
-		}
-
-		private void ThrowIfGroupsConflicting(ISet[] owned)
-		{
-			if (IsConflicting(owned))
-			{
-				throw new Exception("Set is already owned by another group.");
-			}
+			return new NonOwningGroup(include, exclude, dataCapacity);
 		}
 
 		private bool IsConflicting(ISet[] owned)
 		{
-			for (int i = 0; i < owned.Length; i++)
+			foreach (var set in owned)
 			{
-				if (_ownedBase.ContainsKey(owned[i]))
+				if (_ownedBase.ContainsKey(set))
 				{
 					return true;
 				}
 			}
 
 			return false;
-		}
-		
-		private static int GetFilterHash(IFilter filter)
-		{
-			int include = filter.Include.GetUnorderedHashCode();
-			int exclude = filter.Exclude.GetUnorderedHashCode();
-			return CombineHashOrdered(include, exclude);
 		}
 
 		private static int CombineHashOrdered(int a, int b)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Massive
@@ -11,49 +10,35 @@ namespace Massive
 		protected bool IsSynced { set; get; }
 		protected int GroupLength { get; set; }
 
-		public IFilter Filter { get; }
-
 		public ISet[] Owned { get; }
 
-		public IReadOnlySet[] Other { get; }
+		public IReadOnlySet[] Include { get; }
+		
+		public IReadOnlySet[] Exclude { get; }
 
 		public IGroup ExtendedGroup { get; set; }
 
 		public ReadOnlySpan<int> GroupIds => Owned[0].AliveIds.Slice(0, GroupLength);
 
-		public OwningGroup(ISet[] owned, IReadOnlySet[] other = null, IFilter filter = null)
+		public OwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
 		{
 			Owned = owned;
-			Other = other ?? Array.Empty<IReadOnlySet>();
-			Filter = filter ?? EmptyFilter.Instance;
+			Include = include ?? Array.Empty<IReadOnlySet>();
+			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
 
-			All = Owned.Concat(Other).ToArray();
+			All = Owned.Concat(Include).ToArray();
 
 			foreach (var set in All)
 			{
-				set.AfterAdded += AddEntity;
-				set.BeforeDeleted += RemoveEntity;
+				set.AfterAdded += AddToGroup;
+				set.BeforeDeleted += RemoveFromGroup;
 			}
-		}
 
-		public bool IsOwning(IReadOnlySet set)
-		{
-			return Owned.Contains(set);
-		}
-
-		public bool ExtendsGroup(IGroup group)
-		{
-			return ExtendsGroup(group.Owned, group.Other, group.Filter);
-		}
-
-		public bool ExtendsGroup(ISet[] owned, IReadOnlySet[] other, IFilter filter)
-		{
-			return Owned.Contains(owned) && Other.Contains(other) && Filter.Contains(filter);
-		}
-
-		public bool BaseForGroup(ISet[] owned, IReadOnlySet[] other, IFilter filter)
-		{
-			return owned.Contains(Owned) && other.Contains(Other) && filter.Contains(Filter);
+			foreach (var set in Exclude)
+			{
+				set.AfterAdded += RemoveFromGroup;
+				set.BeforeDeleted += AddToGroupWhenRemovedFromFilter;
+			}
 		}
 
 		public void EnsureSynced()
@@ -68,29 +53,56 @@ namespace Massive
 			var minimal = SetUtils.GetMinimalSet(All).AliveIds;
 			foreach (var id in minimal)
 			{
-				AddEntity(id);
+				AddToGroup(id);
 			}
 		}
 
-		public void AddEntity(int id)
+		public bool IsOwning(IReadOnlySet set)
 		{
-			if (IsSynced && SetUtils.AliveInAll(id, All) && Owned[0].GetDense(id) >= GroupLength && Filter.ContainsId(id))
+			return Owned.Contains(set);
+		}
+
+		public bool ExtendsGroup(IGroup group)
+		{
+			return ExtendsGroup(group.Owned, group.Include, group.Exclude);
+		}
+
+		public bool ExtendsGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude)
+		{
+			return Owned.Contains(owned) && Include.Contains(include) && Exclude.Contains(exclude);
+		}
+
+		public bool BaseForGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude)
+		{
+			return owned.Contains(Owned) && include.Contains(Include) && exclude.Contains(Exclude);
+		}
+
+		private void AddToGroup(int id)
+		{
+			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetUtils.AliveInAll(id, All)
+			    && SetUtils.NotAliveInAll(id, Exclude))
 			{
 				SwapEntry(id, GroupLength);
 				GroupLength += 1;
-				
-				ExtendedGroup?.AddEntity(id);
 			}
 		}
 
-		public void RemoveEntity(int id)
+		private void RemoveFromGroup(int id)
 		{
 			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense < GroupLength)
 			{
-				ExtendedGroup?.RemoveEntity(id);
-				
 				GroupLength -= 1;
 				SwapEntry(id, GroupLength);
+			}
+		}
+
+		private void AddToGroupWhenRemovedFromFilter(int id)
+		{
+			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetUtils.AliveInAll(id, All)
+			    && SetUtils.CountAliveInAll(id, Exclude) == 1)
+			{
+				SwapEntry(id, GroupLength);
+				GroupLength += 1;
 			}
 		}
 

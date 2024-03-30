@@ -8,6 +8,21 @@ namespace Massive
 	public static class SetUtils
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int CountAliveInAll(int id, IReadOnlySet[] sets)
+		{
+			int counter = 0;
+			foreach (var set in sets)
+			{
+				if (set.IsAlive(id))
+				{
+					counter += 1;
+				}
+			}
+
+			return counter;
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AliveInAll(int id, IReadOnlySet[] sets)
 		{
 			foreach (var set in sets)

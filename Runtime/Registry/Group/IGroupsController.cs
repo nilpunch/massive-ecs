@@ -2,6 +2,6 @@ namespace Massive
 {
 	public interface IGroupsController
 	{
-		IGroup EnsureGroup(ISet[] owned = null, IReadOnlySet[] other = null, IFilter filter = null);
+		IGroup EnsureGroup(ISet[] owned = null, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null);
 	}
 }

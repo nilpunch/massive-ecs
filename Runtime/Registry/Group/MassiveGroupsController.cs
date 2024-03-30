@@ -37,16 +37,16 @@ namespace Massive
 			}
 		}
 
-		protected override IGroup CreateOwningGroup(ISet[] owned, IReadOnlySet[] other = null, IFilter filter = null)
+		protected override IGroup CreateOwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
 		{
-			var massiveOwningGroup = new MassiveOwningGroup(owned, other, filter, _framesCapacity);
+			var massiveOwningGroup = new MassiveOwningGroup(owned, include, exclude, _framesCapacity);
 			massiveOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
 			return massiveOwningGroup;
 		}
 
-		protected override IGroup CreateNonOwningGroup(IReadOnlySet[] other, IFilter filter = null, int dataCapacity = Constants.DataCapacity)
+		protected override IGroup CreateNonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = Constants.DataCapacity)
 		{
-			var massiveNonOwningGroup = new MassiveNonOwningGroup(other, filter, dataCapacity, _framesCapacity);
+			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, dataCapacity, _framesCapacity);
 			massiveNonOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
 			return massiveNonOwningGroup;
 		}
