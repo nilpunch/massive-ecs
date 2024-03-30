@@ -54,19 +54,19 @@ namespace Massive
 			{
 				var owningList = _ownedBase[owned[0]];
 				var baseGroupNode = owningList.First;
-				
+
 				// Find most nested group that is base for our
 				while (baseGroupNode.Next != null && baseGroupNode.Next.Value.BaseForGroup(owned, include, exclude))
 				{
 					baseGroupNode = baseGroupNode.Next;
 				}
-				
+
 				// Check if the next group extends ours
 				if (baseGroupNode.Next != null && !baseGroupNode.Next.Value.ExtendsGroup(owned, include, exclude))
 				{
 					throw new Exception("Conflicting groups.");
 				}
-				
+
 				group = CreateOwningGroup(owned, include, exclude);
 				owningList.AddAfter(baseGroupNode, group);
 			}
@@ -75,7 +75,7 @@ namespace Massive
 			{
 				group = CreateOwningGroup(owned, include, exclude);
 				owningGroups.AddBefore(owningGroups.First, group);
-				
+
 				foreach (var set in owned)
 				{
 					_ownedBase[set] = owningGroups;
@@ -89,7 +89,7 @@ namespace Massive
 			_groupsLookup.Add(groupCode, group);
 			CreatedGroups.Add(group);
 			group.EnsureSynced();
-			
+
 			return group;
 		}
 

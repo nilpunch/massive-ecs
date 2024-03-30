@@ -5,7 +5,7 @@ namespace Massive
 {
 	public class OwningGroup : IGroup
 	{
-		private IReadOnlySet[] All { get; }
+		private IReadOnlySet[] OwnedWithIncluded { get; }
 
 		protected bool IsSynced { set; get; }
 		protected int GroupLength { get; set; }
@@ -13,10 +13,8 @@ namespace Massive
 		public ISet[] Owned { get; }
 
 		public IReadOnlySet[] Include { get; }
-		
-		public IReadOnlySet[] Exclude { get; }
 
-		public IGroup ExtendedGroup { get; set; }
+		public IReadOnlySet[] Exclude { get; }
 
 		public ReadOnlySpan<int> GroupIds => Owned[0].AliveIds.Slice(0, GroupLength);
 
@@ -26,9 +24,9 @@ namespace Massive
 			Include = include ?? Array.Empty<IReadOnlySet>();
 			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
 
-			All = Owned.Concat(Include).ToArray();
+			OwnedWithIncluded = Owned.Concat(Include).ToArray();
 
-			foreach (var set in All)
+			foreach (var set in OwnedWithIncluded)
 			{
 				set.AfterAdded += AddToGroup;
 				set.BeforeDeleted += RemoveFromGroup;
@@ -50,7 +48,7 @@ namespace Massive
 
 			IsSynced = true;
 
-			var minimal = SetUtils.GetMinimalSet(All).AliveIds;
+			var minimal = SetHelpers.GetMinimalSet(OwnedWithIncluded).AliveIds;
 			foreach (var id in minimal)
 			{
 				AddToGroup(id);
@@ -79,8 +77,8 @@ namespace Massive
 
 		private void AddToGroup(int id)
 		{
-			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetUtils.AliveInAll(id, All)
-			    && SetUtils.NotAliveInAll(id, Exclude))
+			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetHelpers.AliveInAll(id, OwnedWithIncluded)
+			    && SetHelpers.NotAliveInAll(id, Exclude))
 			{
 				SwapEntry(id, GroupLength);
 				GroupLength += 1;
@@ -98,8 +96,8 @@ namespace Massive
 
 		private void AddToGroupWhenRemovedFromFilter(int id)
 		{
-			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetUtils.AliveInAll(id, All)
-			    && SetUtils.CountAliveInAll(id, Exclude) == 1)
+			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetHelpers.AliveInAll(id, OwnedWithIncluded)
+			    && SetHelpers.CountAliveInAll(id, Exclude) == 1)
 			{
 				SwapEntry(id, GroupLength);
 				GroupLength += 1;

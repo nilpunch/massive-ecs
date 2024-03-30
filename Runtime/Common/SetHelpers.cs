@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public static class SetUtils
+	public static class SetHelpers
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int CountAliveInAll(int id, IReadOnlySet[] sets)
@@ -21,7 +21,7 @@ namespace Massive
 
 			return counter;
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AliveInAll(int id, IReadOnlySet[] sets)
 		{

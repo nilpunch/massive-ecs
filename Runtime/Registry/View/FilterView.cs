@@ -21,7 +21,7 @@ namespace Massive
 		{
 			var ids = _filter.Include.Length == 0
 				? _entities.AliveIds
-				: SetUtils.GetMinimalSet(_filter.Include).AliveIds;
+				: SetHelpers.GetMinimalSet(_filter.Include).AliveIds;
 
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{
@@ -38,7 +38,7 @@ namespace Massive
 		{
 			var ids = _filter.Include.Length == 0
 				? _entities.AliveIds
-				: SetUtils.GetMinimalSet(_filter.Include).AliveIds;
+				: SetHelpers.GetMinimalSet(_filter.Include).AliveIds;
 
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{

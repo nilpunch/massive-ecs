@@ -35,7 +35,7 @@ namespace Massive
 			var data1 = _components1.AliveData;
 			var data2 = _components2.AliveData;
 			var data3 = _components3.AliveData;
-			var ids = SetUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
+			var ids = SetHelpers.GetMinimalSet(_componentsAndInclude).AliveIds;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
@@ -58,7 +58,7 @@ namespace Massive
 			var data1 = _components1.AliveData;
 			var data2 = _components2.AliveData;
 			var data3 = _components3.AliveData;
-			var ids = SetUtils.GetMinimalSet(_componentsAndInclude).AliveIds;
+			var ids = SetHelpers.GetMinimalSet(_componentsAndInclude).AliveIds;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{

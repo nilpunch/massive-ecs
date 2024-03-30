@@ -15,8 +15,6 @@ namespace Massive
 
 		public IReadOnlySet[] Exclude { get; }
 
-		public IGroup ExtendedGroup { get; set; }
-
 		public ReadOnlySpan<int> GroupIds => GroupSet.AliveIds;
 
 		public NonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = Constants.DataCapacity)
@@ -51,7 +49,7 @@ namespace Massive
 			IsSynced = true;
 
 			GroupSet.Clear();
-			var minimal = SetUtils.GetMinimalSet(Include).AliveIds;
+			var minimal = SetHelpers.GetMinimalSet(Include).AliveIds;
 			foreach (var id in minimal)
 			{
 				AddToGroup(id);
@@ -80,7 +78,7 @@ namespace Massive
 
 		private void AddToGroup(int id)
 		{
-			if (IsSynced && SetUtils.AliveInAll(id, Include) && SetUtils.NotAliveInAll(id, Exclude))
+			if (IsSynced && SetHelpers.AliveInAll(id, Include) && SetHelpers.NotAliveInAll(id, Exclude))
 			{
 				GroupSet.Ensure(id);
 			}
@@ -96,7 +94,7 @@ namespace Massive
 
 		private void AddToGroupWhenRemovedFromFilter(int id)
 		{
-			if (IsSynced && SetUtils.AliveInAll(id, Include) && SetUtils.CountAliveInAll(id, Exclude) == 1)
+			if (IsSynced && SetHelpers.AliveInAll(id, Include) && SetHelpers.CountAliveInAll(id, Exclude) == 1)
 			{
 				GroupSet.Ensure(id);
 			}

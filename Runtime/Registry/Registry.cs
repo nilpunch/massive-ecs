@@ -13,9 +13,7 @@ namespace Massive
 		public Identifiers Entities { get; }
 
 		public Registry(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
-			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeTagsAsComponents))
-		{
-		}
+			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeTagsAsComponents)) { }
 
 		protected Registry(IGroupsController groups, ISetFactory setFactory)
 		{

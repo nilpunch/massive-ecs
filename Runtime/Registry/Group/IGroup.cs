@@ -10,8 +10,6 @@ namespace Massive
 
 		IReadOnlySet[] Exclude { get; }
 
-		IGroup ExtendedGroup { get; set; }
-
 		ReadOnlySpan<int> GroupIds { get; }
 
 		void EnsureSynced();
