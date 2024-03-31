@@ -37,7 +37,7 @@ namespace Massive
 
 			foreach (var set in AllSets)
 			{
-				set.Delete(entityId);
+				set.Remove(entityId);
 			}
 		}
 
@@ -60,7 +60,7 @@ namespace Massive
 		{
 			if (SetsLookup.TryGetValue(typeof(T), out var set))
 			{
-				set.Delete(entityId);
+				set.Remove(entityId);
 			}
 		}
 

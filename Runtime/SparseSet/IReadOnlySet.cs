@@ -10,7 +10,7 @@ namespace Massive
 
 		event Action<int> AfterAdded;
 
-		event Action<int> BeforeDeleted;
+		event Action<int> BeforeRemoved;
 
 		int GetDense(int id);
 

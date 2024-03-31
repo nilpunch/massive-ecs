@@ -10,7 +10,9 @@ namespace Massive
 
 		IReadOnlySet[] Exclude { get; }
 
-		ReadOnlySpan<int> GroupIds { get; }
+		ReadOnlySpan<int> Ids { get; }
+
+		int Length => Ids.Length;
 
 		void EnsureSynced();
 

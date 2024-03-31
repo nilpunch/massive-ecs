@@ -16,7 +16,7 @@ namespace Massive
 
 		public IReadOnlySet[] Exclude { get; }
 
-		public ReadOnlySpan<int> GroupIds => Owned[0].AliveIds.Slice(0, GroupLength);
+		public ReadOnlySpan<int> Ids => Owned[0].AliveIds.Slice(0, GroupLength);
 
 		public OwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
 		{
@@ -29,13 +29,13 @@ namespace Massive
 			foreach (var set in OwnedWithIncluded)
 			{
 				set.AfterAdded += AddToGroup;
-				set.BeforeDeleted += RemoveFromGroup;
+				set.BeforeRemoved += RemoveFromGroup;
 			}
 
 			foreach (var set in Exclude)
 			{
 				set.AfterAdded += RemoveFromGroup;
-				set.BeforeDeleted += AddToGroupWhenRemovedFromFilter;
+				set.BeforeRemoved += AddToGroupBeforeRemovedFromExcluded;
 			}
 		}
 
@@ -58,11 +58,6 @@ namespace Massive
 		public bool IsOwning(IReadOnlySet set)
 		{
 			return Owned.Contains(set);
-		}
-
-		public bool ExtendsGroup(IGroup group)
-		{
-			return ExtendsGroup(group.Owned, group.Include, group.Exclude);
 		}
 
 		public bool ExtendsGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude)
@@ -94,8 +89,9 @@ namespace Massive
 			}
 		}
 
-		private void AddToGroupWhenRemovedFromFilter(int id)
+		private void AddToGroupBeforeRemovedFromExcluded(int id)
 		{
+			// Applies only when removed from the last remaining exclude set
 			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetHelpers.AliveInAll(id, OwnedWithIncluded)
 			    && SetHelpers.CountAliveInAll(id, Exclude) == 1)
 			{

@@ -8,14 +8,13 @@ namespace Massive
 
 		protected bool IsSynced { get; set; }
 
-
 		public ISet[] Owned => Array.Empty<ISet>();
 
 		public IReadOnlySet[] Include { get; }
 
 		public IReadOnlySet[] Exclude { get; }
 
-		public ReadOnlySpan<int> GroupIds => GroupSet.AliveIds;
+		public ReadOnlySpan<int> Ids => GroupSet.AliveIds;
 
 		public NonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = Constants.DataCapacity)
 			: this(new SparseSet(dataCapacity), include, exclude) { }
@@ -29,13 +28,13 @@ namespace Massive
 			foreach (var set in Include)
 			{
 				set.AfterAdded += AddToGroup;
-				set.BeforeDeleted += RemoveFromGroup;
+				set.BeforeRemoved += RemoveFromGroup;
 			}
 
 			foreach (var set in Exclude)
 			{
 				set.AfterAdded += RemoveFromGroup;
-				set.BeforeDeleted += AddToGroupWhenRemovedFromFilter;
+				set.BeforeRemoved += AddToGroupBeforeRemovedFromExcluded;
 			}
 		}
 
@@ -61,11 +60,6 @@ namespace Massive
 			return false;
 		}
 
-		public bool ExtendsGroup(IGroup group)
-		{
-			return Include.Contains(group.Include) && Exclude.Contains(group.Exclude);
-		}
-
 		public bool ExtendsGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude)
 		{
 			return Include.Contains(include) && Exclude.Contains(exclude);
@@ -88,12 +82,13 @@ namespace Massive
 		{
 			if (IsSynced)
 			{
-				GroupSet.Delete(id);
+				GroupSet.Remove(id);
 			}
 		}
 
-		private void AddToGroupWhenRemovedFromFilter(int id)
+		private void AddToGroupBeforeRemovedFromExcluded(int id)
 		{
+			// Applies only when removed from the last remaining exclude set
 			if (IsSynced && SetHelpers.AliveInAll(id, Include) && SetHelpers.CountAliveInAll(id, Exclude) == 1)
 			{
 				GroupSet.Ensure(id);

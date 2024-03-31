@@ -29,7 +29,7 @@ namespace Massive
 			var data1 = _components1.AliveData;
 			var data2 = _components2.AliveData;
 			var data3 = _components3.AliveData;
-			var groupIds = _group.GroupIds;
+			var groupIds = _group.Ids;
 
 			switch (_group.IsOwning(_components1), _group.IsOwning(_components2), _group.IsOwning(_components3))
 			{
@@ -105,7 +105,7 @@ namespace Massive
 			var data1 = _components1.AliveData;
 			var data2 = _components2.AliveData;
 			var data3 = _components3.AliveData;
-			var groupIds = _group.GroupIds;
+			var groupIds = _group.Ids;
 
 			switch (_group.IsOwning(_components1), _group.IsOwning(_components2), _group.IsOwning(_components3))
 			{

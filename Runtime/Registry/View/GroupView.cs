@@ -17,7 +17,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action)
 		{
-			var groupIds = _group.GroupIds;
+			var groupIds = _group.Ids;
 			for (var i = groupIds.Length - 1; i >= 0; i--)
 			{
 				action.Invoke(groupIds[i]);
@@ -27,7 +27,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionExtra<TExtra> action)
 		{
-			var groupIds = _group.GroupIds;
+			var groupIds = _group.Ids;
 			for (var i = groupIds.Length - 1; i >= 0; i--)
 			{
 				action.Invoke(groupIds[i], extra);

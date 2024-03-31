@@ -20,7 +20,7 @@ namespace Massive
 		public void ForEach(EntityActionRef<T> action)
 		{
 			var data = _components.AliveData;
-			var groupIds = _group.GroupIds;
+			var groupIds = _group.Ids;
 
 			if (_group.IsOwning(_components))
 			{
@@ -43,7 +43,7 @@ namespace Massive
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T, TExtra> action)
 		{
 			var data = _components.AliveData;
-			var groupIds = _group.GroupIds;
+			var groupIds = _group.Ids;
 
 			if (_group.IsOwning(_components))
 			{

@@ -28,7 +28,7 @@ namespace Massive.Tests
 			massive.Ensure(1);
 			massive.Ensure(2);
 
-			massive.Delete(1);
+			massive.Remove(1);
 
 			Assert.IsTrue(massive.IsAlive(0));
 			Assert.IsFalse(massive.IsAlive(1));
@@ -80,7 +80,7 @@ namespace Massive.Tests
 
 			massive.SaveFrame();
 
-			massive.Delete(0);
+			massive.Remove(0);
 
 			Assert.IsFalse(massive.IsAlive(0));
 
@@ -98,7 +98,7 @@ namespace Massive.Tests
 
 			massive.Ensure(0);
 			massive.Ensure(1);
-			massive.Delete(1);
+			massive.Remove(1);
 
 			Assert.IsTrue(massive.IsAlive(0));
 			Assert.IsFalse(massive.IsAlive(1));

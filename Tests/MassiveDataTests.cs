@@ -19,7 +19,7 @@ namespace Massive.Tests
 			massiveData.Ensure(1, new TestState { Value = 2 });
 			massiveData.Ensure(2, new TestState { Value = 3 });
 
-			massiveData.Delete(1);
+			massiveData.Remove(1);
 
 			Assert.IsTrue(massiveData.IsAlive(0));
 			Assert.IsFalse(massiveData.IsAlive(1));
@@ -109,7 +109,7 @@ namespace Massive.Tests
 
 			massiveData.Ensure(0, new TestState { Value = 1 });
 			massiveData.Ensure(1, new TestState { Value = 2 });
-			massiveData.Delete(1);
+			massiveData.Remove(1);
 
 			Assert.IsTrue(massiveData.IsAlive(0));
 			Assert.IsFalse(massiveData.IsAlive(1));

@@ -4,7 +4,7 @@ namespace Massive
 	{
 		void Ensure(int id);
 
-		void Delete(int id);
+		void Remove(int id);
 
 		void Clear();
 

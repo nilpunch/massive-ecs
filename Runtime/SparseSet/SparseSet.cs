@@ -22,7 +22,7 @@ namespace Massive
 
 		public event Action<int> AfterAdded;
 
-		public event Action<int> BeforeDeleted;
+		public event Action<int> BeforeRemoved;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Ensure(int id)
@@ -47,15 +47,17 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Delete(int id)
+		public void Remove(int id)
 		{
-			BeforeDeleted?.Invoke(id);
-
 			// If element is not alive, nothing to be done
-			if (!TryGetDense(id, out var dense))
+			if (!IsAlive(id))
 			{
 				return;
 			}
+
+			BeforeRemoved?.Invoke(id);
+
+			int dense = Sparse[id];
 
 			int count = AliveCount;
 			AliveCount -= 1;
@@ -76,7 +78,7 @@ namespace Massive
 			var ids = AliveIds;
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				BeforeDeleted?.Invoke(ids[i]);
+				BeforeRemoved?.Invoke(ids[i]);
 				AliveCount -= 1;
 			}
 		}
