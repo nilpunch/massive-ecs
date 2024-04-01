@@ -114,6 +114,31 @@ namespace Massive.Tests
 			}
 		}
 
+		[Test]
+		public void Group_StableLateInitializationTest()
+		{
+			var registry = new Registry();
+
+			for (int i = 0; i < 30; i++)
+			{
+				var entity = registry.Create();
+
+				if (i % 2 != 0)
+				{
+					registry.Add<int>(entity);
+				}
+
+				if (i % 3 != 0)
+				{
+					registry.Add<char>(entity);
+				}
+			}
+
+			var group = SetUpGroupWithIntAndWithoutChar(registry);
+
+			Assert.AreEqual(group.Length, 5);
+		}
+
 		private IGroup SetUpGroupWithIntAndChar(IRegistry registry)
 		{
 			switch (_testGroupType)
