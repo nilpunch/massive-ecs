@@ -27,7 +27,7 @@ namespace Massive.Tests
 		{
 			var registry = new Registry();
 
-			var group = SetUpGroupForFunctionalityTest(registry);
+			var group = SetUpGroupWithIntAndChar(registry);
 
 			Assert.AreEqual(group.Length, 0);
 
@@ -70,7 +70,7 @@ namespace Massive.Tests
 			var entity2 = registry.Create(2);
 			registry.Add<char>(entity2);
 
-			var group = SetUpGroupForExclusionTest(registry);
+			var group = SetUpGroupWithIntAndWithoutChar(registry);
 
 			var entity3 = registry.Create(3);
 
@@ -114,7 +114,7 @@ namespace Massive.Tests
 			}
 		}
 
-		private IGroup SetUpGroupForFunctionalityTest(IRegistry registry)
+		private IGroup SetUpGroupWithIntAndChar(IRegistry registry)
 		{
 			switch (_testGroupType)
 			{
@@ -146,7 +146,7 @@ namespace Massive.Tests
 			}
 		}
 
-		private IGroup SetUpGroupForExclusionTest(IRegistry registry)
+		private IGroup SetUpGroupWithIntAndWithoutChar(IRegistry registry)
 		{
 			switch (_testGroupType)
 			{
