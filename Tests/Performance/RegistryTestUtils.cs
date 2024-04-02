@@ -72,5 +72,66 @@
 
 			return registry;
 		}
+
+		public static IRegistry FillRegistryWith50Tags(this IRegistry registry)
+		{
+			while (registry.Entities.CanCreateAmount != 0)
+			{
+				// 50 different tags
+				int id = registry.Create();
+				registry.Add<TestTag>(id);
+				registry.Add<TestTag<int, int, int>>(id);
+				registry.Add<TestTag<long, long, long>>(id);
+				registry.Add<TestTag<double, int, long>>(id);
+				registry.Add<TestTag<long, short, byte>>(id);
+				registry.Add<TestTag<short, ushort, int>>(id);
+				registry.Add<TestTag<ushort, ulong, float>>(id);
+				registry.Add<TestTag<ulong, double, decimal>>(id);
+				registry.Add<TestTag<decimal, char, byte>>(id);
+				registry.Add<TestTag<char, bool, int>>(id);
+				registry.Add<TestTag<bool, byte, sbyte>>(id);
+				registry.Add<TestTag<sbyte, float, ushort>>(id);
+				registry.Add<TestTag<int, double, bool>>(id);
+				registry.Add<TestTag<double, decimal, char>>(id);
+				registry.Add<TestTag<long, bool, float>>(id);
+				registry.Add<TestTag<short, int, ulong>>(id);
+				registry.Add<TestTag<ushort, sbyte, decimal>>(id);
+				registry.Add<TestTag<ulong, char, double>>(id);
+				registry.Add<TestTag<decimal, bool, short>>(id);
+				registry.Add<TestTag<char, int, byte>>(id);
+				registry.Add<TestTag<bool, ulong, sbyte>>(id);
+				registry.Add<TestTag<sbyte, short, ushort>>(id);
+				registry.Add<TestTag<float, ulong, int>>(id);
+				registry.Add<TestTag<double, sbyte, long>>(id);
+				registry.Add<TestTag<int, char, decimal>>(id);
+				registry.Add<TestTag<long, decimal, bool>>(id);
+				registry.Add<TestTag<short, double, byte>>(id);
+				registry.Add<TestTag<ushort, float, char>>(id);
+				registry.Add<TestTag<ulong, int, bool>>(id);
+				registry.Add<TestTag<decimal, short, ulong>>(id);
+				registry.Add<TestTag<char, ushort, float>>(id);
+				registry.Add<TestTag<bool, double, sbyte>>(id);
+				registry.Add<TestTag<sbyte, long, ushort>>(id);
+				registry.Add<TestTag<float, decimal, char>>(id);
+				registry.Add<TestTag<double, byte, int>>(id);
+				registry.Add<TestTag<int, sbyte, ulong>>(id);
+				registry.Add<TestTag<long, ushort, decimal>>(id);
+				registry.Add<TestTag<short, char, double>>(id);
+				registry.Add<TestTag<ushort, bool, float>>(id);
+				registry.Add<TestTag<ulong, byte, short>>(id);
+				registry.Add<TestTag<decimal, int, char>>(id);
+				registry.Add<TestTag<char, ulong, bool>>(id);
+				registry.Add<TestTag<bool, short, double>>(id);
+				registry.Add<TestTag<sbyte, decimal, ushort>>(id);
+				registry.Add<TestTag<float, bool, byte>>(id);
+				registry.Add<TestTag<double, ushort, sbyte>>(id);
+				registry.Add<TestTag<int, float, char>>(id);
+				registry.Add<TestTag<long, byte, ulong>>(id);
+				registry.Add<TestTag<short, decimal, bool>>(id);
+				registry.Add<TestTag<ushort, double, int>>(id);
+			}
+
+			return registry;
+		}
 	}
 }

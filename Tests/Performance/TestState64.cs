@@ -3,6 +3,20 @@
 namespace Massive.PerformanceTests
 {
 	/// <summary>
+	/// Empty type.
+	/// </summary>
+	public struct TestTag<T1, T2, T3>
+	{
+	}
+
+	/// <summary>
+	/// Empty type.
+	/// </summary>
+	public struct TestTag
+	{
+	}
+
+	/// <summary>
 	/// 64 Byte structure.
 	/// </summary>
 	public struct TestState64<T1, T2, T3>

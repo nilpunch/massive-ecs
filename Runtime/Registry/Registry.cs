@@ -35,9 +35,9 @@ namespace Massive
 		{
 			Entities.Delete(entityId);
 
-			foreach (var set in AllSets)
+			for (var i = 0; i < AllSets.Count; i++)
 			{
-				set.Remove(entityId);
+				AllSets[i].Remove(entityId);
 			}
 		}
 

@@ -49,15 +49,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove(int id)
 		{
+			BeforeRemoved?.Invoke(id);
+
 			// If element is not alive, nothing to be done
-			if (!IsAlive(id))
+			if (!TryGetDense(id, out var dense))
 			{
 				return;
 			}
-
-			BeforeRemoved?.Invoke(id);
-
-			int dense = Sparse[id];
 
 			int count = AliveCount;
 			AliveCount -= 1;
