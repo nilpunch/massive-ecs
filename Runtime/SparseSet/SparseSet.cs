@@ -67,7 +67,7 @@ namespace Massive
 			}
 
 			int lastElement = count - 1;
-			CopyDense(lastElement, dense);
+			CopyFromToDense(lastElement, dense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -124,7 +124,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected virtual void CopyDense(int source, int destination)
+		protected virtual void CopyFromToDense(int source, int destination)
 		{
 			int sourceId = Dense[source];
 			Dense[destination] = sourceId;

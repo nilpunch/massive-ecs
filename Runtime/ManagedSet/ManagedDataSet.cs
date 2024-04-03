@@ -53,9 +53,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override void CopyDense(int source, int destination)
+		protected override void CopyFromToDense(int source, int destination)
 		{
-			base.CopyDense(source, destination);
+			base.CopyFromToDense(source, destination);
 			Data[source].CopyTo(ref Data[destination]);
 		}
 	}
