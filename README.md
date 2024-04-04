@@ -1,6 +1,6 @@
 # Massive ECS - sparse set ECS with rollbacks
 
-Made for games with deterministic prediction-rollback netcode.
+Made for games with deterministic prediction-rollback netcode. Currently distributed as Unity package.
 
 Prediction-rollback netcode have very stable nature, and is mainly used in fast paced online multiplayer games, such as Overwatch and Rocket League.
 
@@ -10,10 +10,10 @@ This is **a library**, not a framework. Thus, it does not try to take control of
 
 Provided features:
 
-- Fast and simple ECS without any code generation or types announcement
-- Ultra-fast saving and rollbacking with cyclic buffer
-- Zero GC allocations during runtime
-- Support for components with managed data, like arrays
+- Fast and simple ECS without any code generation
+- Ultra-fast saving and rollbacking with cyclic buffers
+- Zero GC allocations during runtime (after full initialization)
+- Support components with managed data such as arrays, strings, etc.
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - IL2CPP friendly, tested on PC | Android | WebGL
 
@@ -86,7 +86,7 @@ class Program
 
         Update(registry, 1f / 60f);
 
-        // Restore everything up to the last SaveFrame() call
+        // Restore full state up to the last SaveFrame() call
         registry.Rollback(0);
     }
 }
