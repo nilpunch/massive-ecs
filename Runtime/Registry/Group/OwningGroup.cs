@@ -6,7 +6,8 @@ namespace Massive
 {
 	public class OwningGroup : IGroup
 	{
-		private IReadOnlySet[] OwnedWithIncluded { get; }
+		private IReadOnlySet[] OwnedPlusIncluded { get; }
+		private IReadOnlySet[] OwnedMinusFirstPlusIncluded { get; }
 
 		protected bool IsSynced { set; get; }
 
@@ -30,9 +31,10 @@ namespace Massive
 			Include = include ?? Array.Empty<IReadOnlySet>();
 			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
 
-			OwnedWithIncluded = Owned.Concat(Include).ToArray();
+			OwnedPlusIncluded = Owned.Concat(Include).ToArray();
+			OwnedMinusFirstPlusIncluded = OwnedPlusIncluded.Skip(1).ToArray();
 
-			foreach (var set in OwnedWithIncluded)
+			foreach (var set in OwnedPlusIncluded)
 			{
 				set.AfterAdded += AddToGroup;
 				set.BeforeRemoved += RemoveFromGroup;
@@ -54,7 +56,7 @@ namespace Massive
 
 			IsSynced = true;
 
-			var minimal = SetHelpers.GetMinimalSet(OwnedWithIncluded).AliveIds;
+			var minimal = SetHelpers.GetMinimalSet(OwnedPlusIncluded).AliveIds;
 			foreach (var id in minimal)
 			{
 				AddToGroup(id);
@@ -80,7 +82,7 @@ namespace Massive
 		{
 			Base?.AddToGroup(id);
 
-			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetHelpers.AliveInAll(id, OwnedWithIncluded)
+			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense >= GroupLength && SetHelpers.AliveInAll(id, OwnedMinusFirstPlusIncluded)
 			    && SetHelpers.NotAliveInAll(id, Exclude))
 			{
 				SwapEntry(id, GroupLength);
@@ -104,7 +106,7 @@ namespace Massive
 			Base?.AddToGroupBeforeRemovedFromExcluded(id);
 
 			// Applies only when removed from the last remaining exclude set
-			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetHelpers.AliveInAll(id, OwnedWithIncluded)
+			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense >= GroupLength && SetHelpers.AliveInAll(id, OwnedMinusFirstPlusIncluded)
 			    && SetHelpers.CountAliveInAll(id, Exclude) == 1)
 			{
 				SwapEntry(id, GroupLength);
