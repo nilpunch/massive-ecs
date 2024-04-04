@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Massive
@@ -8,6 +9,7 @@ namespace Massive
 		private IReadOnlySet[] OwnedWithIncluded { get; }
 
 		protected bool IsSynced { set; get; }
+
 		protected int GroupLength { get; set; }
 
 		public ISet[] Owned { get; }
@@ -15,6 +17,10 @@ namespace Massive
 		public IReadOnlySet[] Include { get; }
 
 		public IReadOnlySet[] Exclude { get; }
+
+		public IGroup Extended { get; set; }
+
+		public IGroup Base { get; set; }
 
 		public ReadOnlySpan<int> Ids => Owned[0].AliveIds.Slice(0, GroupLength);
 
@@ -70,8 +76,10 @@ namespace Massive
 			return owned.Contains(Owned) && include.Contains(Include) && exclude.Contains(Exclude);
 		}
 
-		private void AddToGroup(int id)
+		public void AddToGroup(int id)
 		{
+			Base?.AddToGroup(id);
+
 			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetHelpers.AliveInAll(id, OwnedWithIncluded)
 			    && SetHelpers.NotAliveInAll(id, Exclude))
 			{
@@ -80,8 +88,10 @@ namespace Massive
 			}
 		}
 
-		private void RemoveFromGroup(int id)
+		public void RemoveFromGroup(int id)
 		{
+			Extended?.RemoveFromGroup(id);
+
 			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense < GroupLength)
 			{
 				GroupLength -= 1;
@@ -89,8 +99,10 @@ namespace Massive
 			}
 		}
 
-		private void AddToGroupBeforeRemovedFromExcluded(int id)
+		public void AddToGroupBeforeRemovedFromExcluded(int id)
 		{
+			Base?.AddToGroupBeforeRemovedFromExcluded(id);
+
 			// Applies only when removed from the last remaining exclude set
 			if (IsSynced && Owned[0].GetDense(id) >= GroupLength && SetHelpers.AliveInAll(id, OwnedWithIncluded)
 			    && SetHelpers.CountAliveInAll(id, Exclude) == 1)

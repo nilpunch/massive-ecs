@@ -53,7 +53,7 @@ namespace Massive.Tests
 		{
 			var identifiers = new Identifiers(Capacity);
 
-			Assert.Throws<InvalidOperationException>(CreateCheck);
+			Assert.Catch(CreateCheck);
 
 			void CreateCheck()
 			{

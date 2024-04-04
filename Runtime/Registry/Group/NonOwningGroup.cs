@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Massive
 {
@@ -14,10 +15,16 @@ namespace Massive
 
 		public IReadOnlySet[] Exclude { get; }
 
+		public IGroup Extended { get; set; }
+
+		public IGroup Base { get; set; }
+
 		public ReadOnlySpan<int> Ids => GroupSet.AliveIds;
 
 		public NonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = Constants.DataCapacity)
-			: this(new SparseSet(dataCapacity), include, exclude) { }
+			: this(new SparseSet(dataCapacity), include, exclude)
+		{
+		}
 
 		protected NonOwningGroup(ISet groupSet, IReadOnlySet[] include, IReadOnlySet[] exclude = null)
 		{
@@ -70,7 +77,7 @@ namespace Massive
 			return include.Contains(Include) && exclude.Contains(Exclude);
 		}
 
-		private void AddToGroup(int id)
+		public void AddToGroup(int id)
 		{
 			if (IsSynced && SetHelpers.AliveInAll(id, Include) && SetHelpers.NotAliveInAll(id, Exclude))
 			{
@@ -78,7 +85,7 @@ namespace Massive
 			}
 		}
 
-		private void RemoveFromGroup(int id)
+		public void RemoveFromGroup(int id)
 		{
 			if (IsSynced)
 			{
@@ -86,7 +93,7 @@ namespace Massive
 			}
 		}
 
-		private void AddToGroupBeforeRemovedFromExcluded(int id)
+		public void AddToGroupBeforeRemovedFromExcluded(int id)
 		{
 			// Applies only when removed from the last remaining exclude set
 			if (IsSynced && SetHelpers.AliveInAll(id, Include) && SetHelpers.CountAliveInAll(id, Exclude) == 1)

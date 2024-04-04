@@ -6,7 +6,7 @@ namespace Massive
 	public class GroupsController : IGroupsController
 	{
 		private readonly int _nonOwningDataCapacity;
-		private readonly Dictionary<ISet, LinkedList<IGroup>> _ownedBase = new Dictionary<ISet, LinkedList<IGroup>>();
+		private readonly Dictionary<ISet, IGroup> _ownedBase = new Dictionary<ISet, IGroup>();
 		private readonly Dictionary<int, IGroup> _groupsLookup = new Dictionary<int, IGroup>();
 
 		protected List<IGroup> CreatedGroups { get; } = new List<IGroup>();
@@ -40,45 +40,43 @@ namespace Massive
 				group = CreateNonOwningGroup(include, exclude, _nonOwningDataCapacity);
 			}
 			// Create new owning group if there is no conflicts
-			else if (!_ownedBase.TryGetValue(owned[0], out var owningGroups))
+			else if (!_ownedBase.TryGetValue(owned[0], out var baseGroup))
 			{
 				group = CreateOwningGroup(owned, include, exclude);
-				owningGroups = new LinkedList<IGroup>(new[] { group });
 				foreach (var set in owned)
 				{
-					_ownedBase.Add(set, owningGroups);
+					_ownedBase.Add(set, group);
 				}
 			}
 			// Try to create new group as nested
-			else if (owningGroups.First.Value.BaseForGroup(owned, include, exclude))
+			else if (baseGroup.BaseForGroup(owned, include, exclude))
 			{
-				var owningList = _ownedBase[owned[0]];
-				var baseGroupNode = owningList.First;
+				var baseGroupNode = baseGroup;
 
 				// Find most nested group that is base for our
-				while (baseGroupNode.Next != null && baseGroupNode.Next.Value.BaseForGroup(owned, include, exclude))
+				while (baseGroupNode.Extended != null && baseGroupNode.Extended.BaseForGroup(owned, include, exclude))
 				{
-					baseGroupNode = baseGroupNode.Next;
+					baseGroupNode = baseGroupNode.Extended;
 				}
 
-				// Check if the next group extends ours
-				if (baseGroupNode.Next != null && !baseGroupNode.Next.Value.ExtendsGroup(owned, include, exclude))
+				// Check if the next group can extend ours
+				if (baseGroupNode.Extended != null && !baseGroupNode.Extended.ExtendsGroup(owned, include, exclude))
 				{
 					throw new Exception("Conflicting groups.");
 				}
 
 				group = CreateOwningGroup(owned, include, exclude);
-				owningList.AddAfter(baseGroupNode, group);
+				baseGroupNode.AddAfterThis(group);
 			}
 			// Try to create group as base one
-			else if (owningGroups.First.Value.ExtendsGroup(owned, include, exclude))
+			else if (baseGroup.ExtendsGroup(owned, include, exclude))
 			{
 				group = CreateOwningGroup(owned, include, exclude);
-				owningGroups.AddBefore(owningGroups.First, group);
+				baseGroup.AddBeforeThis(group);
 
 				foreach (var set in owned)
 				{
-					_ownedBase[set] = owningGroups;
+					_ownedBase[set] = group;
 				}
 			}
 			else
@@ -101,19 +99,6 @@ namespace Massive
 		protected virtual IGroup CreateNonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = Constants.DataCapacity)
 		{
 			return new NonOwningGroup(include, exclude, dataCapacity);
-		}
-
-		private bool IsConflicting(ISet[] owned)
-		{
-			foreach (var set in owned)
-			{
-				if (_ownedBase.ContainsKey(set))
-				{
-					return true;
-				}
-			}
-
-			return false;
 		}
 
 		private static int CombineHashOrdered(int a, int b)
