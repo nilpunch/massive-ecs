@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -15,9 +16,10 @@ namespace Massive
 		{
 			_filter = filter ?? EmptyFilter.Instance;
 			_components = registry.Components<T>();
-			_componentsAndInclude = new IReadOnlySet[_filter.Include.Length + 1];
-			_componentsAndInclude[0] = _components;
-			_filter.Include.CopyTo(_componentsAndInclude, 1);
+			_componentsAndInclude = Enumerable.Empty<IReadOnlySet>()
+				.Append(_components)
+				.Concat(_filter.Include)
+				.ToArray();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
