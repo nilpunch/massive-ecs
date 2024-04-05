@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Massive.Tests
 {
 	[TestFixture]
-	public class GroupTest
+	public class GroupTests
 	{
 		public enum TestGroupType
 		{
