@@ -1,27 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Massive
 {
-	public class OwningGroup : IGroup
+	public class OwningGroup : IOwningGroup
 	{
 		private IReadOnlySet[] OwnedPlusIncluded { get; }
+
 		private IReadOnlySet[] OwnedMinusFirstPlusIncluded { get; }
 
-		protected bool IsSynced { set; get; }
+		private ISet[] Owned { get; }
+
+		private IReadOnlySet[] Include { get; }
+
+		private IReadOnlySet[] Exclude { get; }
 
 		protected int GroupLength { get; set; }
 
-		public ISet[] Owned { get; }
+		protected bool IsSynced { set; get; }
 
-		public IReadOnlySet[] Include { get; }
+		public IOwningGroup Extended { get; set; }
 
-		public IReadOnlySet[] Exclude { get; }
-
-		public IGroup Extended { get; set; }
-
-		public IGroup Base { get; set; }
+		public IOwningGroup Base { get; set; }
 
 		public ReadOnlySpan<int> Ids => Owned[0].AliveIds.Slice(0, GroupLength);
 
@@ -56,6 +56,7 @@ namespace Massive
 
 			IsSynced = true;
 
+			GroupLength = 0;
 			var minimal = SetHelpers.GetMinimalSet(OwnedPlusIncluded).AliveIds;
 			foreach (var id in minimal)
 			{

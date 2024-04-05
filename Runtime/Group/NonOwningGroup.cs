@@ -1,23 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Massive
 {
 	public class NonOwningGroup : IGroup
 	{
+		private IReadOnlySet[] Include { get; }
+
+		private IReadOnlySet[] Exclude { get; }
+
 		protected ISet GroupSet { get; }
 
 		protected bool IsSynced { get; set; }
-
-		public ISet[] Owned => Array.Empty<ISet>();
-
-		public IReadOnlySet[] Include { get; }
-
-		public IReadOnlySet[] Exclude { get; }
-
-		public IGroup Extended { get; set; }
-
-		public IGroup Base { get; set; }
 
 		public ReadOnlySpan<int> Ids => GroupSet.AliveIds;
 
@@ -67,17 +60,7 @@ namespace Massive
 			return false;
 		}
 
-		public bool ExtendsGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude)
-		{
-			return Include.Contains(include) && Exclude.Contains(exclude);
-		}
-
-		public bool BaseForGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude)
-		{
-			return include.Contains(Include) && exclude.Contains(Exclude);
-		}
-
-		public void AddToGroup(int id)
+		private void AddToGroup(int id)
 		{
 			if (IsSynced && SetHelpers.AliveInAll(id, Include) && SetHelpers.NotAliveInAll(id, Exclude))
 			{
@@ -85,7 +68,7 @@ namespace Massive
 			}
 		}
 
-		public void RemoveFromGroup(int id)
+		private void RemoveFromGroup(int id)
 		{
 			if (IsSynced)
 			{
@@ -93,7 +76,7 @@ namespace Massive
 			}
 		}
 
-		public void AddToGroupBeforeRemovedFromExcluded(int id)
+		private void AddToGroupBeforeRemovedFromExcluded(int id)
 		{
 			// Applies only when removed from the last remaining exclude set
 			if (IsSynced && SetHelpers.AliveInAll(id, Include) && SetHelpers.CountAliveInAll(id, Exclude) == 1)

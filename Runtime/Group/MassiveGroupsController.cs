@@ -37,7 +37,7 @@ namespace Massive
 			}
 		}
 
-		protected override IGroup CreateOwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
+		protected override IOwningGroup CreateOwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
 		{
 			var massiveOwningGroup = new MassiveOwningGroup(owned, include, exclude, _framesCapacity);
 			massiveOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
