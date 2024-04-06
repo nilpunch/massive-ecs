@@ -19,11 +19,6 @@ namespace Massive
 			_sparseSetFrames = new SparseSetFrames(this, framesCapacity);
 
 			_dataByFrames = new T[framesCapacity * Data.Length];
-
-			for (int i = 0; i < _dataByFrames.Length; i++)
-			{
-				_dataByFrames[i].Initialize();
-			}
 		}
 
 		public int CanRollbackFrames => _sparseSetFrames.CanRollbackFrames;

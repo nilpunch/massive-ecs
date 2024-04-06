@@ -19,13 +19,6 @@ namespace Massive
 			: base(dataCapacity)
 		{
 			Data = new T[Dense.Length];
-
-			for (int i = 0; i < Data.Length; i++)
-			{
-				Data[i].Initialize();
-			}
-
-			_swapBuffer.Initialize();
 		}
 
 		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);

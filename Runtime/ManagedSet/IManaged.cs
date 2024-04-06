@@ -2,8 +2,6 @@ namespace Massive
 {
 	public interface IManaged<T> where T : struct, IManaged<T>
 	{
-		void Initialize();
-
 		void CopyTo(ref T destination);
 
 #if UNITY_2020_3_OR_NEWER
