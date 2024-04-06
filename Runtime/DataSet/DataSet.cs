@@ -11,12 +11,14 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class DataSet<T> : SparseSet, IDataSet<T> where T : struct
 	{
-		protected T[] Data { get; }
+		private T[] _data;
+
+		protected T[] Data => _data;
 
 		public DataSet(int dataCapacity = Constants.DataCapacity)
 			: base(dataCapacity)
 		{
-			Data = new T[Dense.Length];
+			_data = new T[DenseCapacity];
 		}
 
 		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);
@@ -39,6 +41,13 @@ namespace Massive
 		{
 			base.SwapDense(denseA, denseB);
 			(Data[denseA], Data[denseB]) = (Data[denseB], Data[denseA]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override void ResizeDense(int capacity)
+		{
+			base.ResizeDense(capacity);
+			Array.Resize(ref _data, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

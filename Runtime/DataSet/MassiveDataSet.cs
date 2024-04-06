@@ -12,14 +12,19 @@ namespace Massive
 	public class MassiveDataSet<T> : DataSet<T>, IMassive where T : struct
 	{
 		private readonly SparseSetFrames _sparseSetFrames;
-		private readonly T[] _dataByFrames;
+		private readonly T[][] _dataByFrames;
 
 		public MassiveDataSet(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(dataCapacity)
 		{
-			_sparseSetFrames = new SparseSetFrames(this, framesCapacity);
+			_sparseSetFrames = new SparseSetFrames(DenseCapacity, SparseCapacity, framesCapacity);
 
-			_dataByFrames = new T[framesCapacity * Data.Length];
+			_dataByFrames = new T[framesCapacity][];
+
+			for (int i = 0; i < framesCapacity; i++)
+			{
+				_dataByFrames[i] = new T[DenseCapacity];
+			}
 		}
 
 		public int CanRollbackFrames => _sparseSetFrames.CanRollbackFrames;
@@ -27,19 +32,39 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			_sparseSetFrames.SaveFrame();
+			_sparseSetFrames.SaveFrame(this);
 
 			// We can sync saving with MassiveSparseSet saving, using its CurrentFrame
-			Array.Copy(Data, 0, _dataByFrames, _sparseSetFrames.CurrentFrame * Data.Length, AliveCount);
+			Array.Copy(Data, 0, _dataByFrames[_sparseSetFrames.CurrentFrame], 0, AliveCount);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			_sparseSetFrames.Rollback(frames);
+			_sparseSetFrames.Rollback(frames, this);
 
 			// Similarly to saving, we can sync rollback with MassiveSparseSet rollback
-			Array.Copy(_dataByFrames, _sparseSetFrames.CurrentFrame * Data.Length, Data, 0, AliveCount);
+			Array.Copy(_dataByFrames[_sparseSetFrames.CurrentFrame], 0, Data, 0, AliveCount);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override void ResizeDense(int capacity)
+		{
+			base.ResizeDense(capacity);
+
+			_sparseSetFrames.ResizeDense(capacity);
+
+			for (int i = 0; i < _dataByFrames.Length; i++)
+			{
+				Array.Resize(ref _dataByFrames[i], capacity);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override void ResizeSparse(int capacity)
+		{
+			base.ResizeSparse(capacity);
+			_sparseSetFrames.ResizeSparse(capacity);
 		}
 	}
 }

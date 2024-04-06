@@ -3,19 +3,11 @@ using Unity.PerformanceTesting;
 
 namespace Massive.PerformanceTests
 {
-	[TestFixtureSource(nameof(FixtureSets))]
 	public class SparseSetPerformanceTest
 	{
 		private const int EntitiesCount = 1000;
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
-
-		private readonly ISet _set;
-
-		public SparseSetPerformanceTest(ISet set)
-		{
-			_set = set;
-		}
 
 		public static ISet[] FixtureSets =
 		{
@@ -23,21 +15,27 @@ namespace Massive.PerformanceTests
 			new DataSet<TestState64>(EntitiesCount),
 		};
 
-		[Test, Performance]
-		public void SparseSet_Ensure()
+		public static ISet[] FixtureMassiveSets =
+		{
+			new MassiveSparseSet(EntitiesCount),
+			new MassiveDataSet<TestState64>(EntitiesCount),
+		};
+
+		[TestCaseSource(nameof(FixtureSets)), Performance]
+		public void SparseSet_Ensure(ISet set)
 		{
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_set.Ensure(i);
+						set.Ensure(i);
 					}
 				})
 				.CleanUp(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_set.Remove(i);
+						set.Remove(i);
 					}
 				})
 				.MeasurementCount(MeasurementCount)
@@ -45,21 +43,21 @@ namespace Massive.PerformanceTests
 				.Run();
 		}
 
-		[Test, Performance]
-		public void SparseSet_Remove()
+		[TestCaseSource(nameof(FixtureSets)), Performance]
+		public void SparseSet_Remove(ISet set)
 		{
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_set.Remove(i);
+						set.Remove(i);
 					}
 				})
 				.SetUp(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_set.Ensure(i);
+						set.Ensure(i);
 					}
 				})
 				.MeasurementCount(MeasurementCount)
@@ -67,15 +65,34 @@ namespace Massive.PerformanceTests
 				.Run();
 		}
 		
-		[Test, Performance]
-		public void SparseSet_RemoveNonExisting()
+		[TestCaseSource(nameof(FixtureSets)), Performance]
+		public void SparseSet_RemoveNonExisting(ISet set)
 		{
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_set.Remove(i);
+						set.Remove(i);
 					}
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[TestCaseSource(nameof(FixtureMassiveSets)), Performance]
+		public void MassiveSparseSet_Save(ISet set)
+		{
+			IMassive massive = (IMassive)set;
+
+			for (int i = 0; i < EntitiesCount; i++)
+			{
+				set.Ensure(i);
+			}
+
+			Measure.Method(() =>
+				{
+					massive.SaveFrame();
 				})
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)

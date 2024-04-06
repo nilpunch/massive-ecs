@@ -9,15 +9,19 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Identifiers
 	{
-		protected int[] Dense { get; }
-		protected int[] Sparse { get; }
+		private int[] _dense;
+		private int[] _sparse;
+
+		protected int[] Dense => _dense;
+		protected int[] Sparse => _sparse;
+
 		protected int AliveCount { get; set; }
 		protected int MaxId { get; set; }
 
 		public Identifiers(int dataCapacity = Constants.DataCapacity)
 		{
-			Dense = new int[dataCapacity];
-			Sparse = new int[dataCapacity];
+			_dense = new int[dataCapacity];
+			_sparse = new int[dataCapacity];
 		}
 
 		public int CanCreateAmount => Dense.Length - AliveCount;
@@ -27,13 +31,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Create()
 		{
-			if (AliveCount == Dense.Length)
-			{
-				throw new InvalidOperationException($"Exceeded limit of data! Limit: {Dense.Length}.");
-			}
-
 			int count = AliveCount;
 			AliveCount += 1;
+
+			if (count == Dense.Length)
+			{
+				GrowCapacity(count + 1);
+			}
 
 			// If there are unused elements in the dense array, return last
 			int maxId = MaxId;
@@ -76,9 +80,9 @@ namespace Massive
 		public void CreateMany(int amount, [MaybeNull] Action<int> action = null)
 		{
 			int needToCreate = amount;
-			if (needToCreate >= CanCreateAmount)
+			if (needToCreate + AliveCount >= Dense.Length)
 			{
-				throw new InvalidOperationException($"Exceeded limit of ids! CanCreate: {CanCreateAmount}.");
+				GrowCapacity(needToCreate + AliveCount + 1);
 			}
 
 			while (AliveCount < MaxId && needToCreate > 0)
@@ -128,10 +132,30 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public virtual void ResizeDense(int capacity)
+		{
+			Array.Resize(ref _dense, capacity);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public virtual void ResizeSparse(int capacity)
+		{
+			Array.Resize(ref _sparse, capacity);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void AssignIndex(int id, int dense)
 		{
 			Sparse[id] = dense;
 			Dense[dense] = id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void GrowCapacity(int desiredCapacity)
+		{
+			int newCapacity = MathHelpers.GetNextPowerOf2(desiredCapacity);
+			ResizeDense(newCapacity);
+			ResizeSparse(newCapacity);
 		}
 	}
 }

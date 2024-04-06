@@ -8,6 +8,10 @@ namespace Massive
 
 		ReadOnlySpan<int> AliveIds { get; }
 
+		int DenseCapacity { get; }
+
+		int SparseCapacity { get; }
+
 		/// <summary>
 		/// Shoots only after <see cref="Massive.ISet.Ensure(int)"/> call, when the id was not alive and therefore was created.
 		/// </summary>

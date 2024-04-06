@@ -12,13 +12,14 @@ namespace Massive
 	public class ManagedDataSet<T> : SparseSet, IDataSet<T> where T : struct, IManaged<T>
 	{
 		private T _swapBuffer;
+		private T[] _data;
 
-		protected T[] Data { get; }
+		protected T[] Data => _data;
 
 		public ManagedDataSet(int dataCapacity = Constants.DataCapacity)
 			: base(dataCapacity)
 		{
-			Data = new T[Dense.Length];
+			_data = new T[DenseCapacity];
 		}
 
 		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);
@@ -43,6 +44,13 @@ namespace Massive
 			Data[denseA].CopyTo(ref _swapBuffer);
 			Data[denseB].CopyTo(ref Data[denseA]);
 			_swapBuffer.CopyTo(ref Data[denseB]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override void ResizeDense(int capacity)
+		{
+			base.ResizeDense(capacity);
+			Array.Resize(ref _data, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

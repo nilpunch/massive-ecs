@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -11,14 +12,19 @@ namespace Massive
 	public class MassiveManagedDataSet<T> : ManagedDataSet<T>, IMassive where T : struct, IManaged<T>
 	{
 		private readonly SparseSetFrames _sparseSetFrames;
-		private readonly T[] _dataByFrames;
+		private readonly T[][] _dataByFrames;
 
 		public MassiveManagedDataSet(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(dataCapacity)
 		{
-			_sparseSetFrames = new SparseSetFrames(this, framesCapacity);
+			_sparseSetFrames = new SparseSetFrames(DenseCapacity, SparseCapacity, framesCapacity);
 
-			_dataByFrames = new T[framesCapacity * Data.Length];
+			_dataByFrames = new T[framesCapacity][];
+
+			for (int i = 0; i < framesCapacity; i++)
+			{
+				_dataByFrames[i] = new T[DenseCapacity];
+			}
 		}
 
 		public int CanRollbackFrames => _sparseSetFrames.CanRollbackFrames;
@@ -26,27 +32,47 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			_sparseSetFrames.SaveFrame();
+			_sparseSetFrames.SaveFrame(this);
 
 			// We can sync saving with MassiveSparseSet saving, using its CurrentFrame
-			int destinationIndex = _sparseSetFrames.CurrentFrame * Data.Length;
+			var currentFrameData = _dataByFrames[_sparseSetFrames.CurrentFrame];
 			for (int i = 0; i < AliveCount; i++)
 			{
-				Data[i].CopyTo(ref _dataByFrames[destinationIndex + i]);
+				Data[i].CopyTo(ref currentFrameData[i]);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			_sparseSetFrames.Rollback(frames);
+			_sparseSetFrames.Rollback(frames, this);
 
 			// Similarly to saving, we can sync rollback with MassiveSparseSet rollback
-			int destinationIndex = _sparseSetFrames.CurrentFrame * Data.Length;
+			var rollbackFrameData = _dataByFrames[_sparseSetFrames.CurrentFrame];
 			for (int i = 0; i < AliveCount; i++)
 			{
-				_dataByFrames[destinationIndex + i].CopyTo(ref Data[i]);
+				rollbackFrameData[i].CopyTo(ref Data[i]);
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override void ResizeDense(int capacity)
+		{
+			base.ResizeDense(capacity);
+
+			_sparseSetFrames.ResizeDense(capacity);
+
+			for (int i = 0; i < _dataByFrames.Length; i++)
+			{
+				Array.Resize(ref _dataByFrames[i], capacity);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override void ResizeSparse(int capacity)
+		{
+			base.ResizeSparse(capacity);
+			_sparseSetFrames.ResizeSparse(capacity);
 		}
 	}
 }
