@@ -17,20 +17,20 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action)
 		{
-			var ids = _entities.AliveIds;
+			var ids = _entities.AliveIdentifiers;
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{
-				action.Invoke(ids[i]);
+				action.Invoke(ids[i].Id);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionExtra<TExtra> action)
 		{
-			var ids = _entities.AliveIds;
+			var ids = _entities.AliveIdentifiers;
 			for (var i = ids.Length - 1; i >= 0; i--)
 			{
-				action.Invoke(ids[i], extra);
+				action.Invoke(ids[i].Id, extra);
 			}
 		}
 	}

@@ -17,7 +17,7 @@
 			while (registry.Entities.CanCreateAmount != 0)
 			{
 				// 50 different components
-				int id = registry.Create();
+				var id = registry.Create();
 				registry.Add<TestState64>(id);
 				registry.Add<TestState64_2>(id);
 				registry.Add<TestState64_3>(id);
@@ -78,7 +78,7 @@
 			while (registry.Entities.CanCreateAmount != 0)
 			{
 				// 50 different tags
-				int id = registry.Create();
+				var id = registry.Create();
 				registry.Add<TestTag>(id);
 				registry.Add<TestTag<int, int, int>>(id);
 				registry.Add<TestTag<long, long, long>>(id);

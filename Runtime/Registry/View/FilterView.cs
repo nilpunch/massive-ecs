@@ -19,16 +19,30 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action)
 		{
-			var ids = _filter.Include.Length == 0
-				? _entities.AliveIds
-				: SetHelpers.GetMinimalSet(_filter.Include).AliveIds;
-
-			for (var i = ids.Length - 1; i >= 0; i--)
+			if (_filter.Include.Length == 0)
 			{
-				var id = ids[i];
-				if (_filter.ContainsId(id))
+				var identifiers = _entities.AliveIdentifiers;
+
+				for (var i = identifiers.Length - 1; i >= 0; i--)
 				{
-					action.Invoke(id);
+					var identifier = identifiers[i];
+					if (_filter.ContainsId(identifier.Id))
+					{
+						action.Invoke(identifier.Id);
+					}
+				}
+			}
+			else
+			{
+				var ids = SetHelpers.GetMinimalSet(_filter.Include).AliveIds;
+
+				for (var i = ids.Length - 1; i >= 0; i--)
+				{
+					var id = ids[i];
+					if (_filter.ContainsId(id))
+					{
+						action.Invoke(id);
+					}
 				}
 			}
 		}
@@ -36,16 +50,30 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionExtra<TExtra> action)
 		{
-			var ids = _filter.Include.Length == 0
-				? _entities.AliveIds
-				: SetHelpers.GetMinimalSet(_filter.Include).AliveIds;
-
-			for (var i = ids.Length - 1; i >= 0; i--)
+			if (_filter.Include.Length == 0)
 			{
-				var id = ids[i];
-				if (_filter.ContainsId(id))
+				var identifiers = _entities.AliveIdentifiers;
+
+				for (var i = identifiers.Length - 1; i >= 0; i--)
 				{
-					action.Invoke(id, extra);
+					var identifier = identifiers[i];
+					if (_filter.ContainsId(identifier.Id))
+					{
+						action.Invoke(identifier.Id, extra);
+					}
+				}
+			}
+			else
+			{
+				var ids = SetHelpers.GetMinimalSet(_filter.Include).AliveIds;
+
+				for (var i = ids.Length - 1; i >= 0; i--)
+				{
+					var id = ids[i];
+					if (_filter.ContainsId(id))
+					{
+						action.Invoke(id, extra);
+					}
 				}
 			}
 		}

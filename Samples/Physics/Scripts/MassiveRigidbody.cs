@@ -10,7 +10,7 @@ namespace Massive.Samples.Physics
 
 		public void Spawn(Registry registry)
 		{
-			int bodyId = registry.Create(new PhysicsRigidbody()
+			var bodyId = registry.Create(new PhysicsRigidbody()
 			{
 				WorldCenterOfMass = new Transformation(transform.position, transform.rotation),
 				IsStatic = _static
@@ -18,7 +18,7 @@ namespace Massive.Samples.Physics
 
 			foreach (var sphereCollider in GetComponentsInChildren<MassiveSphereCollider>())
 			{
-				registry.Create(new PhysicsSphereCollider(bodyId, sphereCollider.Radius,
+				registry.Create(new PhysicsSphereCollider(bodyId.Id, sphereCollider.Radius,
 					new Transformation(transform.InverseTransformPoint(sphereCollider.transform.position),
 						Quaternion.Inverse(transform.rotation) * sphereCollider.transform.rotation),
 					sphereCollider.Material));
@@ -26,7 +26,7 @@ namespace Massive.Samples.Physics
 
 			foreach (var boxCollider in GetComponentsInChildren<MassiveBoxCollider>())
 			{
-				registry.Create(new PhysicsBoxCollider(bodyId, boxCollider.Size,
+				registry.Create(new PhysicsBoxCollider(bodyId.Id, boxCollider.Size,
 					new Transformation(transform.InverseTransformPoint(boxCollider.transform.position), Quaternion.Inverse(transform.rotation) * boxCollider.transform.rotation),
 					boxCollider.Material));
 			}

@@ -49,11 +49,11 @@ namespace Massive.Tests
 		}
 
 		[TestCase(Capacity + 1)]
-		public void Create_WhenOutOfBounds_ShouldThrow(int id)
+		public void Create_WhenOutOfBounds_ShouldResize(int id)
 		{
 			var identifiers = new Identifiers(Capacity);
 
-			Assert.Catch(CreateCheck);
+			Assert.DoesNotThrow(CreateCheck);
 
 			void CreateCheck()
 			{
@@ -68,7 +68,7 @@ namespace Massive.Tests
 			var identifiers = new Identifiers(Capacity);
 			var created = new List<int>();
 			for (var i = 0; i < createAmount; i++)
-				created.Add(identifiers.Create());
+				created.Add(identifiers.Create().Id);
 
 			var distinctIds = created.Distinct().Count();
 
@@ -111,7 +111,7 @@ namespace Massive.Tests
 				identifiers.Create();
 
 			identifiers.Delete(id);
-			int createdId = identifiers.Create();
+			int createdId = identifiers.Create().Id;
 
 			Assert.AreEqual(createdId, id);
 		}
@@ -130,11 +130,11 @@ namespace Massive.Tests
 		}
 
 		[TestCase(Capacity + 1)]
-		public void CreateMany_WhenOutOfBounds_ShouldThrow(int id)
+		public void CreateMany_WhenOutOfBounds_ShouldResize(int id)
 		{
 			var identifiers = new Identifiers(Capacity);
 
-			Assert.Throws<InvalidOperationException>(CreateManyCheck);
+			Assert.DoesNotThrow(CreateManyCheck);
 
 			void CreateManyCheck()
 			{
@@ -146,7 +146,7 @@ namespace Massive.Tests
 		public void CreateMany_ShouldGenerateDistinctIds(int createAmount)
 		{
 			var identifiers = new Identifiers(Capacity);
-			var created = new List<int>();
+			var created = new List<Identifier>();
 
 			identifiers.CreateMany(createAmount, created.Add);
 			var distinctIds = created.Distinct().Count();

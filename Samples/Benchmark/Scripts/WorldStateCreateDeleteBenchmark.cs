@@ -12,9 +12,9 @@ namespace Massive.Samples.Benchmark
 		{
 			_registry = BenchmarkUtils.GetFullyPackedRegistry(_worldEntitiesCount, 121);
 
-			for (var i = _registry.Entities.AliveIds.Length - 1; i >= 0; i--)
+			for (var i = _registry.Entities.AliveIdentifiers.Length - 1; i >= 0; i--)
 			{
-				var id = _registry.Entities.AliveIds[i];
+				var id = _registry.Entities.AliveIdentifiers[i];
 				_registry.Destroy(id);
 			}
 		}
@@ -26,10 +26,12 @@ namespace Massive.Samples.Benchmark
 				_registry.Create(new TestState() { Position = Vector3.one });
 			}
 
-			for (int index = 0; index < _worldEntitiesCount; index++)
+			var view = new View(_registry);
+
+			view.ForEachExtra(_registry, (id, registry) =>
 			{
-				_registry.Destroy(index);
-			}
+				registry.Destroy(id);
+			});
 		}
 	}
 }

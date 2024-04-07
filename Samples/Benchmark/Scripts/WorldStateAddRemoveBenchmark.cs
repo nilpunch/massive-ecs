@@ -15,14 +15,14 @@ namespace Massive.Samples.Benchmark
 
 		protected override void Sample()
 		{
-			foreach (var id in _registry.Entities.AliveIds)
+			foreach (var identifier in _registry.Entities.AliveIdentifiers)
 			{
-				_registry.Add(id, new TestState() { Position = Vector3.one });
+				_registry.Add(identifier.Id, new TestState() { Position = Vector3.one });
 			}
 
-			foreach (var id in _registry.Entities.AliveIds)
+			foreach (var identifier in _registry.Entities.AliveIdentifiers)
 			{
-				_registry.Remove<TestState>(id);
+				_registry.Remove<TestState>(identifier.Id);
 			}
 		}
 	}

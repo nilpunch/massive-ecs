@@ -25,9 +25,20 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Create()
+		public Identifier Create()
 		{
 			return Entities.Create();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Destroy(Identifier identifier)
+		{
+			if (!Entities.IsAlive(identifier))
+			{
+				return;
+			}
+
+			Destroy(identifier.Id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -39,6 +50,29 @@ namespace Massive
 			{
 				AllSets[i].Remove(entityId);
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsAlive(Identifier identifier)
+		{
+			return Entities.IsAlive(identifier);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsAlive(int entityId)
+		{
+			return Entities.IsAlive(entityId);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Add<T>(Identifier identifier, T data = default) where T : struct
+		{
+			if (!Entities.IsAlive(identifier))
+			{
+				return;
+			}
+
+			Add(identifier.Id, data);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -56,12 +90,34 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Remove<T>(Identifier identifier) where T : struct
+		{
+			if (!Entities.IsAlive(identifier))
+			{
+				return;
+			}
+
+			Remove<T>(identifier.Id);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove<T>(int entityId) where T : struct
 		{
 			if (SetsLookup.TryGetValue(typeof(T), out var set))
 			{
 				set.Remove(entityId);
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Has<T>(Identifier identifier) where T : struct
+		{
+			if (!Entities.IsAlive(identifier))
+			{
+				return false;
+			}
+
+			return Has<T>(identifier.Id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -73,6 +129,17 @@ namespace Massive
 			}
 
 			return false;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ref T Get<T>(Identifier identifier) where T : struct
+		{
+			if (!Entities.IsAlive(identifier))
+			{
+				throw new Exception("Entity is not alive!");
+			}
+
+			return ref Get<T>(identifier.Id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

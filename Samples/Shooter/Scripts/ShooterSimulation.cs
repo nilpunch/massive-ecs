@@ -33,7 +33,7 @@ namespace Massive.Samples.Shooter
 
 			for (int i = 0; i < _charactersAmount; i++)
 			{
-				int characterId = _registry.Create(new CharacterState()
+				var characterId = _registry.Create(new CharacterState()
 				{
 					Transform = new EntityTransform()
 					{

@@ -21,7 +21,7 @@
 			for (int i = 0; i < entitiesCapacity; i++)
 			{
 				// 50 different components
-				int id = registry.Create();
+				var id = registry.Create();
 				registry.Add<TestState>(id);
 				registry.Add<TestState<float, byte, int>>(id);
 				registry.Add<TestState<int, float, double>>(id);

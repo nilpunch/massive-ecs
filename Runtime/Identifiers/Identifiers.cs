@@ -9,10 +9,10 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Identifiers
 	{
-		private int[] _dense;
+		private Identifier[] _dense;
 		private int[] _sparse;
 
-		protected int[] Dense => _dense;
+		protected Identifier[] Dense => _dense;
 		protected int[] Sparse => _sparse;
 
 		protected int AliveCount { get; set; }
@@ -20,16 +20,16 @@ namespace Massive
 
 		public Identifiers(int dataCapacity = Constants.DataCapacity)
 		{
-			_dense = new int[dataCapacity];
+			_dense = new Identifier[dataCapacity];
 			_sparse = new int[dataCapacity];
 		}
 
 		public int CanCreateAmount => Dense.Length - AliveCount;
 
-		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
+		public ReadOnlySpan<Identifier> AliveIdentifiers => new ReadOnlySpan<Identifier>(Dense, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Create()
+		public Identifier Create()
 		{
 			int count = AliveCount;
 			AliveCount += 1;
@@ -46,17 +46,24 @@ namespace Massive
 				return Dense[count];
 			}
 
-			MaxId += 1;
-			AssignIndex(maxId, count);
+			var newId = new Identifier(maxId, 0);
 
-			return maxId;
+			MaxId += 1;
+			AssignIndex(newId, count);
+
+			return newId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Delete(int id)
+		public void Delete(Identifier identifier)
 		{
 			// If element is not alive, nothing to be done
-			if (!TryGetDense(id, out var dense))
+			if (identifier.Id < 0 || identifier.Id >= MaxId)
+			{
+				return;
+			}
+			var dense = Sparse[identifier.Id];
+			if (dense >= AliveCount || Dense[dense] != identifier)
 			{
 				return;
 			}
@@ -73,11 +80,45 @@ namespace Massive
 			// Swap dense with last element
 			int lastDense = count - 1;
 			AssignIndex(Dense[lastDense], dense);
-			AssignIndex(id, lastDense);
+			AssignIndex(Identifier.IncreaseGeneration(identifier), lastDense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CreateMany(int amount, [MaybeNull] Action<int> action = null)
+		public void Delete(int id)
+		{
+			// If element is not alive, nothing to be done
+			if (id < 0 || id >= MaxId)
+			{
+				return;
+			}
+			var dense = Sparse[id];
+			if (dense >= AliveCount)
+			{
+				return;
+			}
+			var identifier = Dense[dense];
+			if (identifier.Id != id)
+			{
+				return;
+			}
+
+			int count = AliveCount;
+			AliveCount -= 1;
+
+			// If dense is the last used element, decreasing alive count is enough
+			if (dense == count - 1)
+			{
+				return;
+			}
+
+			// Swap dense with last element
+			int lastDense = count - 1;
+			AssignIndex(Dense[lastDense], dense);
+			AssignIndex(Identifier.IncreaseGeneration(identifier), lastDense);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CreateMany(int amount, [MaybeNull] Action<Identifier> action = null)
 		{
 			int needToCreate = amount;
 			if (needToCreate + AliveCount >= Dense.Length)
@@ -97,25 +138,31 @@ namespace Massive
 			{
 				int count = AliveCount;
 				int maxId = MaxId;
+				var newId = new Identifier(maxId, 0);
 				AliveCount += 1;
 				MaxId += 1;
-				AssignIndex(maxId, count);
-				action?.Invoke(maxId);
+				AssignIndex(newId, count);
+				action?.Invoke(newId);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool TryGetDense(int id, out int dense)
+		public Identifier GetIdentifier(int sparseId)
 		{
-			if (id < 0 || id >= MaxId)
+			return Dense[sparseId];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsAlive(Identifier identifier)
+		{
+			if (identifier.Id < 0 || identifier.Id >= MaxId)
 			{
-				dense = default;
 				return false;
 			}
 
-			dense = Sparse[id];
+			int dense = Sparse[identifier.Id];
 
-			return dense < AliveCount && Dense[dense] == id;
+			return dense < AliveCount && Dense[dense] == identifier;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -128,7 +175,7 @@ namespace Massive
 
 			int dense = Sparse[id];
 
-			return dense < AliveCount && Dense[dense] == id;
+			return dense < AliveCount && Dense[dense].Id == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -144,10 +191,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignIndex(int id, int dense)
+		private void AssignIndex(Identifier identifier, int dense)
 		{
-			Sparse[id] = dense;
-			Dense[dense] = id;
+			Sparse[identifier.Id] = dense;
+			Dense[dense] = identifier;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

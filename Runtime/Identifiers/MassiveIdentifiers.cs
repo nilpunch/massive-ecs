@@ -8,7 +8,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class MassiveIdentifiers : Identifiers, IMassive
 	{
-		private readonly int[][] _denseByFrames;
+		private readonly Identifier[][] _denseByFrames;
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _maxIdByFrames;
 		private readonly int[] _aliveCountByFrames;
@@ -20,14 +20,14 @@ namespace Massive
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
-			_denseByFrames = new int[framesCapacity][];
+			_denseByFrames = new Identifier[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_maxIdByFrames = new int[framesCapacity];
 			_aliveCountByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
-				_denseByFrames[i] = new int[Dense.Length];
+				_denseByFrames[i] = new Identifier[Dense.Length];
 				_sparseByFrames[i] = new int[Sparse.Length];
 			}
 		}

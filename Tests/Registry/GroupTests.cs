@@ -24,8 +24,8 @@ namespace Massive.Tests
 
 			Assert.AreEqual(0, group.Length);
 
-			var entity1 = registry.Create('1');
-			var entity2 = registry.Create('2');
+			var entity1 = registry.Create('1').Id;
+			var entity2 = registry.Create('2').Id;
 
 			registry.Add(entity2, 42);
 
@@ -59,16 +59,16 @@ namespace Massive.Tests
 		{
 			var registry = new Registry();
 
-			var entity1 = registry.Create(1);
+			var entity1 = registry.Create(1).Id;
 
-			var entity2 = registry.Create(2);
+			var entity2 = registry.Create(2).Id;
 			registry.Add<char>(entity2);
 
 			var group = SetUpGroupWithIntAndWithoutChar(registry, testGroupType);
 
-			var entity3 = registry.Create(3);
+			var entity3 = registry.Create(3).Id;
 
-			var entity4 = registry.Create(4);
+			var entity4 = registry.Create(4).Id;
 			registry.Add<char>(entity4);
 
 			foreach (var entity in group.Ids)
@@ -116,7 +116,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 30; i++)
 			{
-				var entity = registry.Create();
+				var entity = registry.Create().Id;
 
 				if (i % 2 != 0)
 				{
@@ -139,22 +139,27 @@ namespace Massive.Tests
 		{
 			var registry = new Registry();
 
-			var entity1 = registry.Create(1);
+			var entity1 = registry.Create(1).Id;
 			registry.Add<float>(entity1);
 
-			var entity2 = registry.Create(2);
+			var entity2 = registry.Create(2).Id;
 			registry.Add<char>(entity2);
 			registry.Add<float>(entity2);
 
-			var owningGroup3 = registry.Groups.EnsureGroup(new[] { registry.Any<int>(), registry.Any<char>() },
+			var owningGroup3 = registry.Groups.EnsureGroup(
+				new[] { registry.Any<int>(), registry.Any<char>() },
 				new[] { registry.Any<float>(), registry.Any<double>() });
-			var owningGroup = registry.Groups.EnsureGroup(new[] { registry.Any<int>() }, new[] { registry.Any<float>() });
-			var owningGroup2 = registry.Groups.EnsureGroup(new[] { registry.Any<int>(), registry.Any<char>() }, new[] { registry.Any<float>() });
+			var owningGroup = registry.Groups.EnsureGroup(
+				new[] { registry.Any<int>() }, 
+				new[] { registry.Any<float>() });
+			var owningGroup2 = registry.Groups.EnsureGroup(
+				new[] { registry.Any<int>(), registry.Any<char>() },
+				new[] { registry.Any<float>() });
 
-			var entity3 = registry.Create(3);
+			var entity3 = registry.Create(3).Id;
 			registry.Add<float>(entity3);
 
-			var entity4 = registry.Create(4);
+			var entity4 = registry.Create(4).Id;
 			registry.Add<char>(entity4);
 			registry.Add<float>(entity4);
 
