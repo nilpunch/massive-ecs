@@ -1,12 +1,11 @@
-﻿using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class FilterView<T1, T2, T3>
+	public readonly struct FilterView<T1, T2, T3>
 		where T1 : struct
 		where T2 : struct
 		where T3 : struct
@@ -15,7 +14,6 @@ namespace Massive
 		private readonly IReadOnlyDataSet<T1> _components1;
 		private readonly IReadOnlyDataSet<T2> _components2;
 		private readonly IReadOnlyDataSet<T3> _components3;
-		private readonly IReadOnlySet[] _componentsAndInclude;
 
 		public FilterView(IRegistry registry, IFilter filter = null)
 		{
@@ -23,12 +21,6 @@ namespace Massive
 			_components1 = registry.Components<T1>();
 			_components2 = registry.Components<T2>();
 			_components3 = registry.Components<T3>();
-			_componentsAndInclude = Enumerable.Empty<IReadOnlySet>()
-				.Append(_components1)
-				.Append(_components2)
-				.Append(_components3)
-				.Concat(_filter.Include)
-				.ToArray();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -37,7 +29,8 @@ namespace Massive
 			var data1 = _components1.AliveData;
 			var data2 = _components2.AliveData;
 			var data3 = _components3.AliveData;
-			var ids = SetHelpers.GetMinimalSet(_componentsAndInclude).AliveIds;
+			var minData = SetHelpers.GetMinimalSet(_components1, _components2, _components3);
+			var ids = SetHelpers.GetMinimalSet(minData, _filter.Include).AliveIds;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
@@ -60,7 +53,8 @@ namespace Massive
 			var data1 = _components1.AliveData;
 			var data2 = _components2.AliveData;
 			var data3 = _components3.AliveData;
-			var ids = SetHelpers.GetMinimalSet(_componentsAndInclude).AliveIds;
+			var minData = SetHelpers.GetMinimalSet(_components1, _components2, _components3);
+			var ids = SetHelpers.GetMinimalSet(minData, _filter.Include).AliveIds;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{

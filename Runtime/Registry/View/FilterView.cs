@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class FilterView
+	public readonly struct FilterView
 	{
 		private readonly IFilter _filter;
 		private readonly Entities _entities;

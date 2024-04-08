@@ -41,10 +41,5 @@ namespace Massive
 
 			return true;
 		}
-
-		public bool Contains(IFilter other)
-		{
-			return Include.Contains(other.Include) && Exclude.Contains(other.Exclude);
-		}
 	}
 }
