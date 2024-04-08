@@ -11,26 +11,16 @@ namespace Massive.Samples.Benchmark
 		private void Start()
 		{
 			_registry = BenchmarkUtils.GetFullyPackedRegistry(_worldEntitiesCount, 121);
-
-			for (var i = _registry.Entities.Alive.Length - 1; i >= 0; i--)
-			{
-				var id = _registry.Entities.Alive[i];
-				_registry.Destroy(id);
-			}
 		}
 
 		protected override void Sample()
 		{
-			for (int index = 0; index < _worldEntitiesCount; index++)
-			{
-				_registry.Create(new TestState() { Position = Vector3.one });
-			}
-
 			var view = new View(_registry);
 
 			view.ForEachExtra(_registry, (id, registry) =>
 			{
 				registry.Destroy(id);
+				registry.Create(new TestState() { Position = Vector3.one });
 			});
 		}
 	}

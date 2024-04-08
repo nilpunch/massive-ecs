@@ -17,8 +17,16 @@ namespace Massive.Samples.Benchmark
 				_registry.Add<TestState2>(entityId);
 			}
 
-			var group = _registry.Group(_registry.Many<TestState, TestState2>());
-			_groupView = new GroupView<TestState, TestState2>(_registry, group);
+			// Better to cache this
+ 			IGroup group = _registry.Group(
+				owned: _registry.Many<TestState, TestState2>(),
+				include: _registry.Many<int>(),
+				exclude: _registry.Many<char>());
+
+			// Free abstraction, create anywhere you want
+			var view = new GroupView<TestState, TestState2>(_registry, group);
+
+			_groupView = view;
 		}
 
 		protected override void Sample()
