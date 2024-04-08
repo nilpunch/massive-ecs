@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Massive
@@ -25,11 +26,11 @@ namespace Massive
 
 		public ReadOnlySpan<int> Ids => Owned[0].AliveIds.Slice(0, GroupLength);
 
-		public OwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
+		public OwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
 		{
-			Owned = owned;
-			Include = include ?? Array.Empty<IReadOnlySet>();
-			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
+			Owned = owned.ToArray();
+			Include = (include ?? Array.Empty<IReadOnlySet>()).ToArray();
+			Exclude = (exclude ?? Array.Empty<IReadOnlySet>()).ToArray();
 
 			OwnedPlusIncluded = Owned.Concat(Include).ToArray();
 			OwnedMinusFirstPlusIncluded = OwnedPlusIncluded.Skip(1).ToArray();
@@ -58,9 +59,9 @@ namespace Massive
 
 			GroupLength = 0;
 			var minimal = SetHelpers.GetMinimalSet(OwnedPlusIncluded).AliveIds;
-			foreach (var id in minimal)
+			for (var i = 0; i < minimal.Length; i++)
 			{
-				AddToGroup(id);
+				AddToGroup(minimal[i]);
 			}
 		}
 
@@ -69,12 +70,12 @@ namespace Massive
 			return Owned.Contains(set);
 		}
 
-		public bool ExtendsGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude)
+		public bool ExtendsGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude)
 		{
 			return Owned.Contains(owned) && Include.Contains(include) && Exclude.Contains(exclude);
 		}
 
-		public bool BaseForGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude)
+		public bool BaseForGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude)
 		{
 			return owned.Contains(Owned) && include.Contains(Include) && exclude.Contains(Exclude);
 		}
@@ -115,11 +116,12 @@ namespace Massive
 			}
 		}
 
-		private void SwapEntry(int entryId, int swapDense)
+		private void SwapEntry(int id, int swapDense)
 		{
-			foreach (var set in Owned)
+			for (var i = 0; i < Owned.Length; i++)
 			{
-				set.SwapDense(set.GetDense(entryId), swapDense);
+				var set = Owned[i];
+				set.SwapDense(set.GetDense(id), swapDense);
 			}
 		}
 	}

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Massive
 {
 	public interface IOwningGroup : IGroup
@@ -6,9 +8,9 @@ namespace Massive
 
 		IOwningGroup Base { get; set; }
 
-		bool ExtendsGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude);
+		bool ExtendsGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude);
 
-		bool BaseForGroup(ISet[] owned, IReadOnlySet[] include, IReadOnlySet[] exclude);
+		bool BaseForGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude);
 
 		void AddToGroup(int id);
 

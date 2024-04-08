@@ -149,7 +149,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity GetIdentifier(int sparseId)
+		public Entity GetEntity(int sparseId)
 		{
 			return Dense[sparseId];
 		}

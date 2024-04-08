@@ -9,14 +9,14 @@ namespace Massive
 		private readonly Dictionary<ISet, IOwningGroup> _ownedBase = new Dictionary<ISet, IOwningGroup>();
 		private readonly Dictionary<int, IGroup> _groupsLookup = new Dictionary<int, IGroup>();
 
-		protected List<IGroup> CreatedGroups { get; } = new List<IGroup>();
+		protected List<IGroup> AllGroups { get; } = new List<IGroup>();
 
 		public GroupsController(int nonOwningDataCapacity = Constants.DataCapacity)
 		{
 			_nonOwningDataCapacity = nonOwningDataCapacity;
 		}
 
-		public IGroup EnsureGroup(ISet[] owned = null, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
+		public IGroup EnsureGroup(IReadOnlyList<ISet> owned = null, IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
 		{
 			owned ??= Array.Empty<ISet>();
 			include ??= Array.Empty<IReadOnlySet>();
@@ -25,7 +25,7 @@ namespace Massive
 			int ownedCode = owned.GetUnorderedHashCode();
 			int includeCode = include.GetUnorderedHashCode();
 			int excludeCode = exclude.GetUnorderedHashCode();
-			int groupCode = CombineHashOrdered(CombineHashOrdered(ownedCode, includeCode), excludeCode);
+			int groupCode = MathHelpers.CombineHashes(MathHelpers.CombineHashes(ownedCode, includeCode), excludeCode);
 
 			// Try get existing
 			if (_groupsLookup.TryGetValue(groupCode, out var group))
@@ -35,7 +35,7 @@ namespace Massive
 			}
 
 			// If non-owning, then just create new one
-			if (owned.Length == 0)
+			if (owned.Count == 0)
 			{
 				var nonOwningGroup = CreateNonOwningGroup(include, exclude, _nonOwningDataCapacity);
 				return RegisterAndSync(nonOwningGroup, groupCode);
@@ -89,12 +89,14 @@ namespace Massive
 			throw new Exception("Conflicting groups.");
 		}
 
-		protected virtual IOwningGroup CreateOwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
+		protected virtual IOwningGroup CreateOwningGroup(IReadOnlyList<ISet> owned,
+			IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
 		{
 			return new OwningGroup(owned, include, exclude);
 		}
 
-		protected virtual IGroup CreateNonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = 100)
+		protected virtual IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> include,
+			IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = 100)
 		{
 			return new NonOwningGroup(include, exclude, dataCapacity);
 		}
@@ -102,20 +104,9 @@ namespace Massive
 		private IGroup RegisterAndSync(IGroup group, int groupCode)
 		{
 			_groupsLookup.Add(groupCode, group);
-			CreatedGroups.Add(group);
+			AllGroups.Add(group);
 			group.EnsureSynced();
 			return group;
-		}
-
-		private static int CombineHashOrdered(int a, int b)
-		{
-			unchecked
-			{
-				int hash = 17;
-				hash = hash * 31 + a;
-				hash = hash * 31 + b;
-				return hash;
-			}
 		}
 	}
 }

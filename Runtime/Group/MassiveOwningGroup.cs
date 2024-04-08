@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Massive
 {
 	public class MassiveOwningGroup : OwningGroup, IMassive
@@ -7,8 +9,9 @@ namespace Massive
 		private readonly int[] _lengthByFrames;
 		private readonly bool[] _syncedByFrames;
 
-		public MassiveOwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] filter = null, int framesCapacity = Constants.FramesCapacity)
-			: base(owned, include, filter)
+		public MassiveOwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include = null,
+			IReadOnlyList<IReadOnlySet> exclude = null, int framesCapacity = Constants.FramesCapacity)
+			: base(owned, include, exclude)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 

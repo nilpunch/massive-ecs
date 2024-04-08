@@ -16,7 +16,7 @@ namespace Massive.PerformanceTests
 		public GroupViewPerformanceTest()
 		{
 			_registry = new Registry(EntitiesCount).FillRegistryWith50Components();
-			_group = _registry.Groups.EnsureGroup(new[] { _registry.Any<TestState64>(), _registry.Any<TestState64_2>(), _registry.Any<TestState64_3>() });
+			_group = _registry.Group(_registry.Many<TestState64, TestState64_2, TestState64_3>());
 		}
 
 		[Test, Performance]

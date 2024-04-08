@@ -146,15 +146,18 @@ namespace Massive.Tests
 			registry.Add<char>(entity2);
 			registry.Add<float>(entity2);
 
-			var owningGroup3 = registry.Groups.EnsureGroup(
-				new[] { registry.Any<int>(), registry.Any<char>() },
-				new[] { registry.Any<float>(), registry.Any<double>() });
-			var owningGroup = registry.Groups.EnsureGroup(
-				new[] { registry.Any<int>() }, 
-				new[] { registry.Any<float>() });
-			var owningGroup2 = registry.Groups.EnsureGroup(
-				new[] { registry.Any<int>(), registry.Any<char>() },
-				new[] { registry.Any<float>() });
+			var owningGroup3 = registry.Group(
+				registry.Many<int, char>(),
+				registry.Many<float, double>()
+			);
+			var owningGroup = registry.Group(
+				registry.Many<int>(),
+				registry.Many<float>()
+			);
+			var owningGroup2 = registry.Group(
+				registry.Many<int, char>(),
+				registry.Many<float>()
+			);
 
 			var entity3 = registry.Create(3).Id;
 			registry.Add<float>(entity3);
@@ -201,28 +204,18 @@ namespace Massive.Tests
 			switch (testGroupType)
 			{
 				case TestGroupType.FullOwningGroup:
-					return registry.Groups.EnsureGroup(owned: new ISet[]
-					{
-						registry.Components<int>(),
-						registry.Components<char>()
-					});
+					return registry.Group(
+						owned: registry.Many<int, char>()
+					);
 				case TestGroupType.PartialOwningGroup:
-					return registry.Groups.EnsureGroup(
-						owned: new ISet[]
-						{
-							registry.Components<int>()
-						},
-						include: new IReadOnlySet[]
-						{
-							registry.Components<char>()
-						}
+					return registry.Group(
+						owned: registry.Many<int>(),
+						include: registry.Many<char>()
 					);
 				case TestGroupType.NonOwningGroup:
-					return registry.Groups.EnsureGroup(include: new IReadOnlySet[]
-					{
-						registry.Components<int>(),
-						registry.Components<char>()
-					});
+					return registry.Group(
+						include: registry.Many<int, char>()
+					);
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
@@ -234,25 +227,15 @@ namespace Massive.Tests
 			{
 				case TestGroupType.FullOwningGroup:
 				case TestGroupType.PartialOwningGroup:
-					return registry.Groups.EnsureGroup(
-						owned: new ISet[]
-						{
-							registry.Components<int>(),
-						},
-						exclude: new IReadOnlySet[]
-						{
-							registry.Components<char>()
-						});
+					return registry.Group(
+						owned: registry.Many<int>(),
+						exclude: registry.Many<char>()
+					);
 				case TestGroupType.NonOwningGroup:
-					return registry.Groups.EnsureGroup(
-						include: new IReadOnlySet[]
-						{
-							registry.Components<int>(),
-						},
-						exclude: new IReadOnlySet[]
-						{
-							registry.Components<char>()
-						});
+					return registry.Group(
+						include: registry.Many<int>(),
+						exclude: registry.Many<char>()
+					);
 				default:
 					throw new ArgumentOutOfRangeException();
 			}

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Massive
 {
@@ -20,7 +21,7 @@ namespace Massive
 			_savedFrames += Math.Min(_savedFrames + 1, _framesCapacity);
 
 			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-			foreach (IMassive massive in CreatedGroups)
+			foreach (IMassive massive in AllGroups)
 			{
 				massive.SaveFrame();
 			}
@@ -31,20 +32,22 @@ namespace Massive
 			_savedFrames -= frames;
 
 			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-			foreach (IMassive massive in CreatedGroups)
+			foreach (IMassive massive in AllGroups)
 			{
 				massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 			}
 		}
 
-		protected override IOwningGroup CreateOwningGroup(ISet[] owned, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
+		protected override IOwningGroup CreateOwningGroup(IReadOnlyList<ISet> owned,
+			IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
 		{
 			var massiveOwningGroup = new MassiveOwningGroup(owned, include, exclude, _framesCapacity);
 			massiveOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
 			return massiveOwningGroup;
 		}
 
-		protected override IGroup CreateNonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = Constants.DataCapacity)
+		protected override IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> include,
+			IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = 100)
 		{
 			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, dataCapacity, _framesCapacity);
 			massiveNonOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it

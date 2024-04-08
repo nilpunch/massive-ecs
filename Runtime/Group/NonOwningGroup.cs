@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Massive
 {
@@ -14,14 +16,16 @@ namespace Massive
 
 		public ReadOnlySpan<int> Ids => GroupSet.AliveIds;
 
-		public NonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = Constants.DataCapacity)
-			: this(new SparseSet(dataCapacity), include, exclude) { }
+		public NonOwningGroup(IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = Constants.DataCapacity)
+			: this(new SparseSet(dataCapacity), include, exclude)
+		{
+		}
 
-		protected NonOwningGroup(ISet groupSet, IReadOnlySet[] include, IReadOnlySet[] exclude = null)
+		protected NonOwningGroup(ISet groupSet, IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null)
 		{
 			GroupSet = groupSet;
-			Include = include ?? Array.Empty<IReadOnlySet>();
-			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
+			Include = (include ?? Array.Empty<IReadOnlySet>()).ToArray();
+			Exclude = (exclude ?? Array.Empty<IReadOnlySet>()).ToArray();
 
 			foreach (var set in Include)
 			{
@@ -47,9 +51,9 @@ namespace Massive
 
 			GroupSet.Clear();
 			var minimal = SetHelpers.GetMinimalSet(Include).AliveIds;
-			foreach (var id in minimal)
+			for (var i = 0; i < minimal.Length; i++)
 			{
-				AddToGroup(id);
+				AddToGroup(minimal[i]);
 			}
 		}
 

@@ -17,8 +17,8 @@ namespace Massive.Samples.Benchmark
 				_registry.Add<TestState2>(entityId);
 			}
 
-			_groupView = new GroupView<TestState, TestState2>(_registry,
-				_registry.Groups.EnsureGroup(new[] { _registry.Any<TestState>(), _registry.Any<TestState2>() }));
+			var group = _registry.Group(_registry.Many<TestState, TestState2>());
+			_groupView = new GroupView<TestState, TestState2>(_registry, group);
 		}
 
 		protected override void Sample()

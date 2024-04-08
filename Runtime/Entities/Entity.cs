@@ -50,13 +50,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override int GetHashCode()
 		{
-			unchecked
-			{
-				int hash = 17;
-				hash = hash * 31 + Id;
-				hash = hash * 31 + (int)ReuseCount;
-				return hash;
-			}
+			return MathHelpers.CombineHashes(Id, unchecked((int)ReuseCount));
 		}
 	}
 }

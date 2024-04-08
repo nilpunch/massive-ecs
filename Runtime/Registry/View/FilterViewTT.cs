@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct  FilterView<T1, T2>
+	public readonly struct FilterView<T1, T2>
 		where T1 : struct
 		where T2 : struct
 	{

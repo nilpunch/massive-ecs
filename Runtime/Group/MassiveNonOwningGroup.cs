@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Massive
 {
 	public class MassiveNonOwningGroup : NonOwningGroup, IMassive
@@ -7,8 +9,8 @@ namespace Massive
 
 		private readonly bool[] _syncedByFrames;
 
-		public MassiveNonOwningGroup(IReadOnlySet[] include, IReadOnlySet[] exclude = null, int dataCapacity = Constants.DataCapacity,
-			int framesCapacity = Constants.FramesCapacity)
+		public MassiveNonOwningGroup(IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null,
+			int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(new MassiveSparseSet(dataCapacity, framesCapacity), include, exclude)
 		{
 			// Fetch instance from base

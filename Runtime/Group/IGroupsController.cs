@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 namespace Massive
 {
 	public interface IGroupsController
 	{
-		IGroup EnsureGroup(ISet[] owned = null, IReadOnlySet[] include = null, IReadOnlySet[] exclude = null);
+		IGroup EnsureGroup(IReadOnlyList<ISet> owned = null, IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null);
 	}
 }
