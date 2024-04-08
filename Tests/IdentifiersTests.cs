@@ -72,7 +72,7 @@ namespace Massive.Tests
 
 			var distinctIds = created.Distinct().Count();
 
-			Assert.AreEqual(distinctIds, createAmount);
+			Assert.AreEqual(createAmount, distinctIds);
 		}
 
 		[TestCase(0)]
@@ -109,11 +109,12 @@ namespace Massive.Tests
 			var identifiers = new Identifiers(Capacity);
 			for (var i = 0; i <= id; i++)
 				identifiers.Create();
-
+			
 			identifiers.Delete(id);
-			int createdId = identifiers.Create().Id;
+			var createdIdentifier = identifiers.Create();
 
-			Assert.AreEqual(createdId, id);
+			Assert.AreEqual(id, createdIdentifier.Id);
+			Assert.AreEqual(1, createdIdentifier.Generation);
 		}
 
 		[TestCase(0)]
@@ -151,7 +152,7 @@ namespace Massive.Tests
 			identifiers.CreateMany(createAmount, created.Add);
 			var distinctIds = created.Distinct().Count();
 
-			Assert.AreEqual(distinctIds, createAmount);
+			Assert.AreEqual(createAmount, distinctIds);
 		}
 	}
 }

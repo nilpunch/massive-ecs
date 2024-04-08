@@ -7,8 +7,7 @@ namespace Massive.Samples.Benchmark
 		[SerializeField, Min(1)] private int _worldEntitiesCount = 100;
 
 		private MassiveRegistry _registry;
-		private IReadOnlyDataSet<TestState> _testStates1;
-		private IReadOnlyDataSet<TestState2> _testStates2;
+		private GroupView<TestState, TestState2> _groupView;
 
 		private void Start()
 		{
@@ -18,27 +17,17 @@ namespace Massive.Samples.Benchmark
 				_registry.Add<TestState2>(id);
 			}
 
-			_testStates1 = _registry.Components<TestState>();
-			_testStates2 = _registry.Components<TestState2>();
+			_groupView = new GroupView<TestState, TestState2>(_registry,
+				_registry.Groups.EnsureGroup(new[] { _registry.Any<TestState>(), _registry.Any<TestState2>() }));
 		}
 
 		protected override void Sample()
 		{
-			var ids1 = _testStates1.AliveIds;
-			var data1 = _testStates1.AliveData;
-			var data2 = _testStates2.AliveData;
-
-			for (int dense1 = 0; dense1 < ids1.Length; dense1++)
+			_groupView.ForEach((int id, ref TestState state1, ref TestState2 state2) =>
 			{
-				int id = ids1[dense1];
-				if (_testStates2.TryGetDense(id, out var dense2))
-				{
-					ref TestState state1 = ref data1[dense1];
-					ref TestState2 state2 = ref data2[dense2];
-					state1.Position += Vector3.one;
-					state2.Position += Vector3.one;
-				}
-			}
+				state1.Position += Vector3.one;
+				state2.Position += Vector3.one;
+			});
 		}
 	}
 }

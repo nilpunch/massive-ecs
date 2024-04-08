@@ -105,9 +105,10 @@ namespace Massive
 			int count = AliveCount;
 			AliveCount -= 1;
 
-			// If dense is the last used element, decreasing alive count is enough
+			// If dense is the last used element, decreasing alive count and increasing gen is enough
 			if (dense == count - 1)
 			{
+				Dense[dense] = Identifier.IncreaseGeneration(identifier);
 				return;
 			}
 
