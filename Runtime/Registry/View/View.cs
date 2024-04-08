@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct View
 	{
-		private readonly Identifiers _entities;
+		private readonly Entities _entities;
 
 		public View(IRegistry registry)
 		{
@@ -17,20 +17,20 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action)
 		{
-			var ids = _entities.AliveIdentifiers;
-			for (var i = ids.Length - 1; i >= 0; i--)
+			var entities = _entities.Alive;
+			for (var i = entities.Length - 1; i >= 0; i--)
 			{
-				action.Invoke(ids[i].Id);
+				action.Invoke(entities[i].Id);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionExtra<TExtra> action)
 		{
-			var ids = _entities.AliveIdentifiers;
-			for (var i = ids.Length - 1; i >= 0; i--)
+			var entities = _entities.Alive;
+			for (var i = entities.Length - 1; i >= 0; i--)
 			{
-				action.Invoke(ids[i].Id, extra);
+				action.Invoke(entities[i].Id, extra);
 			}
 		}
 	}

@@ -6,7 +6,7 @@ namespace Massive
 	public static class RegistryExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Identifier Create<T>(this IRegistry registry, T data = default) where T : struct
+		public static Entity Create<T>(this IRegistry registry, T data = default) where T : struct
 		{
 			var id = registry.Create();
 			registry.Add(id, data);
@@ -14,68 +14,68 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Destroy(this IRegistry registry, Identifier identifier)
+		public static void Destroy(this IRegistry registry, Entity entity)
 		{
-			if (!registry.Entities.IsAlive(identifier))
+			if (!registry.Entities.IsAlive(entity))
 			{
 				return;
 			}
 
-			registry.Destroy(identifier.Id);
+			registry.Destroy(entity.Id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsAlive(this IRegistry registry, Identifier identifier)
+		public static bool IsAlive(this IRegistry registry, Entity entity)
 		{
-			return registry.Entities.IsAlive(identifier);
+			return registry.Entities.IsAlive(entity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Add<T>(this IRegistry registry, Identifier identifier, T data = default) where T : struct
+		public static void Add<T>(this IRegistry registry, Entity entity, T data = default) where T : struct
 		{
-			if (!registry.Entities.IsAlive(identifier))
+			if (!registry.Entities.IsAlive(entity))
 			{
 				return;
 			}
 
-			registry.Add(identifier.Id, data);
+			registry.Add(entity.Id, data);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Remove<T>(this IRegistry registry, Identifier identifier) where T : struct
+		public static void Remove<T>(this IRegistry registry, Entity entity) where T : struct
 		{
-			if (!registry.Entities.IsAlive(identifier))
+			if (!registry.Entities.IsAlive(entity))
 			{
 				return;
 			}
 
-			registry.Remove<T>(identifier.Id);
+			registry.Remove<T>(entity.Id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool Has<T>(this IRegistry registry, Identifier identifier) where T : struct
+		public static bool Has<T>(this IRegistry registry, Entity entity) where T : struct
 		{
-			if (!registry.Entities.IsAlive(identifier))
+			if (!registry.Entities.IsAlive(entity))
 			{
 				return false;
 			}
 
-			return registry.Has<T>(identifier.Id);
+			return registry.Has<T>(entity.Id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ref T Get<T>(this IRegistry registry, Identifier identifier) where T : struct
+		public static ref T Get<T>(this IRegistry registry, Entity entity) where T : struct
 		{
-			if (!registry.Entities.IsAlive(identifier))
+			if (!registry.Entities.IsAlive(entity))
 			{
 				throw new Exception("Entity is not alive!");
 			}
 
-			return ref registry.Get<T>(identifier.Id);
+			return ref registry.Get<T>(entity.Id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Identifier GetIdentifier(this IRegistry registry, int id)
+		public static Entity GetUniqueId(this IRegistry registry, int id)
 		{
 			return registry.Entities.GetIdentifier(id);
 		}

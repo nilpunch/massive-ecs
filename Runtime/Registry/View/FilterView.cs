@@ -8,7 +8,7 @@ namespace Massive
 	public class FilterView
 	{
 		private readonly IFilter _filter;
-		private readonly Identifiers _entities;
+		private readonly Entities _entities;
 
 		public FilterView(IRegistry registry, IFilter filter = null)
 		{
@@ -21,14 +21,14 @@ namespace Massive
 		{
 			if (_filter.Include.Length == 0)
 			{
-				var identifiers = _entities.AliveIdentifiers;
+				var entities = _entities.Alive;
 
-				for (var i = identifiers.Length - 1; i >= 0; i--)
+				for (var i = entities.Length - 1; i >= 0; i--)
 				{
-					var identifier = identifiers[i];
-					if (_filter.ContainsId(identifier.Id))
+					var entity = entities[i];
+					if (_filter.ContainsId(entity.Id))
 					{
-						action.Invoke(identifier.Id);
+						action.Invoke(entity.Id);
 					}
 				}
 			}
@@ -52,14 +52,14 @@ namespace Massive
 		{
 			if (_filter.Include.Length == 0)
 			{
-				var identifiers = _entities.AliveIdentifiers;
+				var entities = _entities.Alive;
 
-				for (var i = identifiers.Length - 1; i >= 0; i--)
+				for (var i = entities.Length - 1; i >= 0; i--)
 				{
-					var identifier = identifiers[i];
-					if (_filter.ContainsId(identifier.Id))
+					var entity = entities[i];
+					if (_filter.ContainsId(entity.Id))
 					{
-						action.Invoke(identifier.Id, extra);
+						action.Invoke(entity.Id, extra);
 					}
 				}
 			}

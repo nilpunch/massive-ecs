@@ -5,23 +5,23 @@ namespace Massive
 {
 	public class MassiveRegistry : Registry, IMassive
 	{
-		private readonly MassiveIdentifiers _massiveEntities;
+		private readonly MassiveEntities _massiveEntityEntities;
 		private readonly MassiveGroupsController _massiveGroups;
 
 		public MassiveRegistry(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeTagsAsComponents = false)
 			: base(new MassiveGroupsController(dataCapacity, framesCapacity), new MassiveSetFactory(dataCapacity, framesCapacity, storeTagsAsComponents))
 		{
 			// Fetch instances from base
-			_massiveEntities = (MassiveIdentifiers)Entities;
+			_massiveEntityEntities = (MassiveEntities)Entities;
 			_massiveGroups = (MassiveGroupsController)Groups;
 		}
 
-		public int CanRollbackFrames => _massiveEntities.CanRollbackFrames;
+		public int CanRollbackFrames => _massiveEntityEntities.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			_massiveEntities.SaveFrame();
+			_massiveEntityEntities.SaveFrame();
 			_massiveGroups.SaveFrame();
 
 			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
@@ -34,7 +34,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			_massiveEntities.Rollback(frames);
+			_massiveEntityEntities.Rollback(frames);
 			_massiveGroups.Rollback(frames);
 
 			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop

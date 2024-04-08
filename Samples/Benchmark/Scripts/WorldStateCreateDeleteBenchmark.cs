@@ -12,9 +12,9 @@ namespace Massive.Samples.Benchmark
 		{
 			_registry = BenchmarkUtils.GetFullyPackedRegistry(_worldEntitiesCount, 121);
 
-			for (var i = _registry.Entities.AliveIdentifiers.Length - 1; i >= 0; i--)
+			for (var i = _registry.Entities.Alive.Length - 1; i >= 0; i--)
 			{
-				var id = _registry.Entities.AliveIdentifiers[i];
+				var id = _registry.Entities.Alive[i];
 				_registry.Destroy(id);
 			}
 		}

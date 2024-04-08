@@ -2,7 +2,7 @@
 {
 	public interface ISetFactory
 	{
-		Identifiers CreateIdentifiers();
+		Entities CreateIdentifiers();
 
 		ISet CreateAppropriateSet<T>() where T : struct;
 

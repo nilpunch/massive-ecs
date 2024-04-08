@@ -10,7 +10,7 @@ namespace Massive
 		public ISetFactory SetFactory { get; }
 		public Dictionary<Type, ISet> SetsLookup { get; }
 		public List<ISet> AllSets { get; }
-		public Identifiers Entities { get; }
+		public Entities Entities { get; }
 
 		public Registry(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
 			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeTagsAsComponents)) { }
@@ -25,71 +25,71 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Identifier Create()
+		public Entity Create()
 		{
 			return Entities.Create();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Destroy(int entityId)
+		public void Destroy(int id)
 		{
-			Entities.Delete(entityId);
+			Entities.Delete(id);
 
 			for (var i = 0; i < AllSets.Count; i++)
 			{
-				AllSets[i].Remove(entityId);
+				AllSets[i].Remove(id);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(int entityId)
+		public bool IsAlive(int id)
 		{
-			return Entities.IsAlive(entityId);
+			return Entities.IsAlive(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add<T>(int entityId, T data = default) where T : struct
+		public void Add<T>(int id, T data = default) where T : struct
 		{
 			var set = GetOrCreateSet<T>();
 			if (set is IDataSet<T> dataSet)
 			{
-				dataSet.Ensure(entityId, data);
+				dataSet.Ensure(id, data);
 			}
 			else
 			{
-				set.Ensure(entityId);
+				set.Ensure(id);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove<T>(int entityId) where T : struct
+		public void Remove<T>(int id) where T : struct
 		{
 			if (SetsLookup.TryGetValue(typeof(T), out var set))
 			{
-				set.Remove(entityId);
+				set.Remove(id);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Has<T>(int entityId) where T : struct
+		public bool Has<T>(int id) where T : struct
 		{
 			if (SetsLookup.TryGetValue(typeof(T), out var set))
 			{
-				return set.IsAlive(entityId);
+				return set.IsAlive(id);
 			}
 
 			return false;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref T Get<T>(int entityId) where T : struct
+		public ref T Get<T>(int id) where T : struct
 		{
 			if (GetOrCreateSet<T>() is not IDataSet<T> dataSet)
 			{
 				throw new Exception("Type has no associated data!");
 			}
 
-			return ref dataSet.Get(entityId);
+			return ref dataSet.Get(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

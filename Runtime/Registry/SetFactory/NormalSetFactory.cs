@@ -11,9 +11,9 @@
 			_storeTagsAsComponents = storeTagsAsComponents;
 		}
 
-		public Identifiers CreateIdentifiers()
+		public Entities CreateIdentifiers()
 		{
-			return new Identifiers(_dataCapacity);
+			return new Entities(_dataCapacity);
 		}
 
 		public ISet CreateAppropriateSet<T>() where T : struct

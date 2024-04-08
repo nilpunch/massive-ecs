@@ -6,28 +6,28 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class MassiveIdentifiers : Identifiers, IMassive
+	public class MassiveEntities : Entities, IMassive
 	{
-		private readonly Identifier[][] _denseByFrames;
+		private readonly Entity[][] _denseByFrames;
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _maxIdByFrames;
 		private readonly int[] _aliveCountByFrames;
 
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
-		public MassiveIdentifiers(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
+		public MassiveEntities(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(dataCapacity)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
-			_denseByFrames = new Identifier[framesCapacity][];
+			_denseByFrames = new Entity[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_maxIdByFrames = new int[framesCapacity];
 			_aliveCountByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
-				_denseByFrames[i] = new Identifier[Dense.Length];
+				_denseByFrames[i] = new Entity[Dense.Length];
 				_sparseByFrames[i] = new int[Sparse.Length];
 			}
 		}

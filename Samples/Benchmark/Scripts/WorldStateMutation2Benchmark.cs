@@ -12,9 +12,9 @@ namespace Massive.Samples.Benchmark
 		private void Start()
 		{
 			_registry = BenchmarkUtils.GetSimplyPackedRegistry(_worldEntitiesCount, 1);
-			foreach (var id in _registry.Entities.AliveIdentifiers)
+			foreach (var entityId in _registry.Entities.Alive)
 			{
-				_registry.Add<TestState2>(id);
+				_registry.Add<TestState2>(entityId);
 			}
 
 			_groupView = new GroupView<TestState, TestState2>(_registry,

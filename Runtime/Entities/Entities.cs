@@ -7,29 +7,29 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Identifiers
+	public class Entities
 	{
-		private Identifier[] _dense;
+		private Entity[] _dense;
 		private int[] _sparse;
 
-		protected Identifier[] Dense => _dense;
+		protected Entity[] Dense => _dense;
 		protected int[] Sparse => _sparse;
 
 		protected int AliveCount { get; set; }
 		protected int MaxId { get; set; }
 
-		public Identifiers(int dataCapacity = Constants.DataCapacity)
+		public Entities(int dataCapacity = Constants.DataCapacity)
 		{
-			_dense = new Identifier[dataCapacity];
+			_dense = new Entity[dataCapacity];
 			_sparse = new int[dataCapacity];
 		}
 
 		public int CanCreateAmount => Dense.Length - AliveCount;
 
-		public ReadOnlySpan<Identifier> AliveIdentifiers => new ReadOnlySpan<Identifier>(Dense, 0, AliveCount);
+		public ReadOnlySpan<Entity> Alive => new ReadOnlySpan<Entity>(Dense, 0, AliveCount);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Identifier Create()
+		public Entity Create()
 		{
 			int count = AliveCount;
 			AliveCount += 1;
@@ -46,7 +46,7 @@ namespace Massive
 				return Dense[count];
 			}
 
-			var newId = new Identifier(maxId, 0);
+			var newId = new Entity(maxId, 0);
 
 			MaxId += 1;
 			AssignIndex(newId, count);
@@ -55,15 +55,15 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Delete(Identifier identifier)
+		public void Delete(Entity entity)
 		{
 			// If element is not alive, nothing to be done
-			if (identifier.Id < 0 || identifier.Id >= MaxId)
+			if (entity.Id < 0 || entity.Id >= MaxId)
 			{
 				return;
 			}
-			var dense = Sparse[identifier.Id];
-			if (dense >= AliveCount || Dense[dense] != identifier)
+			var dense = Sparse[entity.Id];
+			if (dense >= AliveCount || Dense[dense] != entity)
 			{
 				return;
 			}
@@ -71,16 +71,17 @@ namespace Massive
 			int count = AliveCount;
 			AliveCount -= 1;
 
-			// If dense is the last used element, decreasing alive count is enough
+			// If dense is the last used element, decreasing alive count and apply reuse is enough
 			if (dense == count - 1)
 			{
+				Dense[dense] = Entity.Reuse(entity);
 				return;
 			}
 
 			// Swap dense with last element
 			int lastDense = count - 1;
 			AssignIndex(Dense[lastDense], dense);
-			AssignIndex(Identifier.IncreaseGeneration(identifier), lastDense);
+			AssignIndex(Entity.Reuse(entity), lastDense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -96,8 +97,8 @@ namespace Massive
 			{
 				return;
 			}
-			var identifier = Dense[dense];
-			if (identifier.Id != id)
+			var entity = Dense[dense];
+			if (entity.Id != id)
 			{
 				return;
 			}
@@ -105,21 +106,21 @@ namespace Massive
 			int count = AliveCount;
 			AliveCount -= 1;
 
-			// If dense is the last used element, decreasing alive count and increasing gen is enough
+			// If dense is the last used element, decreasing alive count and apply reuse is enough
 			if (dense == count - 1)
 			{
-				Dense[dense] = Identifier.IncreaseGeneration(identifier);
+				Dense[dense] = Entity.Reuse(entity);
 				return;
 			}
 
 			// Swap dense with last element
 			int lastDense = count - 1;
 			AssignIndex(Dense[lastDense], dense);
-			AssignIndex(Identifier.IncreaseGeneration(identifier), lastDense);
+			AssignIndex(Entity.Reuse(entity), lastDense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CreateMany(int amount, [MaybeNull] Action<Identifier> action = null)
+		public void CreateMany(int amount, [MaybeNull] Action<Entity> action = null)
 		{
 			int needToCreate = amount;
 			if (needToCreate + AliveCount >= Dense.Length)
@@ -139,7 +140,7 @@ namespace Massive
 			{
 				int count = AliveCount;
 				int maxId = MaxId;
-				var newId = new Identifier(maxId, 0);
+				var newId = new Entity(maxId, 0);
 				AliveCount += 1;
 				MaxId += 1;
 				AssignIndex(newId, count);
@@ -148,22 +149,22 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Identifier GetIdentifier(int sparseId)
+		public Entity GetIdentifier(int sparseId)
 		{
 			return Dense[sparseId];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(Identifier identifier)
+		public bool IsAlive(Entity entity)
 		{
-			if (identifier.Id < 0 || identifier.Id >= MaxId)
+			if (entity.Id < 0 || entity.Id >= MaxId)
 			{
 				return false;
 			}
 
-			int dense = Sparse[identifier.Id];
+			int dense = Sparse[entity.Id];
 
-			return dense < AliveCount && Dense[dense] == identifier;
+			return dense < AliveCount && Dense[dense] == entity;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -192,10 +193,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignIndex(Identifier identifier, int dense)
+		private void AssignIndex(Entity entity, int dense)
 		{
-			Sparse[identifier.Id] = dense;
-			Dense[dense] = identifier;
+			Sparse[entity.Id] = dense;
+			Dense[dense] = entity;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
