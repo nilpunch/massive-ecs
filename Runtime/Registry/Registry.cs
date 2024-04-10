@@ -27,9 +27,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity CreateEntity()
+		public int Create()
 		{
-			return Entities.Create();
+			return Entities.Create().Id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

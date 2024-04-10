@@ -13,6 +13,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Entity CreateEntity(this IRegistry registry)
+		{
+			return registry.Entities.Create();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity CreateEntity<T>(this IRegistry registry, T data = default) where T : struct
 		{
 			var entity = registry.CreateEntity();
@@ -21,15 +27,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Create(this IRegistry registry)
-		{
-			return registry.CreateEntity().Id;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Create<T>(this IRegistry registry, T data = default) where T : struct
 		{
-			return registry.CreateEntity(data).Id;
+			var id = registry.Create();
+			registry.Add(id, data);
+			return id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
