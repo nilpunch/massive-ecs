@@ -24,8 +24,8 @@ namespace Massive.Tests
 
 			Assert.AreEqual(0, group.Length);
 
-			var entity1 = registry.Create('1').Id;
-			var entity2 = registry.Create('2').Id;
+			var entity1 = registry.CreateEntity('1').Id;
+			var entity2 = registry.CreateEntity('2').Id;
 
 			registry.Add(entity2, 42);
 
@@ -59,16 +59,16 @@ namespace Massive.Tests
 		{
 			var registry = new Registry();
 
-			var entity1 = registry.Create(1).Id;
+			var entity1 = registry.CreateEntity(1).Id;
 
-			var entity2 = registry.Create(2).Id;
+			var entity2 = registry.CreateEntity(2).Id;
 			registry.Add<char>(entity2);
 
 			var group = SetUpGroupWithIntAndWithoutChar(registry, testGroupType);
 
-			var entity3 = registry.Create(3).Id;
+			var entity3 = registry.CreateEntity(3).Id;
 
-			var entity4 = registry.Create(4).Id;
+			var entity4 = registry.CreateEntity(4).Id;
 			registry.Add<char>(entity4);
 
 			foreach (var entity in group.Ids)
@@ -116,7 +116,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 30; i++)
 			{
-				var entity = registry.Create().Id;
+				var entity = registry.CreateEntity();
 
 				if (i % 2 != 0)
 				{
@@ -139,10 +139,10 @@ namespace Massive.Tests
 		{
 			var registry = new Registry();
 
-			var entity1 = registry.Create(1).Id;
+			var entity1 = registry.CreateEntity(1).Id;
 			registry.Add<float>(entity1);
 
-			var entity2 = registry.Create(2).Id;
+			var entity2 = registry.CreateEntity(2).Id;
 			registry.Add<char>(entity2);
 			registry.Add<float>(entity2);
 
@@ -159,10 +159,10 @@ namespace Massive.Tests
 				registry.Many<float>()
 			);
 
-			var entity3 = registry.Create(3).Id;
+			var entity3 = registry.CreateEntity(3).Id;
 			registry.Add<float>(entity3);
 
-			var entity4 = registry.Create(4).Id;
+			var entity4 = registry.CreateEntity(4).Id;
 			registry.Add<char>(entity4);
 			registry.Add<float>(entity4);
 

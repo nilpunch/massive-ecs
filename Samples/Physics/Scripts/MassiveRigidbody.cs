@@ -18,7 +18,7 @@ namespace Massive.Samples.Physics
 
 			foreach (var sphereCollider in GetComponentsInChildren<MassiveSphereCollider>())
 			{
-				registry.Create(new PhysicsSphereCollider(bodyId.Id, sphereCollider.Radius,
+				registry.Create(new PhysicsSphereCollider(bodyId, sphereCollider.Radius,
 					new Transformation(transform.InverseTransformPoint(sphereCollider.transform.position),
 						Quaternion.Inverse(transform.rotation) * sphereCollider.transform.rotation),
 					sphereCollider.Material));
@@ -26,7 +26,7 @@ namespace Massive.Samples.Physics
 
 			foreach (var boxCollider in GetComponentsInChildren<MassiveBoxCollider>())
 			{
-				registry.Create(new PhysicsBoxCollider(bodyId.Id, boxCollider.Size,
+				registry.Create(new PhysicsBoxCollider(bodyId, boxCollider.Size,
 					new Transformation(transform.InverseTransformPoint(boxCollider.transform.position), Quaternion.Inverse(transform.rotation) * boxCollider.transform.rotation),
 					boxCollider.Material));
 			}

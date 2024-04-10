@@ -27,7 +27,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity Create()
+		public Entity CreateEntity()
 		{
 			return Entities.Create();
 		}

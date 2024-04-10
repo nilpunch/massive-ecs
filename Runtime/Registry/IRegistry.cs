@@ -11,7 +11,7 @@ namespace Massive
 		List<ISet> AllSets { get; }
 		Entities Entities { get; }
 
-		Entity Create();
+		Entity CreateEntity();
 
 		void Destroy(int id);
 
