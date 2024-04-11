@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Massive
 {
 	public interface IRegistry
 	{
 		IGroupsController Groups { get; }
-		ISetFactory SetFactory { get; }
-		Dictionary<Type, ISet> SetsLookup { get; }
-		List<ISet> AllSets { get; }
 		Entities Entities { get; }
 
 		event Action<ISet> SetCreated;

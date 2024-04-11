@@ -13,7 +13,7 @@ namespace Massive
 	{
 		private T[] _data;
 
-		protected T[] Data => _data;
+		public T[] Data => _data;
 
 		public DataSet(int dataCapacity = Constants.DataCapacity)
 			: base(dataCapacity)

@@ -14,7 +14,7 @@ namespace Massive
 		private T _swapBuffer;
 		private T[] _data;
 
-		protected T[] Data => _data;
+		public T[] Data => _data;
 
 		public ManagedDataSet(int dataCapacity = Constants.DataCapacity)
 			: base(dataCapacity)
