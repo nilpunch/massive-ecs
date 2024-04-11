@@ -12,6 +12,8 @@ namespace Massive
 		public List<ISet> AllSets { get; }
 		public Entities Entities { get; }
 
+		public event Action<ISet> SetCreated;
+
 		public Registry(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
 			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeTagsAsComponents))
 		{
@@ -121,6 +123,7 @@ namespace Massive
 				set = SetFactory.CreateAppropriateSet<T>();
 				SetsLookup.Add(type, set);
 				AllSets.Add(set);
+				SetCreated?.Invoke(set);
 			}
 
 			return set;

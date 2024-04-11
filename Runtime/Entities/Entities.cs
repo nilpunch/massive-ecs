@@ -28,6 +28,10 @@ namespace Massive
 
 		public ReadOnlySpan<Entity> Alive => new ReadOnlySpan<Entity>(Dense, 0, AliveCount);
 
+		public event Action<Entity> AfterCreated;
+
+		public event Action<int> BeforeDeleted;
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Create()
 		{
@@ -39,24 +43,30 @@ namespace Massive
 				GrowCapacity(count + 1);
 			}
 
-			// If there are unused elements in the dense array, return last
+			Entity entity;
 			int maxId = MaxId;
+
+			// If there are unused elements in the dense array, return last
 			if (count < maxId)
 			{
-				return Dense[count];
+				entity = Dense[count];
+			}
+			else
+			{
+				entity = new Entity(maxId, 0);
+				MaxId += 1;
+				AssignEntity(entity, count);
 			}
 
-			var newId = new Entity(maxId, 0);
-
-			MaxId += 1;
-			AssignIndex(newId, count);
-
-			return newId;
+			AfterCreated?.Invoke(entity);
+			return entity;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Delete(Entity entity)
 		{
+			BeforeDeleted?.Invoke(entity.Id);
+
 			// If element is not alive, nothing to be done
 			if (entity.Id < 0 || entity.Id >= MaxId)
 			{
@@ -80,13 +90,15 @@ namespace Massive
 
 			// Swap dense with last element
 			int lastDense = count - 1;
-			AssignIndex(Dense[lastDense], dense);
-			AssignIndex(Entity.Reuse(entity), lastDense);
+			AssignEntity(Dense[lastDense], dense);
+			AssignEntity(Entity.Reuse(entity), lastDense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Delete(int id)
 		{
+			BeforeDeleted?.Invoke(id);
+
 			// If element is not alive, nothing to be done
 			if (id < 0 || id >= MaxId)
 			{
@@ -115,8 +127,8 @@ namespace Massive
 
 			// Swap dense with last element
 			int lastDense = count - 1;
-			AssignIndex(Dense[lastDense], dense);
-			AssignIndex(Entity.Reuse(entity), lastDense);
+			AssignEntity(Dense[lastDense], dense);
+			AssignEntity(Entity.Reuse(entity), lastDense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -143,7 +155,7 @@ namespace Massive
 				var newId = new Entity(maxId, 0);
 				AliveCount += 1;
 				MaxId += 1;
-				AssignIndex(newId, count);
+				AssignEntity(newId, count);
 				action?.Invoke(newId);
 			}
 		}
@@ -193,7 +205,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignIndex(Entity entity, int dense)
+		private void AssignEntity(Entity entity, int dense)
 		{
 			Sparse[entity.Id] = dense;
 			Dense[dense] = entity;
