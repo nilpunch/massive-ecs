@@ -2,7 +2,7 @@
 {
 	public static class Constants
 	{
-		public const int DataCapacity = 128;
+		public const int DataCapacity = 16;
 		public const int FramesCapacity = 121;
 	}
 }
