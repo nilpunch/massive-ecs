@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	public static class RegistryGroupsExtensions
+	public static class RegistryGroupExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IGroup Group(this IRegistry registry, IReadOnlyList<ISet> owned = null,

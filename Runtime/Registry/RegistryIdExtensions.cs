@@ -14,7 +14,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Create<T>(this IRegistry registry, T data = default) where T : struct
 		{
-			var id = registry.Entities.Create().Id;
+			var id = registry.Create();
 			registry.Add(id, data);
 			return id;
 		}

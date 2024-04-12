@@ -6,18 +6,16 @@ namespace Massive
 {
 	public class Registry : IRegistry
 	{
-		public IGroupsController Groups { get; }
 		private ISetFactory SetFactory { get; }
 		private Dictionary<Type, ISet> SetsLookup { get; }
+
 		protected List<ISet> AllSets { get; }
+
+		public IGroupsController Groups { get; }
 		public Entities Entities { get; }
 
-		public event Action<ISet> SetCreated;
-
 		public Registry(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
-			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeTagsAsComponents))
-		{
-		}
+			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeTagsAsComponents)) { }
 
 		protected Registry(IGroupsController groups, ISetFactory setFactory)
 		{
@@ -27,16 +25,11 @@ namespace Massive
 			AllSets = new List<ISet>();
 
 			Entities = setFactory.CreateIdentifiers();
-			Entities.BeforeDeleted += OnBeforeDeleted;
+			Entities.BeforeDeleted += RemoveFromSetsWhenDeleted;
 		}
 
-		private void OnBeforeDeleted(int id)
+		private void RemoveFromSetsWhenDeleted(int id)
 		{
-			if (!Entities.IsAlive(id))
-			{
-				return;
-			}
-
 			for (var i = 0; i < AllSets.Count; i++)
 			{
 				AllSets[i].Remove(id);
@@ -64,7 +57,6 @@ namespace Massive
 				set = SetFactory.CreateAppropriateSet<T>();
 				SetsLookup.Add(type, set);
 				AllSets.Add(set);
-				SetCreated?.Invoke(set);
 			}
 
 			return set;

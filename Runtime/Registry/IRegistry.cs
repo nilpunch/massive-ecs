@@ -1,13 +1,10 @@
-﻿using System;
-
-namespace Massive
+﻿namespace Massive
 {
 	public interface IRegistry
 	{
 		IGroupsController Groups { get; }
-		Entities Entities { get; }
 
-		event Action<ISet> SetCreated;
+		Entities Entities { get; }
 
 		IDataSet<T> Components<T>() where T : struct;
 
