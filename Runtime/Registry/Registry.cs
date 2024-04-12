@@ -7,9 +7,9 @@ namespace Massive
 	public class Registry : IRegistry
 	{
 		public IGroupsController Groups { get; }
-		public ISetFactory SetFactory { get; }
-		public Dictionary<Type, ISet> SetsLookup { get; }
-		public List<ISet> AllSets { get; }
+		private ISetFactory SetFactory { get; }
+		private Dictionary<Type, ISet> SetsLookup { get; }
+		protected List<ISet> AllSets { get; }
 		public Entities Entities { get; }
 
 		public event Action<ISet> SetCreated;
@@ -25,19 +25,17 @@ namespace Massive
 			SetFactory = setFactory;
 			SetsLookup = new Dictionary<Type, ISet>();
 			AllSets = new List<ISet>();
+
 			Entities = setFactory.CreateIdentifiers();
+			Entities.BeforeDeleted += OnBeforeDeleted;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int Create()
+		private void OnBeforeDeleted(int id)
 		{
-			return Entities.Create().Id;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Destroy(int id)
-		{
-			Entities.Delete(id);
+			if (!Entities.IsAlive(id))
+			{
+				return;
+			}
 
 			for (var i = 0; i < AllSets.Count; i++)
 			{
@@ -46,62 +44,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(int id)
-		{
-			return Entities.IsAlive(id);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add<T>(int id, T data = default) where T : struct
-		{
-			var set = GetOrCreateSet<T>();
-			if (set is IDataSet<T> dataSet)
-			{
-				dataSet.Ensure(id, data);
-			}
-			else
-			{
-				set.Ensure(id);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove<T>(int id) where T : struct
-		{
-			if (SetsLookup.TryGetValue(typeof(T), out var set))
-			{
-				set.Remove(id);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Has<T>(int id) where T : struct
-		{
-			if (SetsLookup.TryGetValue(typeof(T), out var set))
-			{
-				return set.IsAlive(id);
-			}
-
-			return false;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref T Get<T>(int id) where T : struct
-		{
-			if (GetOrCreateSet<T>() is not IDataSet<T> dataSet)
-			{
-				throw new Exception("Type has no associated data!");
-			}
-
-			return ref dataSet.Get(id);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IDataSet<T> Components<T>() where T : struct
 		{
-			if (GetOrCreateSet<T>() is not IDataSet<T> dataSet)
+			if (Any<T>() is not IDataSet<T> dataSet)
 			{
-				throw new Exception($"Type has no associated data! Use {nameof(Any)}<T>() instead.");
+				throw new Exception($"Type has no associated data! Maybe use {nameof(Any)}<T>() instead.");
 			}
 
 			return dataSet;
@@ -109,12 +56,6 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ISet Any<T>() where T : struct
-		{
-			return GetOrCreateSet<T>();
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private ISet GetOrCreateSet<T>() where T : struct
 		{
 			var type = typeof(T);
 

@@ -2,7 +2,7 @@ namespace Massive
 {
 	public interface IManaged<T> where T : struct, IManaged<T>
 	{
-		void CopyTo(ref T destination);
+		void CopyTo(ref T other);
 
 #if UNITY_2020_3_OR_NEWER
 		[UnityEngine.Scripting.Preserve]
