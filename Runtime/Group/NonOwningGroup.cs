@@ -10,9 +10,9 @@ namespace Massive
 
 		private IReadOnlySet[] Exclude { get; }
 
-		protected ISet GroupSet { get; }
+		public ISet GroupSet { get; }
 
-		protected bool IsSynced { get; set; }
+		public bool IsSynced { get; protected set; }
 
 		public ReadOnlySpan<int> Ids => GroupSet.AliveIds;
 

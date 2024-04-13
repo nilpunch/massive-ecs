@@ -8,6 +8,8 @@ namespace Massive
 
 		int Length => Ids.Length;
 
+		bool IsSynced { get; }
+
 		void EnsureSynced();
 
 		bool IsOwning(IReadOnlySet set);

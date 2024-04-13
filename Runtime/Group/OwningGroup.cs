@@ -18,7 +18,7 @@ namespace Massive
 
 		protected int GroupLength { get; set; }
 
-		protected bool IsSynced { set; get; }
+		public bool IsSynced { get; protected set; }
 
 		public IOwningGroup Extended { get; set; }
 
@@ -121,7 +121,11 @@ namespace Massive
 			for (var i = 0; i < Owned.Length; i++)
 			{
 				var set = Owned[i];
-				set.SwapDense(set.GetDense(id), swapDense);
+				var dense = set.GetDense(id);
+				if (dense != swapDense)
+				{
+					set.SwapDense(set.GetDense(id), swapDense);
+				}
 			}
 		}
 	}
