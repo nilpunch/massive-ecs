@@ -5,14 +5,18 @@ namespace Massive
 {
 	public readonly struct Entity : IEquatable<Entity>
 	{
-		public readonly int Id;
+		public readonly int IdPlusOne;
 		public readonly uint ReuseCount;
+
+		public int Id => IdPlusOne - 1;
 
 		public Entity(int id, uint reuseCount)
 		{
-			Id = id;
+			IdPlusOne = id + 1;
 			ReuseCount = reuseCount;
 		}
+
+		public static Entity Null => new Entity();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity Reuse(Entity entity)
@@ -26,7 +30,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool operator ==(Entity a, Entity b)
 		{
-			return a.Id == b.Id && a.ReuseCount == b.ReuseCount;
+			return a.Equals(b);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -38,7 +42,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Equals(Entity other)
 		{
-			return Id == other.Id && ReuseCount == other.ReuseCount;
+			return IdPlusOne == other.IdPlusOne && ReuseCount == other.ReuseCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
