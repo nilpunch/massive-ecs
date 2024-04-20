@@ -1,14 +1,11 @@
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 
 // ReSharper disable MustUseReturnValue
 namespace Massive.Serialization
 {
 	public class ComponentParser<T> : IRegistryParser where T : unmanaged
 	{
-		private readonly byte[] _buffer4Bytes = new byte[4];
-
 		public unsafe void Write(IRegistry registry, Stream stream)
 		{
 			var set = registry.Any<T>();
@@ -19,7 +16,7 @@ namespace Massive.Serialization
 			{
 				fixed (T* data = dataSet.Data)
 				{
-					stream.Write(new ReadOnlySpan<byte>(data, set.AliveCount * Marshal.SizeOf<T>()));
+					stream.Write(new ReadOnlySpan<byte>(data, set.AliveCount * sizeof(T)));
 				}
 			}
 		}
