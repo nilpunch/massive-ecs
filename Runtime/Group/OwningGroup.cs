@@ -121,11 +121,7 @@ namespace Massive
 			for (var i = 0; i < Owned.Length; i++)
 			{
 				var set = Owned[i];
-				var dense = set.GetDense(id);
-				if (dense != swapDense)
-				{
-					set.SwapDense(set.GetDense(id), swapDense);
-				}
+				set.SwapDense(set.GetDense(id), swapDense);
 			}
 		}
 	}
