@@ -19,7 +19,7 @@ Provided features:
 
 Work in progress:
 
-- Full state serialization to allow late joins
+- Full state serialization for late joins
 - User-friendly integration with Unity
 
 ## Code Examples
