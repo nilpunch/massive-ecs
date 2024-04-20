@@ -13,9 +13,14 @@ Provided features:
 - Fast and simple ECS without any code generation
 - Ultra-fast saving and rollbacking with cyclic buffers
 - Zero GC allocations during runtime (after full initialization)
-- Support components with managed data such as arrays, strings, etc.
+- Support for components with managed data, such as arrays, strings, etc.
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - IL2CPP friendly, tested on PC | Android | WebGL
+
+Work in progress:
+
+- Full state serialization to allow late joins
+- User-friendly integration with Unity
 
 ## Code Examples
 
