@@ -15,7 +15,7 @@ namespace Massive
 		public Entity[] Dense => _dense;
 		public int[] Sparse => _sparse;
 
-		public int AliveCount { get; set; }
+		public int Count { get; set; }
 		public int MaxId { get; set; }
 
 		public Entities(int dataCapacity = Constants.DataCapacity)
@@ -24,9 +24,7 @@ namespace Massive
 			_sparse = new int[dataCapacity];
 		}
 
-		public int CanCreateAmount => Dense.Length - AliveCount;
-
-		public ReadOnlySpan<Entity> Alive => new ReadOnlySpan<Entity>(Dense, 0, AliveCount);
+		public ReadOnlySpan<Entity> Alive => new ReadOnlySpan<Entity>(Dense, 0, Count);
 
 		public event Action<Entity> AfterCreated;
 
@@ -35,8 +33,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Create()
 		{
-			int count = AliveCount;
-			AliveCount += 1;
+			int count = Count;
+			Count += 1;
 
 			if (count == Dense.Length)
 			{
@@ -63,7 +61,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Delete(Entity entity)
+		public void Destroy(Entity entity)
 		{
 			BeforeDeleted?.Invoke(entity.Id);
 
@@ -73,13 +71,13 @@ namespace Massive
 				return;
 			}
 			var dense = Sparse[entity.Id];
-			if (dense >= AliveCount || Dense[dense] != entity)
+			if (dense >= Count || Dense[dense] != entity)
 			{
 				return;
 			}
 
-			int count = AliveCount;
-			AliveCount -= 1;
+			int count = Count;
+			Count -= 1;
 
 			// If dense is the last used element, decreasing alive count and apply reuse is enough
 			if (dense == count - 1)
@@ -95,7 +93,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Delete(int id)
+		public void Destroy(int id)
 		{
 			BeforeDeleted?.Invoke(id);
 
@@ -105,7 +103,7 @@ namespace Massive
 				return;
 			}
 			var dense = Sparse[id];
-			if (dense >= AliveCount)
+			if (dense >= Count)
 			{
 				return;
 			}
@@ -115,8 +113,8 @@ namespace Massive
 				return;
 			}
 
-			int count = AliveCount;
-			AliveCount -= 1;
+			int count = Count;
+			Count -= 1;
 
 			// If dense is the last used element, decreasing alive count and apply reuse is enough
 			if (dense == count - 1)
@@ -135,25 +133,25 @@ namespace Massive
 		public void CreateMany(int amount, [MaybeNull] Action<Entity> action = null)
 		{
 			int needToCreate = amount;
-			if (needToCreate + AliveCount >= Dense.Length)
+			if (needToCreate + Count >= Dense.Length)
 			{
-				GrowCapacity(needToCreate + AliveCount + 1);
+				GrowCapacity(needToCreate + Count + 1);
 			}
 
-			while (AliveCount < MaxId && needToCreate > 0)
+			while (Count < MaxId && needToCreate > 0)
 			{
-				int count = AliveCount;
-				AliveCount += 1;
+				int count = Count;
+				Count += 1;
 				action?.Invoke(Dense[count]);
 				needToCreate -= 1;
 			}
 
 			for (int i = 0; i < needToCreate; i++)
 			{
-				int count = AliveCount;
+				int count = Count;
 				int maxId = MaxId;
 				var newId = new Entity(maxId, 0);
-				AliveCount += 1;
+				Count += 1;
 				MaxId += 1;
 				AssignEntity(newId, count);
 				action?.Invoke(newId);
@@ -176,7 +174,7 @@ namespace Massive
 
 			int dense = Sparse[entity.Id];
 
-			return dense < AliveCount && Dense[dense] == entity;
+			return dense < Count && Dense[dense] == entity;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -189,7 +187,7 @@ namespace Massive
 
 			int dense = Sparse[id];
 
-			return dense < AliveCount && Dense[dense].Id == id;
+			return dense < Count && Dense[dense].Id == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

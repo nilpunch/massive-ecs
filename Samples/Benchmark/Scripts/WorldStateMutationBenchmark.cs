@@ -17,7 +17,7 @@ namespace Massive.Samples.Benchmark
 
 		protected override void Sample()
 		{
-			var data = _testStates.AliveData;
+			var data = _testStates.Data;
 			for (int i = 0; i < data.Length; i++)
 			{
 				ref TestState state = ref data[i];

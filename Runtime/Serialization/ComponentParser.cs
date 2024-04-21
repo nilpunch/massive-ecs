@@ -14,9 +14,9 @@ namespace Massive.Serialization
 
 			if (set is IDataSet<T> dataSet)
 			{
-				fixed (T* data = dataSet.Data)
+				fixed (T* data = dataSet.RawData)
 				{
-					stream.Write(new ReadOnlySpan<byte>(data, set.AliveCount * sizeof(T)));
+					stream.Write(new ReadOnlySpan<byte>(data, set.Count * sizeof(T)));
 				}
 			}
 		}
@@ -29,9 +29,9 @@ namespace Massive.Serialization
 
 			if (set is IDataSet<T> dataSet)
 			{
-				fixed (T* data = dataSet.Data)
+				fixed (T* data = dataSet.RawData)
 				{
-					stream.Read(new Span<byte>(data, set.AliveCount * sizeof(T)));
+					stream.Read(new Span<byte>(data, set.Count * sizeof(T)));
 				}
 			}
 		}

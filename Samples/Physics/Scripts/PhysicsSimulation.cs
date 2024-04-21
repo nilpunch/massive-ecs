@@ -105,9 +105,9 @@ namespace Massive.Samples.Physics
 				new GUIStyle() { fontSize = Mathf.RoundToInt(70 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
 			GUILayout.TextField($"{_registry.CanRollbackFrames} Resimulations",
 				new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_sphereColliders.AliveCount} Spheres",
+			GUILayout.TextField($"{_sphereColliders.Count} Spheres",
 				new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_boxColliders.AliveCount} Boxes",
+			GUILayout.TextField($"{_boxColliders.Count} Boxes",
 				new GUIStyle() { fontSize = Mathf.RoundToInt(50 * fontScaling), normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}

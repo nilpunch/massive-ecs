@@ -14,7 +14,7 @@ namespace Massive
 		private T _swapBuffer;
 		private T[] _data;
 
-		public T[] Data => _data;
+		public T[] RawData => _data;
 
 		public ManagedDataSet(int dataCapacity = Constants.DataCapacity)
 			: base(dataCapacity)
@@ -22,28 +22,28 @@ namespace Massive
 			_data = new T[DenseCapacity];
 		}
 
-		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);
+		public Span<T> Data => new Span<T>(RawData, 0, Count);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Ensure(int id, T data)
+		public void Assign(int id, T data)
 		{
-			base.Ensure(id);
-			data.CopyTo(ref Data[Sparse[id]]);
+			base.Assign(id);
+			data.CopyTo(ref RawData[Sparse[id]]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			return ref Data[Sparse[id]];
+			return ref RawData[Sparse[id]];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void SwapDense(int denseA, int denseB)
 		{
 			base.SwapDense(denseA, denseB);
-			Data[denseA].CopyTo(ref _swapBuffer);
-			Data[denseB].CopyTo(ref Data[denseA]);
-			_swapBuffer.CopyTo(ref Data[denseB]);
+			RawData[denseA].CopyTo(ref _swapBuffer);
+			RawData[denseB].CopyTo(ref RawData[denseA]);
+			_swapBuffer.CopyTo(ref RawData[denseB]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -57,7 +57,7 @@ namespace Massive
 		protected override void CopyFromToDense(int source, int destination)
 		{
 			base.CopyFromToDense(source, destination);
-			Data[source].CopyTo(ref Data[destination]);
+			RawData[source].CopyTo(ref RawData[destination]);
 		}
 	}
 }

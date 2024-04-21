@@ -17,7 +17,7 @@ namespace Massive.Samples.Shooter
 
 		public override void UpdateWorld(float deltaTime)
 		{
-			var data = _characters.AliveData;
+			var data = _characters.Data;
 			for (var i = 0; i < data.Length; i++)
 			{
 				ref var characterState = ref data[i];

@@ -35,7 +35,7 @@ namespace Massive
 			_sparseSetFrames.SaveFrame(this);
 
 			// We can sync saving with MassiveSparseSet saving, using its CurrentFrame
-			Array.Copy(Data, 0, _dataByFrames[_sparseSetFrames.CurrentFrame], 0, AliveCount);
+			Array.Copy(RawData, 0, _dataByFrames[_sparseSetFrames.CurrentFrame], 0, Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,7 +44,7 @@ namespace Massive
 			_sparseSetFrames.Rollback(frames, this);
 
 			// Similarly to saving, we can sync rollback with MassiveSparseSet rollback
-			Array.Copy(_dataByFrames[_sparseSetFrames.CurrentFrame], 0, Data, 0, AliveCount);
+			Array.Copy(_dataByFrames[_sparseSetFrames.CurrentFrame], 0, RawData, 0, Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

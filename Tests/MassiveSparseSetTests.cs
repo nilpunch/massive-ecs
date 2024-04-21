@@ -12,11 +12,11 @@ namespace Massive.Tests
 
 			var id = 2;
 
-			Assert.IsFalse(massive.IsAlive(id));
+			Assert.IsFalse(massive.IsAssigned(id));
 
-			massive.Ensure(id);
+			massive.Assign(id);
 
-			Assert.IsTrue(massive.IsAlive(id));
+			Assert.IsTrue(massive.IsAssigned(id));
 		}
 
 		[Test]
@@ -24,15 +24,15 @@ namespace Massive.Tests
 		{
 			var massive = new MassiveSparseSet(dataCapacity: 4, framesCapacity: 2);
 
-			massive.Ensure(0);
-			massive.Ensure(1);
-			massive.Ensure(2);
+			massive.Assign(0);
+			massive.Assign(1);
+			massive.Assign(2);
 
-			massive.Remove(1);
+			massive.Unassign(1);
 
-			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
-			Assert.IsTrue(massive.IsAlive(2));
+			Assert.IsTrue(massive.IsAssigned(0));
+			Assert.IsFalse(massive.IsAssigned(1));
+			Assert.IsTrue(massive.IsAssigned(2));
 		}
 
 		[Test]
@@ -40,17 +40,17 @@ namespace Massive.Tests
 		{
 			var massive = new MassiveSparseSet(dataCapacity: 4, framesCapacity: 2);
 
-			Assert.IsFalse(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
-			Assert.IsFalse(massive.IsAlive(2));
+			Assert.IsFalse(massive.IsAssigned(0));
+			Assert.IsFalse(massive.IsAssigned(1));
+			Assert.IsFalse(massive.IsAssigned(2));
 
-			massive.Ensure(0);
-			massive.Ensure(1);
-			massive.Ensure(2);
+			massive.Assign(0);
+			massive.Assign(1);
+			massive.Assign(2);
 
-			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsTrue(massive.IsAlive(1));
-			Assert.IsTrue(massive.IsAlive(2));
+			Assert.IsTrue(massive.IsAssigned(0));
+			Assert.IsTrue(massive.IsAssigned(1));
+			Assert.IsTrue(massive.IsAssigned(2));
 		}
 
 		[Test]
@@ -58,15 +58,15 @@ namespace Massive.Tests
 		{
 			var massive = new MassiveSparseSet(dataCapacity: 4, framesCapacity: 2);
 
-			massive.Ensure(0);
-			massive.Ensure(1);
-			massive.Ensure(2);
+			massive.Assign(0);
+			massive.Assign(1);
+			massive.Assign(2);
 
 			massive.SaveFrame();
 
-			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsTrue(massive.IsAlive(1));
-			Assert.IsTrue(massive.IsAlive(2));
+			Assert.IsTrue(massive.IsAssigned(0));
+			Assert.IsTrue(massive.IsAssigned(1));
+			Assert.IsTrue(massive.IsAssigned(2));
 		}
 
 		[Test]
@@ -74,19 +74,19 @@ namespace Massive.Tests
 		{
 			var massive = new MassiveSparseSet(dataCapacity: 2, framesCapacity: 2);
 
-			massive.Ensure(0);
+			massive.Assign(0);
 
-			Assert.IsTrue(massive.IsAlive(0));
+			Assert.IsTrue(massive.IsAssigned(0));
 
 			massive.SaveFrame();
 
-			massive.Remove(0);
+			massive.Unassign(0);
 
-			Assert.IsFalse(massive.IsAlive(0));
+			Assert.IsFalse(massive.IsAssigned(0));
 
 			massive.Rollback(0);
 
-			Assert.IsTrue(massive.IsAlive(0));
+			Assert.IsTrue(massive.IsAssigned(0));
 		}
 
 		[Test]
@@ -96,22 +96,22 @@ namespace Massive.Tests
 
 			massive.SaveFrame();
 
-			massive.Ensure(0);
-			massive.Ensure(1);
-			massive.Remove(1);
+			massive.Assign(0);
+			massive.Assign(1);
+			massive.Unassign(1);
 
-			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
+			Assert.IsTrue(massive.IsAssigned(0));
+			Assert.IsFalse(massive.IsAssigned(1));
 
 			massive.SaveFrame();
 
-			Assert.IsTrue(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
+			Assert.IsTrue(massive.IsAssigned(0));
+			Assert.IsFalse(massive.IsAssigned(1));
 
 			massive.Rollback(1);
 
-			Assert.IsFalse(massive.IsAlive(0));
-			Assert.IsFalse(massive.IsAlive(1));
+			Assert.IsFalse(massive.IsAssigned(0));
+			Assert.IsFalse(massive.IsAssigned(1));
 		}
 	}
 }

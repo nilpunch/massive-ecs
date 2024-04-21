@@ -49,7 +49,7 @@ namespace Massive.Samples.Physics
 
 		public static void UpdateWorldPositions(IReadOnlyDataSet<PhysicsRigidbody> bodies, IReadOnlyDataSet<PhysicsSphereCollider> colliders)
 		{
-			var aliveColliders = colliders.AliveData;
+			var aliveColliders = colliders.Data;
 			for (int i = 0; i < aliveColliders.Length; i++)
 			{
 				ref var collider = ref aliveColliders[i];

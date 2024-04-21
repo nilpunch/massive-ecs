@@ -2,19 +2,20 @@
 {
 	public static class RegistryTestUtils
 	{
-		public static IRegistry FillRegistryWithSingleComponent(this IRegistry registry)
+		public static IRegistry FillRegistryWithSingleComponent(this IRegistry registry, int entitiesAmount)
 		{
-			while (registry.Entities.CanCreateAmount != 0)
+			while (entitiesAmount != 0)
 			{
 				registry.Create<TestState64>();
+				entitiesAmount -= 1;
 			}
 
 			return registry;
 		}
 
-		public static IRegistry FillRegistryWith50Components(this IRegistry registry)
+		public static IRegistry FillRegistryWith50Components(this IRegistry registry, int entitiesAmount)
 		{
-			while (registry.Entities.CanCreateAmount != 0)
+			while (entitiesAmount != 0)
 			{
 				// 50 different components
 				var id = registry.Create();
@@ -68,14 +69,15 @@
 				registry.Add<TestState64<long, byte, ulong>>(id);
 				registry.Add<TestState64<short, decimal, bool>>(id);
 				registry.Add<TestState64<ushort, double, int>>(id);
+				entitiesAmount -= 1;
 			}
 
 			return registry;
 		}
 
-		public static IRegistry FillRegistryWith50Tags(this IRegistry registry)
+		public static IRegistry FillRegistryWith50Tags(this IRegistry registry, int entitiesAmount)
 		{
-			while (registry.Entities.CanCreateAmount != 0)
+			while (entitiesAmount != 0)
 			{
 				// 50 different tags
 				var id = registry.Create();
@@ -129,6 +131,7 @@
 				registry.Add<TestTag<long, byte, ulong>>(id);
 				registry.Add<TestTag<short, decimal, bool>>(id);
 				registry.Add<TestTag<ushort, double, int>>(id);
+				entitiesAmount -= 1;
 			}
 
 			return registry;

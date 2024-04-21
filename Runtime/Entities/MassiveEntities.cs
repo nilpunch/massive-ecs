@@ -39,7 +39,7 @@ namespace Massive
 		{
 			_cyclicFrameCounter.SaveFrame();
 
-			int currentAliveCount = AliveCount;
+			int currentAliveCount = Count;
 			int currentMaxId = MaxId;
 			int currentFrame = _cyclicFrameCounter.CurrentFrame;
 
@@ -62,7 +62,7 @@ namespace Massive
 
 			Array.Copy(_denseByFrames[rollbackFrame], 0, Dense, 0, rollbackMaxId);
 			Array.Copy(_sparseByFrames[rollbackFrame], 0, Sparse, 0, rollbackMaxId);
-			AliveCount = rollbackAliveCount;
+			Count = rollbackAliveCount;
 			MaxId = rollbackMaxId;
 		}
 

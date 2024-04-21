@@ -24,14 +24,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T1, T2, T3> action)
 		{
-			var data1 = _components1.AliveData;
-			var data2 = _components2.AliveData;
-			var data3 = _components3.AliveData;
+			var data1 = _components1.Data;
+			var data2 = _components2.Data;
+			var data3 = _components3.Data;
 
 			// Iterate over smallest data set
 			if (data1.Length <= data2.Length && data1.Length <= data3.Length)
 			{
-				var ids1 = _components1.AliveIds;
+				var ids1 = _components1.Ids;
 				for (int dense1 = ids1.Length - 1; dense1 >= 0; dense1--)
 				{
 					int id = ids1[dense1];
@@ -44,7 +44,7 @@ namespace Massive
 			}
 			else if (data2.Length <= data1.Length && data2.Length <= data3.Length)
 			{
-				var ids2 = _components2.AliveIds;
+				var ids2 = _components2.Ids;
 				for (int dense2 = ids2.Length - 1; dense2 >= 0; dense2--)
 				{
 					int id = ids2[dense2];
@@ -57,7 +57,7 @@ namespace Massive
 			}
 			else
 			{
-				var ids3 = _components2.AliveIds;
+				var ids3 = _components2.Ids;
 				for (int dense3 = ids3.Length - 1; dense3 >= 0; dense3--)
 				{
 					int id = ids3[dense3];
@@ -73,14 +73,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T1, T2, T3, TExtra> action)
 		{
-			var data1 = _components1.AliveData;
-			var data2 = _components2.AliveData;
-			var data3 = _components3.AliveData;
+			var data1 = _components1.Data;
+			var data2 = _components2.Data;
+			var data3 = _components3.Data;
 
 			// Iterate over smallest data set
 			if (data1.Length <= data2.Length && data1.Length <= data3.Length)
 			{
-				var ids1 = _components1.AliveIds;
+				var ids1 = _components1.Ids;
 				for (int dense1 = ids1.Length - 1; dense1 >= 0; dense1--)
 				{
 					int id = ids1[dense1];
@@ -93,7 +93,7 @@ namespace Massive
 			}
 			else if (data2.Length <= data1.Length && data2.Length <= data3.Length)
 			{
-				var ids2 = _components2.AliveIds;
+				var ids2 = _components2.Ids;
 				for (int dense2 = ids2.Length - 1; dense2 >= 0; dense2--)
 				{
 					int id = ids2[dense2];
@@ -106,7 +106,7 @@ namespace Massive
 			}
 			else
 			{
-				var ids3 = _components2.AliveIds;
+				var ids3 = _components2.Ids;
 				for (int dense3 = ids3.Length - 1; dense3 >= 0; dense3--)
 				{
 					int id = ids3[dense3];

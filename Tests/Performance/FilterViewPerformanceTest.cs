@@ -14,7 +14,7 @@ namespace Massive.PerformanceTests
 
 		public FilterViewPerformanceTest()
 		{
-			_registry = new Registry(EntitiesCount).FillRegistryWith50Components();
+			_registry = new Registry().FillRegistryWith50Components(EntitiesCount);
 		}
 
 		[Test, Performance]

@@ -19,8 +19,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T> action)
 		{
-			var data = _components.AliveData;
-			var ids = SetHelpers.GetMinimalSet(_components, _filter.Include).AliveIds;
+			var data = _components.Data;
+			var ids = SetHelpers.GetMinimalSet(_components, _filter.Include).Ids;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
@@ -38,8 +38,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T, TExtra> action)
 		{
-			var data = _components.AliveData;
-			var ids = SetHelpers.GetMinimalSet(_components, _filter.Include).AliveIds;
+			var data = _components.Data;
+			var ids = SetHelpers.GetMinimalSet(_components, _filter.Include).Ids;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{

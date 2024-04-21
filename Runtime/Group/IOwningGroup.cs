@@ -16,7 +16,7 @@ namespace Massive
 
 		void RemoveFromGroup(int id);
 
-		void AddToGroupBeforeRemovedFromExcluded(int id);
+		void AddToGroupBeforeUnassignedFromExcluded(int id);
 
 		void AddGroupAfterThis(IOwningGroup group)
 		{

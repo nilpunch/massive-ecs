@@ -32,7 +32,7 @@ namespace Massive
 		{
 			for (var i = 0; i < AllSets.Count; i++)
 			{
-				AllSets[i].Remove(id);
+				AllSets[i].Unassign(id);
 			}
 		}
 

@@ -19,7 +19,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T> action)
 		{
-			var data = _components.AliveData;
+			var data = _components.Data;
 			var groupIds = _group.Ids;
 
 			if (_group.IsOwning(_components))
@@ -42,7 +42,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T, TExtra> action)
 		{
-			var data = _components.AliveData;
+			var data = _components.Data;
 			var groupIds = _group.Ids;
 
 			if (_group.IsOwning(_components))

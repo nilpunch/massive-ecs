@@ -13,7 +13,7 @@ namespace Massive
 	{
 		private T[] _data;
 
-		public T[] Data => _data;
+		public T[] RawData => _data;
 
 		public DataSet(int dataCapacity = Constants.DataCapacity)
 			: base(dataCapacity)
@@ -21,26 +21,26 @@ namespace Massive
 			_data = new T[DenseCapacity];
 		}
 
-		public Span<T> AliveData => new Span<T>(Data, 0, AliveCount);
+		public Span<T> Data => new Span<T>(RawData, 0, Count);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Ensure(int id, T data)
+		public void Assign(int id, T data)
 		{
-			base.Ensure(id);
-			Data[Sparse[id]] = data;
+			base.Assign(id);
+			RawData[Sparse[id]] = data;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			return ref Data[Sparse[id]];
+			return ref RawData[Sparse[id]];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void SwapDense(int denseA, int denseB)
 		{
 			base.SwapDense(denseA, denseB);
-			(Data[denseA], Data[denseB]) = (Data[denseB], Data[denseA]);
+			(RawData[denseA], RawData[denseB]) = (RawData[denseB], RawData[denseA]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -54,7 +54,7 @@ namespace Massive
 		protected override void CopyFromToDense(int source, int destination)
 		{
 			base.CopyFromToDense(source, destination);
-			Data[destination] = Data[source];
+			RawData[destination] = RawData[source];
 		}
 	}
 }

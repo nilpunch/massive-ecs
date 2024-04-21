@@ -17,8 +17,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T> action)
 		{
-			var data = _components.AliveData;
-			var ids = _components.AliveIds;
+			var data = _components.Data;
+			var ids = _components.Ids;
 			for (int dense = ids.Length - 1; dense >= 0; dense--)
 			{
 				action.Invoke(ids[dense], ref data[dense]);
@@ -28,8 +28,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T, TExtra> action)
 		{
-			var data = _components.AliveData;
-			var ids = _components.AliveIds;
+			var data = _components.Data;
+			var ids = _components.Ids;
 			for (int dense = ids.Length - 1; dense >= 0; dense--)
 			{
 				action.Invoke(ids[dense], ref data[dense], extra);

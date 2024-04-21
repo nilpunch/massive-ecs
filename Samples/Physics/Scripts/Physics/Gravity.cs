@@ -6,7 +6,7 @@ namespace Massive.Samples.Physics
 	{
 		public static void Apply(in IReadOnlyDataSet<PhysicsRigidbody> rigidbodies, float gravity = 10f)
 		{
-			var aliveRigidbodies = rigidbodies.AliveData;
+			var aliveRigidbodies = rigidbodies.Data;
 			for (var i = 0; i < aliveRigidbodies.Length; i++)
 			{
 				aliveRigidbodies[i].ApplyForce(Vector3.down * gravity);

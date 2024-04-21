@@ -112,8 +112,8 @@ namespace Massive.Samples.Physics
 		{
 			Contacts.Clear();
 
-			var aliveSpheres = spheres.AliveData;
-			var aliveBoxes = boxes.AliveData;
+			var aliveSpheres = spheres.Data;
+			var aliveBoxes = boxes.Data;
 			for (int i = 0; i < aliveSpheres.Length; ++i)
 			{
 				PhysicsSphereCollider a = aliveSpheres[i];

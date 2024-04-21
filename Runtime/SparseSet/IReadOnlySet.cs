@@ -4,28 +4,28 @@ namespace Massive
 {
 	public interface IReadOnlySet
 	{
-		int AliveCount { get; }
+		int Count { get; }
 
-		ReadOnlySpan<int> AliveIds { get; }
+		ReadOnlySpan<int> Ids { get; }
 
 		int DenseCapacity { get; }
 
 		int SparseCapacity { get; }
 
 		/// <summary>
-		/// Shoots only after <see cref="Massive.ISet.Ensure(int)"/> call, when the id was not alive and therefore was created.
+		/// Shoots only after <see cref="ISet.Assign"/> call, when the id was not alive and therefore was created.
 		/// </summary>
-		event Action<int> AfterAdded;
+		event Action<int> AfterAssigned;
 
 		/// <summary>
-		/// Shoots before each <see cref="Massive.ISet.Remove(int)"/> call, even if the id is already dead.
+		/// Shoots before each <see cref="ISet.Unassign"/> call, even if the id is already dead.
 		/// </summary>
-		event Action<int> BeforeRemoved;
+		event Action<int> BeforeUnassigned;
 
 		int GetDense(int id);
 
 		bool TryGetDense(int id, out int dense);
 
-		bool IsAlive(int id);
+		bool IsAssigned(int id);
 	}
 }

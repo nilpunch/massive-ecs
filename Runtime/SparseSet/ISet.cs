@@ -6,11 +6,11 @@ namespace Massive
 
 		int[] Sparse { get; }
 
-		new int AliveCount { get; set; }
+		new int Count { get; set; }
 
-		void Ensure(int id);
+		void Assign(int id);
 
-		void Remove(int id);
+		void Unassign(int id);
 
 		void Clear();
 

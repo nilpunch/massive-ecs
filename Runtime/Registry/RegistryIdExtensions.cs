@@ -22,7 +22,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this IRegistry registry, int id)
 		{
-			registry.Entities.Delete(id);
+			registry.Entities.Destroy(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -37,24 +37,24 @@ namespace Massive
 			var set = registry.Any<T>();
 			if (set is IDataSet<T> dataSet)
 			{
-				dataSet.Ensure(id, data);
+				dataSet.Assign(id, data);
 			}
 			else
 			{
-				set.Ensure(id);
+				set.Assign(id);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Remove<T>(this IRegistry registry, int id) where T : struct
 		{
-			registry.Any<T>().Remove(id);
+			registry.Any<T>().Unassign(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this IRegistry registry, int id) where T : struct
 		{
-			return registry.Any<T>().IsAlive(id);
+			return registry.Any<T>().IsAssigned(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

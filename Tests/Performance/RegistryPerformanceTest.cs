@@ -26,9 +26,9 @@ namespace Massive.PerformanceTests
 		{
 			_registry = registryFilling switch
 			{
-				RegistryFilling.FillWithSingleComponent => new Registry(EntitiesCount).FillRegistryWithSingleComponent(),
-				RegistryFilling.FillWith50Components => new Registry(EntitiesCount).FillRegistryWith50Components(),
-				RegistryFilling.FillWith50Tags => new Registry(EntitiesCount).FillRegistryWith50Tags(),
+				RegistryFilling.FillWithSingleComponent => new Registry().FillRegistryWithSingleComponent(EntitiesCount),
+				RegistryFilling.FillWith50Components => new Registry().FillRegistryWith50Components(EntitiesCount),
+				RegistryFilling.FillWith50Tags => new Registry().FillRegistryWith50Tags(EntitiesCount),
 				_ => throw new ArgumentOutOfRangeException(nameof(registryFilling))
 			};
 		}

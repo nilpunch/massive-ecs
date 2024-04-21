@@ -34,7 +34,7 @@ namespace Massive
 			}
 			else
 			{
-				var ids = SetHelpers.GetMinimalSet(_filter.Include).AliveIds;
+				var ids = SetHelpers.GetMinimalSet(_filter.Include).Ids;
 
 				for (var i = ids.Length - 1; i >= 0; i--)
 				{
@@ -65,7 +65,7 @@ namespace Massive
 			}
 			else
 			{
-				var ids = SetHelpers.GetMinimalSet(_filter.Include).AliveIds;
+				var ids = SetHelpers.GetMinimalSet(_filter.Include).Ids;
 
 				for (var i = ids.Length - 1; i >= 0; i--)
 				{

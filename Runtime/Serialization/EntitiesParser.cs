@@ -12,7 +12,7 @@ namespace Massive.Serialization
 		{
 			var entities = registry.Entities;
 
-			BitConverter.TryWriteBytes(_buffer4Bytes, entities.AliveCount);
+			BitConverter.TryWriteBytes(_buffer4Bytes, entities.Count);
 			stream.Write(_buffer4Bytes);
 
 			BitConverter.TryWriteBytes(_buffer4Bytes, entities.MaxId);
@@ -34,7 +34,7 @@ namespace Massive.Serialization
 			var entities = registry.Entities;
 
 			stream.Read(_buffer4Bytes);
-			entities.AliveCount = BitConverter.ToInt32(_buffer4Bytes);
+			entities.Count = BitConverter.ToInt32(_buffer4Bytes);
 
 			stream.Read(_buffer4Bytes);
 			entities.MaxId = BitConverter.ToInt32(_buffer4Bytes);

@@ -14,7 +14,7 @@ namespace Massive.Samples.Shooter
 
 		public void Synchronize(IReadOnlyDataSet<TState> data)
 		{
-			var aliveCount = data.AliveCount;
+			var aliveCount = data.Count;
 
 			if (_entities.EntitiesCount < aliveCount)
 			{
@@ -26,7 +26,7 @@ namespace Massive.Samples.Shooter
 			}
 
 			IReadOnlyList<EntityRoot<TState>> entities = _entities.Entities;
-			Span<TState> states = data.AliveData;
+			Span<TState> states = data.Data;
 			for (int i = 0; i < aliveCount; i++)
 			{
 				entities[i].SyncState(ref states[i]);

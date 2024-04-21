@@ -81,7 +81,7 @@ namespace Massive.Samples.Physics
 
 		public static void IntegrateAll(IReadOnlyDataSet<PhysicsRigidbody> bodies, float deltaTime)
 		{
-			var aliveRigidbodies = bodies.AliveData;
+			var aliveRigidbodies = bodies.Data;
 			for (var i = 0; i < aliveRigidbodies.Length; i++)
 			{
 				aliveRigidbodies[i].Integrate(deltaTime);
@@ -90,7 +90,7 @@ namespace Massive.Samples.Physics
 
 		public static void UpdateAllWorldInertia(IReadOnlyDataSet<PhysicsRigidbody> bodies)
 		{
-			var bodiesAlive = bodies.AliveData;
+			var bodiesAlive = bodies.Data;
 			for (int i = 0; i < bodiesAlive.Length; i++)
 			{
 				bodiesAlive[i].UpdateWorldInertiaTensor();
@@ -99,9 +99,9 @@ namespace Massive.Samples.Physics
 
 		public static void RecalculateAllInertia(IReadOnlyDataSet<PhysicsRigidbody> bodies, IReadOnlyDataSet<PhysicsBoxCollider> boxes, IReadOnlyDataSet<PhysicsSphereCollider> spheres)
 		{
-			var bodiesAlive = bodies.AliveData;
-			var boxesAlive = boxes.AliveData;
-			var spheresAlive = spheres.AliveData;
+			var bodiesAlive = bodies.Data;
+			var boxesAlive = boxes.Data;
+			var spheresAlive = spheres.Data;
 
 			for (int i = 0; i < bodiesAlive.Length; i++)
 			{

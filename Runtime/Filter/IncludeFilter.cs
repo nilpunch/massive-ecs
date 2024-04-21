@@ -16,7 +16,7 @@ namespace Massive
 		{
 			for (int i = 0; i < Include.Length; i++)
 			{
-				if (!Include[i].IsAlive(id))
+				if (!Include[i].IsAssigned(id))
 				{
 					return false;
 				}

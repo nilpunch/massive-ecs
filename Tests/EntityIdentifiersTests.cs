@@ -78,13 +78,13 @@ namespace Massive.Tests
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
-		public void Delete_ShouldMakeNotAlive(int id)
+		public void Destroy_ShouldMakeNotAlive(int id)
 		{
 			var entities = new Entities(Capacity);
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
-			entities.Delete(id);
+			entities.Destroy(id);
 			var isAlive = entities.IsAlive(id);
 
 			Assert.IsFalse(isAlive);
@@ -92,25 +92,25 @@ namespace Massive.Tests
 
 		[TestCase(200)]
 		[TestCase(-1)]
-		public void Delete_WhenOutOfBounds_ShouldNotThrow(int id)
+		public void Destroy_WhenOutOfBounds_ShouldNotThrow(int id)
 		{
 			var entities = new Entities(Capacity);
 
-			Assert.DoesNotThrow(CheckDelete);
+			Assert.DoesNotThrow(CheckDestroy);
 
-			void CheckDelete() => entities.Delete(id);
+			void CheckDestroy() => entities.Destroy(id);
 		}
 
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
-		public void DeleteThenCreate_ShouldRecycleIds(int id)
+		public void DestroyThenCreate_ShouldRecycleIds(int id)
 		{
 			var entities = new Entities(Capacity);
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 			
-			entities.Delete(id);
+			entities.Destroy(id);
 			var createdIdentifier = entities.Create();
 
 			Assert.AreEqual(id, createdIdentifier.Id);

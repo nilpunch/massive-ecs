@@ -2,8 +2,8 @@ namespace Massive
 {
 	public interface IDataSet<T> : IReadOnlyDataSet<T>, ISet where T : struct
 	{
-		T[] Data { get; }
+		T[] RawData { get; }
 
-		void Ensure(int id, T data);
+		void Assign(int id, T data);
 	}
 }

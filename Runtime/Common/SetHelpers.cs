@@ -8,12 +8,12 @@ namespace Massive
 	public static class SetHelpers
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int CountAliveInAll(int id, IReadOnlySet[] sets)
+		public static int CountAssignedInAll(int id, IReadOnlySet[] sets)
 		{
 			int counter = 0;
 			foreach (var set in sets)
 			{
-				if (set.IsAlive(id))
+				if (set.IsAssigned(id))
 				{
 					counter += 1;
 				}
@@ -23,11 +23,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AliveInAll(int id, IReadOnlySet[] sets)
+		public static bool AssignedInAll(int id, IReadOnlySet[] sets)
 		{
 			foreach (var set in sets)
 			{
-				if (!set.IsAlive(id))
+				if (!set.IsAssigned(id))
 				{
 					return false;
 				}
@@ -37,11 +37,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool NotAliveInAll(int id, IReadOnlySet[] sets)
+		public static bool NotAssignedInAll(int id, IReadOnlySet[] sets)
 		{
 			foreach (var set in sets)
 			{
-				if (set.IsAlive(id))
+				if (set.IsAssigned(id))
 				{
 					return false;
 				}
@@ -57,7 +57,7 @@ namespace Massive
 
 			for (int i = 1; i < sets.Length; i++)
 			{
-				if (minimal.AliveCount > sets[i].AliveCount)
+				if (minimal.Count > sets[i].Count)
 				{
 					minimal = sets[i];
 				}
@@ -73,7 +73,7 @@ namespace Massive
 
 			for (int i = 0; i < sets.Length; i++)
 			{
-				if (minimal.AliveCount > sets[i].AliveCount)
+				if (minimal.Count > sets[i].Count)
 				{
 					minimal = sets[i];
 				}
@@ -85,7 +85,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IReadOnlySet GetMinimalSet(IReadOnlySet set1, IReadOnlySet set2)
 		{
-			if (set1.AliveCount <= set2.AliveCount)
+			if (set1.Count <= set2.Count)
 			{
 				return set1;
 			}
@@ -98,12 +98,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IReadOnlySet GetMinimalSet(IReadOnlySet set1, IReadOnlySet set2, IReadOnlySet set3)
 		{
-			if (set1.AliveCount <= set2.AliveCount && set1.AliveCount <= set3.AliveCount)
+			if (set1.Count <= set2.Count && set1.Count <= set3.Count)
 			{
 				return set1;
 			}
 
-			if (set2.AliveCount <= set1.AliveCount && set2.AliveCount <= set3.AliveCount)
+			if (set2.Count <= set1.Count && set2.Count <= set3.Count)
 			{
 				return set2;
 			}

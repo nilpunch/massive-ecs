@@ -10,7 +10,7 @@ namespace Massive
 	{
 		private readonly int[][] _denseByFrames;
 		private readonly int[][] _sparseByFrames;
-		private readonly int[] _aliveCountByFrames;
+		private readonly int[] _countByFrames;
 
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
@@ -20,7 +20,7 @@ namespace Massive
 
 			_denseByFrames = new int[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
-			_aliveCountByFrames = new int[framesCapacity];
+			_countByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
@@ -38,13 +38,13 @@ namespace Massive
 		{
 			_cyclicFrameCounter.SaveFrame();
 
-			int currentAliveCount = sparseSet.AliveCount;
+			int currentCount = sparseSet.Count;
 			int currentFrame = _cyclicFrameCounter.CurrentFrame;
 
 			// Copy everything from current state to current frame
-			Array.Copy(sparseSet.Dense, 0, _denseByFrames[currentFrame], 0, currentAliveCount);
+			Array.Copy(sparseSet.Dense, 0, _denseByFrames[currentFrame], 0, currentCount);
 			Array.Copy(sparseSet.Sparse, 0, _sparseByFrames[currentFrame], 0, sparseSet.SparseCapacity);
-			_aliveCountByFrames[currentFrame] = currentAliveCount;
+			_countByFrames[currentFrame] = currentCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -54,11 +54,11 @@ namespace Massive
 
 			// Copy everything from rollback frame to current state
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
-			int rollbackAliveCount = _aliveCountByFrames[rollbackFrame];
+			int rollbackAliveCount = _countByFrames[rollbackFrame];
 
 			Array.Copy(_denseByFrames[rollbackFrame], 0, sparseSet.Dense, 0, rollbackAliveCount);
 			Array.Copy(_sparseByFrames[rollbackFrame], 0, sparseSet.Sparse, 0, sparseSet.SparseCapacity);
-			sparseSet.AliveCount = rollbackAliveCount;
+			sparseSet.Count = rollbackAliveCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -15,15 +15,15 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
 
-			massiveData.Ensure(0, new TestState { Value = 1 });
-			massiveData.Ensure(1, new TestState { Value = 2 });
-			massiveData.Ensure(2, new TestState { Value = 3 });
+			massiveData.Assign(0, new TestState { Value = 1 });
+			massiveData.Assign(1, new TestState { Value = 2 });
+			massiveData.Assign(2, new TestState { Value = 3 });
 
-			massiveData.Remove(1);
+			massiveData.Unassign(1);
 
-			Assert.IsTrue(massiveData.IsAlive(0));
-			Assert.IsFalse(massiveData.IsAlive(1));
-			Assert.IsTrue(massiveData.IsAlive(2));
+			Assert.IsTrue(massiveData.IsAssigned(0));
+			Assert.IsFalse(massiveData.IsAssigned(1));
+			Assert.IsTrue(massiveData.IsAssigned(2));
 		}
 
 		[Test]
@@ -31,17 +31,17 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
 
-			Assert.IsFalse(massiveData.IsAlive(0));
-			Assert.IsFalse(massiveData.IsAlive(1));
-			Assert.IsFalse(massiveData.IsAlive(2));
+			Assert.IsFalse(massiveData.IsAssigned(0));
+			Assert.IsFalse(massiveData.IsAssigned(1));
+			Assert.IsFalse(massiveData.IsAssigned(2));
 
-			massiveData.Ensure(0, new TestState { Value = 1 });
-			massiveData.Ensure(1, new TestState { Value = 2 });
-			massiveData.Ensure(2, new TestState { Value = 3 });
+			massiveData.Assign(0, new TestState { Value = 1 });
+			massiveData.Assign(1, new TestState { Value = 2 });
+			massiveData.Assign(2, new TestState { Value = 3 });
 
-			Assert.IsTrue(massiveData.IsAlive(0));
-			Assert.IsTrue(massiveData.IsAlive(1));
-			Assert.IsTrue(massiveData.IsAlive(2));
+			Assert.IsTrue(massiveData.IsAssigned(0));
+			Assert.IsTrue(massiveData.IsAssigned(1));
+			Assert.IsTrue(massiveData.IsAssigned(2));
 		}
 
 		[Test]
@@ -49,9 +49,9 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
 
-			massiveData.Ensure(0, new TestState { Value = 1 });
-			massiveData.Ensure(1, new TestState { Value = 2 });
-			massiveData.Ensure(2, new TestState { Value = 3 });
+			massiveData.Assign(0, new TestState { Value = 1 });
+			massiveData.Assign(1, new TestState { Value = 2 });
+			massiveData.Assign(2, new TestState { Value = 3 });
 
 			Assert.AreEqual(massiveData.Get(0).Value, 1);
 			Assert.AreEqual(massiveData.Get(1).Value, 2);
@@ -63,7 +63,7 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 2, framesCapacity: 2);
 
-			massiveData.Ensure(0, new TestState { Value = 1 });
+			massiveData.Assign(0, new TestState { Value = 1 });
 
 			massiveData.Get(0).Value = 2;
 
@@ -75,9 +75,9 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
 
-			massiveData.Ensure(0, new TestState { Value = 1 });
-			massiveData.Ensure(1, new TestState { Value = 2 });
-			massiveData.Ensure(2, new TestState { Value = 3 });
+			massiveData.Assign(0, new TestState { Value = 1 });
+			massiveData.Assign(1, new TestState { Value = 2 });
+			massiveData.Assign(2, new TestState { Value = 3 });
 
 			massiveData.SaveFrame();
 
@@ -91,7 +91,7 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 2, framesCapacity: 2);
 
-			massiveData.Ensure(0, new TestState { Value = 1 });
+			massiveData.Assign(0, new TestState { Value = 1 });
 			massiveData.SaveFrame();
 
 			massiveData.Get(0).Value = 2;
@@ -107,22 +107,22 @@ namespace Massive.Tests
 
 			massiveData.SaveFrame();
 
-			massiveData.Ensure(0, new TestState { Value = 1 });
-			massiveData.Ensure(1, new TestState { Value = 2 });
-			massiveData.Remove(1);
+			massiveData.Assign(0, new TestState { Value = 1 });
+			massiveData.Assign(1, new TestState { Value = 2 });
+			massiveData.Unassign(1);
 
-			Assert.IsTrue(massiveData.IsAlive(0));
-			Assert.IsFalse(massiveData.IsAlive(1));
+			Assert.IsTrue(massiveData.IsAssigned(0));
+			Assert.IsFalse(massiveData.IsAssigned(1));
 
 			massiveData.SaveFrame();
 
-			Assert.IsTrue(massiveData.IsAlive(0));
-			Assert.IsFalse(massiveData.IsAlive(1));
+			Assert.IsTrue(massiveData.IsAssigned(0));
+			Assert.IsFalse(massiveData.IsAssigned(1));
 
 			massiveData.Rollback(1);
 
-			Assert.IsFalse(massiveData.IsAlive(0));
-			Assert.IsFalse(massiveData.IsAlive(1));
+			Assert.IsFalse(massiveData.IsAssigned(0));
+			Assert.IsFalse(massiveData.IsAssigned(1));
 		}
 	}
 }

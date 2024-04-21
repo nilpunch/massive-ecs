@@ -36,9 +36,9 @@ namespace Massive
 
 			// We can sync saving with MassiveSparseSet saving, using its CurrentFrame
 			var currentFrameData = _dataByFrames[_sparseSetFrames.CurrentFrame];
-			for (int i = 0; i < AliveCount; i++)
+			for (int i = 0; i < Count; i++)
 			{
-				Data[i].CopyTo(ref currentFrameData[i]);
+				RawData[i].CopyTo(ref currentFrameData[i]);
 			}
 		}
 
@@ -49,9 +49,9 @@ namespace Massive
 
 			// Similarly to saving, we can sync rollback with MassiveSparseSet rollback
 			var rollbackFrameData = _dataByFrames[_sparseSetFrames.CurrentFrame];
-			for (int i = 0; i < AliveCount; i++)
+			for (int i = 0; i < Count; i++)
 			{
-				rollbackFrameData[i].CopyTo(ref Data[i]);
+				rollbackFrameData[i].CopyTo(ref RawData[i]);
 			}
 		}
 

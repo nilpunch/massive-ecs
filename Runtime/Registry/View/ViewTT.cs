@@ -21,13 +21,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T1, T2> action)
 		{
-			var data1 = _components1.AliveData;
-			var data2 = _components2.AliveData;
+			var data1 = _components1.Data;
+			var data2 = _components2.Data;
 
 			// Iterate over smallest data set
 			if (data1.Length <= data2.Length)
 			{
-				var ids1 = _components1.AliveIds;
+				var ids1 = _components1.Ids;
 				for (int dense1 = ids1.Length - 1; dense1 >= 0; dense1--)
 				{
 					int id = ids1[dense1];
@@ -39,7 +39,7 @@ namespace Massive
 			}
 			else
 			{
-				var ids2 = _components2.AliveIds;
+				var ids2 = _components2.Ids;
 				for (int dense2 = ids2.Length - 1; dense2 >= 0; dense2--)
 				{
 					int id = ids2[dense2];
@@ -54,13 +54,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T1, T2, TExtra> action)
 		{
-			var data1 = _components1.AliveData;
-			var data2 = _components2.AliveData;
+			var data1 = _components1.Data;
+			var data2 = _components2.Data;
 
 			// Iterate over smallest data set
 			if (data1.Length <= data2.Length)
 			{
-				var ids1 = _components1.AliveIds;
+				var ids1 = _components1.Ids;
 				for (int dense1 = ids1.Length - 1; dense1 >= 0; dense1--)
 				{
 					int id = ids1[dense1];
@@ -72,7 +72,7 @@ namespace Massive
 			}
 			else
 			{
-				var ids2 = _components2.AliveIds;
+				var ids2 = _components2.Ids;
 				for (int dense2 = ids2.Length - 1; dense2 >= 0; dense2--)
 				{
 					int id = ids2[dense2];

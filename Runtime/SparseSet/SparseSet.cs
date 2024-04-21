@@ -15,7 +15,7 @@ namespace Massive
 
 		public int[] Sparse => _sparse;
 
-		public int AliveCount { get; set; }
+		public int Count { get; set; }
 
 		public SparseSet(int dataCapacity = Constants.DataCapacity)
 		{
@@ -23,18 +23,18 @@ namespace Massive
 			_sparse = new int[dataCapacity];
 		}
 
-		public ReadOnlySpan<int> AliveIds => new ReadOnlySpan<int>(Dense, 0, AliveCount);
+		public ReadOnlySpan<int> Ids => new ReadOnlySpan<int>(Dense, 0, Count);
 
 		public int DenseCapacity => Dense.Length;
 
 		public int SparseCapacity => Sparse.Length;
 
-		public event Action<int> AfterAdded;
+		public event Action<int> AfterAssigned;
 
-		public event Action<int> BeforeRemoved;
+		public event Action<int> BeforeUnassigned;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Ensure(int id)
+		public void Assign(int id)
 		{
 			if (id < 0)
 			{
@@ -42,13 +42,13 @@ namespace Massive
 			}
 
 			// If element is alive, nothing to be done
-			if (IsAlive(id))
+			if (IsAssigned(id))
 			{
 				return;
 			}
 
-			int count = AliveCount;
-			AliveCount += 1;
+			int count = Count;
+			Count += 1;
 
 			if (id >= SparseCapacity)
 			{
@@ -62,13 +62,13 @@ namespace Massive
 
 			AssignIndex(id, count);
 
-			AfterAdded?.Invoke(id);
+			AfterAssigned?.Invoke(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove(int id)
+		public void Unassign(int id)
 		{
-			BeforeRemoved?.Invoke(id);
+			BeforeUnassigned?.Invoke(id);
 
 			// If element is not alive, nothing to be done
 			if (!TryGetDense(id, out var dense))
@@ -76,8 +76,8 @@ namespace Massive
 				return;
 			}
 
-			int count = AliveCount;
-			AliveCount -= 1;
+			int count = Count;
+			Count -= 1;
 
 			// If dense is the last used element, decreasing alive count is enough
 			if (dense == count - 1)
@@ -92,11 +92,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			var ids = AliveIds;
+			var ids = Ids;
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				BeforeRemoved?.Invoke(ids[i]);
-				AliveCount -= 1;
+				BeforeUnassigned?.Invoke(ids[i]);
+				Count -= 1;
 			}
 		}
 
@@ -117,11 +117,11 @@ namespace Massive
 
 			dense = Sparse[id];
 
-			return dense < AliveCount && Dense[dense] == id;
+			return dense < Count && Dense[dense] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(int id)
+		public bool IsAssigned(int id)
 		{
 			if (id < 0 || id >= SparseCapacity)
 			{
@@ -130,7 +130,7 @@ namespace Massive
 
 			int dense = Sparse[id];
 
-			return dense < AliveCount && Dense[dense] == id;
+			return dense < Count && Dense[dense] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

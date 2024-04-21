@@ -14,7 +14,7 @@ namespace Massive.PerformanceTests
 
 		public FilterView3Include3IgnorePerformanceTest()
 		{
-			_registry = new Registry(EntitiesCount).FillRegistryWith50Components();
+			_registry = new Registry().FillRegistryWith50Components(EntitiesCount);
 
 			var includeFilter = new IReadOnlySet[]
 			{

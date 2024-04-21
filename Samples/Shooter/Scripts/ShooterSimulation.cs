@@ -92,9 +92,9 @@ namespace Massive.Samples.Shooter
 			GUILayout.TextField($"{_debugTime}ms Simulation", new GUIStyle() { fontSize = 70, normal = new GUIStyleState() { textColor = Color.white } });
 			GUILayout.TextField($"{_registry.CanRollbackFrames} Resimulations",
 				new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_registry.Components<CharacterState>().AliveCount} Characters",
+			GUILayout.TextField($"{_registry.Components<CharacterState>().Count} Characters",
 				new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
-			GUILayout.TextField($"{_registry.Components<BulletState>().AliveCount} Bullets",
+			GUILayout.TextField($"{_registry.Components<BulletState>().Count} Bullets",
 				new GUIStyle() { fontSize = 50, normal = new GUIStyleState() { textColor = Color.white } });
 		}
 	}

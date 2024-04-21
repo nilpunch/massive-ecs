@@ -19,12 +19,12 @@ namespace Massive.Samples.Benchmark
 
 			foreach (var entity in _registry.Entities.Alive)
 			{
-				dataSet.Ensure(entity.Id, new TestState() { Position = Vector3.one });
+				dataSet.Assign(entity.Id, new TestState() { Position = Vector3.one });
 			}
 
 			foreach (var entity in _registry.Entities.Alive)
 			{
-				dataSet.Remove(entity.Id);
+				dataSet.Unassign(entity.Id);
 			}
 		}
 	}

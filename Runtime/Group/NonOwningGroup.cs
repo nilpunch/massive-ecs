@@ -14,7 +14,7 @@ namespace Massive
 
 		public bool IsSynced { get; protected set; }
 
-		public ReadOnlySpan<int> Ids => GroupSet.AliveIds;
+		public ReadOnlySpan<int> Ids => GroupSet.Ids;
 
 		public NonOwningGroup(IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = Constants.DataCapacity)
 			: this(new SparseSet(dataCapacity), include, exclude)
@@ -29,14 +29,14 @@ namespace Massive
 
 			foreach (var set in Include)
 			{
-				set.AfterAdded += AddToGroup;
-				set.BeforeRemoved += RemoveFromGroup;
+				set.AfterAssigned += AddToGroup;
+				set.BeforeUnassigned += RemoveFromGroup;
 			}
 
 			foreach (var set in Exclude)
 			{
-				set.AfterAdded += RemoveFromGroup;
-				set.BeforeRemoved += AddToGroupBeforeRemovedFromExcluded;
+				set.AfterAssigned += RemoveFromGroup;
+				set.BeforeUnassigned += AddToGroupBeforeUnassignedFromExcluded;
 			}
 		}
 
@@ -50,7 +50,7 @@ namespace Massive
 			IsSynced = true;
 
 			GroupSet.Clear();
-			var minimal = SetHelpers.GetMinimalSet(Include).AliveIds;
+			var minimal = SetHelpers.GetMinimalSet(Include).Ids;
 			for (var i = 0; i < minimal.Length; i++)
 			{
 				AddToGroup(minimal[i]);
@@ -64,9 +64,9 @@ namespace Massive
 
 		private void AddToGroup(int id)
 		{
-			if (IsSynced && SetHelpers.AliveInAll(id, Include) && SetHelpers.NotAliveInAll(id, Exclude))
+			if (IsSynced && SetHelpers.AssignedInAll(id, Include) && SetHelpers.NotAssignedInAll(id, Exclude))
 			{
-				GroupSet.Ensure(id);
+				GroupSet.Assign(id);
 			}
 		}
 
@@ -74,16 +74,16 @@ namespace Massive
 		{
 			if (IsSynced)
 			{
-				GroupSet.Remove(id);
+				GroupSet.Unassign(id);
 			}
 		}
 
-		private void AddToGroupBeforeRemovedFromExcluded(int id)
+		private void AddToGroupBeforeUnassignedFromExcluded(int id)
 		{
 			// Applies only when removed from the last remaining exclude set
-			if (IsSynced && SetHelpers.AliveInAll(id, Include) && SetHelpers.CountAliveInAll(id, Exclude) == 1)
+			if (IsSynced && SetHelpers.AssignedInAll(id, Include) && SetHelpers.CountAssignedInAll(id, Exclude) == 1)
 			{
-				GroupSet.Ensure(id);
+				GroupSet.Assign(id);
 			}
 		}
 	}
