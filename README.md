@@ -65,7 +65,7 @@ class Program
         });
 
         // Iterate manually over packed data, using Span<T>
-        var velocities = registry.Components<Velocity>().AliveData;
+        var velocities = registry.Components<Velocity>().Data;
         for (int i = 0; i < velocities.Length; ++i)
         {
             ref var velocity = ref velocities[i];
@@ -80,10 +80,10 @@ class Program
         for (int i = 0; i < 10; ++i)
         {
             var entity = registry.Create();
-            registry.Add<Position>(entity, new Position() { X = i * 10f });
+            registry.Assign<Position>(entity, new Position() { X = i * 10f });
             if (i % 2 == 0)
             {
-                registry.Add<Velocity>(entity, new Velocity() { Magnitude = i * 10f });
+                registry.Assign<Velocity>(entity, new Velocity() { Magnitude = i * 10f });
             }
         }
 
