@@ -25,10 +25,10 @@ namespace Massive
 			AllSets = new List<ISet>();
 
 			Entities = setFactory.CreateIdentifiers();
-			Entities.BeforeDeleted += RemoveFromSetsWhenDeleted;
+			Entities.BeforeDestroyed += UnassignFromAllSets;
 		}
 
-		private void RemoveFromSetsWhenDeleted(int id)
+		private void UnassignFromAllSets(int id)
 		{
 			for (var i = 0; i < AllSets.Count; i++)
 			{

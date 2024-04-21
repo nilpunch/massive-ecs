@@ -27,15 +27,15 @@ namespace Massive.Tests
 			var entity1 = registry.CreateEntity('1').Id;
 			var entity2 = registry.CreateEntity('2').Id;
 
-			registry.Add(entity2, 42);
+			registry.Assign(entity2, 42);
 
 			Assert.AreEqual(1, group.Length);
 
-			registry.Add<int>(entity1);
+			registry.Assign<int>(entity1);
 
 			Assert.AreEqual(2, group.Length);
 
-			registry.Remove<int>(entity1);
+			registry.Unassign<int>(entity1);
 
 			Assert.AreEqual(1, group.Length);
 
@@ -47,8 +47,8 @@ namespace Massive.Tests
 
 			Assert.AreEqual(group.Ids[0], entity2);
 
-			registry.Remove<char>(entity1);
-			registry.Remove<char>(entity2);
+			registry.Unassign<char>(entity1);
+			registry.Unassign<char>(entity2);
 
 			Assert.AreEqual(0, group.Length);
 		}
@@ -62,14 +62,14 @@ namespace Massive.Tests
 			var entity1 = registry.CreateEntity(1).Id;
 
 			var entity2 = registry.CreateEntity(2).Id;
-			registry.Add<char>(entity2);
+			registry.Assign<char>(entity2);
 
 			var group = SetUpGroupWithIntAndWithoutChar(registry, testGroupType);
 
 			var entity3 = registry.CreateEntity(3).Id;
 
 			var entity4 = registry.CreateEntity(4).Id;
-			registry.Add<char>(entity4);
+			registry.Assign<char>(entity4);
 
 			foreach (var entity in group.Ids)
 			{
@@ -85,13 +85,13 @@ namespace Massive.Tests
 				}
 			}
 
-			registry.Add<char>(entity1);
-			registry.Add<char>(entity3);
+			registry.Assign<char>(entity1);
+			registry.Assign<char>(entity3);
 
 			Assert.AreEqual(0, group.Length);
 
-			registry.Remove<char>(entity2);
-			registry.Remove<char>(entity4);
+			registry.Unassign<char>(entity2);
+			registry.Unassign<char>(entity4);
 
 			foreach (var entity in group.Ids)
 			{
@@ -120,12 +120,12 @@ namespace Massive.Tests
 
 				if (i % 2 != 0)
 				{
-					registry.Add<int>(entity);
+					registry.Assign<int>(entity);
 				}
 
 				if (i % 3 != 0)
 				{
-					registry.Add<char>(entity);
+					registry.Assign<char>(entity);
 				}
 			}
 
@@ -140,11 +140,11 @@ namespace Massive.Tests
 			var registry = new Registry();
 
 			var entity1 = registry.CreateEntity(1).Id;
-			registry.Add<float>(entity1);
+			registry.Assign<float>(entity1);
 
 			var entity2 = registry.CreateEntity(2).Id;
-			registry.Add<char>(entity2);
-			registry.Add<float>(entity2);
+			registry.Assign<char>(entity2);
+			registry.Assign<float>(entity2);
 
 			var owningGroup3 = registry.Group(
 				registry.Many<int, char>(),
@@ -160,39 +160,39 @@ namespace Massive.Tests
 			);
 
 			var entity3 = registry.CreateEntity(3).Id;
-			registry.Add<float>(entity3);
+			registry.Assign<float>(entity3);
 
 			var entity4 = registry.CreateEntity(4).Id;
-			registry.Add<char>(entity4);
-			registry.Add<float>(entity4);
+			registry.Assign<char>(entity4);
+			registry.Assign<float>(entity4);
 
 			Assert.AreEqual(4, owningGroup.Length);
 			Assert.AreEqual(2, owningGroup2.Length);
 			Assert.AreEqual(0, owningGroup3.Length);
 
-			registry.Add<char>(entity1);
-			registry.Add<char>(entity3);
+			registry.Assign<char>(entity1);
+			registry.Assign<char>(entity3);
 
 			Assert.AreEqual(4, owningGroup.Length);
 			Assert.AreEqual(4, owningGroup2.Length);
 			Assert.AreEqual(0, owningGroup3.Length);
 
-			registry.Add<double>(entity1);
-			registry.Add<double>(entity3);
+			registry.Assign<double>(entity1);
+			registry.Assign<double>(entity3);
 
 			Assert.AreEqual(4, owningGroup.Length);
 			Assert.AreEqual(4, owningGroup2.Length);
 			Assert.AreEqual(2, owningGroup3.Length);
 
-			registry.Remove<char>(entity1);
-			registry.Remove<char>(entity3);
+			registry.Unassign<char>(entity1);
+			registry.Unassign<char>(entity3);
 
 			Assert.AreEqual(4, owningGroup.Length);
 			Assert.AreEqual(2, owningGroup2.Length);
 			Assert.AreEqual(0, owningGroup3.Length);
 
-			registry.Remove<float>(entity2);
-			registry.Remove<float>(entity4);
+			registry.Unassign<float>(entity2);
+			registry.Unassign<float>(entity4);
 
 			Assert.AreEqual(2, owningGroup.Length);
 			Assert.AreEqual(0, owningGroup2.Length);

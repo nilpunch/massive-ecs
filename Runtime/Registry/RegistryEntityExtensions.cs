@@ -22,7 +22,7 @@ namespace Massive
 		public static Entity CreateEntity<T>(this IRegistry registry, T data = default) where T : struct
 		{
 			var entity = registry.CreateEntity();
-			registry.Add(entity.Id, data);
+			registry.Assign(entity.Id, data);
 			return entity;
 		}
 
@@ -44,25 +44,25 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Add<T>(this IRegistry registry, Entity entity, T data = default) where T : struct
+		public static void Assign<T>(this IRegistry registry, Entity entity, T data = default) where T : struct
 		{
 			if (!registry.Entities.IsAlive(entity))
 			{
 				return;
 			}
 
-			registry.Add(entity.Id, data);
+			registry.Assign(entity.Id, data);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Remove<T>(this IRegistry registry, Entity entity) where T : struct
+		public static void Unassign<T>(this IRegistry registry, Entity entity) where T : struct
 		{
 			if (!registry.Entities.IsAlive(entity))
 			{
 				return;
 			}
 
-			registry.Remove<T>(entity.Id);
+			registry.Unassign<T>(entity.Id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

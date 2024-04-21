@@ -28,7 +28,7 @@ namespace Massive
 
 		public event Action<Entity> AfterCreated;
 
-		public event Action<int> BeforeDeleted;
+		public event Action<int> BeforeDestroyed;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Create()
@@ -63,7 +63,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(Entity entity)
 		{
-			BeforeDeleted?.Invoke(entity.Id);
+			BeforeDestroyed?.Invoke(entity.Id);
 
 			// If element is not alive, nothing to be done
 			if (entity.Id < 0 || entity.Id >= MaxId)
@@ -95,7 +95,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int id)
 		{
-			BeforeDeleted?.Invoke(id);
+			BeforeDestroyed?.Invoke(id);
 
 			// If element is not alive, nothing to be done
 			if (id < 0 || id >= MaxId)

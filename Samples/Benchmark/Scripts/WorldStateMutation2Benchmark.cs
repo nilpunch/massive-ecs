@@ -14,7 +14,7 @@ namespace Massive.Samples.Benchmark
 			_registry = BenchmarkUtils.GetSimplyPackedRegistry(_worldEntitiesCount, 1);
 			foreach (var entityId in _registry.Entities.Alive)
 			{
-				_registry.Add<TestState2>(entityId);
+				_registry.Assign<TestState2>(entityId);
 			}
 
 			// Better to cache this

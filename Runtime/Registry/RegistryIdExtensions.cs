@@ -15,7 +15,7 @@ namespace Massive
 		public static int Create<T>(this IRegistry registry, T data = default) where T : struct
 		{
 			var id = registry.Create();
-			registry.Add(id, data);
+			registry.Assign(id, data);
 			return id;
 		}
 
@@ -32,7 +32,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Add<T>(this IRegistry registry, int id, T data = default) where T : struct
+		public static void Assign<T>(this IRegistry registry, int id, T data = default) where T : struct
 		{
 			var set = registry.Any<T>();
 			if (set is IDataSet<T> dataSet)
@@ -46,7 +46,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Remove<T>(this IRegistry registry, int id) where T : struct
+		public static void Unassign<T>(this IRegistry registry, int id) where T : struct
 		{
 			registry.Any<T>().Unassign(id);
 		}

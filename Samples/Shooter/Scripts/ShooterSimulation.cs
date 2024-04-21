@@ -41,7 +41,7 @@ namespace Massive.Samples.Shooter
 						Rotation = Quaternion.AngleAxis(180f * (i - _charactersAmount / 2f) / _charactersAmount, Vector3.forward)
 					}
 				});
-				_registry.Add(characterId, new WeaponState());
+				_registry.Assign(characterId, new WeaponState());
 			}
 
 			_registry.SaveFrame();
