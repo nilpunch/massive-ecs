@@ -29,7 +29,7 @@ namespace Massive.PerformanceTests
 				_registry.Any<TestState64<int, byte, int>>(),
 				_registry.Any<TestState64<int, int, byte>>(),
 			};
-			
+
 			_filter = new Filter(includeFilter, excludeFilter);
 		}
 

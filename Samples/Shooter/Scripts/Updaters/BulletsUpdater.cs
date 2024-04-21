@@ -10,7 +10,7 @@
 			_registry = registry;
 			_bullets = new View<BulletState>(registry);
 		}
-		
+
 		public override void UpdateWorld(float deltaTime)
 		{
 			_bullets.ForEachExtra((_registry, deltaTime), (int entityId, ref BulletState state, (IRegistry Registry, float DeltaTime) inner) =>

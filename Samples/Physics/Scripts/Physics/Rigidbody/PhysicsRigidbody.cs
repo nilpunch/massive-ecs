@@ -97,7 +97,8 @@ namespace Massive.Samples.Physics
 			}
 		}
 
-		public static void RecalculateAllInertia(IReadOnlyDataSet<PhysicsRigidbody> bodies, IReadOnlyDataSet<PhysicsBoxCollider> boxes, IReadOnlyDataSet<PhysicsSphereCollider> spheres)
+		public static void RecalculateAllInertia(IReadOnlyDataSet<PhysicsRigidbody> bodies, IReadOnlyDataSet<PhysicsBoxCollider> boxes,
+			IReadOnlyDataSet<PhysicsSphereCollider> spheres)
 		{
 			var bodiesAlive = bodies.Data;
 			var boxesAlive = boxes.Data;

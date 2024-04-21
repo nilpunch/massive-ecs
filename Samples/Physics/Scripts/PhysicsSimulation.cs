@@ -33,12 +33,13 @@ namespace Massive.Samples.Physics
 				massiveRigidbody.Spawn(_registry);
 			}
 
-			PhysicsRigidbody.RecalculateAllInertia(_registry.Components<PhysicsRigidbody>(), _registry.Components<PhysicsBoxCollider>(), _registry.Components<PhysicsSphereCollider>());
+			PhysicsRigidbody.RecalculateAllInertia(_registry.Components<PhysicsRigidbody>(), _registry.Components<PhysicsBoxCollider>(),
+				_registry.Components<PhysicsSphereCollider>());
 
 			_bodies = _registry.Components<PhysicsRigidbody>();
 			_sphereColliders = _registry.Components<PhysicsSphereCollider>();
 			_boxColliders = _registry.Components<PhysicsBoxCollider>();
-			
+
 			_registry.SaveFrame();
 		}
 

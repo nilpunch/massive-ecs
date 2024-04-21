@@ -64,7 +64,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
-		
+
 		[TestCaseSource(nameof(FixtureSets)), Performance]
 		public void SparseSet_RemoveNonExisting(ISet set)
 		{

@@ -5,16 +5,12 @@ namespace Massive.PerformanceTests
 	/// <summary>
 	/// Empty type.
 	/// </summary>
-	public struct TestTag<T1, T2, T3>
-	{
-	}
+	public struct TestTag<T1, T2, T3> { }
 
 	/// <summary>
 	/// Empty type.
 	/// </summary>
-	public struct TestTag
-	{
-	}
+	public struct TestTag { }
 
 	/// <summary>
 	/// 64 Byte structure.

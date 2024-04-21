@@ -109,7 +109,7 @@ namespace Massive.Tests
 			var entities = new Entities(Capacity);
 			for (var i = 0; i <= id; i++)
 				entities.Create();
-			
+
 			entities.Destroy(id);
 			var createdIdentifier = entities.Create();
 

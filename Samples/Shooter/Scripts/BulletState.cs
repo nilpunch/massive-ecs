@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Massive.Samples.Shooter
 {
-	public struct BulletState// : IManaged<BulletState>
+	public struct BulletState // : IManaged<BulletState>
 	{
 		public EntityTransform Transform;
 
@@ -14,14 +14,10 @@ namespace Massive.Samples.Shooter
 		public float Lifetime;
 
 		public bool IsDestroyed => Lifetime <= 0f;
-		
-		public void Initialize()
-		{
-		}
 
-		public void Reset()
-		{
-		}
+		public void Initialize() { }
+
+		public void Reset() { }
 
 		public void CopyTo(ref BulletState destination)
 		{

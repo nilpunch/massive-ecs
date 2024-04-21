@@ -18,7 +18,7 @@ namespace Massive.Samples.Benchmark
 			}
 
 			// Better to cache this
- 			IGroup group = _registry.Group(_registry.Many<TestState, TestState2>());
+			IGroup group = _registry.Group(_registry.Many<TestState, TestState2>());
 
 			// Free abstraction, create anywhere you want
 			var view = new GroupView<TestState, TestState2>(_registry, group);

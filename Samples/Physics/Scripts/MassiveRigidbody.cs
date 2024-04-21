@@ -31,7 +31,8 @@ namespace Massive.Samples.Physics
 					boxCollider.Material));
 			}
 
-			PhysicsRigidbody.RecalculateAllInertia(registry.Components<PhysicsRigidbody>(), registry.Components<PhysicsBoxCollider>(), registry.Components<PhysicsSphereCollider>());
+			PhysicsRigidbody.RecalculateAllInertia(registry.Components<PhysicsRigidbody>(), registry.Components<PhysicsBoxCollider>(),
+				registry.Components<PhysicsSphereCollider>());
 
 			registry.Get<PhysicsRigidbody>(bodyId).ApplyImpulseAtPoint(_startImpulse, _startImpulsePoint);
 		}

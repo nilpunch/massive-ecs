@@ -23,23 +23,23 @@ namespace Massive.Samples.Shooter
 			_characters.ForEachExtra((_registry, deltaTime, _cooldown, _bulletVelocity, _bulletDamage, _bulletLifetime),
 				(int entity, ref CharacterState characterState, ref WeaponState weaponState,
 					(IRegistry Registry, float DeltaTime, float DefaultCooldown, float BulletVelocity, float BulletDamage, float BulletLifetime) inner) =>
-			{
-				weaponState.Cooldown -= inner.DeltaTime;
-				if (weaponState.Cooldown > 0)
 				{
-					return;
-				}
+					weaponState.Cooldown -= inner.DeltaTime;
+					if (weaponState.Cooldown > 0)
+					{
+						return;
+					}
 
-				weaponState.Cooldown = inner.DefaultCooldown;
+					weaponState.Cooldown = inner.DefaultCooldown;
 
-				inner.Registry.Create(new BulletState
-				{
-					Transform = characterState.Transform,
-					Velocity = characterState.Transform.Rotation * Vector3.up * inner.BulletVelocity,
-					Lifetime = inner.BulletLifetime,
-					Damage = inner.BulletDamage
+					inner.Registry.Create(new BulletState
+					{
+						Transform = characterState.Transform,
+						Velocity = characterState.Transform.Rotation * Vector3.up * inner.BulletVelocity,
+						Lifetime = inner.BulletLifetime,
+						Damage = inner.BulletDamage
+					});
 				});
-			});
 		}
 	}
 }

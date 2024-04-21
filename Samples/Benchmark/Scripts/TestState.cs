@@ -12,11 +12,11 @@ namespace Massive.Samples.Benchmark
 		public Quaternion Data2;
 		public Quaternion Data3;
 	}
-	
+
 	public struct TestState
 	{
 		public Vector3 Position;
-		
+
 		public Quaternion Data1;
 		public Quaternion Data2;
 		public Quaternion Data3;
@@ -24,11 +24,11 @@ namespace Massive.Samples.Benchmark
 		public Quaternion Data5;
 		public Quaternion Data6;
 	}
-	
+
 	public struct TestState2
 	{
 		public Vector3 Position;
-		
+
 		public Quaternion Data1;
 		public Quaternion Data2;
 		public Quaternion Data3;
