@@ -5,32 +5,31 @@ namespace Massive.Serialization
 {
 	public class RegistryParser : IRegistryParser
 	{
-		private readonly List<IRegistryParser> _componentParsers = new List<IRegistryParser>();
-		private readonly List<IRegistryParser> _nonOwningGroupParsers = new List<IRegistryParser>();
+		private readonly List<IRegistryParser> _parsers = new List<IRegistryParser>();
+
+		public RegistryParser()
+		{
+			_parsers.Add(new EntitiesParser());
+		}
 
 		public void AddComponent<T>() where T : unmanaged
 		{
-			_componentParsers.Add(new ComponentParser<T>());
+			_parsers.Add(new ComponentParser<T>());
 		}
 
 		public void AddCustomComponent<T>(IDataSetParser<T> dataParser) where T : struct
 		{
-			_componentParsers.Add(new CustomComponentParser<T>(dataParser));
+			_parsers.Add(new CustomComponentParser<T>(dataParser));
 		}
 
 		public void AddNonOwningGroup(ComponentsGroup include = null, ComponentsGroup exclude = null)
 		{
-			_nonOwningGroupParsers.Add(new NonOwningGroupParser(include, exclude));
+			_parsers.Add(new NonOwningGroupParser(include, exclude));
 		}
 
 		public void Write(IRegistry registry, Stream stream)
 		{
-			foreach (var parser in _componentParsers)
-			{
-				parser.Write(registry, stream);
-			}
-
-			foreach (var parser in _nonOwningGroupParsers)
+			foreach (var parser in _parsers)
 			{
 				parser.Write(registry, stream);
 			}
@@ -38,12 +37,7 @@ namespace Massive.Serialization
 
 		public void Read(IRegistry registry, Stream stream)
 		{
-			foreach (var parser in _componentParsers)
-			{
-				parser.Read(registry, stream);
-			}
-
-			foreach (var parser in _nonOwningGroupParsers)
+			foreach (var parser in _parsers)
 			{
 				parser.Read(registry, stream);
 			}

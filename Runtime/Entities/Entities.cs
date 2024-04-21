@@ -12,11 +12,11 @@ namespace Massive
 		private Entity[] _dense;
 		private int[] _sparse;
 
-		protected Entity[] Dense => _dense;
-		protected int[] Sparse => _sparse;
+		public Entity[] Dense => _dense;
+		public int[] Sparse => _sparse;
 
-		protected int AliveCount { get; set; }
-		protected int MaxId { get; set; }
+		public int AliveCount { get; set; }
+		public int MaxId { get; set; }
 
 		public Entities(int dataCapacity = Constants.DataCapacity)
 		{
