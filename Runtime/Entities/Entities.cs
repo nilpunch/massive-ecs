@@ -159,9 +159,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity GetEntity(int sparseId)
+		public Entity GetEntity(int id)
 		{
-			return Dense[sparseId];
+			return Dense[Sparse[id]];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
