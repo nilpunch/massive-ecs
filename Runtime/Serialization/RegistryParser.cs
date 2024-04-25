@@ -17,9 +17,9 @@ namespace Massive.Serialization
 			_parsers.Add(new ComponentParser<T>());
 		}
 
-		public void AddCustomComponent<T>(IDataSetParser<T> dataParser) where T : struct
+		public void AddCustomComponent<T>(IDataSetParser<T> dataParser = null) where T : struct
 		{
-			_parsers.Add(new CustomComponentParser<T>(dataParser));
+			_parsers.Add(new CustomComponentParser<T>(dataParser ?? new DefaultDataSetParser<T>()));
 		}
 
 		public void AddNonOwningGroup(ComponentsGroup include = null, ComponentsGroup exclude = null)
