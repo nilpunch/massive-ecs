@@ -67,8 +67,9 @@ namespace Massive.Tests
 			Assert.IsTrue(isAlive);
 		}
 
-		[TestCase( + 1)]
-		public void Create_WhenOutOfBounds_ShouldResize(int id)
+		[TestCase(Constants.DataCapacity + 10)]
+		[TestCase(Constants.DataCapacity + 1000)]
+		public void Create_WhenOutOfBounds_ShouldResize(int createAmount)
 		{
 			var entities = new Entities();
 
@@ -76,7 +77,7 @@ namespace Massive.Tests
 
 			void CreateCheck()
 			{
-				for (var i = 0; i <= id; i++)
+				for (var i = 0; i <= createAmount; i++)
 					entities.Create();
 			}
 		}
@@ -149,8 +150,9 @@ namespace Massive.Tests
 			Assert.IsTrue(isAlive);
 		}
 
-		[TestCase( + 1)]
-		public void CreateMany_WhenOutOfBounds_ShouldResize(int id)
+		[TestCase(Constants.DataCapacity + 10)]
+		[TestCase(Constants.DataCapacity + 1000)]
+		public void CreateMany_WhenOutOfBounds_ShouldResize(int createAmount)
 		{
 			var entities = new Entities();
 
@@ -158,7 +160,7 @@ namespace Massive.Tests
 
 			void CreateManyCheck()
 			{
-				entities.CreateMany(id);
+				entities.CreateMany(createAmount);
 			}
 		}
 
