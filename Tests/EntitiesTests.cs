@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
 namespace Massive.Tests
 {
 	[TestFixture]
-	public class EntityIdentifiersTests
+	public class EntitiesTests
 	{
-		// ReSharper disable RedundantArgumentDefaultValue
-		private const int Capacity = 100;
-
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
 		public void IsAlive_WhenNotCreated_ShouldBeFalse(int id)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 
 			var isAlive = entities.IsAlive(id);
 
@@ -27,19 +23,42 @@ namespace Massive.Tests
 		[TestCase(-1)]
 		public void IsAlive_WhenOutOfBounds_ShouldNotThrow(int id)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 
 			Assert.DoesNotThrow(CheckAlive);
 
 			void CheckAlive() => entities.IsAlive(id);
 		}
 
+		[Test]
+		public void GetEntity_ShouldReturnCorrectEntity()
+		{
+			var entities = new Entities();
+
+			for (var i = 0; i < 10; i++)
+				entities.Create();
+
+			Assert.AreEqual(0, entities.GetEntity(0).Id);
+			Assert.AreEqual(3, entities.GetEntity(3).Id);
+			Assert.AreEqual(6, entities.GetEntity(6).Id);
+
+			for (var i = 0; i <= 5; i++)
+			{
+				entities.Destroy(i);
+				entities.Create();
+			}
+
+			Assert.AreEqual(0, entities.GetEntity(0).Id);
+			Assert.AreEqual(3, entities.GetEntity(3).Id);
+			Assert.AreEqual(6, entities.GetEntity(6).Id);
+		}
+		
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
 		public void Create_ShouldMakeAlive(int id)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
@@ -48,10 +67,10 @@ namespace Massive.Tests
 			Assert.IsTrue(isAlive);
 		}
 
-		[TestCase(Capacity + 1)]
+		[TestCase( + 1)]
 		public void Create_WhenOutOfBounds_ShouldResize(int id)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 
 			Assert.DoesNotThrow(CreateCheck);
 
@@ -65,7 +84,7 @@ namespace Massive.Tests
 		[TestCase(10)]
 		public void Create_ShouldGenerateDistinctIds(int createAmount)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 			var created = new List<int>();
 			for (var i = 0; i < createAmount; i++)
 				created.Add(entities.Create().Id);
@@ -80,7 +99,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void Destroy_ShouldMakeNotAlive(int id)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
@@ -94,7 +113,7 @@ namespace Massive.Tests
 		[TestCase(-1)]
 		public void Destroy_WhenOutOfBounds_ShouldNotThrow(int id)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 
 			Assert.DoesNotThrow(CheckDestroy);
 
@@ -106,7 +125,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void DestroyThenCreate_ShouldRecycleIds(int id)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
@@ -122,7 +141,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void CreateMany_ShouldMakeAlive(int id)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 
 			entities.CreateMany(id + 1);
 			var isAlive = entities.IsAlive(id);
@@ -130,10 +149,10 @@ namespace Massive.Tests
 			Assert.IsTrue(isAlive);
 		}
 
-		[TestCase(Capacity + 1)]
+		[TestCase( + 1)]
 		public void CreateMany_WhenOutOfBounds_ShouldResize(int id)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 
 			Assert.DoesNotThrow(CreateManyCheck);
 
@@ -146,7 +165,7 @@ namespace Massive.Tests
 		[TestCase(10)]
 		public void CreateMany_ShouldGenerateDistinctIds(int createAmount)
 		{
-			var entities = new Entities(Capacity);
+			var entities = new Entities();
 			var created = new List<Entity>();
 
 			entities.CreateMany(createAmount, created.Add);
