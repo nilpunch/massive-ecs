@@ -26,7 +26,7 @@
 			return massiveIdentifiers;
 		}
 
-		public ISet CreateAppropriateSet<T>() where T : struct
+		public ISet CreateAppropriateSet<T>()
 		{
 			if (Type<T>.HasNoFields && !_storeTagsAsComponents)
 			{
@@ -43,7 +43,7 @@
 			return massiveSparseSet;
 		}
 
-		public ISet CreateDataSet<T>() where T : struct
+		public ISet CreateDataSet<T>()
 		{
 			if (ManagedUtils.IsManaged<T>())
 			{

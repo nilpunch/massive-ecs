@@ -13,19 +13,19 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ISet[] Many<T1>(this IRegistry registry) where T1 : struct
+		public static ISet[] Many<T1>(this IRegistry registry) 
 		{
 			return new[] { registry.Any<T1>() };
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ISet[] Many<T1, T2>(this IRegistry registry) where T1 : struct where T2 : struct
+		public static ISet[] Many<T1, T2>(this IRegistry registry)  
 		{
 			return new[] { registry.Any<T1>(), registry.Any<T2>() };
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ISet[] Many<T1, T2, T3>(this IRegistry registry) where T1 : struct where T2 : struct where T3 : struct
+		public static ISet[] Many<T1, T2, T3>(this IRegistry registry)   
 		{
 			return new[] { registry.Any<T1>(), registry.Any<T2>(), registry.Any<T3>() };
 		}

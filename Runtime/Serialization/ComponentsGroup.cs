@@ -11,7 +11,7 @@ namespace Massive.Serialization
 		}
 	}
 
-	public class ComponentsGroup<T> : ComponentsGroup where T : struct
+	public class ComponentsGroup<T> : ComponentsGroup
 	{
 		public override IReadOnlyList<IReadOnlySet> GetMany(IRegistry registry)
 		{
@@ -19,7 +19,7 @@ namespace Massive.Serialization
 		}
 	}
 
-	public class ComponentsGroup<T1, T2> : ComponentsGroup where T1 : struct where T2 : struct
+	public class ComponentsGroup<T1, T2> : ComponentsGroup  
 	{
 		public override IReadOnlyList<IReadOnlySet> GetMany(IRegistry registry)
 		{
@@ -27,7 +27,7 @@ namespace Massive.Serialization
 		}
 	}
 
-	public class ComponentsGroup<T1, T2, T3> : ComponentsGroup where T1 : struct where T2 : struct where T3 : struct
+	public class ComponentsGroup<T1, T2, T3> : ComponentsGroup   
 	{
 		public override IReadOnlyList<IReadOnlySet> GetMany(IRegistry registry)
 		{

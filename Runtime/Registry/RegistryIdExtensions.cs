@@ -12,7 +12,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Create<T>(this IRegistry registry, T data = default) where T : struct
+		public static int Create<T>(this IRegistry registry, T data = default)
 		{
 			var id = registry.Create();
 			registry.Assign(id, data);
@@ -32,7 +32,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this IRegistry registry, int id, T data = default) where T : struct
+		public static void Assign<T>(this IRegistry registry, int id, T data = default)
 		{
 			var set = registry.Any<T>();
 			if (set is IDataSet<T> dataSet)
@@ -46,19 +46,19 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Unassign<T>(this IRegistry registry, int id) where T : struct
+		public static void Unassign<T>(this IRegistry registry, int id)
 		{
 			registry.Any<T>().Unassign(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool Has<T>(this IRegistry registry, int id) where T : struct
+		public static bool Has<T>(this IRegistry registry, int id)
 		{
 			return registry.Any<T>().IsAssigned(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ref T Get<T>(this IRegistry registry, int id) where T : struct
+		public static ref T Get<T>(this IRegistry registry, int id)
 		{
 			if (registry.Any<T>() is not IDataSet<T> dataSet)
 			{

@@ -6,8 +6,8 @@
 
 		Entities Entities { get; }
 
-		IDataSet<T> Components<T>() where T : struct;
+		IDataSet<T> Components<T>();
 
-		ISet Any<T>() where T : struct;
+		ISet Any<T>();
 	}
 }

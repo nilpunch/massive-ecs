@@ -39,7 +39,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IDataSet<T> Components<T>() where T : struct
+		public IDataSet<T> Components<T>()
 		{
 			if (Any<T>() is not IDataSet<T> dataSet)
 			{
@@ -50,7 +50,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet Any<T>() where T : struct
+		public ISet Any<T>()
 		{
 			var type = typeof(T);
 

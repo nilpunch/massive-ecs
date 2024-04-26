@@ -9,7 +9,7 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class DataSet<T> : SparseSet, IDataSet<T> where T : struct
+	public class DataSet<T> : SparseSet, IDataSet<T>
 	{
 		private T[] _data;
 

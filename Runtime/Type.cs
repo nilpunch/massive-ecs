@@ -5,7 +5,7 @@ namespace Massive
 	/// <summary>
 	/// Type information.
 	/// </summary>
-	public static class Type<T> where T : struct
+	public static class Type<T>
 	{
 		// ReSharper disable StaticMemberInGenericType
 		public static bool HasAnyFields { get; }

@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Massive.Serialization
 {
-	public class DefaultDataSetParser<T> : IDataSetParser<T> where T : struct
+	public class DefaultDataSetParser<T> : IDataSetParser<T>
 	{
 		private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
 

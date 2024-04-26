@@ -16,7 +16,7 @@
 			return new Entities(_dataCapacity);
 		}
 
-		public ISet CreateAppropriateSet<T>() where T : struct
+		public ISet CreateAppropriateSet<T>()
 		{
 			if (Type<T>.HasNoFields && !_storeTagsAsComponents)
 			{
@@ -31,7 +31,7 @@
 			return new SparseSet(_dataCapacity);
 		}
 
-		public ISet CreateDataSet<T>() where T : struct
+		public ISet CreateDataSet<T>()
 		{
 			if (ManagedUtils.IsManaged<T>())
 			{

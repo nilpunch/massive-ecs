@@ -4,10 +4,10 @@
 	{
 		Entities CreateIdentifiers();
 
-		ISet CreateAppropriateSet<T>() where T : struct;
+		ISet CreateAppropriateSet<T>();
 
 		ISet CreateSparseSet();
 
-		ISet CreateDataSet<T>() where T : struct;
+		ISet CreateDataSet<T>();
 	}
 }

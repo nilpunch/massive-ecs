@@ -6,9 +6,9 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct FilterView<T1, T2, T3>
-		where T1 : struct
-		where T2 : struct
-		where T3 : struct
+		
+		
+		
 	{
 		private readonly IFilter _filter;
 		private readonly IReadOnlyDataSet<T1> _components1;

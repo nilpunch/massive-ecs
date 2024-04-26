@@ -2,7 +2,7 @@
 
 namespace Massive
 {
-	public interface IReadOnlyDataSet<T> : IReadOnlySet where T : struct
+	public interface IReadOnlyDataSet<T> : IReadOnlySet
 	{
 		Span<T> Data { get; }
 

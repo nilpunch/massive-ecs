@@ -15,7 +15,7 @@ namespace Massive
 		/// <summary>
 		/// Create <see cref="Massive.ManagedDataSet{T}"/> bypassing <see cref="Massive.IManaged{T}"/> constraint.
 		/// </summary>
-		public static IDataSet<T> CreateManagedDataSet<T>(int dataCapacity = Constants.DataCapacity) where T : struct
+		public static IDataSet<T> CreateManagedDataSet<T>(int dataCapacity = Constants.DataCapacity)
 		{
 			Type constructedType = typeof(ManagedDataSet<>)
 				.GetGenericTypeDefinition()
@@ -28,7 +28,6 @@ namespace Massive
 		/// Create <see cref="Massive.MassiveManagedDataSet{T}"/> bypassing <see cref="Massive.IManaged{T}"/> constraint.
 		/// </summary>
 		public static IDataSet<T> CreateMassiveManagedDataSet<T>(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
-			where T : struct
 		{
 			Type constructedType = typeof(MassiveManagedDataSet<>)
 				.GetGenericTypeDefinition()

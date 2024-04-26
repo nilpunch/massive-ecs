@@ -3,7 +3,7 @@
 // ReSharper disable MustUseReturnValue
 namespace Massive.Serialization
 {
-	public class CustomComponentParser<T> : IRegistryParser where T : struct
+	public class CustomComponentParser<T> : IRegistryParser
 	{
 		private readonly IDataSetParser<T> _dataParser;
 

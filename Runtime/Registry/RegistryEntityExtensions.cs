@@ -18,7 +18,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity CreateEntity<T>(this IRegistry registry, T data = default) where T : struct
+		public static Entity CreateEntity<T>(this IRegistry registry, T data = default)
 		{
 			var entity = registry.CreateEntity();
 			registry.Assign(entity.Id, data);
@@ -43,7 +43,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this IRegistry registry, Entity entity, T data = default) where T : struct
+		public static void Assign<T>(this IRegistry registry, Entity entity, T data = default)
 		{
 			if (!registry.Entities.IsAlive(entity))
 			{
@@ -54,7 +54,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Unassign<T>(this IRegistry registry, Entity entity) where T : struct
+		public static void Unassign<T>(this IRegistry registry, Entity entity)
 		{
 			if (!registry.Entities.IsAlive(entity))
 			{
@@ -65,7 +65,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool Has<T>(this IRegistry registry, Entity entity) where T : struct
+		public static bool Has<T>(this IRegistry registry, Entity entity)
 		{
 			if (!registry.Entities.IsAlive(entity))
 			{
@@ -76,7 +76,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ref T Get<T>(this IRegistry registry, Entity entity) where T : struct
+		public static ref T Get<T>(this IRegistry registry, Entity entity)
 		{
 			if (!registry.Entities.IsAlive(entity))
 			{

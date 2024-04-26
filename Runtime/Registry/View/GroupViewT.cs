@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct GroupView<T> where T : struct
+	public readonly struct GroupView<T>
 	{
 		private readonly IGroup _group;
 		private readonly IReadOnlyDataSet<T> _components;
