@@ -17,7 +17,9 @@ namespace Massive
 		public ReadOnlySpan<int> Ids => GroupSet.Ids;
 
 		public NonOwningGroup(IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = Constants.DataCapacity)
-			: this(new SparseSet(dataCapacity), include, exclude) { }
+			: this(new SparseSet(dataCapacity), include, exclude)
+		{
+		}
 
 		protected NonOwningGroup(ISet groupSet, IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null)
 		{
