@@ -1,4 +1,5 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 namespace Unity.IL2CPP.CompilerServices
 {
 	using System;

@@ -22,7 +22,9 @@ namespace Massive.PerformanceTests
 		{
 			var view = new View(_registry);
 
-			Measure.Method(() => view.ForEach((_) => { }))
+			Measure.Method(() => view.ForEach((_) =>
+				{
+				}))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -33,7 +35,9 @@ namespace Massive.PerformanceTests
 		{
 			var view = new View<TestState64>(_registry);
 
-			Measure.Method(() => view.ForEach((int _, ref TestState64 _) => { }))
+			Measure.Method(() => view.ForEach((int _, ref TestState64 _) =>
+				{
+				}))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -44,7 +48,9 @@ namespace Massive.PerformanceTests
 		{
 			var view = new View<TestState64, TestState64_2>(_registry);
 
-			Measure.Method(() => view.ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
+			Measure.Method(() => view.ForEach((int _, ref TestState64 _, ref TestState64_2 _) =>
+				{
+				}))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -55,7 +61,9 @@ namespace Massive.PerformanceTests
 		{
 			var view = new View<TestState64, TestState64_2, TestState64_3>(_registry);
 
-			Measure.Method(() => view.ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
+			Measure.Method(() => view.ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) =>
+				{
+				}))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

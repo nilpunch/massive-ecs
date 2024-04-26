@@ -15,9 +15,13 @@ namespace Massive.Samples.Shooter
 
 		public bool IsDestroyed => Lifetime <= 0f;
 
-		public void Initialize() { }
+		public void Initialize()
+		{
+		}
 
-		public void Reset() { }
+		public void Reset()
+		{
+		}
 
 		public void CopyTo(ref BulletState destination)
 		{

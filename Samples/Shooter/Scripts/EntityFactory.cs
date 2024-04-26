@@ -20,9 +20,13 @@ namespace Massive.Samples.Shooter
 			_nameBuilder = new StringBuilder();
 		}
 
-		public EntityFactory(EntityRoot<TState> prefab, Transform parent) : this(prefab, parent, prefab.name) { }
+		public EntityFactory(EntityRoot<TState> prefab, Transform parent) : this(prefab, parent, prefab.name)
+		{
+		}
 
-		public EntityFactory(EntityRoot<TState> prefab) : this(prefab, null, prefab.name) { }
+		public EntityFactory(EntityRoot<TState> prefab) : this(prefab, null, prefab.name)
+		{
+		}
 
 		public EntityRoot<TState> Create()
 		{

@@ -52,7 +52,7 @@ namespace Massive.Tests
 			Assert.AreEqual(3, entities.GetEntity(3).Id);
 			Assert.AreEqual(6, entities.GetEntity(6).Id);
 		}
-		
+
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
