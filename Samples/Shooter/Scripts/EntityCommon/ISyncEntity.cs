@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.Shooter
 {
-	public interface ISyncEntity<TState> : ISyncComponent<TState> where TState : unmanaged
+	public interface ISyncEntity<TState> : ISyncComponent<TState>
 	{
 		void Enable();
 		void Disable();

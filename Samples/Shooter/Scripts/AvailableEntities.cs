@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Massive.Samples.Shooter
 {
-	public class AvailableEntities<TState> where TState : unmanaged
+	public class AvailableEntities<TState>
 	{
 		private readonly Stack<EntityRoot<TState>> _pool;
 		private readonly EntityFactory<TState> _entityFactory;

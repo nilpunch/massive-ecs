@@ -158,7 +158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _simulationsPerFrame: 120
   _entitiesCapacity: 128
-  _charactersAmount: 7
+  _charactersAmount: 70
   _characterPrefab: {fileID: 6570296482868281500, guid: 1d1e085c91905db4ba8bcc88d66309b6, type: 3}
   _bulletPrefab: {fileID: 630462838858110626, guid: e335915f8dc878749bf7850aff3b5da1, type: 3}
 --- !u!4 &453373616
@@ -201,9 +201,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cooldown: 0
-  _bulletVelocity: 7
+  _bulletVelocity: 3.5
   _bulletDamage: 1
-  _bulletLifetime: 3.2
+  _bulletLifetime: 6.4
 --- !u!114 &453373619
 MonoBehaviour:
   m_ObjectHideFlags: 0

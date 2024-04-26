@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Massive.Samples.Shooter
 {
-	public class EntityRoot<TState> : MonoBehaviour, ISyncEntity<TState> where TState : unmanaged
+	public class EntityRoot<TState> : MonoBehaviour, ISyncEntity<TState>
 	{
 		private ISyncComponent<TState>[] _components;
 		private Renderer[] _renderers;

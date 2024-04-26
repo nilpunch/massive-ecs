@@ -55,12 +55,12 @@ namespace Massive.Samples.Shooter
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
-			if (_registry.CanRollbackFrames >= 0)
-			{
-				var previousFrameCount = _currentFrame;
-				_currentFrame = Mathf.Max(_currentFrame - _registry.CanRollbackFrames, 0);
-				_registry.Rollback(previousFrameCount - _currentFrame);
-			}
+			// if (_registry.CanRollbackFrames >= 0)
+			// {
+			// 	var previousFrameCount = _currentFrame;
+			// 	_currentFrame = Mathf.Max(_currentFrame - _registry.CanRollbackFrames, 0);
+			// 	_registry.Rollback(previousFrameCount - _currentFrame);
+			// }
 
 			_elapsedTime += Time.deltaTime;
 

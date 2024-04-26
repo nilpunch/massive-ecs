@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Massive.Samples.Shooter
 {
-	public class EntityFactory<TState> where TState : unmanaged
+	public class EntityFactory<TState>
 	{
 		private readonly Transform _parent;
 		private readonly EntityRoot<TState> _prefab;

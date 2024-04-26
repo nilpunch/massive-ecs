@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Massive.Samples.Shooter
 {
-	public class EntitySynchronisation<TState> where TState : unmanaged
+	public class EntitySynchronisation<TState>
 	{
 		private readonly AvailableEntities<TState> _entities;
 
