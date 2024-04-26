@@ -15,12 +15,12 @@ Provided features:
 - Zero GC allocations during runtime (after full initialization)
 - Support for components with managed data, such as arrays, strings, etc.
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
+- Full-state serialization
 - IL2CPP friendly, tested on PC | Android | WebGL
 
 Work in progress:
 
-- Full state serialization for late joins
-- User-friendly integration with Unity
+- User-friendly [integration with Unity](https://github.com/nilpunch/unity-prediction-rollback)
 
 ## Code Examples
 
