@@ -2,16 +2,13 @@
 
 namespace Massive
 {
-	/// <summary>
-	/// Type information.
-	/// </summary>
-	public static class Type<T>
+	internal static class TypeInfo<T>
 	{
 		// ReSharper disable StaticMemberInGenericType
 		public static bool HasAnyFields { get; }
 		public static bool HasNoFields { get; }
 
-		static Type()
+		static TypeInfo()
 		{
 			HasAnyFields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
 			HasNoFields = !HasAnyFields;

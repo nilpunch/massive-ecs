@@ -28,7 +28,7 @@
 
 		public ISet CreateAppropriateSet<T>()
 		{
-			if (Type<T>.HasNoFields && !_storeTagsAsComponents)
+			if (TypeInfo<T>.HasNoFields && !_storeTagsAsComponents)
 			{
 				return CreateSparseSet();
 			}
