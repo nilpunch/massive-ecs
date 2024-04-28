@@ -11,7 +11,7 @@
 			_storeTagsAsComponents = storeTagsAsComponents;
 		}
 
-		public Entities CreateIdentifiers()
+		public Entities CreateEntities()
 		{
 			return new Entities(_dataCapacity);
 		}

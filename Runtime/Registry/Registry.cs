@@ -26,7 +26,7 @@ namespace Massive
 			SetsLookup = new Dictionary<Type, ISet>();
 			AllSets = new List<ISet>();
 
-			Entities = setFactory.CreateIdentifiers();
+			Entities = setFactory.CreateEntities();
 			Entities.BeforeDestroyed += UnassignFromAllSets;
 		}
 

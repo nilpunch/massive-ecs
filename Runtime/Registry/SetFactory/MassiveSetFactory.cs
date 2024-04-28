@@ -19,7 +19,7 @@
 			_storeTagsAsComponents = storeTagsAsComponents;
 		}
 
-		public Entities CreateIdentifiers()
+		public Entities CreateEntities()
 		{
 			var massiveIdentifiers = new MassiveEntities(_dataCapacity, _framesCapacity);
 			massiveIdentifiers.SaveFrame();

@@ -2,7 +2,7 @@
 {
 	public interface ISetFactory
 	{
-		Entities CreateIdentifiers();
+		Entities CreateEntities();
 
 		ISet CreateAppropriateSet<T>();
 
