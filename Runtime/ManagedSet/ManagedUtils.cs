@@ -13,18 +13,6 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Create <see cref="Massive.ManagedDataSet{T}"/> bypassing <see cref="Massive.IManaged{T}"/> constraint.
-		/// </summary>
-		public static IDataSet<T> CreateManagedDataSet<T>(int dataCapacity = Constants.DataCapacity)
-		{
-			Type constructedType = typeof(ManagedDataSet<>)
-				.GetGenericTypeDefinition()
-				.MakeGenericType(typeof(T));
-
-			return (IDataSet<T>)Activator.CreateInstance(constructedType, dataCapacity);
-		}
-
-		/// <summary>
 		/// Create <see cref="Massive.MassiveManagedDataSet{T}"/> bypassing <see cref="Massive.IManaged{T}"/> constraint.
 		/// </summary>
 		public static IDataSet<T> CreateMassiveManagedDataSet<T>(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)

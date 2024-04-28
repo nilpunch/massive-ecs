@@ -10,7 +10,6 @@ namespace Massive
 		private static void GenericsCompilerHint()
 		{
 			// ReSharper disable ObjectCreationAsStatement
-			new ManagedDataSet<T>();
 			new MassiveManagedDataSet<T>();
 		}
 	}

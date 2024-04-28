@@ -33,14 +33,7 @@
 
 		public ISet CreateDataSet<T>()
 		{
-			if (ManagedUtils.IsManaged<T>())
-			{
-				return ManagedUtils.CreateManagedDataSet<T>(_dataCapacity);
-			}
-			else
-			{
-				return new DataSet<T>(_dataCapacity);
-			}
+			return new DataSet<T>(_dataCapacity);
 		}
 	}
 }
