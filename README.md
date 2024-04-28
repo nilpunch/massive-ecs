@@ -13,7 +13,7 @@ Provided features:
 - Fast and simple ECS without any code generation
 - Ultra-fast saving and rollbacking with cyclic buffers
 - Zero GC allocations during runtime (after full initialization)
-- Support for components with managed data, such as arrays, strings, etc.
+- Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - Full-state serialization
 - IL2CPP friendly, tested on PC | Android | WebGL
@@ -135,9 +135,9 @@ Over 1000 bullets resimulating 120 frames per one frame at 60 FPS simulation.
 
 https://github.com/nilpunch/massive/assets/69798762/45f3011b-db48-4fa9-a6cf-9cf101d11cc7
 
-That is 1000\*120 = 120.000 updates per frame, and 120.000\*60 = 7.200.000 updates per second.
+That is 1000 \* 120 = 120 000 updates per frame, and 120 000 \* 60 = 7 200 000 updates per second.
 
-Note that simulating 1000 bullets for 120 frames is **not the same** as simulating 120.000 bullets for one frame. The last case is highly parallelizable, while the resimulation case is sequential and in terms of computation can only be optimised via SIMD.
+Note that simulating 1000 bullets for 120 frames is **not the same** as simulating 120 000 bullets for one frame. The last case is highly parallelizable, while the resimulation case is sequential and in terms of computation can only be optimised via SIMD.
 
 ### Physics
 
