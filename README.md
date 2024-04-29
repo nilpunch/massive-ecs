@@ -20,7 +20,7 @@ Provided features:
 
 Work in progress:
 
-- User-friendly [integration with Unity](https://github.com/nilpunch/unity-prediction-rollback)
+- User-friendly [integration with Unity](https://github.com/nilpunch/massive-unity-integration)
 
 ## Code Examples
 
