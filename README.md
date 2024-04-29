@@ -111,7 +111,6 @@ You can use just them if you don't need rollback functionality:
 
 - `SparseSet` - data structure containing ids, similar to `HashSet<int>`
 - `DataSet<T>` - data extension for `SparseSet`, similar to `Dictionary<int, T>`
-- `ManagedDataSet<T>` - same as `DataSet<T>`, but with customizable saving
 - `Entities` - data structure to generate and reuse ids
 - `Registry` - container for entities, components and tags
 
@@ -119,7 +118,7 @@ Each type has a *Massive* counterpart with added rollback functionality:
 
 - `MassiveSparseSet` - counterpart to `SparseSet`
 - `MassiveDataSet<T>` - counterpart to `DataSet<T>`
-- `MassiveManagedDataSet<T>` - counterpart to `ManagedDataSet<T>`
+- `MassiveManagedDataSet<T>` - same as `MassiveDataSet<T>`, but with customizable saving
 - `MassiveEntities` - counterpart to `Entities`
 - `MassiveRegistry` - counterpart to `Registry`
 
