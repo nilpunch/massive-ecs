@@ -16,7 +16,7 @@ namespace Massive
 			ReuseCount = reuseCount;
 		}
 
-		public static Entity Null => new Entity();
+		public static Entity Dead => new Entity();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity Reuse(Entity entity)
