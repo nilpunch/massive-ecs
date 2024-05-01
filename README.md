@@ -2,7 +2,7 @@
 
 Made for games with deterministic prediction-rollback netcode. Currently distributed as Unity package.
 
-Prediction-rollback netcode have very stable nature, and is mainly used in fast paced online multiplayer games, such as Overwatch and Rocket League.
+Prediction-rollback netcode has very stable nature, and is mainly used in fast paced online multiplayer games, such as Overwatch and Rocket League.
 
 ## Overview
 
