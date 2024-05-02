@@ -17,10 +17,9 @@ Provided features:
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - Full-state serialization
 - IL2CPP friendly, tested on PC | Android | WebGL
+- User-friendly [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
 
-Work in progress:
-
-- User-friendly [integration with Unity](https://github.com/nilpunch/massive-unity-integration)
+Consider this list a work in progress as well as the project.
 
 ## Code Examples
 
@@ -107,7 +106,10 @@ See minimum required Unity version in the `package.json` file.
 
 ## Types Overview
 
-You can use just them if you don't need rollback functionality:
+> [!NOTE]
+> Some APIs are subject to change, but overall the architecture is stable.
+
+You can just use these types if you don't need the rollback functionality:
 
 - `SparseSet` - data structure containing ids, similar to `HashSet<int>`
 - `DataSet<T>` - data extension for `SparseSet`, similar to `Dictionary<int, T>`
@@ -125,21 +127,3 @@ Each type has a *Massive* counterpart with added rollback functionality:
 ### How it works
 
 Each *Massive* data structure contains cyclic buffer in linear memory. This allows for very fast saving and rollbacking, copying the entire data arrays at once. `MassiveRegistry` simply uses these *Massive* data structures internally, so we get the simplest possible ECS with rollbacks.
-
-## Test Samples
-
-### Shooter
-
-Over 1000 bullets resimulating 120 frames per one frame at 60 FPS simulation.
-
-https://github.com/nilpunch/massive/assets/69798762/45f3011b-db48-4fa9-a6cf-9cf101d11cc7
-
-That is 1000 \* 120 = 120 000 updates per frame, and 120 000 \* 60 = 7 200 000 updates per second.
-
-Note that simulating 1000 bullets for 120 frames is **not the same** as simulating 120 000 bullets for one frame. The last case is highly parallelizable, while the resimulation case is sequential and in terms of computation can only be optimised via SIMD.
-
-### Physics
-
-Simple rigidbody physics (just a showcase, not well optimised for resimulations because of brute force collision detection)
-
-https://github.com/nilpunch/massive/assets/69798762/53779ac1-fb6a-44ed-9e35-fb9ce30df6a5
