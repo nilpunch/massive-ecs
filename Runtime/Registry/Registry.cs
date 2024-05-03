@@ -56,6 +56,8 @@ namespace Massive
 
 			if (!SetsLookup.TryGetValue(type, out var set))
 			{
+				SetFactory<T>.CompilerHint();
+
 				set = SetFactory.CreateAppropriateSet<T>();
 				SetsLookup.Add(type, set);
 				AllSets.Add(set);
