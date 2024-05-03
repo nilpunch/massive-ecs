@@ -19,6 +19,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T> action)
 		{
+			_group.EnsureSynced();
+
 			var data = _components.Data;
 			var groupIds = _group.Ids;
 
@@ -42,6 +44,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T, TExtra> action)
 		{
+			_group.EnsureSynced();
+
 			var data = _components.Data;
 			var groupIds = _group.Ids;
 

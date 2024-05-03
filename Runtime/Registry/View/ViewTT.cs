@@ -6,8 +6,6 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct View<T1, T2>
-		
-		
 	{
 		private readonly IReadOnlyDataSet<T1> _components1;
 		private readonly IReadOnlyDataSet<T2> _components2;

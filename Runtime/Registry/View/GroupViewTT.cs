@@ -6,8 +6,6 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct GroupView<T1, T2>
-		
-		
 	{
 		private readonly IGroup _group;
 		private readonly IReadOnlyDataSet<T1> _components1;
@@ -23,6 +21,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityActionRef<T1, T2> action)
 		{
+			_group.EnsureSynced();
+
 			var data1 = _components1.Data;
 			var data2 = _components2.Data;
 			var groupIds = _group.Ids;
@@ -65,6 +65,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T1, T2, TExtra> action)
 		{
+			_group.EnsureSynced();
+
 			var data1 = _components1.Data;
 			var data2 = _components2.Data;
 			var groupIds = _group.Ids;
