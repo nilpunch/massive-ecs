@@ -7,13 +7,14 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class CyclicFrameCounter
 	{
-		private readonly int _framesCapacity;
 		private int _savedFrames;
 
 		public CyclicFrameCounter(int framesCapacity = Constants.FramesCapacity)
 		{
-			_framesCapacity = framesCapacity;
+			FramesCapacity = framesCapacity;
 		}
+
+		public int FramesCapacity { get; }
 
 		public int CurrentFrame { get; private set; }
 
@@ -22,8 +23,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			CurrentFrame = Loop(CurrentFrame + 1, _framesCapacity);
-			_savedFrames = Math.Min(_savedFrames + 1, _framesCapacity);
+			CurrentFrame = Loop(CurrentFrame + 1, FramesCapacity);
+			_savedFrames = Math.Min(_savedFrames + 1, FramesCapacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -35,7 +36,7 @@ namespace Massive
 			}
 
 			_savedFrames -= frames;
-			CurrentFrame = LoopNegative(CurrentFrame - frames, _framesCapacity);
+			CurrentFrame = LoopNegative(CurrentFrame - frames, FramesCapacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

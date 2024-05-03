@@ -1,6 +1,6 @@
 {
   "name": "massive-ecs",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "displayName": "Massive ECS",
   "unity": "2021.2",
   "description": "Sparse set ECS library made for prediction-rollback netcode.",
@@ -8,22 +8,5 @@
   {
     "com.unity.test-framework.performance": "3.0.3"
   },
-  "samples": [
-    {
-      "displayName": "Shooter",
-      "description": "More real world scenario.",
-      "path": "Samples/Shooter"
-    },
-    {
-      "displayName": "Simple Physics",
-      "description": "A simple custom physics with bruteforce collisions and some friction.",
-      "path": "Samples/Physics"
-    },
-    {
-      "displayName": "Benchmark",
-      "description": "Basic performance monitoring.",
-      "path": "Samples/Benchmark"
-    }
-  ],
   "author": "https://github.com/nilpunch"
 }

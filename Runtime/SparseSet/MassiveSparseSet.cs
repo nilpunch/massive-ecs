@@ -65,7 +65,7 @@ namespace Massive
 		{
 			base.ResizeDense(capacity);
 
-			for (int i = 0; i < DenseCapacity; i++)
+			for (int i = 0; i < _cyclicFrameCounter.FramesCapacity; i++)
 			{
 				Array.Resize(ref _denseByFrames[i], capacity);
 			}
@@ -76,7 +76,7 @@ namespace Massive
 		{
 			base.ResizeSparse(capacity);
 
-			for (int i = 0; i < SparseCapacity; i++)
+			for (int i = 0; i < _cyclicFrameCounter.FramesCapacity; i++)
 			{
 				Array.Resize(ref _sparseByFrames[i], capacity);
 			}
