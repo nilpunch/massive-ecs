@@ -6,23 +6,21 @@ namespace Massive
 	{
 		Entities CreateEntities();
 
-		ISet CreateAppropriateSet<T>() => AOT<T>.GenerateVirtualGenerics();
+		ISet CreateAppropriateSet<T>() => GenerateVirtualGenericsForAOT<T>();
 
-		ISet CreateSparseSet();
-
-		ISet CreateDataSet<T>();
-
-		private static class AOT<T>
+		/// <summary>
+		/// This is a hint for IL2CPP to compile
+		/// <see cref="CreateAppropriateSet{T}"/> for both <see cref="NormalSetFactory"/> and <see cref="MassiveSetFactory"/>.
+		/// Compiler by itself can't figure out which generics need to be compiled.
+		/// </summary>
+		private static ISet GenerateVirtualGenericsForAOT<T>()
 		{
-			public static ISet GenerateVirtualGenerics()
-			{
-				// ReSharper disable ReturnValueOfPureMethodIsNotUsed
-				new NormalSetFactory().CreateAppropriateSet<T>();
-				new MassiveSetFactory().CreateAppropriateSet<T>();
+			// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+			new NormalSetFactory().CreateAppropriateSet<T>();
+			new MassiveSetFactory().CreateAppropriateSet<T>();
 
-				// Just in case
-				throw new NotSupportedException($"The default implementation of {nameof(CreateAppropriateSet)}<T>() is forbidden.");
-			}
+			// Just in case 
+			throw new NotSupportedException($"The default implementation of {nameof(CreateAppropriateSet)}<T>() is forbidden.");
 		}
 	}
 }
