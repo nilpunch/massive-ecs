@@ -4,15 +4,10 @@ namespace Massive
 	{
 		void CopyTo(ref T other);
 
-		/// <summary>
-		/// This is a hint for IL2CPP to compile
-		/// <see cref="MassiveManagedDataSet{T}"/> for each <see cref="IManaged{T}"/> implementation.
-		/// This will allow to construct <see cref="MassiveManagedDataSet{T}"/> using reflection.
-		/// </summary>
+		// This is a hint for IL2CPP
 		private static void ReflectionSupportForAOT()
 		{
-			// ReSharper disable ObjectCreationAsStatement
-			new MassiveManagedDataSet<T>();
+			_ = new MassiveManagedDataSet<T>();
 		}
 	}
 }
