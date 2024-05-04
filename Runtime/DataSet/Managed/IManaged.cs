@@ -4,10 +4,7 @@ namespace Massive
 	{
 		void CopyTo(ref T other);
 
-#if UNITY_2020_3_OR_NEWER
-		[UnityEngine.Scripting.Preserve]
-#endif
-		private static void GenericsCompilerHint()
+		private static void ReflectionSupportForAOT()
 		{
 			// ReSharper disable ObjectCreationAsStatement
 			new MassiveManagedDataSet<T>();

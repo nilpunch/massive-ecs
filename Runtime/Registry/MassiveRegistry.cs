@@ -8,8 +8,8 @@ namespace Massive
 		private readonly MassiveEntities _massiveEntityEntities;
 		private readonly MassiveGroupsController _massiveGroups;
 
-		public MassiveRegistry(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeTagsAsComponents = false)
-			: base(new MassiveGroupsController(dataCapacity, framesCapacity), new MassiveSetFactory(dataCapacity, framesCapacity, storeTagsAsComponents))
+		public MassiveRegistry(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeEmptyTypesAsDataSets = false)
+			: base(new MassiveGroupsController(dataCapacity, framesCapacity), new MassiveSetFactory(dataCapacity, framesCapacity, storeEmptyTypesAsDataSets))
 		{
 			// Fetch instances from base
 			_massiveEntityEntities = (MassiveEntities)Entities;

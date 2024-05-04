@@ -15,7 +15,9 @@
 		/// <summary>
 		/// Restores data from some frames ago.<br/>
 		/// </summary>
-		/// <param name="frames">Must be non-negative and not exceed <see cref="IMassive.CanRollbackFrames"/>.</param>
+		/// <param name="frames">
+		/// Must be non-negative and not exceed <see cref="IMassive.CanRollbackFrames"/>.
+		/// </param>
 		void Rollback(int frames);
 	}
 }

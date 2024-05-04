@@ -96,7 +96,7 @@ namespace Massive
 		}
 
 		protected virtual IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> include,
-			IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = 100)
+			IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = Constants.DataCapacity)
 		{
 			return new NonOwningGroup(include, exclude, dataCapacity);
 		}

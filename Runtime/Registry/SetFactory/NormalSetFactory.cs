@@ -3,12 +3,12 @@
 	public class NormalSetFactory : ISetFactory
 	{
 		private readonly int _dataCapacity;
-		private readonly bool _storeTagsAsComponents;
+		private readonly bool _storeEmptyTypesAsDataSets;
 
-		public NormalSetFactory(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
+		public NormalSetFactory(int dataCapacity = Constants.DataCapacity, bool storeEmptyTypesAsDataSets = false)
 		{
 			_dataCapacity = dataCapacity;
-			_storeTagsAsComponents = storeTagsAsComponents;
+			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 		}
 
 		public Entities CreateEntities()
@@ -18,7 +18,7 @@
 
 		public ISet CreateAppropriateSet<T>()
 		{
-			if (TypeInfo<T>.HasNoFields && !_storeTagsAsComponents)
+			if (TypeInfo<T>.HasNoFields && !_storeEmptyTypesAsDataSets)
 			{
 				return CreateSparseSet();
 			}

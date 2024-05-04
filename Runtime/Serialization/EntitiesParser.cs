@@ -6,17 +6,17 @@ namespace Massive.Serialization
 {
 	public class EntitiesParser : IRegistryParser
 	{
-		private static readonly byte[] _buffer4Bytes = new byte[4];
+		private static readonly byte[] s_buffer4Bytes = new byte[4];
 
 		public unsafe void Write(IRegistry registry, Stream stream)
 		{
 			var entities = registry.Entities;
 
-			BitConverter.TryWriteBytes(_buffer4Bytes, entities.Count);
-			stream.Write(_buffer4Bytes);
+			BitConverter.TryWriteBytes(s_buffer4Bytes, entities.Count);
+			stream.Write(s_buffer4Bytes);
 
-			BitConverter.TryWriteBytes(_buffer4Bytes, entities.MaxId);
-			stream.Write(_buffer4Bytes);
+			BitConverter.TryWriteBytes(s_buffer4Bytes, entities.MaxId);
+			stream.Write(s_buffer4Bytes);
 
 			fixed (Entity* dense = entities.Dense)
 			{
@@ -33,11 +33,11 @@ namespace Massive.Serialization
 		{
 			var entities = registry.Entities;
 
-			stream.Read(_buffer4Bytes);
-			entities.Count = BitConverter.ToInt32(_buffer4Bytes);
+			stream.Read(s_buffer4Bytes);
+			entities.Count = BitConverter.ToInt32(s_buffer4Bytes);
 
-			stream.Read(_buffer4Bytes);
-			entities.MaxId = BitConverter.ToInt32(_buffer4Bytes);
+			stream.Read(s_buffer4Bytes);
+			entities.MaxId = BitConverter.ToInt32(s_buffer4Bytes);
 
 			entities.ResizeDense(entities.MaxId);
 			entities.ResizeSparse(entities.MaxId);

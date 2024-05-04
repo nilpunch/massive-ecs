@@ -14,8 +14,8 @@ namespace Massive
 		public IGroupsController Groups { get; }
 		public Entities Entities { get; }
 
-		public Registry(int dataCapacity = Constants.DataCapacity, bool storeTagsAsComponents = false)
-			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeTagsAsComponents))
+		public Registry(int dataCapacity = Constants.DataCapacity, bool storeEmptyTypesAsDataSets = false)
+			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeEmptyTypesAsDataSets))
 		{
 		}
 
@@ -56,8 +56,6 @@ namespace Massive
 
 			if (!SetsLookup.TryGetValue(type, out var set))
 			{
-				SetFactory<T>.CompilerHint();
-
 				set = SetFactory.CreateAppropriateSet<T>();
 				SetsLookup.Add(type, set);
 				AllSets.Add(set);

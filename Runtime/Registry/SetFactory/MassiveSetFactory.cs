@@ -4,19 +4,19 @@
 	/// Factory for data structures with rollbacks.
 	/// </summary>
 	/// <remarks>
-	/// Created structures have first empty frame saved so that you can rollback to it.
+	/// Created massives have first frame saved so that you can rollback to it.
 	/// </remarks>
 	public class MassiveSetFactory : ISetFactory
 	{
 		private readonly int _dataCapacity;
 		private readonly int _framesCapacity;
-		private readonly bool _storeTagsAsComponents;
+		private readonly bool _storeEmptyTypesAsDataSets;
 
-		public MassiveSetFactory(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeTagsAsComponents = false)
+		public MassiveSetFactory(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeEmptyTypesAsDataSets = false)
 		{
 			_dataCapacity = dataCapacity;
 			_framesCapacity = framesCapacity;
-			_storeTagsAsComponents = storeTagsAsComponents;
+			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 		}
 
 		public Entities CreateEntities()
@@ -28,7 +28,7 @@
 
 		public ISet CreateAppropriateSet<T>()
 		{
-			if (TypeInfo<T>.HasNoFields && !_storeTagsAsComponents)
+			if (TypeInfo<T>.HasNoFields && !_storeEmptyTypesAsDataSets)
 			{
 				return CreateSparseSet();
 			}
