@@ -21,7 +21,7 @@ namespace Massive
 				new MassiveSetFactory().CreateAppropriateSet<T>();
 
 				// Just in case
-				throw new NotSupportedException($"The default implementation of {nameof(ISetFactory)}.{nameof(CreateAppropriateSet)}<T>() is forbidden.");
+				throw new NotSupportedException($"The default implementation of {nameof(CreateAppropriateSet)}<T>() is forbidden.");
 			}
 		}
 	}
