@@ -16,8 +16,8 @@ Provided features:
 - Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - Full-state serialization
-- IL2CPP friendly, tested on PC | Android | WebGL
-- User-friendly [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
+- IL2CPP friendly, tested with high stripping level on PC | Android | WebGL
+- [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
 
 Consider this list a work in progress as well as the project.
 
