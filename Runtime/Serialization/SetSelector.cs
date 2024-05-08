@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Massive.Serialization
 {
 	/// <summary>
-	/// Helper delegate to select sets from any registry.
+	/// Helper to select sets from any registry.
 	/// </summary>
 	public delegate IReadOnlyList<IReadOnlySet> SetSelector(IRegistry registry);
 

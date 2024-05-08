@@ -1,4 +1,4 @@
-﻿namespace Massive.Samples
+﻿namespace Massive.Samples.Simple
 {
 	struct Position
 	{
@@ -48,24 +48,19 @@
 
 		static void Main()
 		{
-			var registry = new MassiveRegistry();
+			var registry = new Registry();
 
 			for (int i = 0; i < 10; ++i)
 			{
 				var entity = registry.Create();
-				registry.Assign<Position>(entity, new Position() { X = i * 10f });
+				registry.Assign(entity, new Position() { X = i * 10f });
 				if (i % 2 == 0)
 				{
-					registry.Assign<Velocity>(entity, new Velocity() { Magnitude = i * 10f });
+					registry.Assign(entity, new Velocity() { Magnitude = i * 10f });
 				}
 			}
 
-			registry.SaveFrame();
-
 			Update(registry, 1f / 60f);
-
-			// Restore full state up to the last SaveFrame() call
-			registry.Rollback(0);
 		}
 	}
 }
