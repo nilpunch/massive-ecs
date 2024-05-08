@@ -19,13 +19,6 @@
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 		}
 
-		public Entities CreateEntities()
-		{
-			var massiveIdentifiers = new MassiveEntities(_dataCapacity, _framesCapacity);
-			massiveIdentifiers.SaveFrame();
-			return massiveIdentifiers;
-		}
-
 		public ISet CreateAppropriateSet<T>()
 		{
 			if (TypeInfo<T>.HasNoFields && !_storeEmptyTypesAsDataSets)
@@ -36,14 +29,14 @@
 			return CreateDataSet<T>();
 		}
 
-		public ISet CreateSparseSet()
+		private ISet CreateSparseSet()
 		{
 			var massiveSparseSet = new MassiveSparseSet(_dataCapacity, _framesCapacity);
 			massiveSparseSet.SaveFrame();
 			return massiveSparseSet;
 		}
 
-		public ISet CreateDataSet<T>()
+		private ISet CreateDataSet<T>()
 		{
 			if (ManagedUtils.IsManaged<T>())
 			{

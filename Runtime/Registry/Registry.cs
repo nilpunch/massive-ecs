@@ -15,18 +15,18 @@ namespace Massive
 		public Entities Entities { get; }
 
 		public Registry(int dataCapacity = Constants.DataCapacity, bool storeEmptyTypesAsDataSets = false)
-			: this(new GroupsController(dataCapacity), new NormalSetFactory(dataCapacity, storeEmptyTypesAsDataSets))
+			: this(new GroupsController(dataCapacity), new Entities(dataCapacity), new NormalSetFactory(dataCapacity, storeEmptyTypesAsDataSets))
 		{
 		}
 
-		protected Registry(IGroupsController groups, ISetFactory setFactory)
+		protected Registry(IGroupsController groups, Entities entities, ISetFactory setFactory)
 		{
 			Groups = groups;
+			Entities = entities;
 			SetFactory = setFactory;
 			SetsLookup = new Dictionary<Type, ISet>();
 			AllSets = new List<ISet>();
 
-			Entities = setFactory.CreateEntities();
 			Entities.BeforeDestroyed += UnassignFromAllSets;
 		}
 

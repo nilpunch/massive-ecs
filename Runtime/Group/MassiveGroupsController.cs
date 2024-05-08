@@ -5,43 +5,46 @@ namespace Massive
 {
 	public class MassiveGroupsController : GroupsController, IMassive
 	{
-		private readonly int _framesCapacity;
-		private int _savedFrames;
+		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
 		public MassiveGroupsController(int nonOwningDataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(nonOwningDataCapacity)
 		{
-			_framesCapacity = framesCapacity;
+			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 		}
 
-		public int CanRollbackFrames => _savedFrames;
+		public int CanRollbackFrames => _cyclicFrameCounter.CanRollbackFrames;
 
 		public void SaveFrame()
 		{
-			_savedFrames += Math.Min(_savedFrames + 1, _framesCapacity);
+			_cyclicFrameCounter.SaveFrame();
 
-			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-			foreach (IMassive massive in AllGroups)
+			foreach (var group in AllGroups)
 			{
-				massive.SaveFrame();
+				if (group is IMassive massive)
+				{
+					massive.SaveFrame();
+				}
 			}
 		}
 
 		public void Rollback(int frames)
 		{
-			_savedFrames -= frames;
+			_cyclicFrameCounter.Rollback(frames);
 
-			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-			foreach (IMassive massive in AllGroups)
+			foreach (var group in AllGroups)
 			{
-				massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
+				if (group is IMassive massive)
+				{
+					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
+				}
 			}
 		}
 
 		protected override IOwningGroup CreateOwningGroup(IReadOnlyList<ISet> owned,
 			IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
 		{
-			var massiveOwningGroup = new MassiveOwningGroup(owned, include, exclude, _framesCapacity);
+			var massiveOwningGroup = new MassiveOwningGroup(owned, include, exclude, _cyclicFrameCounter.FramesCapacity);
 			massiveOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
 			return massiveOwningGroup;
 		}
@@ -49,7 +52,7 @@ namespace Massive
 		protected override IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> include,
 			IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = Constants.DataCapacity)
 		{
-			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, dataCapacity, _framesCapacity);
+			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, dataCapacity, _cyclicFrameCounter.FramesCapacity);
 			massiveNonOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
 			return massiveNonOwningGroup;
 		}

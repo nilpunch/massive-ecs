@@ -8,12 +8,12 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class MassiveEntities : Entities, IMassive
 	{
+		private readonly CyclicFrameCounter _cyclicFrameCounter;
+
 		private readonly Entity[][] _denseByFrames;
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _maxIdByFrames;
-		private readonly int[] _aliveCountByFrames;
-
-		private readonly CyclicFrameCounter _cyclicFrameCounter;
+		private readonly int[] _countByFrames;
 
 		public MassiveEntities(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
 			: base(dataCapacity)
@@ -23,7 +23,7 @@ namespace Massive
 			_denseByFrames = new Entity[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_maxIdByFrames = new int[framesCapacity];
-			_aliveCountByFrames = new int[framesCapacity];
+			_countByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
@@ -39,14 +39,14 @@ namespace Massive
 		{
 			_cyclicFrameCounter.SaveFrame();
 
-			int currentAliveCount = Count;
-			int currentMaxId = MaxId;
 			int currentFrame = _cyclicFrameCounter.CurrentFrame;
+			int currentCount = Count;
+			int currentMaxId = MaxId;
 
 			// Copy everything from current state to current frame
 			Array.Copy(Dense, 0, _denseByFrames[currentFrame], 0, currentMaxId);
 			Array.Copy(Sparse, 0, _sparseByFrames[currentFrame], 0, currentMaxId);
-			_aliveCountByFrames[currentFrame] = currentAliveCount;
+			_countByFrames[currentFrame] = currentCount;
 			_maxIdByFrames[currentFrame] = currentMaxId;
 		}
 
@@ -57,12 +57,12 @@ namespace Massive
 
 			// Copy everything from rollback frame to current state
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
-			int rollbackAliveCount = _aliveCountByFrames[rollbackFrame];
+			int rollbackCount = _countByFrames[rollbackFrame];
 			int rollbackMaxId = _maxIdByFrames[rollbackFrame];
 
 			Array.Copy(_denseByFrames[rollbackFrame], 0, Dense, 0, rollbackMaxId);
 			Array.Copy(_sparseByFrames[rollbackFrame], 0, Sparse, 0, rollbackMaxId);
-			Count = rollbackAliveCount;
+			Count = rollbackCount;
 			MaxId = rollbackMaxId;
 		}
 

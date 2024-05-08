@@ -9,7 +9,7 @@ namespace Massive
 		private readonly MassiveGroupsController _massiveGroups;
 
 		public MassiveRegistry(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeEmptyTypesAsDataSets = false)
-			: base(new MassiveGroupsController(dataCapacity, framesCapacity), new MassiveSetFactory(dataCapacity, framesCapacity, storeEmptyTypesAsDataSets))
+			: base(new MassiveGroupsController(dataCapacity, framesCapacity), new MassiveEntities(dataCapacity, framesCapacity), new MassiveSetFactory(dataCapacity, framesCapacity, storeEmptyTypesAsDataSets))
 		{
 			// Fetch instances from base
 			_massiveEntityEntities = (MassiveEntities)Entities;
@@ -24,23 +24,27 @@ namespace Massive
 			_massiveEntityEntities.SaveFrame();
 			_massiveGroups.SaveFrame();
 
-			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-			foreach (IMassive massive in AllSets)
+			foreach (var set in AllSets)
 			{
-				massive.SaveFrame();
+				if (set is IMassive massive)
+				{
+					massive.SaveFrame();
+				}
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			_massiveEntityEntities.Rollback(frames);
-			_massiveGroups.Rollback(frames);
+			_massiveEntityEntities.Rollback(Math.Min(frames, _massiveEntityEntities.CanRollbackFrames));
+			_massiveGroups.Rollback(Math.Min(frames, _massiveGroups.CanRollbackFrames));
 
-			// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-			foreach (IMassive massive in AllSets)
+			foreach (var set in AllSets)
 			{
-				massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
+				if (set is IMassive massive)
+				{
+					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
+				}
 			}
 		}
 	}

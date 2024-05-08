@@ -11,11 +11,6 @@
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 		}
 
-		public Entities CreateEntities()
-		{
-			return new Entities(_dataCapacity);
-		}
-
 		public ISet CreateAppropriateSet<T>()
 		{
 			if (TypeInfo<T>.HasNoFields && !_storeEmptyTypesAsDataSets)
@@ -26,12 +21,12 @@
 			return CreateDataSet<T>();
 		}
 
-		public ISet CreateSparseSet()
+		private ISet CreateSparseSet()
 		{
 			return new SparseSet(_dataCapacity);
 		}
 
-		public ISet CreateDataSet<T>()
+		private ISet CreateDataSet<T>()
 		{
 			return new DataSet<T>(_dataCapacity);
 		}

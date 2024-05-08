@@ -5,7 +5,7 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for any <see cref="Massive.ISet"/>.
+	/// Data extension for <see cref="Massive.SparseSet"/>.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
