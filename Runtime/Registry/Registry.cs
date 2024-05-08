@@ -12,14 +12,14 @@ namespace Massive
 		protected List<ISet> AllSets { get; }
 
 		public IGroupsController Groups { get; }
-		public Entities Entities { get; }
+		public IEntities Entities { get; }
 
 		public Registry(int dataCapacity = Constants.DataCapacity, bool storeEmptyTypesAsDataSets = false)
 			: this(new GroupsController(dataCapacity), new Entities(dataCapacity), new NormalSetFactory(dataCapacity, storeEmptyTypesAsDataSets))
 		{
 		}
 
-		protected Registry(IGroupsController groups, Entities entities, ISetFactory setFactory)
+		protected Registry(IGroupsController groups, IEntities entities, ISetFactory setFactory)
 		{
 			Groups = groups;
 			Entities = entities;

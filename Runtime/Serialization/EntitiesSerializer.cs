@@ -10,7 +10,7 @@ namespace Massive.Serialization
 
 		public unsafe void Serialize(IRegistry registry, Stream stream)
 		{
-			var entities = registry.Entities;
+			var entities = (Entities)registry.Entities;
 
 			BitConverter.TryWriteBytes(s_buffer4Bytes, entities.Count);
 			stream.Write(s_buffer4Bytes);
@@ -31,7 +31,7 @@ namespace Massive.Serialization
 
 		public unsafe void Deserialize(IRegistry registry, Stream stream)
 		{
-			var entities = registry.Entities;
+			var entities = (Entities)registry.Entities;
 
 			stream.Read(s_buffer4Bytes);
 			entities.Count = BitConverter.ToInt32(s_buffer4Bytes);

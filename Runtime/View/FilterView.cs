@@ -8,7 +8,7 @@ namespace Massive
 	public readonly struct FilterView
 	{
 		private readonly IFilter _filter;
-		private readonly Entities _entities;
+		private readonly IEntities _entities;
 
 		public FilterView(IRegistry registry, IFilter filter = null)
 		{

@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct View
 	{
-		private readonly Entities _entities;
+		private readonly IEntities _entities;
 
 		public View(IRegistry registry)
 		{

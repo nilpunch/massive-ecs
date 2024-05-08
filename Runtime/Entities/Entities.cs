@@ -7,7 +7,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Entities
+	public class Entities : IEntities
 	{
 		private Entity[] _dense;
 		private int[] _sparse;
@@ -58,38 +58,6 @@ namespace Massive
 
 			AfterCreated?.Invoke(entity);
 			return entity;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Destroy(Entity entity)
-		{
-			BeforeDestroyed?.Invoke(entity.Id);
-
-			// If element is not alive, nothing to be done
-			if (entity.Id < 0 || entity.Id >= MaxId)
-			{
-				return;
-			}
-			var dense = Sparse[entity.Id];
-			if (dense >= Count || Dense[dense] != entity)
-			{
-				return;
-			}
-
-			int count = Count;
-			Count -= 1;
-
-			// If dense is the last used element, decreasing alive count and apply reuse is enough
-			if (dense == count - 1)
-			{
-				Dense[dense] = Entity.Reuse(entity);
-				return;
-			}
-
-			// Swap dense with last element
-			int lastDense = count - 1;
-			AssignEntity(Dense[lastDense], dense);
-			AssignEntity(Entity.Reuse(entity), lastDense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -4,7 +4,7 @@
 	{
 		IGroupsController Groups { get; }
 
-		Entities Entities { get; }
+		IEntities Entities { get; }
 
 		IDataSet<T> Components<T>();
 
