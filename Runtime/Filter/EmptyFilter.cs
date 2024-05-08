@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Massive
 {
@@ -6,8 +7,8 @@ namespace Massive
 	{
 		public static EmptyFilter Instance { get; } = new EmptyFilter();
 
-		public IReadOnlySet[] Include => Array.Empty<IReadOnlySet>();
-		public IReadOnlySet[] Exclude => Array.Empty<IReadOnlySet>();
+		public IReadOnlyList<IReadOnlySet> Include => Array.Empty<IReadOnlySet>();
+		public IReadOnlyList<IReadOnlySet> Exclude => Array.Empty<IReadOnlySet>();
 
 		private EmptyFilter()
 		{

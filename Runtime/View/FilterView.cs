@@ -19,7 +19,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach(EntityAction action)
 		{
-			if (_filter.Include.Length == 0)
+			if (_filter.Include.Count == 0)
 			{
 				var entities = _entities.Alive;
 
@@ -50,7 +50,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionExtra<TExtra> action)
 		{
-			if (_filter.Include.Length == 0)
+			if (_filter.Include.Count == 0)
 			{
 				var entities = _entities.Alive;
 

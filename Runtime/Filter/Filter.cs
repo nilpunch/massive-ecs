@@ -1,18 +1,19 @@
 using System;
+using System.Collections.Generic;
 
 namespace Massive
 {
 	public class Filter : IFilter
 	{
-		public IReadOnlySet[] Include { get; }
-		public IReadOnlySet[] Exclude { get; }
+		public IReadOnlyList<IReadOnlySet> Include { get; }
+		public IReadOnlyList<IReadOnlySet> Exclude { get; }
 
-		public Filter(IReadOnlySet[] include = null, IReadOnlySet[] exclude = null)
+		public Filter(IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
 		{
 			Include = include ?? Array.Empty<IReadOnlySet>();
 			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
 
-			for (int i = 0; i < Exclude.Length; i++)
+			for (int i = 0; i < Exclude.Count; i++)
 			{
 				if (Include.Contains(Exclude[i]))
 				{
@@ -23,7 +24,7 @@ namespace Massive
 
 		public bool ContainsId(int id)
 		{
-			for (int i = 0; i < Include.Length; i++)
+			for (int i = 0; i < Include.Count; i++)
 			{
 				if (!Include[i].IsAssigned(id))
 				{
@@ -31,7 +32,7 @@ namespace Massive
 				}
 			}
 
-			for (int i = 0; i < Exclude.Length; i++)
+			for (int i = 0; i < Exclude.Count; i++)
 			{
 				if (Exclude[i].IsAssigned(id))
 				{

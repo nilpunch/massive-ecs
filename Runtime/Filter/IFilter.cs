@@ -1,9 +1,11 @@
+using System.Collections.Generic;
+
 namespace Massive
 {
 	public interface IFilter
 	{
-		IReadOnlySet[] Include { get; }
-		IReadOnlySet[] Exclude { get; }
+		IReadOnlyList<IReadOnlySet> Include { get; }
+		IReadOnlyList<IReadOnlySet> Exclude { get; }
 
 		bool ContainsId(int id);
 	}

@@ -6,15 +6,15 @@ namespace Massive
 {
 	public class OwningGroup : IOwningGroup
 	{
-		private IReadOnlySet[] OwnedPlusIncluded { get; }
+		private IReadOnlyList<IReadOnlySet> OwnedPlusIncluded { get; }
 
-		private IReadOnlySet[] OwnedMinusFirstPlusIncluded { get; }
+		private IReadOnlyList<IReadOnlySet> OwnedMinusFirstPlusIncluded { get; }
 
-		private ISet[] Owned { get; }
+		private IReadOnlyList<ISet> Owned { get; }
 
-		private IReadOnlySet[] Include { get; }
+		private IReadOnlyList<IReadOnlySet> Include { get; }
 
-		private IReadOnlySet[] Exclude { get; }
+		private IReadOnlyList<IReadOnlySet> Exclude { get; }
 
 		protected int GroupLength { get; set; }
 
@@ -118,7 +118,7 @@ namespace Massive
 
 		private void SwapEntry(int id, int swapDense)
 		{
-			for (var i = 0; i < Owned.Length; i++)
+			for (var i = 0; i < Owned.Count; i++)
 			{
 				var set = Owned[i];
 				set.SwapDense(set.GetDense(id), swapDense);

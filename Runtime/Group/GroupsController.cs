@@ -5,15 +5,20 @@ namespace Massive
 {
 	public class GroupsController : IGroupsController
 	{
-		private readonly int _nonOwningDataCapacity;
+		private readonly IGroupFactory _groupFactory;
 		private readonly Dictionary<ISet, IOwningGroup> _ownedBase = new Dictionary<ISet, IOwningGroup>();
 		private readonly Dictionary<int, IGroup> _groupsLookup = new Dictionary<int, IGroup>();
 
 		protected List<IGroup> AllGroups { get; } = new List<IGroup>();
 
 		public GroupsController(int nonOwningDataCapacity = Constants.DataCapacity)
+			: this(new NormalGroupFactory(nonOwningDataCapacity))
 		{
-			_nonOwningDataCapacity = nonOwningDataCapacity;
+		}
+
+		protected GroupsController(IGroupFactory groupFactory)
+		{
+			_groupFactory = groupFactory;
 		}
 
 		public IGroup EnsureGroup(IReadOnlyList<ISet> owned = null, IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
@@ -37,14 +42,14 @@ namespace Massive
 			// If non-owning, then just create new one
 			if (owned.Count == 0)
 			{
-				var nonOwningGroup = CreateNonOwningGroup(include, exclude, _nonOwningDataCapacity);
+				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude);
 				return RegisterAndSync(nonOwningGroup, groupCode);
 			}
 
 			// If there is no conflicts, just create new owning group
 			if (!_ownedBase.TryGetValue(owned[0], out var baseGroup))
 			{
-				var owningGroup = CreateOwningGroup(owned, include, exclude);
+				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
 				foreach (var set in owned)
 				{
 					_ownedBase.Add(set, owningGroup);
@@ -69,7 +74,7 @@ namespace Massive
 					throw new Exception("Conflicting groups.");
 				}
 
-				var owningGroup = CreateOwningGroup(owned, include, exclude);
+				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
 				baseGroupNode.AddGroupAfterThis(owningGroup);
 				return RegisterAndSync(owningGroup, groupCode);
 			}
@@ -77,7 +82,7 @@ namespace Massive
 			// Try to create group as base
 			if (baseGroup.ExtendsGroup(owned, include, exclude))
 			{
-				var owningGroup = CreateOwningGroup(owned, include, exclude);
+				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
 				baseGroup.AddGroupBeforeThis(owningGroup);
 				foreach (var set in owned)
 				{
@@ -87,18 +92,6 @@ namespace Massive
 			}
 
 			throw new Exception("Conflicting groups.");
-		}
-
-		protected virtual IOwningGroup CreateOwningGroup(IReadOnlyList<ISet> owned,
-			IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
-		{
-			return new OwningGroup(owned, include, exclude);
-		}
-
-		protected virtual IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> include,
-			IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = Constants.DataCapacity)
-		{
-			return new NonOwningGroup(include, exclude, dataCapacity);
 		}
 
 		private IGroup RegisterAndSync(IGroup group, int groupCode)

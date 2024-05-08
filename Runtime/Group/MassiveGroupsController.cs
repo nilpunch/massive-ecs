@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Massive
 {
@@ -8,7 +7,7 @@ namespace Massive
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
 		public MassiveGroupsController(int nonOwningDataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
-			: base(nonOwningDataCapacity)
+			: base(new MassiveGroupFactory(nonOwningDataCapacity, framesCapacity))
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 		}
@@ -39,22 +38,6 @@ namespace Massive
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}
 			}
-		}
-
-		protected override IOwningGroup CreateOwningGroup(IReadOnlyList<ISet> owned,
-			IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
-		{
-			var massiveOwningGroup = new MassiveOwningGroup(owned, include, exclude, _cyclicFrameCounter.FramesCapacity);
-			massiveOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
-			return massiveOwningGroup;
-		}
-
-		protected override IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> include,
-			IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = Constants.DataCapacity)
-		{
-			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, dataCapacity, _cyclicFrameCounter.FramesCapacity);
-			massiveNonOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
-			return massiveNonOwningGroup;
 		}
 	}
 }
