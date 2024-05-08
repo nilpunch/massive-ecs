@@ -4,11 +4,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Massive.Serialization
 {
-	public class DefaultDataSetParser<T> : IDataSetParser<T>
+	public class DefaultDataSetSerializer<T> : IDataSetSerializer<T>
 	{
 		private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
 
-		public void Write(IDataSet<T> set, Stream stream)
+		public void Write(DataSet<T> set, Stream stream)
 		{
 			var data = new T[set.Count];
 
@@ -17,7 +17,7 @@ namespace Massive.Serialization
 			_binaryFormatter.Serialize(stream, data);
 		}
 
-		public void Read(IDataSet<T> set, Stream stream)
+		public void Read(DataSet<T> set, Stream stream)
 		{
 			var data = (T[])_binaryFormatter.Deserialize(stream);
 
