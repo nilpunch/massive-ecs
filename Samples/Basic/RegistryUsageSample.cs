@@ -1,66 +1,32 @@
-﻿namespace Massive.Samples.Simple
+namespace Massive.Samples.Basic
 {
-	struct Position
-	{
-		public float X;
-		public float Y;
-	}
-
-	struct Velocity
-	{
-		public float Magnitude;
-	}
-
 	class RegistryUsageSample
 	{
-		static void Update(IRegistry registry, float deltaTime)
-		{
-			var view = new View<Position, Velocity>(registry);
-
-			// Iterate using view
-			view.ForEach((int entity, ref Position position, ref Velocity velocity) =>
-			{
-				position.Y += velocity.Magnitude * deltaTime;
-
-				if (position.Y > 5f)
-				{
-					// Create and destroy entities during iteration
-					registry.Destroy(entity);
-				}
-			});
-
-			// Pass extra arguments to avoid boxing
-			view.ForEachExtra((registry, deltaTime),
-				(int entity, ref Position position, ref Velocity velocity,
-					(IRegistry Registry, float DeltaTime) passedArguments) =>
-				{
-					// ...
-				});
-
-			// Iterate manually over packed data, using Span<T>
-			var velocities = registry.Components<Velocity>().Data;
-			for (int i = 0; i < velocities.Length; ++i)
-			{
-				ref var velocity = ref velocities[i];
-				// ...
-			}
-		}
-
 		static void Main()
 		{
 			var registry = new Registry();
 
-			for (int i = 0; i < 10; ++i)
+			var entity1 = registry.CreateEntity(); // Creates unique entity
+
+			var entity2 = registry.CreateEntity<int>(); // Creates unique entity with a component
+
+			registry.Assign<int>(entity1); // Assigns component with default value to an entity
+
+			registry.Assign(entity2, "String component"); // Assigns component with specific value
+			
+			registry.Assign(entity1, 10); // Overrides previously assigned component value
+			
+			if (registry.Has<string>(entity2)) // Checks whether an entity has such a component
 			{
-				var entity = registry.Create();
-				registry.Assign(entity, new Position() { X = i * 10f });
-				if (i % 2 == 0)
-				{
-					registry.Assign(entity, new Velocity() { Magnitude = i * 10f });
-				}
+				registry.Unassign<string>(entity2); // Unassigns a component from this entity
 			}
 
-			Update(registry, 1f / 60f);
+			ref int value = ref registry.Get<int>(entity1); // Returns ref to component value
+
+			if (registry.IsAlive(entity1)) // Checks whether an entity is alive
+			{
+				registry.Destroy(entity1); // Destroys this entity
+			}
 		}
 	}
 }
