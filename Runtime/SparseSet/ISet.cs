@@ -9,9 +9,5 @@ namespace Massive
 		void Clear();
 
 		void SwapDense(int denseA, int denseB);
-
-		void ResizeDense(int dataCapacity);
-
-		void ResizeSparse(int capacity);
 	}
 }

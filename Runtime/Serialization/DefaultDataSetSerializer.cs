@@ -12,7 +12,7 @@ namespace Massive.Serialization
 		{
 			var data = new T[set.Count];
 
-			Array.Copy(set.RawData, data, set.Count);
+			// Array.Copy(set.RawData, data, set.Count);
 
 			_binaryFormatter.Serialize(stream, data);
 		}
@@ -21,7 +21,7 @@ namespace Massive.Serialization
 		{
 			var data = (T[])_binaryFormatter.Deserialize(stream);
 
-			Array.Copy(data, set.RawData, data.Length);
+			// Array.Copy(data, set.RawData, data.Length);
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace Massive
 
 		public IOwningGroup Base { get; set; }
 
-		public ReadOnlySpan<int> Ids => Owned[0].Ids.Slice(0, GroupLength);
+		public ReadOnlyPackedSpan<int> Ids => new ReadOnlyPackedSpan<int>(Owned[0].Ids.PackedArray, GroupLength);
 
 		public OwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
 		{

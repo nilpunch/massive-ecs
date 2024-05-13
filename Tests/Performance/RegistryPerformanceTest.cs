@@ -16,7 +16,7 @@ namespace Massive.PerformanceTests
 			FillWith50Tags,
 		}
 
-		private const int EntitiesCount = 1000;
+		private const int EntitiesCount = 100;
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
 

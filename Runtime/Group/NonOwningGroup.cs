@@ -14,7 +14,7 @@ namespace Massive
 
 		public bool IsSynced { get; protected set; }
 
-		public ReadOnlySpan<int> Ids => GroupSet.Ids;
+		public ReadOnlyPackedSpan<int> Ids => GroupSet.Ids;
 
 		public NonOwningGroup(IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null, int dataCapacity = Constants.DataCapacity)
 			: this(new SparseSet(dataCapacity), include, exclude)

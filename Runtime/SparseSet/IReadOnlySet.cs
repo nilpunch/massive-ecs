@@ -6,11 +6,7 @@ namespace Massive
 	{
 		int Count { get; }
 
-		ReadOnlySpan<int> Ids { get; }
-
-		int DenseCapacity { get; }
-
-		int SparseCapacity { get; }
+		ReadOnlyPackedSpan<int> Ids { get; }
 
 		/// <summary>
 		/// Shoots only after <see cref="ISet.Assign"/> call, when the id was not alive and therefore was created.

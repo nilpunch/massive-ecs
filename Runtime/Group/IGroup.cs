@@ -4,7 +4,7 @@ namespace Massive
 {
 	public interface IGroup
 	{
-		ReadOnlySpan<int> Ids { get; }
+		ReadOnlyPackedSpan<int> Ids { get; }
 
 		int Length => Ids.Length;
 

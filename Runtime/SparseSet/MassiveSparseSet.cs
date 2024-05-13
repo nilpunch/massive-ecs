@@ -10,8 +10,8 @@ namespace Massive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
-		private readonly int[][] _denseByFrames;
-		private readonly int[][] _sparseByFrames;
+		private readonly PackedArray<int>[] _denseByFrames;
+		private readonly PackedArray<int>[] _sparseByFrames;
 		private readonly int[] _countByFrames;
 
 		public MassiveSparseSet(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
@@ -19,14 +19,14 @@ namespace Massive
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
-			_denseByFrames = new int[framesCapacity][];
-			_sparseByFrames = new int[framesCapacity][];
+			_denseByFrames = new PackedArray<int>[framesCapacity];
+			_sparseByFrames = new PackedArray<int>[framesCapacity];
 			_countByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
-				_denseByFrames[i] = new int[DenseCapacity];
-				_sparseByFrames[i] = new int[SparseCapacity];
+				_denseByFrames[i] = new PackedArray<int>();
+				_sparseByFrames[i] = new PackedArray<int>();
 			}
 		}
 
@@ -41,8 +41,8 @@ namespace Massive
 			int currentCount = Count;
 
 			// Copy everything from current state to current frame
-			Array.Copy(Dense, 0, _denseByFrames[currentFrame], 0, currentCount);
-			Array.Copy(Sparse, 0, _sparseByFrames[currentFrame], 0, SparseCapacity);
+			Dense.CopyTo(_denseByFrames[currentFrame], currentCount);
+			Sparse.CopyTo(_sparseByFrames[currentFrame]);
 			_countByFrames[currentFrame] = currentCount;
 		}
 
@@ -55,31 +55,9 @@ namespace Massive
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackCount = _countByFrames[rollbackFrame];
 
-			Array.Copy(_denseByFrames[rollbackFrame], 0, Dense, 0, rollbackCount);
-			Array.Copy(_sparseByFrames[rollbackFrame], 0, Sparse, 0, SparseCapacity);
+			_denseByFrames[rollbackFrame].CopyTo(Dense, rollbackCount);
+			_sparseByFrames[rollbackFrame].CopyTo(Sparse);
 			Count = rollbackCount;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void ResizeDense(int capacity)
-		{
-			base.ResizeDense(capacity);
-
-			for (int i = 0; i < _cyclicFrameCounter.FramesCapacity; i++)
-			{
-				Array.Resize(ref _denseByFrames[i], capacity);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void ResizeSparse(int capacity)
-		{
-			base.ResizeSparse(capacity);
-
-			for (int i = 0; i < _cyclicFrameCounter.FramesCapacity; i++)
-			{
-				Array.Resize(ref _sparseByFrames[i], capacity);
-			}
 		}
 	}
 }

@@ -8,33 +8,31 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class SparseSet : ISet
 	{
-		private int[] _dense;
-		private int[] _sparse;
+		private readonly PackedArray<int> _dense;
+		private readonly PackedArray<int> _sparse;
 
-		public int[] Dense => _dense;
+		public PackedArray<int> Dense => _dense;
 
-		public int[] Sparse => _sparse;
+		public PackedArray<int> Sparse => _sparse;
 
 		public int Count { get; set; }
 
 		public SparseSet(int dataCapacity = Constants.DataCapacity)
 		{
-			_dense = new int[dataCapacity];
-			_sparse = new int[dataCapacity];
+			_dense = new PackedArray<int>();
+			_sparse = new PackedArray<int>();
 		}
 
-		public ReadOnlySpan<int> Ids => new ReadOnlySpan<int>(Dense, 0, Count);
+		public ReadOnlyPackedSpan<int> Ids => new ReadOnlyPackedSpan<int>(Dense, Count);
 
-		public int DenseCapacity => Dense.Length;
-
-		public int SparseCapacity => Sparse.Length;
+		public int SparseCapacity => Sparse.Capacity;
 
 		public event Action<int> AfterAssigned;
 
 		public event Action<int> BeforeUnassigned;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Assign(int id)
+		public virtual void Assign(int id)
 		{
 			if (id < 0)
 			{
@@ -50,15 +48,8 @@ namespace Massive
 			int count = Count;
 			Count += 1;
 
-			if (id >= SparseCapacity)
-			{
-				GrowSparse(id + 1);
-			}
-
-			if (count >= DenseCapacity)
-			{
-				GrowDense(count + 1);
-			}
+			_sparse.EnsurePageForIndex(id);
+			_dense.EnsurePageForIndex(count);
 
 			AssignIndex(id, count);
 
@@ -92,10 +83,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			var ids = Ids;
-			for (int i = ids.Length - 1; i >= 0; i--)
+			foreach (var id in Ids)
 			{
-				BeforeUnassigned?.Invoke(ids[i]);
+				BeforeUnassigned?.Invoke(id);
 				Count -= 1;
 			}
 		}
@@ -109,7 +99,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryGetDense(int id, out int dense)
 		{
-			if (id < 0 || id >= SparseCapacity)
+			if (id < 0 || !Sparse.HasPageForIndex(id))
 			{
 				dense = default;
 				return false;
@@ -123,7 +113,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAssigned(int id)
 		{
-			if (id < 0 || id >= SparseCapacity)
+			if (id < 0 || !Sparse.HasPageForIndex(id))
 			{
 				return false;
 			}
@@ -143,18 +133,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void ResizeDense(int capacity)
-		{
-			Array.Resize(ref _dense, capacity);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void ResizeSparse(int capacity)
-		{
-			Array.Resize(ref _sparse, capacity);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected virtual void CopyFromToDense(int source, int destination)
 		{
 			int sourceId = Dense[source];
@@ -167,18 +145,6 @@ namespace Massive
 		{
 			Sparse[id] = dense;
 			Dense[dense] = id;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void GrowDense(int desiredCapacity)
-		{
-			ResizeDense(MathHelpers.GetNextPowerOf2(desiredCapacity));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void GrowSparse(int desiredCapacity)
-		{
-			ResizeSparse(MathHelpers.GetNextPowerOf2(desiredCapacity));
 		}
 	}
 }

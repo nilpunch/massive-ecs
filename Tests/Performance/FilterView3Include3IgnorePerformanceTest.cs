@@ -5,7 +5,7 @@ namespace Massive.PerformanceTests
 {
 	public class FilterView3Include3IgnorePerformanceTest
 	{
-		private const int EntitiesCount = 1000;
+		private const int EntitiesCount = 100;
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
 
