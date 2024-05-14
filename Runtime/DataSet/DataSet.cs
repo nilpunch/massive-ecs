@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -11,21 +10,29 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class DataSet<T> : SparseSet, IDataSet<T>
 	{
-		private T[] _data;
+		private PackedArray<T> _data;
 
-		public T[] RawData => _data;
+		public PackedArray<T> RawData => _data;
 
 		public DataSet(int dataCapacity = Constants.DataCapacity)
 			: base(dataCapacity)
 		{
-			_data = new T[DenseCapacity];
+			_data = new PackedArray<T>();
 		}
 
-		public Span<T> Data => new Span<T>(RawData, 0, Count);
+		public PackedSpan<T> Data => new PackedSpan<T>(RawData, Count);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override void Assign(int id)
+		{
+			RawData.EnsurePageForIndex(Count);
+			base.Assign(id);
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Assign(int id, T data)
 		{
+			RawData.EnsurePageForIndex(Count);
 			base.Assign(id);
 			RawData[Sparse[id]] = data;
 		}
@@ -41,13 +48,6 @@ namespace Massive
 		{
 			base.SwapDense(denseA, denseB);
 			(RawData[denseA], RawData[denseB]) = (RawData[denseB], RawData[denseA]);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void ResizeDense(int capacity)
-		{
-			base.ResizeDense(capacity);
-			Array.Resize(ref _data, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

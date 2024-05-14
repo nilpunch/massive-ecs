@@ -17,7 +17,7 @@ namespace Massive
 
 		protected override void CopyData(T[] source, T[] destination, int count)
 		{
-			Array.Copy(source, 0, destination, 0, count);
+			Array.Copy(source, destination, count);
 		}
 	}
 }

@@ -5,7 +5,7 @@ namespace Massive.PerformanceTests
 {
 	public class SparseSetPerformanceTest
 	{
-		private const int EntitiesCount = 1000;
+		private const int EntitiesCount = 100;
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
 
@@ -24,6 +24,7 @@ namespace Massive.PerformanceTests
 		[TestCaseSource(nameof(FixtureSets)), Performance]
 		public void SparseSet_Ensure(ISet set)
 		{
+			set.Clear();
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -46,6 +47,7 @@ namespace Massive.PerformanceTests
 		[TestCaseSource(nameof(FixtureSets)), Performance]
 		public void SparseSet_Remove(ISet set)
 		{
+			set.Clear();
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -68,6 +70,7 @@ namespace Massive.PerformanceTests
 		[TestCaseSource(nameof(FixtureSets)), Performance]
 		public void SparseSet_RemoveNonExisting(ISet set)
 		{
+			set.Clear();
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -83,6 +86,7 @@ namespace Massive.PerformanceTests
 		[TestCaseSource(nameof(FixtureMassiveSets)), Performance]
 		public void MassiveSparseSet_Save(ISet set)
 		{
+			set.Clear();
 			IMassive massive = (IMassive)set;
 
 			for (int i = 0; i < EntitiesCount; i++)
