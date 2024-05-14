@@ -13,7 +13,7 @@ namespace Massive.Tests
 		[TestCase(Constants.PageSize * 2)]
 		[TestCase(Constants.PageSize * 2 + 1)]
 		[TestCase(Constants.PageSize * 2 - 1)]
-		public void Span_ShouldIterateOverWholeCollection(int length)
+		public void PackedSpan_ShouldIterateOverAllElements(int length)
 		{
 			var packedArray = new PackedArray<int>();
 
@@ -29,6 +29,7 @@ namespace Massive.Tests
 			foreach (var i in span)
 			{
 				iterationsAmount += 1;
+				Assert.AreEqual(length - iterationsAmount, i);
 			}
 
 			Assert.AreEqual(length, iterationsAmount);

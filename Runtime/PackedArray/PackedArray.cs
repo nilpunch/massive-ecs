@@ -24,10 +24,12 @@ namespace Massive
 		}
 
 		public T[][] PagedData => _pagedData;
+		
+		public int PagesAmount => PagesAmount;
 
 		public int PageSize => _pageSize;
 
-		public int Capacity => _pagedData.Length * _pageSize;
+		public int Capacity => PagesAmount * _pageSize;
 
 		public ref T this[int index]
 		{
@@ -63,7 +65,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePage(int page)
 		{
-			if (page >= _pagedData.Length)
+			if (page >= PagesAmount)
 			{
 				Array.Resize(ref _pagedData, MathHelpers.GetNextPowerOf2(page + 1));
 			}
@@ -81,7 +83,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool HasPage(int page)
 		{
-			return page < _pagedData.Length && _pagedData[page] != null;
+			return page < PagesAmount && _pagedData[page] != null;
 		}
 
 		public void CopyTo(PackedArray<T> other, int length = int.MaxValue, Action<T[], T[], int> copyMethod = null)
@@ -93,7 +95,7 @@ namespace Massive
 				throw new Exception("Can't copy packed arrays with different page size.");
 			}
 
-			int fullPages = Math.Min(length / _pageSize, _pagedData.Length);
+			int fullPages = Math.Min(length / _pageSize, PagesAmount);
 			for (int pageIndex = 0; pageIndex < fullPages; pageIndex++)
 			{
 				var page = _pagedData[pageIndex];
@@ -105,7 +107,7 @@ namespace Massive
 				}
 			}
 
-			if (fullPages < _pagedData.Length && _pagedData[fullPages] != null)
+			if (fullPages < PagesAmount && _pagedData[fullPages] != null)
 			{
 				other.EnsurePage(fullPages);
 				copyMethod(_pagedData[fullPages], other.PagedData[fullPages], MathHelpers.FastMod(length, _pageSize));
@@ -114,7 +116,7 @@ namespace Massive
 
 		public void ForEachPage(Action<T[], int> pageAction, int length = int.MaxValue)
 		{
-			int fullPages = Math.Min(length / _pageSize, _pagedData.Length);
+			int fullPages = Math.Min(length / _pageSize, PagesAmount);
 			for (int pageIndex = 0; pageIndex < fullPages; pageIndex++)
 			{
 				var page = _pagedData[pageIndex];
@@ -125,7 +127,7 @@ namespace Massive
 				}
 			}
 
-			if (fullPages < _pagedData.Length && _pagedData[fullPages] != null)
+			if (fullPages < PagesAmount && _pagedData[fullPages] != null)
 			{
 				pageAction(_pagedData[fullPages], MathHelpers.FastMod(length, _pageSize));
 			}

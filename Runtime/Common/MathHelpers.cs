@@ -29,7 +29,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Fast module for powers of two only.
+		/// Checks whether a value is a power of two or not.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPowerOfTwo(int value)
