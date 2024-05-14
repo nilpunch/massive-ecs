@@ -22,13 +22,13 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => PackedArray.GetUnsafe(index);
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
 			return new Enumerator(PackedArray, Length);
 		}
-		
+
 		public ref struct Enumerator
 		{
 			private readonly T[][] _pagedData;
@@ -44,17 +44,8 @@ namespace Massive
 				_pageSize = packedArray.PageSize;
 				_length = length;
 
-				_page = Math.Min(length / _pageSize, _pagedData.Length);
-
-				if (_page < _pagedData.Length)
-				{
-					_index = MathHelpers.FastMod(_length, _pageSize);
-				}
-				else
-				{
-					_index = _pageSize;
-				}
-
+				_page = Math.Min(_length / _pageSize, _pagedData.Length);
+				_index = MathHelpers.FastMod(_length, _pageSize);
 				_currentPage = new Span<T>(_pagedData[_page]);
 			}
 
@@ -71,14 +62,14 @@ namespace Massive
 					_currentPage = new Span<T>(_pagedData[_page]);
 					return true;
 				}
-				
+
 				return false;
 			}
 
 			public void Reset()
 			{
-				_page = Math.Max(_length / _pageSize - 1, 0);
-				_index = _length % _pageSize + 1;
+				_page = Math.Min(_length / _pageSize, _pagedData.Length);
+				_index = MathHelpers.FastMod(_length, _pageSize);
 				_currentPage = new Span<T>(_pagedData[_page]);
 			}
 

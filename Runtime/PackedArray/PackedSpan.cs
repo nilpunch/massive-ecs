@@ -22,21 +22,21 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => ref PackedArray.GetUnsafe(index);
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
 			return new Enumerator(PackedArray, Length);
 		}
-		
+
 		public ref struct Enumerator
 		{
 			private readonly T[][] _pagedData;
 			private readonly int _pageSize;
 			private readonly int _length;
-			private int _page;
+			private int _pageIndex;
 			private Span<T> _currentPage;
-			private int _index;
+			private int _indexInPage;
 
 			public Enumerator(PackedArray<T> packedArray, int length)
 			{
@@ -44,40 +44,40 @@ namespace Massive
 				_pageSize = packedArray.PageSize;
 				_length = length;
 
-				_page = _length / _pageSize - 1;
-				_index = _length % _pageSize + 1;
-				_currentPage = new Span<T>(_pagedData[_page]);
+				_pageIndex = Math.Min(_length / _pageSize, _pagedData.Length);
+				_indexInPage = MathHelpers.FastMod(_length, _pageSize);
+				_currentPage = new Span<T>(_pagedData[_pageIndex]);
 			}
 
 			public bool MoveNext()
 			{
-				if (--_index >= 0)
+				if (--_indexInPage >= 0)
 				{
 					return true;
 				}
 
-				while (--_page >= 0)
+				while (--_pageIndex >= 0)
 				{
 				}
 
-				if (_page >= 0)
+				if (_pageIndex >= 0)
 				{
-					_index = _pageSize - 1;
-					_currentPage = new Span<T>(_pagedData[_page]);
+					_indexInPage = _pageSize - 1;
+					_currentPage = new Span<T>(_pagedData[_pageIndex]);
 					return true;
 				}
-				
+
 				return false;
 			}
 
 			public void Reset()
 			{
-				_page = _length / _pageSize - 1;
-				_index = _length % _pageSize + 1;
-				_currentPage = new Span<T>(_pagedData[_page]);
+				_pageIndex = Math.Min(_length / _pageSize, _pagedData.Length);
+				_indexInPage = MathHelpers.FastMod(_length, _pageSize);
+				_currentPage = new Span<T>(_pagedData[_pageIndex]);
 			}
 
-			public ref T Current => ref _currentPage[_index];
+			public ref T Current => ref _currentPage[_indexInPage];
 		}
 	}
 }
