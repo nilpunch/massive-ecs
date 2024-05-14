@@ -25,7 +25,7 @@ namespace Massive
 
 		public T[][] PagedData => _pagedData;
 		
-		public int PagesAmount => PagesAmount;
+		public int PagesAmount => _pagedData.Length;
 
 		public int PageSize => _pageSize;
 
