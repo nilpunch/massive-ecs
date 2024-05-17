@@ -13,7 +13,7 @@ namespace Massive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
-		private readonly PackedArray<T>[] _dataByFrames;
+		private readonly PagedArray<T>[] _dataByFrames;
 		private readonly int[][] _denseByFrames;
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _countByFrames;
@@ -23,14 +23,14 @@ namespace Massive
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
-			_dataByFrames = new PackedArray<T>[framesCapacity];
+			_dataByFrames = new PagedArray<T>[framesCapacity];
 			_denseByFrames = new int[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_countByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
-				_dataByFrames[i] = new PackedArray<T>();
+				_dataByFrames[i] = new PagedArray<T>();
 				_denseByFrames[i] = new int[DenseCapacity];
 				_sparseByFrames[i] = new int[SparseCapacity];
 			}
@@ -47,7 +47,7 @@ namespace Massive
 			int currentCount = Count;
 
 			// Copy everything from current state to current frame
-			RawData.CopyTo(_dataByFrames[currentFrame], currentCount, CopyData);
+			Data.CopyTo(_dataByFrames[currentFrame], currentCount, CopyData);
 			Array.Copy(Dense, _denseByFrames[currentFrame], currentCount);
 			Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
 			_countByFrames[currentFrame] = currentCount;
@@ -62,7 +62,7 @@ namespace Massive
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackCount = _countByFrames[rollbackFrame];
 
-			_dataByFrames[rollbackFrame].CopyTo(RawData, rollbackCount, CopyData);
+			_dataByFrames[rollbackFrame].CopyTo(Data, rollbackCount, CopyData);
 			Array.Copy(_denseByFrames[rollbackFrame], Dense, rollbackCount);
 			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, SparseCapacity);
 			Count = rollbackCount;

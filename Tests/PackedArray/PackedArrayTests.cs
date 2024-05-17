@@ -13,16 +13,16 @@ namespace Massive.Tests
 		[TestCase(Constants.PageSize * 2)]
 		[TestCase(Constants.PageSize * 2 + 1)]
 		[TestCase(Constants.PageSize * 2 - 1)]
-		public void PackedSpan_ShouldIterateOverAllElements(int length)
+		public void PagedSpan_ShouldIterateOverAllElements(int length)
 		{
-			var packedArray = new PackedArray<int>();
+			var packedArray = new PagedArray<int>();
 
 			for (int i = 0; i < length; i++)
 			{
 				packedArray.GetSafe(i) = i;
 			}
 
-			var span = new ReadOnlyPackedSpan<int>(packedArray, length);
+			var span = new PagedSpan<int>(packedArray, length);
 
 			int iterationsAmount = 0;
 

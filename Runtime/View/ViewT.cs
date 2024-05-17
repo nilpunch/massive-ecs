@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -19,9 +20,14 @@ namespace Massive
 		{
 			var data = _components.Data;
 			var ids = _components.Ids;
-			for (int dense = ids.Length - 1; dense >= 0; dense--)
+			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, _components.Count))
 			{
-				action.Invoke(ids[dense], ref data[dense]);
+				var page = data.Pages[pageIndex];
+				for (int dense = pageLength - 1; dense >= 0; dense--)
+				{
+					var id = ids[indexOffset + dense];
+					action.Invoke(id, ref page[dense]);
+				}
 			}
 		}
 
@@ -30,9 +36,14 @@ namespace Massive
 		{
 			var data = _components.Data;
 			var ids = _components.Ids;
-			for (int dense = ids.Length - 1; dense >= 0; dense--)
+			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, _components.Count))
 			{
-				action.Invoke(ids[dense], ref data[dense], extra);
+				var page = data.Pages[pageIndex];
+				for (int dense = pageLength - 1; dense >= 0; dense--)
+				{
+					var id = ids[indexOffset + dense];
+					action.Invoke(id, ref page[dense], extra);
+				}
 			}
 		}
 	}

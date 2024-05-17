@@ -20,6 +20,19 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
+		public void GroupView_ForEach()
+		{
+			var view = new GroupView(_group);
+
+			Measure.Method(() => view.ForEach((_) =>
+				{
+				}))
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+		
+		[Test, Performance]
 		public void GroupViewT_ForEach()
 		{
 			var view = new GroupView<TestState64>(_registry, _group);

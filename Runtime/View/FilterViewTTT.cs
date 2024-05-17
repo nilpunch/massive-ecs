@@ -29,16 +29,25 @@ namespace Massive
 			var minData = SetHelpers.GetMinimalSet(_components1, _components2, _components3);
 			var ids = SetHelpers.GetMinimalSet(minData, _filter.Include).Ids;
 
-			for (int i = ids.Length - 1; i >= 0; i--)
+			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, ids.Length))
 			{
-				int id = ids[i];
-				if (_components1.TryGetDense(id, out var dense1)
-				    && _components2.TryGetDense(id, out var dense2)
-				    && _components3.TryGetDense(id, out var dense3))
+				if (!data1.HasPage(pageIndex) || !data2.HasPage(pageIndex) || !data3.HasPage(pageIndex))
 				{
-					if (_filter.ContainsId(id))
+					continue;
+				}
+
+				var page1 = data1.Pages[pageIndex];
+				var page2 = data2.Pages[pageIndex];
+				var page3 = data3.Pages[pageIndex];
+				for (int i = pageLength - 1; i >= 0; i--)
+				{
+					var id = ids[indexOffset + i];
+					if (_components1.TryGetDense(id, out var dense1)
+					    && _components2.TryGetDense(id, out var dense2)
+					    && _components3.TryGetDense(id, out var dense3)
+					    && _filter.ContainsId(id))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
+						action.Invoke(id, ref page1[dense1], ref page2[dense2], ref page3[dense3]);
 					}
 				}
 			}
@@ -53,16 +62,25 @@ namespace Massive
 			var minData = SetHelpers.GetMinimalSet(_components1, _components2, _components3);
 			var ids = SetHelpers.GetMinimalSet(minData, _filter.Include).Ids;
 
-			for (int i = ids.Length - 1; i >= 0; i--)
+			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, ids.Length))
 			{
-				int id = ids[i];
-				if (_components1.TryGetDense(id, out var dense1)
-				    && _components2.TryGetDense(id, out var dense2)
-				    && _components3.TryGetDense(id, out var dense3))
+				if (!data1.HasPage(pageIndex) || !data2.HasPage(pageIndex) || !data3.HasPage(pageIndex))
 				{
-					if (_filter.ContainsId(id))
+					continue;
+				}
+
+				var page1 = data1.Pages[pageIndex];
+				var page2 = data2.Pages[pageIndex];
+				var page3 = data3.Pages[pageIndex];
+				for (int i = pageLength - 1; i >= 0; i--)
+				{
+					var id = ids[indexOffset + i];
+					if (_components1.TryGetDense(id, out var dense1)
+					    && _components2.TryGetDense(id, out var dense2)
+					    && _components3.TryGetDense(id, out var dense3)
+					    && _filter.ContainsId(id))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3], extra);
+						action.Invoke(id, ref page1[dense1], ref page2[dense2], ref page3[dense3], extra);
 					}
 				}
 			}

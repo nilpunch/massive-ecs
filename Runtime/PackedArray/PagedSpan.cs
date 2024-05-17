@@ -6,27 +6,27 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct PackedSpan<T>
+	public readonly struct PagedSpan<T>
 	{
-		public readonly PackedArray<T> PackedArray;
+		public readonly PagedArray<T> PagedArray;
 		public readonly int Length;
 
-		public PackedSpan(PackedArray<T> packedArray, int length)
+		public PagedSpan(PagedArray<T> pagedArray, int length)
 		{
-			PackedArray = packedArray;
+			PagedArray = pagedArray;
 			Length = length;
 		}
 
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref PackedArray.GetUnsafe(index);
+			get => ref PagedArray.GetUnsafe(index);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
-			return new Enumerator(PackedArray, Length);
+			return new Enumerator(PagedArray, Length);
 		}
 
 		public ref struct Enumerator
@@ -38,17 +38,18 @@ namespace Massive
 			private Span<T> _currentPage;
 			private int _indexInPage;
 
-			public Enumerator(PackedArray<T> packedArray, int length)
+			public Enumerator(PagedArray<T> pagedArray, int length)
 			{
-				_pagedData = packedArray.PagedData;
-				_pageSize = packedArray.PageSize;
+				_pagedData = pagedArray.Pages;
+				_pageSize = pagedArray.PageSize;
 				_length = length;
 
-				_pageIndex = Math.Min(_length / _pageSize, _pagedData.Length);
+				_pageIndex = _length / _pageSize;
 				_indexInPage = MathHelpers.FastMod(_length, _pageSize);
 				_currentPage = new Span<T>(_pagedData[_pageIndex]);
 			}
 
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool MoveNext()
 			{
 				if (--_indexInPage >= 0)
@@ -56,11 +57,7 @@ namespace Massive
 					return true;
 				}
 
-				while (--_pageIndex >= 0)
-				{
-				}
-
-				if (_pageIndex >= 0)
+				if (--_pageIndex >= 0)
 				{
 					_indexInPage = _pageSize - 1;
 					_currentPage = new Span<T>(_pagedData[_pageIndex]);

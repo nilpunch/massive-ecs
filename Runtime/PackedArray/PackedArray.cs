@@ -7,12 +7,12 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class PackedArray<T>
+	public class PagedArray<T>
 	{
 		private readonly int _pageSize;
-		private T[][] _pagedData;
+		private T[][] _pages;
 
-		public PackedArray(int pageSize = Constants.PageSize)
+		public PagedArray(int pageSize = Constants.PageSize)
 		{
 			if (!MathHelpers.IsPowerOfTwo(pageSize))
 			{
@@ -20,12 +20,12 @@ namespace Massive
 			}
 
 			_pageSize = pageSize;
-			_pagedData = new T[Constants.PagesAmount][];
+			_pages = new T[Constants.PagesAmount][];
 		}
 
-		public T[][] PagedData => _pagedData;
+		public T[][] Pages => _pages;
 		
-		public int PagesAmount => _pagedData.Length;
+		public int PagesAmount => _pages.Length;
 
 		public int PageSize => _pageSize;
 
@@ -41,7 +41,7 @@ namespace Massive
 		public ref T GetUnsafe(int index)
 		{
 			int page = index / PageSize;
-			return ref _pagedData[page][MathHelpers.FastMod(index, PageSize)];
+			return ref _pages[page][MathHelpers.FastMod(index, PageSize)];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,7 +51,7 @@ namespace Massive
 
 			EnsurePage(page);
 
-			return ref _pagedData[page][MathHelpers.FastMod(index, PageSize)];
+			return ref _pages[page][MathHelpers.FastMod(index, PageSize)];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -67,10 +67,10 @@ namespace Massive
 		{
 			if (page >= PagesAmount)
 			{
-				Array.Resize(ref _pagedData, MathHelpers.GetNextPowerOf2(page + 1));
+				Array.Resize(ref _pages, MathHelpers.GetNextPowerOf2(page + 1));
 			}
 
-			_pagedData[page] ??= new T[PageSize];
+			_pages[page] ??= new T[PageSize];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -83,10 +83,15 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool HasPage(int page)
 		{
-			return page < PagesAmount && _pagedData[page] != null;
+			return page < PagesAmount && _pages[page] != null;
 		}
 
-		public void CopyTo(PackedArray<T> other, int length = int.MaxValue, Action<T[], T[], int> copyMethod = null)
+		public PagedSpan<T> AsSpan(int length)
+		{
+			return new PagedSpan<T>(this, length);
+		}
+
+		public void CopyTo(PagedArray<T> other, int length = int.MaxValue, Action<T[], T[], int> copyMethod = null)
 		{
 			copyMethod ??= Array.Copy;
 			
@@ -98,19 +103,19 @@ namespace Massive
 			int fullPages = Math.Min(length / _pageSize, PagesAmount);
 			for (int pageIndex = 0; pageIndex < fullPages; pageIndex++)
 			{
-				var page = _pagedData[pageIndex];
+				var page = _pages[pageIndex];
 
 				if (page != null)
 				{
 					other.EnsurePage(pageIndex);
-					copyMethod(page, other.PagedData[pageIndex], _pageSize);
+					copyMethod(page, other.Pages[pageIndex], _pageSize);
 				}
 			}
 
-			if (fullPages < PagesAmount && _pagedData[fullPages] != null)
+			if (fullPages < PagesAmount && _pages[fullPages] != null)
 			{
 				other.EnsurePage(fullPages);
-				copyMethod(_pagedData[fullPages], other.PagedData[fullPages], MathHelpers.FastMod(length, _pageSize));
+				copyMethod(_pages[fullPages], other.Pages[fullPages], MathHelpers.FastMod(length, _pageSize));
 			}
 		}
 
@@ -119,7 +124,7 @@ namespace Massive
 			int fullPages = Math.Min(length / _pageSize, PagesAmount);
 			for (int pageIndex = 0; pageIndex < fullPages; pageIndex++)
 			{
-				var page = _pagedData[pageIndex];
+				var page = _pages[pageIndex];
 
 				if (page != null)
 				{
@@ -127,9 +132,9 @@ namespace Massive
 				}
 			}
 
-			if (fullPages < PagesAmount && _pagedData[fullPages] != null)
+			if (fullPages < PagesAmount && _pages[fullPages] != null)
 			{
-				pageAction(_pagedData[fullPages], MathHelpers.FastMod(length, _pageSize));
+				pageAction(_pages[fullPages], MathHelpers.FastMod(length, _pageSize));
 			}
 		}
 	}
