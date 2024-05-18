@@ -15,7 +15,8 @@ Provided features:
 - Zero GC allocations during runtime (after full initialization)
 - Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
-- Full-state serialization
+- Data pagination for stable resizing during iteration
+- Full state serialization
 - IL2CPP friendly, tested with high stripping level on PC | Android | WebGL
 - [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
 
