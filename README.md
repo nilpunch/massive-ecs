@@ -64,13 +64,13 @@ class Program
             // ...
         });
 
-        // Iterate manually over packed data, using Span<T>
-        var velocities = registry.Components<Velocity>().Data;
-        for (int i = 0; i < velocities.Length; ++i)
-        {
-            ref var velocity = ref velocities[i];
-            // ...
-        }
+		// Iterate manually over data set
+		var velocities = registry.Components<Velocity>();
+		for (int i = 0; i < velocities.Count; ++i)
+		{
+			ref var velocity = ref velocities.Data[i];
+			// ...
+		}
     }
 
     static void Main()
