@@ -3,7 +3,7 @@
 namespace Massive.Tests
 {
 	[TestFixture]
-	public class PackedArrayTests
+	public class PagedArrayTests
 	{
 		[TestCase(0)]
 		[TestCase(1)]
