@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -55,6 +54,18 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Swap(int first, int second)
+		{
+			var pageFirst = _pages[first / PageSize];
+			var pageSecond = _pages[second / PageSize];
+
+			var firstIndex = MathHelpers.FastMod(first, PageSize);
+			var secondIndex = MathHelpers.FastMod(second, PageSize);
+
+			(pageFirst[firstIndex], pageSecond[secondIndex]) = (pageSecond[secondIndex], pageFirst[firstIndex]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePageForIndex(int index)
 		{
 			int page = index / PageSize;
@@ -100,7 +111,7 @@ namespace Massive
 				throw new Exception("Can't copy packed arrays with different page size.");
 			}
 
-			int fullPages = Math.Min(length / _pageSize, PagesAmount);
+			int fullPages = Math.Min(length / PageSize, PagesAmount);
 			for (int pageIndex = 0; pageIndex < fullPages; pageIndex++)
 			{
 				var page = _pages[pageIndex];
@@ -108,33 +119,33 @@ namespace Massive
 				if (page != null)
 				{
 					other.EnsurePage(pageIndex);
-					copyMethod(page, other.Pages[pageIndex], _pageSize);
+					copyMethod(page, other.Pages[pageIndex], PageSize);
 				}
 			}
 
 			if (fullPages < PagesAmount && _pages[fullPages] != null)
 			{
 				other.EnsurePage(fullPages);
-				copyMethod(_pages[fullPages], other.Pages[fullPages], MathHelpers.FastMod(length, _pageSize));
+				copyMethod(_pages[fullPages], other.Pages[fullPages], MathHelpers.FastMod(length, PageSize));
 			}
 		}
 
 		public void ForEachPage(Action<T[], int> pageAction, int length = int.MaxValue)
 		{
-			int fullPages = Math.Min(length / _pageSize, PagesAmount);
+			int fullPages = Math.Min(length / PageSize, PagesAmount);
 			for (int pageIndex = 0; pageIndex < fullPages; pageIndex++)
 			{
 				var page = _pages[pageIndex];
 
 				if (page != null)
 				{
-					pageAction(page, _pageSize);
+					pageAction(page, PageSize);
 				}
 			}
 
 			if (fullPages < PagesAmount && _pages[fullPages] != null)
 			{
-				pageAction(_pages[fullPages], MathHelpers.FastMod(length, _pageSize));
+				pageAction(_pages[fullPages], MathHelpers.FastMod(length, PageSize));
 			}
 		}
 	}

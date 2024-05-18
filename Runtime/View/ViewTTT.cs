@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -38,15 +37,13 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					var page2 = data2.Pages[pageIndex];
-					var page3 = data3.Pages[pageIndex];
 					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
 					{
 						int id = ids1[indexOffset + dense1];
 						if (_components2.TryGetDense(id, out var dense2) &&
 						    _components3.TryGetDense(id, out var dense3))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2], ref page3[dense3]);
+							action.Invoke(id, ref page1[dense1], ref data2[dense2], ref data3[dense3]);
 						}
 					}
 				}
@@ -61,16 +58,14 @@ namespace Massive
 						continue;
 					}
 
-					var page1 = data1.Pages[pageIndex];
 					var page2 = data2.Pages[pageIndex];
-					var page3 = data3.Pages[pageIndex];
 					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
 					{
 						int id = ids2[indexOffset + dense2];
 						if (_components1.TryGetDense(id, out var dense1) &&
 						    _components3.TryGetDense(id, out var dense3))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2], ref page3[dense3]);
+							action.Invoke(id, ref data1[dense1], ref page2[dense2], ref data3[dense3]);
 						}
 					}
 				}
@@ -85,8 +80,6 @@ namespace Massive
 						continue;
 					}
 
-					var page1 = data1.Pages[pageIndex];
-					var page2 = data2.Pages[pageIndex];
 					var page3 = data3.Pages[pageIndex];
 					for (int dense3 = pageLength - 1; dense3 >= 0; dense3--)
 					{
@@ -94,7 +87,7 @@ namespace Massive
 						if (_components1.TryGetDense(id, out var dense1) &&
 						    _components2.TryGetDense(id, out var dense2))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2], ref page3[dense3]);
+							action.Invoke(id, ref data1[dense1], ref data2[dense2], ref page3[dense3]);
 						}
 					}
 				}
@@ -120,15 +113,13 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					var page2 = data2.Pages[pageIndex];
-					var page3 = data3.Pages[pageIndex];
 					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
 					{
 						int id = ids1[indexOffset + dense1];
 						if (_components2.TryGetDense(id, out var dense2) &&
 						    _components3.TryGetDense(id, out var dense3))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2], ref page3[dense3], extra);
+							action.Invoke(id, ref page1[dense1], ref data2[dense2], ref data3[dense3], extra);
 						}
 					}
 				}
@@ -143,16 +134,14 @@ namespace Massive
 						continue;
 					}
 
-					var page1 = data1.Pages[pageIndex];
 					var page2 = data2.Pages[pageIndex];
-					var page3 = data3.Pages[pageIndex];
 					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
 					{
 						int id = ids2[indexOffset + dense2];
 						if (_components1.TryGetDense(id, out var dense1) &&
 						    _components3.TryGetDense(id, out var dense3))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2], ref page3[dense3], extra);
+							action.Invoke(id, ref data1[dense1], ref page2[dense2], ref data3[dense3], extra);
 						}
 					}
 				}
@@ -167,8 +156,6 @@ namespace Massive
 						continue;
 					}
 
-					var page1 = data1.Pages[pageIndex];
-					var page2 = data2.Pages[pageIndex];
 					var page3 = data3.Pages[pageIndex];
 					for (int dense3 = pageLength - 1; dense3 >= 0; dense3--)
 					{
@@ -176,7 +163,7 @@ namespace Massive
 						if (_components1.TryGetDense(id, out var dense1) &&
 						    _components2.TryGetDense(id, out var dense2))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2], ref page3[dense3], extra);
+							action.Invoke(id, ref data1[dense1], ref data2[dense2], ref page3[dense3], extra);
 						}
 					}
 				}

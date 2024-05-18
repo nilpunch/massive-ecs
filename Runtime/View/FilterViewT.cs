@@ -22,22 +22,13 @@ namespace Massive
 			var data = _components.Data;
 			var ids = SetHelpers.GetMinimalSet(_components, _filter.Include).Ids;
 
-			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, _components.Count))
+			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				if (!data.HasPage(pageIndex))
+				var id = ids[i];
+				if (_components.TryGetDense(id, out var dense)
+				    && _filter.ContainsId(id))
 				{
-					continue;
-				}
-
-				var page = data.Pages[pageIndex];
-				for (int i = pageLength - 1; i >= 0; i--)
-				{
-					var id = ids[indexOffset + i];
-					if (_components.TryGetDense(id, out var dense)
-					    && _filter.ContainsId(id))
-					{
-						action.Invoke(id, ref page[dense]);
-					}
+					action.Invoke(id, ref data[dense]);
 				}
 			}
 		}
@@ -48,22 +39,13 @@ namespace Massive
 			var data = _components.Data;
 			var ids = SetHelpers.GetMinimalSet(_components, _filter.Include).Ids;
 
-			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, _components.Count))
+			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				if (!data.HasPage(pageIndex))
+				var id = ids[i];
+				if (_components.TryGetDense(id, out var dense)
+				    && _filter.ContainsId(id))
 				{
-					continue;
-				}
-
-				var page = data.Pages[pageIndex];
-				for (int i = pageLength - 1; i >= 0; i--)
-				{
-					var id = ids[indexOffset + i];
-					if (_components.TryGetDense(id, out var dense)
-					    && _filter.ContainsId(id))
-					{
-						action.Invoke(id, ref page[dense], extra);
-					}
+					action.Invoke(id, ref data[dense], extra);
 				}
 			}
 		}

@@ -26,24 +26,14 @@ namespace Massive
 			var minData = SetHelpers.GetMinimalSet(_components1, _components2);
 			var ids = SetHelpers.GetMinimalSet(minData, _filter.Include).Ids;
 
-			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, ids.Length))
+			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				if (!data1.HasPage(pageIndex) || !data2.HasPage(pageIndex))
+				var id = ids[i];
+				if (_components1.TryGetDense(id, out var dense1)
+				    && _components2.TryGetDense(id, out var dense2)
+				    && _filter.ContainsId(id))
 				{
-					continue;
-				}
-
-				var page1 = data1.Pages[pageIndex];
-				var page2 = data2.Pages[pageIndex];
-				for (int i = pageLength - 1; i >= 0; i--)
-				{
-					var id = ids[indexOffset + i];
-					if (_components1.TryGetDense(id, out var dense1)
-					    && _components2.TryGetDense(id, out var dense2)
-					    && _filter.ContainsId(id))
-					{
-						action.Invoke(id, ref page1[dense1], ref page2[dense2]);
-					}
+					action.Invoke(id, ref data1[dense1], ref data2[dense2]);
 				}
 			}
 		}
@@ -56,24 +46,14 @@ namespace Massive
 			var minData = SetHelpers.GetMinimalSet(_components1, _components2);
 			var ids = SetHelpers.GetMinimalSet(minData, _filter.Include).Ids;
 
-			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, ids.Length))
+			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				if (!data1.HasPage(pageIndex) || !data2.HasPage(pageIndex))
+				var id = ids[i];
+				if (_components1.TryGetDense(id, out var dense1)
+				    && _components2.TryGetDense(id, out var dense2)
+				    && _filter.ContainsId(id))
 				{
-					continue;
-				}
-
-				var page1 = data1.Pages[pageIndex];
-				var page2 = data2.Pages[pageIndex];
-				for (int i = pageLength - 1; i >= 0; i--)
-				{
-					var id = ids[indexOffset + i];
-					if (_components1.TryGetDense(id, out var dense1)
-					    && _components2.TryGetDense(id, out var dense2)
-					    && _filter.ContainsId(id))
-					{
-						action.Invoke(id, ref page1[dense1], ref page2[dense2], extra);
-					}
+					action.Invoke(id, ref data1[dense1], ref data2[dense2], extra);
 				}
 			}
 		}

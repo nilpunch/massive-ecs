@@ -44,9 +44,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int FastMod(int value, int mod)
 		{
-			uint v = (uint)value;
-			uint m = (uint)mod;
-			return (int)(v & (m - 1));
+			return (int)((uint)value & ((uint)mod - 1));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -43,7 +43,7 @@ namespace Massive
 		public override void SwapDense(int denseA, int denseB)
 		{
 			base.SwapDense(denseA, denseB);
-			(Data[denseA], Data[denseB]) = (Data[denseB], Data[denseA]);
+			Data.Swap(denseA, denseB);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

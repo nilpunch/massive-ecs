@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -35,13 +34,12 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					var page2 = data2.Pages[pageIndex];
 					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
 					{
 						int id = ids1[indexOffset + dense1];
 						if (_components2.TryGetDense(id, out var dense2))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2]);
+							action.Invoke(id, ref page1[dense1], ref data2[dense2]);
 						}
 					}
 				}
@@ -56,14 +54,13 @@ namespace Massive
 						continue;
 					}
 
-					var page1 = data1.Pages[pageIndex];
 					var page2 = data2.Pages[pageIndex];
 					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
 					{
 						int id = ids2[indexOffset + dense2];
 						if (_components1.TryGetDense(id, out var dense1))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2]);
+							action.Invoke(id, ref data1[dense1], ref page2[dense2]);
 						}
 					}
 				}
@@ -88,13 +85,12 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					var page2 = data2.Pages[pageIndex];
 					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
 					{
 						int id = ids1[indexOffset + dense1];
 						if (_components2.TryGetDense(id, out var dense2))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2], extra);
+							action.Invoke(id, ref page1[dense1], ref data2[dense2], extra);
 						}
 					}
 				}
@@ -109,14 +105,13 @@ namespace Massive
 						continue;
 					}
 
-					var page1 = data1.Pages[pageIndex];
 					var page2 = data2.Pages[pageIndex];
 					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
 					{
 						int id = ids2[indexOffset + dense2];
 						if (_components1.TryGetDense(id, out var dense1))
 						{
-							action.Invoke(id, ref page1[dense1], ref page2[dense2], extra);
+							action.Invoke(id, ref data1[dense1], ref page2[dense2], extra);
 						}
 					}
 				}

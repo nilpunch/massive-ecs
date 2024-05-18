@@ -12,8 +12,9 @@ namespace Massive
 		public static int CountAssignedInAll(int id, IReadOnlyList<IReadOnlySet> sets)
 		{
 			int counter = 0;
-			foreach (var set in sets)
+			for (var i = 0; i < sets.Count; i++)
 			{
+				var set = sets[i];
 				if (set.IsAssigned(id))
 				{
 					counter += 1;
@@ -26,8 +27,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AssignedInAll(int id, IReadOnlyList<IReadOnlySet> sets)
 		{
-			foreach (var set in sets)
+			for (var i = 0; i < sets.Count; i++)
 			{
+				var set = sets[i];
 				if (!set.IsAssigned(id))
 				{
 					return false;
@@ -40,8 +42,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool NotAssignedInAll(int id, IReadOnlyList<IReadOnlySet> sets)
 		{
-			foreach (var set in sets)
+			for (var i = 0; i < sets.Count; i++)
 			{
+				var set = sets[i];
 				if (set.IsAssigned(id))
 				{
 					return false;
