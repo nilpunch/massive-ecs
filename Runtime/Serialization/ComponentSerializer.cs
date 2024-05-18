@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 // ReSharper disable MustUseReturnValue
@@ -11,13 +12,17 @@ namespace Massive.Serialization
 
 			SparseSetSerializer.Serialize(set, stream);
 
-			// if (set is DataSet<T> dataSet)
-			// {
-			// 	fixed (T* data = dataSet.RawData)
-			// 	{
-			// 		stream.Write(new ReadOnlySpan<byte>(data, set.Count * sizeof(T)));
-			// 	}
-			// }
+			if (set is DataSet<T> dataSet)
+			{
+				var pagedData = dataSet.Data;
+				foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedData.PageSize, set.Count))
+				{
+					fixed (T* page = pagedData.Pages[pageIndex])
+					{
+						stream.Write(new ReadOnlySpan<byte>(page, pageLength * sizeof(T)));
+					}
+				}
+			}
 		}
 
 		public unsafe void Deserialize(IRegistry registry, Stream stream)
@@ -26,13 +31,18 @@ namespace Massive.Serialization
 
 			SparseSetSerializer.Deserialize(set, stream);
 
-			// if (set is DataSet<T> dataSet)
-			// {
-			// 	fixed (T* data = dataSet.RawData)
-			// 	{
-			// 		stream.Read(new Span<byte>(data, set.Count * sizeof(T)));
-			// 	}
-			// }
+			if (set is DataSet<T> dataSet)
+			{
+				var pagedData = dataSet.Data;
+				foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedData.PageSize, set.Count))
+				{
+					pagedData.EnsurePage(pageIndex);
+					fixed (T* page = pagedData.Pages[pageIndex])
+					{
+						stream.Read(new Span<byte>(page, pageLength * sizeof(T)));
+					}
+				}
+			}
 		}
 	}
 }
