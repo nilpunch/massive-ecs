@@ -48,7 +48,7 @@ namespace Massive.PerformanceTests
 		public void GroupView_ForEach()
 		{
 			var view = new GroupView(_group);
-		
+
 			Measure.Method(() => view.ForEach((_) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)

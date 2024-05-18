@@ -9,7 +9,8 @@ namespace Massive
 		private readonly MassiveGroupsController _massiveGroups;
 
 		public MassiveRegistry(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeEmptyTypesAsDataSets = false)
-			: base(new MassiveGroupsController(dataCapacity, framesCapacity), new MassiveEntities(dataCapacity, framesCapacity), new MassiveSetFactory(dataCapacity, framesCapacity, storeEmptyTypesAsDataSets))
+			: base(new MassiveGroupsController(dataCapacity, framesCapacity), new MassiveEntities(dataCapacity, framesCapacity),
+				new MassiveSetFactory(dataCapacity, framesCapacity, storeEmptyTypesAsDataSets))
 		{
 			// Fetch instances from base
 			_massiveEntityEntities = (MassiveEntities)Entities;

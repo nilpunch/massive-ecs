@@ -12,7 +12,8 @@
 		private readonly int _framesCapacity;
 		private readonly bool _storeEmptyTypesAsDataSets;
 
-		public MassiveSetFactory(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeEmptyTypesAsDataSets = false)
+		public MassiveSetFactory(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity,
+			bool storeEmptyTypesAsDataSets = false)
 		{
 			_dataCapacity = dataCapacity;
 			_framesCapacity = framesCapacity;

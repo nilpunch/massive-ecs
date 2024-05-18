@@ -97,7 +97,7 @@ namespace Massive
 		public void CopyTo(PagedArray<T> other, int length = int.MaxValue, Action<T[], T[], int> copyMethod = null)
 		{
 			copyMethod ??= Array.Copy;
-			
+
 			if (PageSize != other.PageSize)
 			{
 				throw new Exception("Can't copy packed arrays with different page size.");

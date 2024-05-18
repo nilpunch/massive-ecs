@@ -94,10 +94,7 @@ namespace Massive.PerformanceTests
 				set.Assign(i);
 			}
 
-			Measure.Method(() =>
-				{
-					massive.SaveFrame();
-				})
+			Measure.Method(() => { massive.SaveFrame(); })
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
