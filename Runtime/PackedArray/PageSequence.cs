@@ -3,6 +3,9 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	/// <summary>
+	/// Reverse page sequence.
+	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct PageSequence
@@ -35,9 +38,8 @@ namespace Massive
 				_pageSize = pageSize;
 				_length = length;
 
-				_page = _length / _pageSize + 1;
-				_pageLength = 0;
-				_nextPageLength = MathHelpers.FastMod(_length, _pageSize);
+				_page = _length == 0 ? 0 : _length / _pageSize + 1;
+				_pageLength = _nextPageLength = MathHelpers.FastMod(_length, _pageSize);
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -47,6 +49,7 @@ namespace Massive
 				{
 					_pageLength = _nextPageLength;
 					_nextPageLength = _pageSize;
+
 					return true;
 				}
 
@@ -55,9 +58,8 @@ namespace Massive
 
 			public void Reset()
 			{
-				_page = _length / _pageSize + 1;
-				_pageLength = 0;
-				_nextPageLength = MathHelpers.FastMod(_length, _pageSize);
+				_page = _length == 0 ? 0 : _length / _pageSize + 1;
+				_pageLength = _nextPageLength = MathHelpers.FastMod(_length, _pageSize);
 			}
 
 			public (int PageIndex, int PageLength, int IndexOffset) Current => (_page, _pageLength, _page * _pageSize);
