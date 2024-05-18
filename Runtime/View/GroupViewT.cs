@@ -26,9 +26,14 @@ namespace Massive
 
 			if (_group.IsOwning(_components))
 			{
-				for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, groupIds.Length))
 				{
-					action.Invoke(groupIds[dense], ref data[dense]);
+					var page = data.Pages[pageIndex];
+					for (int dense = pageLength - 1; dense >= 0; dense--)
+					{
+						int id = groupIds[indexOffset + dense];
+						action.Invoke(id, ref page[dense]);
+					}
 				}
 			}
 			else
@@ -51,9 +56,14 @@ namespace Massive
 
 			if (_group.IsOwning(_components))
 			{
-				for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, groupIds.Length))
 				{
-					action.Invoke(groupIds[dense], ref data[dense], extra);
+					var page = data.Pages[pageIndex];
+					for (int dense = pageLength - 1; dense >= 0; dense--)
+					{
+						int id = groupIds[indexOffset + dense];
+						action.Invoke(id, ref page[dense], extra);
+					}
 				}
 			}
 			else

@@ -13,9 +13,9 @@ namespace Massive.Samples.Basic
 			registry.Assign<int>(entity1); // Assigns component with default value to an entity
 
 			registry.Assign(entity2, "String component"); // Assigns component with specific value
-			
+
 			registry.Assign(entity1, 10); // Overrides previously assigned component value
-			
+
 			if (registry.Has<string>(entity2)) // Checks whether an entity has such a component
 			{
 				registry.Unassign<string>(entity2); // Unassigns a component from this entity

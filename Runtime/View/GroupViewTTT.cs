@@ -33,58 +33,91 @@ namespace Massive
 			switch (_group.IsOwning(_components1), _group.IsOwning(_components2), _group.IsOwning(_components3))
 			{
 				case (true, true, true):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref data1[dense], ref data2[dense], ref data3[dense]);
+						var page1 = data1.Pages[pageIndex];
+						var page2 = data2.Pages[pageIndex];
+						var page3 = data3.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref page1[dense], ref page2[dense], ref page3[dense]);
+						}
 					}
 					break;
 
 				case (false, true, true):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref _components1.Get(id), ref data2[dense], ref data3[dense]);
+						var page2 = data2.Pages[pageIndex];
+						var page3 = data3.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref _components1.Get(id), ref page2[dense], ref page3[dense]);
+						}
 					}
 					break;
 
 				case (true, false, true):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref data1[dense], ref _components2.Get(id), ref data3[dense]);
+						var page1 = data1.Pages[pageIndex];
+						var page3 = data3.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref page1[dense], ref _components2.Get(id), ref page3[dense]);
+						}
 					}
 					break;
 
 				case (false, false, true):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref _components1.Get(id), ref _components2.Get(id), ref data3[dense]);
+						var page3 = data3.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref _components1.Get(id), ref _components2.Get(id), ref page3[dense]);
+						}
 					}
 					break;
 
 				case (true, true, false):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref data1[dense], ref data2[dense], ref _components3.Get(id));
+						var page1 = data1.Pages[pageIndex];
+						var page2 = data2.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref page1[dense], ref page2[dense], ref _components3.Get(id));
+						}
 					}
 					break;
 
 				case (false, true, false):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref _components1.Get(id), ref data2[dense], ref _components3.Get(id));
+						var page2 = data2.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref _components1.Get(id), ref page2[dense], ref _components3.Get(id));
+						}
 					}
 					break;
 
 				case (true, false, false):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref data1[dense], ref _components2.Get(id), ref _components3.Get(id));
+						var page1 = data1.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref page1[dense], ref _components2.Get(id), ref _components3.Get(id));
+						}
 					}
 					break;
 
@@ -103,6 +136,8 @@ namespace Massive
 		{
 			_group.EnsureSynced();
 
+			_group.EnsureSynced();
+
 			var data1 = _components1.Data;
 			var data2 = _components2.Data;
 			var data3 = _components3.Data;
@@ -111,58 +146,91 @@ namespace Massive
 			switch (_group.IsOwning(_components1), _group.IsOwning(_components2), _group.IsOwning(_components3))
 			{
 				case (true, true, true):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref data1[dense], ref data2[dense], ref data3[dense], extra);
+						var page1 = data1.Pages[pageIndex];
+						var page2 = data2.Pages[pageIndex];
+						var page3 = data3.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref page1[dense], ref page2[dense], ref page3[dense], extra);
+						}
 					}
 					break;
 
 				case (false, true, true):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref _components1.Get(id), ref data2[dense], ref data3[dense], extra);
+						var page2 = data2.Pages[pageIndex];
+						var page3 = data3.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref _components1.Get(id), ref page2[dense], ref page3[dense], extra);
+						}
 					}
 					break;
 
 				case (true, false, true):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref data1[dense], ref _components2.Get(id), ref data3[dense], extra);
+						var page1 = data1.Pages[pageIndex];
+						var page3 = data3.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref page1[dense], ref _components2.Get(id), ref page3[dense], extra);
+						}
 					}
 					break;
 
 				case (false, false, true):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref _components1.Get(id), ref _components2.Get(id), ref data3[dense], extra);
+						var page3 = data3.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref _components1.Get(id), ref _components2.Get(id), ref page3[dense], extra);
+						}
 					}
 					break;
 
 				case (true, true, false):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref data1[dense], ref data2[dense], ref _components3.Get(id), extra);
+						var page1 = data1.Pages[pageIndex];
+						var page2 = data2.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref page1[dense], ref page2[dense], ref _components3.Get(id), extra);
+						}
 					}
 					break;
 
 				case (false, true, false):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref _components1.Get(id), ref data2[dense], ref _components3.Get(id), extra);
+						var page2 = data2.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref _components1.Get(id), ref page2[dense], ref _components3.Get(id), extra);
+						}
 					}
 					break;
 
 				case (true, false, false):
-					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
 					{
-						int id = groupIds[dense];
-						action.Invoke(id, ref data1[dense], ref _components2.Get(id), ref _components3.Get(id), extra);
+						var page1 = data1.Pages[pageIndex];
+						for (int dense = pageLength - 1; dense >= 0; dense--)
+						{
+							int id = groupIds[indexOffset + dense];
+							action.Invoke(id, ref page1[dense], ref _components2.Get(id), ref _components3.Get(id), extra);
+						}
 					}
 					break;
 

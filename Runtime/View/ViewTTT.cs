@@ -26,42 +26,69 @@ namespace Massive
 			var data3 = _components3.Data;
 
 			// Iterate over smallest data set
-			if (data1.Length <= data2.Length && data1.Length <= data3.Length)
+			if (_components1.Count <= _components2.Count && _components1.Count <= _components3.Count)
 			{
 				var ids1 = _components1.Ids;
-				for (int dense1 = ids1.Length - 1; dense1 >= 0; dense1--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, _components1.Count))
 				{
-					int id = ids1[dense1];
-					if (_components2.TryGetDense(id, out var dense2) &&
-					    _components3.TryGetDense(id, out var dense3))
+					if (!data2.HasPage(pageIndex) || !data3.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
+						continue;
+					}
+
+					var page1 = data1.Pages[pageIndex];
+					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
+					{
+						int id = ids1[indexOffset + dense1];
+						if (_components2.TryGetDense(id, out var dense2) &&
+						    _components3.TryGetDense(id, out var dense3))
+						{
+							action.Invoke(id, ref page1[dense1], ref data2[dense2], ref data3[dense3]);
+						}
 					}
 				}
 			}
-			else if (data2.Length <= data1.Length && data2.Length <= data3.Length)
+			else if (_components2.Count <= _components1.Count && _components2.Count <= _components3.Count)
 			{
 				var ids2 = _components2.Ids;
-				for (int dense2 = ids2.Length - 1; dense2 >= 0; dense2--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data2.PageSize, _components2.Count))
 				{
-					int id = ids2[dense2];
-					if (_components1.TryGetDense(id, out var dense1) &&
-					    _components3.TryGetDense(id, out var dense3))
+					if (!data1.HasPage(pageIndex) || !data3.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
+						continue;
+					}
+
+					var page2 = data2.Pages[pageIndex];
+					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
+					{
+						int id = ids2[indexOffset + dense2];
+						if (_components1.TryGetDense(id, out var dense1) &&
+						    _components3.TryGetDense(id, out var dense3))
+						{
+							action.Invoke(id, ref data1[dense1], ref page2[dense2], ref data3[dense3]);
+						}
 					}
 				}
 			}
 			else
 			{
 				var ids3 = _components2.Ids;
-				for (int dense3 = ids3.Length - 1; dense3 >= 0; dense3--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data3.PageSize, _components3.Count))
 				{
-					int id = ids3[dense3];
-					if (_components1.TryGetDense(id, out var dense1) &&
-					    _components2.TryGetDense(id, out var dense2))
+					if (!data1.HasPage(pageIndex) || !data2.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
+						continue;
+					}
+
+					var page3 = data3.Pages[pageIndex];
+					for (int dense3 = pageLength - 1; dense3 >= 0; dense3--)
+					{
+						int id = ids3[indexOffset + dense3];
+						if (_components1.TryGetDense(id, out var dense1) &&
+						    _components2.TryGetDense(id, out var dense2))
+						{
+							action.Invoke(id, ref data1[dense1], ref data2[dense2], ref page3[dense3]);
+						}
 					}
 				}
 			}
@@ -75,42 +102,69 @@ namespace Massive
 			var data3 = _components3.Data;
 
 			// Iterate over smallest data set
-			if (data1.Length <= data2.Length && data1.Length <= data3.Length)
+			if (_components1.Count <= _components2.Count && _components1.Count <= _components3.Count)
 			{
 				var ids1 = _components1.Ids;
-				for (int dense1 = ids1.Length - 1; dense1 >= 0; dense1--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, _components1.Count))
 				{
-					int id = ids1[dense1];
-					if (_components2.TryGetDense(id, out var dense2) &&
-					    _components3.TryGetDense(id, out var dense3))
+					if (!data2.HasPage(pageIndex) || !data3.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3], extra);
+						continue;
+					}
+
+					var page1 = data1.Pages[pageIndex];
+					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
+					{
+						int id = ids1[indexOffset + dense1];
+						if (_components2.TryGetDense(id, out var dense2) &&
+						    _components3.TryGetDense(id, out var dense3))
+						{
+							action.Invoke(id, ref page1[dense1], ref data2[dense2], ref data3[dense3], extra);
+						}
 					}
 				}
 			}
-			else if (data2.Length <= data1.Length && data2.Length <= data3.Length)
+			else if (_components2.Count <= _components1.Count && _components2.Count <= _components3.Count)
 			{
 				var ids2 = _components2.Ids;
-				for (int dense2 = ids2.Length - 1; dense2 >= 0; dense2--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data2.PageSize, _components2.Count))
 				{
-					int id = ids2[dense2];
-					if (_components1.TryGetDense(id, out var dense1) &&
-					    _components3.TryGetDense(id, out var dense3))
+					if (!data1.HasPage(pageIndex) || !data3.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3], extra);
+						continue;
+					}
+
+					var page2 = data2.Pages[pageIndex];
+					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
+					{
+						int id = ids2[indexOffset + dense2];
+						if (_components1.TryGetDense(id, out var dense1) &&
+						    _components3.TryGetDense(id, out var dense3))
+						{
+							action.Invoke(id, ref data1[dense1], ref page2[dense2], ref data3[dense3], extra);
+						}
 					}
 				}
 			}
 			else
 			{
 				var ids3 = _components2.Ids;
-				for (int dense3 = ids3.Length - 1; dense3 >= 0; dense3--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data3.PageSize, _components3.Count))
 				{
-					int id = ids3[dense3];
-					if (_components1.TryGetDense(id, out var dense1) &&
-					    _components2.TryGetDense(id, out var dense2))
+					if (!data1.HasPage(pageIndex) || !data2.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3], extra);
+						continue;
+					}
+
+					var page3 = data3.Pages[pageIndex];
+					for (int dense3 = pageLength - 1; dense3 >= 0; dense3--)
+					{
+						int id = ids3[indexOffset + dense3];
+						if (_components1.TryGetDense(id, out var dense1) &&
+						    _components2.TryGetDense(id, out var dense2))
+						{
+							action.Invoke(id, ref data1[dense1], ref data2[dense2], ref page3[dense3], extra);
+						}
 					}
 				}
 			}

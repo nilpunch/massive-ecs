@@ -34,7 +34,7 @@ namespace Massive
 		public event Action<int> BeforeUnassigned;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Assign(int id)
+		public virtual void Assign(int id)
 		{
 			if (id < 0)
 			{

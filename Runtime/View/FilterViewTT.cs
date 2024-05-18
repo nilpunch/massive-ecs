@@ -28,14 +28,12 @@ namespace Massive
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				int id = ids[i];
+				var id = ids[i];
 				if (_components1.TryGetDense(id, out var dense1)
-				    && _components2.TryGetDense(id, out var dense2))
+				    && _components2.TryGetDense(id, out var dense2)
+				    && _filter.ContainsId(id))
 				{
-					if (_filter.ContainsId(id))
-					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2]);
-					}
+					action.Invoke(id, ref data1[dense1], ref data2[dense2]);
 				}
 			}
 		}
@@ -50,14 +48,12 @@ namespace Massive
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				int id = ids[i];
+				var id = ids[i];
 				if (_components1.TryGetDense(id, out var dense1)
-				    && _components2.TryGetDense(id, out var dense2))
+				    && _components2.TryGetDense(id, out var dense2)
+				    && _filter.ContainsId(id))
 				{
-					if (_filter.ContainsId(id))
-					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], extra);
-					}
+					action.Invoke(id, ref data1[dense1], ref data2[dense2], extra);
 				}
 			}
 		}

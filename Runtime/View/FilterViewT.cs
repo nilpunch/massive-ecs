@@ -24,13 +24,11 @@ namespace Massive
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				int id = ids[i];
-				if (_components.TryGetDense(id, out var dense))
+				var id = ids[i];
+				if (_components.TryGetDense(id, out var dense)
+				    && _filter.ContainsId(id))
 				{
-					if (_filter.ContainsId(id))
-					{
-						action.Invoke(id, ref data[dense]);
-					}
+					action.Invoke(id, ref data[dense]);
 				}
 			}
 		}
@@ -43,13 +41,11 @@ namespace Massive
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				int id = ids[i];
-				if (_components.TryGetDense(id, out var dense))
+				var id = ids[i];
+				if (_components.TryGetDense(id, out var dense)
+				    && _filter.ContainsId(id))
 				{
-					if (_filter.ContainsId(id))
-					{
-						action.Invoke(id, ref data[dense], extra);
-					}
+					action.Invoke(id, ref data[dense], extra);
 				}
 			}
 		}

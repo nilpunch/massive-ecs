@@ -23,27 +23,45 @@ namespace Massive
 			var data2 = _components2.Data;
 
 			// Iterate over smallest data set
-			if (data1.Length <= data2.Length)
+			if (_components1.Count <= _components2.Count)
 			{
 				var ids1 = _components1.Ids;
-				for (int dense1 = ids1.Length - 1; dense1 >= 0; dense1--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, _components1.Count))
 				{
-					int id = ids1[dense1];
-					if (_components2.TryGetDense(id, out var dense2))
+					if (!data2.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2]);
+						continue;
+					}
+
+					var page1 = data1.Pages[pageIndex];
+					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
+					{
+						int id = ids1[indexOffset + dense1];
+						if (_components2.TryGetDense(id, out var dense2))
+						{
+							action.Invoke(id, ref page1[dense1], ref data2[dense2]);
+						}
 					}
 				}
 			}
 			else
 			{
 				var ids2 = _components2.Ids;
-				for (int dense2 = ids2.Length - 1; dense2 >= 0; dense2--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data2.PageSize, _components2.Count))
 				{
-					int id = ids2[dense2];
-					if (_components1.TryGetDense(id, out var dense1))
+					if (!data1.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2]);
+						continue;
+					}
+
+					var page2 = data2.Pages[pageIndex];
+					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
+					{
+						int id = ids2[indexOffset + dense2];
+						if (_components1.TryGetDense(id, out var dense1))
+						{
+							action.Invoke(id, ref data1[dense1], ref page2[dense2]);
+						}
 					}
 				}
 			}
@@ -56,27 +74,45 @@ namespace Massive
 			var data2 = _components2.Data;
 
 			// Iterate over smallest data set
-			if (data1.Length <= data2.Length)
+			if (_components1.Count <= _components2.Count)
 			{
 				var ids1 = _components1.Ids;
-				for (int dense1 = ids1.Length - 1; dense1 >= 0; dense1--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, _components1.Count))
 				{
-					int id = ids1[dense1];
-					if (_components2.TryGetDense(id, out var dense2))
+					if (!data2.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], extra);
+						continue;
+					}
+
+					var page1 = data1.Pages[pageIndex];
+					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
+					{
+						int id = ids1[indexOffset + dense1];
+						if (_components2.TryGetDense(id, out var dense2))
+						{
+							action.Invoke(id, ref page1[dense1], ref data2[dense2], extra);
+						}
 					}
 				}
 			}
 			else
 			{
 				var ids2 = _components2.Ids;
-				for (int dense2 = ids2.Length - 1; dense2 >= 0; dense2--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data2.PageSize, _components2.Count))
 				{
-					int id = ids2[dense2];
-					if (_components1.TryGetDense(id, out var dense1))
+					if (!data1.HasPage(pageIndex))
 					{
-						action.Invoke(id, ref data1[dense1], ref data2[dense2], extra);
+						continue;
+					}
+
+					var page2 = data2.Pages[pageIndex];
+					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
+					{
+						int id = ids2[indexOffset + dense2];
+						if (_components1.TryGetDense(id, out var dense1))
+						{
+							action.Invoke(id, ref data1[dense1], ref page2[dense2], extra);
+						}
 					}
 				}
 			}

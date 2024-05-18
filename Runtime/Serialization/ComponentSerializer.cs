@@ -14,9 +14,13 @@ namespace Massive.Serialization
 
 			if (set is DataSet<T> dataSet)
 			{
-				fixed (T* data = dataSet.RawData)
+				var pagedData = dataSet.Data;
+				foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedData.PageSize, set.Count))
 				{
-					stream.Write(new ReadOnlySpan<byte>(data, set.Count * sizeof(T)));
+					fixed (T* page = pagedData.Pages[pageIndex])
+					{
+						stream.Write(new ReadOnlySpan<byte>(page, pageLength * sizeof(T)));
+					}
 				}
 			}
 		}
@@ -29,9 +33,14 @@ namespace Massive.Serialization
 
 			if (set is DataSet<T> dataSet)
 			{
-				fixed (T* data = dataSet.RawData)
+				var pagedData = dataSet.Data;
+				foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedData.PageSize, set.Count))
 				{
-					stream.Read(new Span<byte>(data, set.Count * sizeof(T)));
+					pagedData.EnsurePage(pageIndex);
+					fixed (T* page = pagedData.Pages[pageIndex])
+					{
+						stream.Read(new Span<byte>(page, pageLength * sizeof(T)));
+					}
 				}
 			}
 		}
