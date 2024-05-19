@@ -6,11 +6,12 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class PagedArray<T>
 	{
 		private T[][] _pages;
 
-		public PagedArray(int pageSize = Constants.PageSize)
+		public PagedArray(int pageSize = Constants.DefaultPageSize)
 		{
 			if (!MathHelpers.IsPowerOfTwo(pageSize))
 			{
@@ -18,7 +19,7 @@ namespace Massive
 			}
 
 			PageSize = pageSize;
-			_pages = new T[Constants.PagesAmount][];
+			_pages = new T[Constants.DefaultPagesAmount][];
 		}
 
 		public T[][] Pages => _pages;
@@ -39,29 +40,26 @@ namespace Massive
 		public ref T GetSafe(int index)
 		{
 			int page = index / PageSize;
-
 			EnsurePage(page);
-
 			return ref _pages[page][MathHelpers.FastMod(index, PageSize)];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Swap(int first, int second)
 		{
-			var pageFirst = _pages[first / PageSize];
-			var pageSecond = _pages[second / PageSize];
+			var firstPage = _pages[first / PageSize];
+			var secondPage = _pages[second / PageSize];
 
 			var firstIndex = MathHelpers.FastMod(first, PageSize);
 			var secondIndex = MathHelpers.FastMod(second, PageSize);
 
-			(pageFirst[firstIndex], pageSecond[secondIndex]) = (pageSecond[secondIndex], pageFirst[firstIndex]);
+			(firstPage[firstIndex], secondPage[secondIndex]) = (secondPage[secondIndex], firstPage[firstIndex]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePageForIndex(int index)
 		{
 			int page = index / PageSize;
-
 			EnsurePage(page);
 		}
 

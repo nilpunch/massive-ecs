@@ -9,7 +9,7 @@ namespace Massive
 	{
 		private int _savedFrames;
 
-		public CyclicFrameCounter(int framesCapacity = Constants.FramesCapacity)
+		public CyclicFrameCounter(int framesCapacity = Constants.DefaultFramesCapacity)
 		{
 			FramesCapacity = framesCapacity;
 		}

@@ -2,10 +2,10 @@
 {
 	public static class Constants
 	{
-		public const int DataCapacity = 16;
-		public const int FramesCapacity = 121;
+		public const int DefaultSetCapacity = 16;
+		public const int DefaultFramesCapacity = 121;
 
-		public const int PageSize = 1024;
-		public const int PagesAmount = 8;
+		public const int DefaultPageSize = 1024;
+		public const int DefaultPagesAmount = 8;
 	}
 }

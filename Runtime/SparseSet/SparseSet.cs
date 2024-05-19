@@ -17,10 +17,10 @@ namespace Massive
 
 		public int Count { get; set; }
 
-		public SparseSet(int dataCapacity = Constants.DataCapacity)
+		public SparseSet(int setCapacity = Constants.DefaultSetCapacity)
 		{
-			_dense = new int[dataCapacity];
-			_sparse = new int[dataCapacity];
+			_dense = new int[setCapacity];
+			_sparse = new int[setCapacity];
 		}
 
 		public ReadOnlySpan<int> Ids => new ReadOnlySpan<int>(Dense, 0, Count);

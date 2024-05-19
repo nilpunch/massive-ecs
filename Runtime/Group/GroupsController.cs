@@ -11,8 +11,8 @@ namespace Massive
 
 		protected List<IGroup> AllGroups { get; } = new List<IGroup>();
 
-		public GroupsController(int nonOwningDataCapacity = Constants.DataCapacity)
-			: this(new NormalGroupFactory(nonOwningDataCapacity))
+		public GroupsController(int nonOwningSetCapacity = Constants.DefaultSetCapacity)
+			: this(new NormalGroupFactory(nonOwningSetCapacity))
 		{
 		}
 

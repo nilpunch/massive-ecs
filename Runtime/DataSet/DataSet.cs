@@ -12,10 +12,10 @@ namespace Massive
 	{
 		public PagedArray<T> Data { get; }
 
-		public DataSet(int dataCapacity = Constants.DataCapacity)
-			: base(dataCapacity)
+		public DataSet(int setCapacity = Constants.DefaultSetCapacity, int pageSize = Constants.DefaultPageSize)
+			: base(setCapacity)
 		{
-			Data = new PagedArray<T>();
+			Data = new PagedArray<T>(pageSize);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

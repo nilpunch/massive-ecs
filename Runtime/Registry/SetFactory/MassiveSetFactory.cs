@@ -8,16 +8,18 @@
 	/// </remarks>
 	public class MassiveSetFactory : ISetFactory
 	{
-		private readonly int _dataCapacity;
+		private readonly int _setCapacity;
 		private readonly int _framesCapacity;
 		private readonly bool _storeEmptyTypesAsDataSets;
+		private readonly int _pageSize;
 
-		public MassiveSetFactory(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity,
-			bool storeEmptyTypesAsDataSets = false)
+		public MassiveSetFactory(int setCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
+			bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
 		{
-			_dataCapacity = dataCapacity;
+			_setCapacity = setCapacity;
 			_framesCapacity = framesCapacity;
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
+			_pageSize = pageSize;
 		}
 
 		public ISet CreateAppropriateSet<T>()
@@ -32,7 +34,7 @@
 
 		private ISet CreateSparseSet()
 		{
-			var massiveSparseSet = new MassiveSparseSet(_dataCapacity, _framesCapacity);
+			var massiveSparseSet = new MassiveSparseSet(_setCapacity, _framesCapacity);
 			massiveSparseSet.SaveFrame();
 			return massiveSparseSet;
 		}
@@ -41,13 +43,13 @@
 		{
 			if (ManagedUtils.IsManaged<T>())
 			{
-				var massiveManagedDataSet = ManagedUtils.CreateMassiveManagedDataSet<T>(_dataCapacity, _framesCapacity);
+				var massiveManagedDataSet = ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize);
 				((IMassive)massiveManagedDataSet).SaveFrame();
 				return massiveManagedDataSet;
 			}
 			else
 			{
-				var massiveDataSet = new MassiveDataSet<T>(_dataCapacity, _framesCapacity);
+				var massiveDataSet = new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize);
 				massiveDataSet.SaveFrame();
 				return massiveDataSet;
 			}

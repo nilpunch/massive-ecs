@@ -7,12 +7,12 @@ namespace Massive.Tests
 	{
 		[TestCase(0)]
 		[TestCase(1)]
-		[TestCase(Constants.PageSize)]
-		[TestCase(Constants.PageSize + 1)]
-		[TestCase(Constants.PageSize - 1)]
-		[TestCase(Constants.PageSize * 2)]
-		[TestCase(Constants.PageSize * 2 + 1)]
-		[TestCase(Constants.PageSize * 2 - 1)]
+		[TestCase(Constants.DefaultPageSize)]
+		[TestCase(Constants.DefaultPageSize + 1)]
+		[TestCase(Constants.DefaultPageSize - 1)]
+		[TestCase(Constants.DefaultPageSize * 2)]
+		[TestCase(Constants.DefaultPageSize * 2 + 1)]
+		[TestCase(Constants.DefaultPageSize * 2 - 1)]
 		public void PagedSpan_ShouldIterateOverAllElements(int length)
 		{
 			var packedArray = new PagedArray<int>();

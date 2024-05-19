@@ -25,7 +25,7 @@ namespace Massive
 			return new Enumerator(_pageSize, _length);
 		}
 
-		public ref struct Enumerator
+		public struct Enumerator
 		{
 			private readonly int _pageSize;
 			private readonly int _length;
@@ -62,7 +62,11 @@ namespace Massive
 				_pageLength = _nextPageLength = MathHelpers.FastMod(_length, _pageSize);
 			}
 
-			public (int PageIndex, int PageLength, int IndexOffset) Current => (_page, _pageLength, _page * _pageSize);
+			public (int PageIndex, int PageLength, int IndexOffset) Current
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => (_page, _pageLength, _page * _pageSize);
+			}
 		}
 	}
 }

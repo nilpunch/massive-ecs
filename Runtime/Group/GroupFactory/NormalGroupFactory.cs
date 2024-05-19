@@ -4,11 +4,11 @@ namespace Massive
 {
 	public class NormalGroupFactory : IGroupFactory
 	{
-		private readonly int _nonOwningDataCapacity;
+		private readonly int _nonOwningSetCapacity;
 
-		public NormalGroupFactory(int nonOwningDataCapacity = Constants.DataCapacity)
+		public NormalGroupFactory(int nonOwningSetCapacity = Constants.DefaultSetCapacity)
 		{
-			_nonOwningDataCapacity = nonOwningDataCapacity;
+			_nonOwningSetCapacity = nonOwningSetCapacity;
 		}
 
 		public IOwningGroup CreateOwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
@@ -18,7 +18,7 @@ namespace Massive
 
 		public IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null)
 		{
-			return new NonOwningGroup(include, exclude, _nonOwningDataCapacity);
+			return new NonOwningGroup(include, exclude, _nonOwningSetCapacity);
 		}
 	}
 }

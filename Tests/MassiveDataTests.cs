@@ -13,7 +13,7 @@ namespace Massive.Tests
 		[Test]
 		public void Delete_ShouldMakeNotAlive()
 		{
-			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
+			var massiveData = new MassiveDataSet<TestState>(setCapacity: 4, framesCapacity: 2);
 
 			massiveData.Assign(0, new TestState { Value = 1 });
 			massiveData.Assign(1, new TestState { Value = 2 });
@@ -29,7 +29,7 @@ namespace Massive.Tests
 		[Test]
 		public void Ensure_ShouldMakeStatesAlive()
 		{
-			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
+			var massiveData = new MassiveDataSet<TestState>(setCapacity: 4, framesCapacity: 2);
 
 			Assert.IsFalse(massiveData.IsAssigned(0));
 			Assert.IsFalse(massiveData.IsAssigned(1));
@@ -47,7 +47,7 @@ namespace Massive.Tests
 		[Test]
 		public void Ensure_ShouldInitializeData()
 		{
-			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
+			var massiveData = new MassiveDataSet<TestState>(setCapacity: 4, framesCapacity: 2);
 
 			massiveData.Assign(0, new TestState { Value = 1 });
 			massiveData.Assign(1, new TestState { Value = 2 });
@@ -61,7 +61,7 @@ namespace Massive.Tests
 		[Test]
 		public void State_WhenAffected_ShouldChangeState()
 		{
-			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 2, framesCapacity: 2);
+			var massiveData = new MassiveDataSet<TestState>(setCapacity: 2, framesCapacity: 2);
 
 			massiveData.Assign(0, new TestState { Value = 1 });
 
@@ -73,7 +73,7 @@ namespace Massive.Tests
 		[Test]
 		public void SaveFrame_ShouldPreserveStates()
 		{
-			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 4, framesCapacity: 2);
+			var massiveData = new MassiveDataSet<TestState>(setCapacity: 4, framesCapacity: 2);
 
 			massiveData.Assign(0, new TestState { Value = 1 });
 			massiveData.Assign(1, new TestState { Value = 2 });
@@ -89,7 +89,7 @@ namespace Massive.Tests
 		[Test]
 		public void RollbackZero_ShouldResetCurrentFrameChanges()
 		{
-			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 2, framesCapacity: 2);
+			var massiveData = new MassiveDataSet<TestState>(setCapacity: 2, framesCapacity: 2);
 
 			massiveData.Assign(0, new TestState { Value = 1 });
 			massiveData.SaveFrame();
@@ -103,7 +103,7 @@ namespace Massive.Tests
 		[Test]
 		public void IsAlive_ShouldWorkCorrectWithRollback()
 		{
-			var massiveData = new MassiveDataSet<TestState>(dataCapacity: 2, framesCapacity: 2);
+			var massiveData = new MassiveDataSet<TestState>(setCapacity: 2, framesCapacity: 2);
 
 			massiveData.SaveFrame();
 

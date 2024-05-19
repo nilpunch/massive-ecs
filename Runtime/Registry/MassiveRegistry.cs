@@ -8,9 +8,10 @@ namespace Massive
 		private readonly MassiveEntities _massiveEntityEntities;
 		private readonly MassiveGroupsController _massiveGroups;
 
-		public MassiveRegistry(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity, bool storeEmptyTypesAsDataSets = false)
-			: base(new MassiveGroupsController(dataCapacity, framesCapacity), new MassiveEntities(dataCapacity, framesCapacity),
-				new MassiveSetFactory(dataCapacity, framesCapacity, storeEmptyTypesAsDataSets))
+		public MassiveRegistry(int setCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
+			bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
+			: base(new MassiveGroupsController(setCapacity, framesCapacity), new MassiveEntities(setCapacity, framesCapacity),
+				new MassiveSetFactory(setCapacity, framesCapacity, storeEmptyTypesAsDataSets, pageSize))
 		{
 			// Fetch instances from base
 			_massiveEntityEntities = (MassiveEntities)Entities;

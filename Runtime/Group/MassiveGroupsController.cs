@@ -6,8 +6,8 @@ namespace Massive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
-		public MassiveGroupsController(int nonOwningDataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
-			: base(new MassiveGroupFactory(nonOwningDataCapacity, framesCapacity))
+		public MassiveGroupsController(int nonOwningSetCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
+			: base(new MassiveGroupFactory(nonOwningSetCapacity, framesCapacity))
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 		}

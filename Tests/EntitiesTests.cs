@@ -67,8 +67,8 @@ namespace Massive.Tests
 			Assert.IsTrue(isAlive);
 		}
 
-		[TestCase(Constants.DataCapacity + 10)]
-		[TestCase(Constants.DataCapacity + 1000)]
+		[TestCase(Constants.DefaultSetCapacity + 10)]
+		[TestCase(Constants.DefaultSetCapacity + 1000)]
 		public void Create_WhenOutOfBounds_ShouldResize(int createAmount)
 		{
 			var entities = new Entities();
@@ -150,8 +150,8 @@ namespace Massive.Tests
 			Assert.IsTrue(isAlive);
 		}
 
-		[TestCase(Constants.DataCapacity + 10)]
-		[TestCase(Constants.DataCapacity + 1000)]
+		[TestCase(Constants.DefaultSetCapacity + 10)]
+		[TestCase(Constants.DefaultSetCapacity + 1000)]
 		public void CreateMany_WhenOutOfBounds_ShouldResize(int createAmount)
 		{
 			var entities = new Entities();

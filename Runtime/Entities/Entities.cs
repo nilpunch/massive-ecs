@@ -18,10 +18,10 @@ namespace Massive
 		public int Count { get; set; }
 		public int MaxId { get; set; }
 
-		public Entities(int dataCapacity = Constants.DataCapacity)
+		public Entities(int setCapacity = Constants.DefaultSetCapacity)
 		{
-			_dense = new Entity[dataCapacity];
-			_sparse = new int[dataCapacity];
+			_dense = new Entity[setCapacity];
+			_sparse = new int[setCapacity];
 		}
 
 		public ReadOnlySpan<Entity> Alive => new ReadOnlySpan<Entity>(Dense, 0, Count);

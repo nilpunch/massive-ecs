@@ -14,8 +14,8 @@ namespace Massive
 		public IGroupsController Groups { get; }
 		public IEntities Entities { get; }
 
-		public Registry(int dataCapacity = Constants.DataCapacity, bool storeEmptyTypesAsDataSets = false)
-			: this(new GroupsController(dataCapacity), new Entities(dataCapacity), new NormalSetFactory(dataCapacity, storeEmptyTypesAsDataSets))
+		public Registry(int setCapacity = Constants.DefaultSetCapacity, bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
+			: this(new GroupsController(setCapacity), new Entities(setCapacity), new NormalSetFactory(setCapacity, storeEmptyTypesAsDataSets, pageSize))
 		{
 		}
 

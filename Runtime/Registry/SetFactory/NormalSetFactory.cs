@@ -2,13 +2,16 @@
 {
 	public class NormalSetFactory : ISetFactory
 	{
-		private readonly int _dataCapacity;
+		private readonly int _setCapacity;
 		private readonly bool _storeEmptyTypesAsDataSets;
+		private readonly int _pageSize;
 
-		public NormalSetFactory(int dataCapacity = Constants.DataCapacity, bool storeEmptyTypesAsDataSets = false)
+		public NormalSetFactory(int setCapacity = Constants.DefaultSetCapacity, bool storeEmptyTypesAsDataSets = false,
+			int pageSize = Constants.DefaultPageSize)
 		{
-			_dataCapacity = dataCapacity;
+			_setCapacity = setCapacity;
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
+			_pageSize = pageSize;
 		}
 
 		public ISet CreateAppropriateSet<T>()
@@ -23,12 +26,12 @@
 
 		private ISet CreateSparseSet()
 		{
-			return new SparseSet(_dataCapacity);
+			return new SparseSet(_setCapacity);
 		}
 
 		private ISet CreateDataSet<T>()
 		{
-			return new DataSet<T>(_dataCapacity);
+			return new DataSet<T>(_setCapacity, _pageSize);
 		}
 	}
 }

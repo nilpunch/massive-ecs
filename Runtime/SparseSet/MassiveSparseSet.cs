@@ -14,8 +14,8 @@ namespace Massive
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _countByFrames;
 
-		public MassiveSparseSet(int dataCapacity = Constants.DataCapacity, int framesCapacity = Constants.FramesCapacity)
-			: base(dataCapacity)
+		public MassiveSparseSet(int setCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
+			: base(setCapacity)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
