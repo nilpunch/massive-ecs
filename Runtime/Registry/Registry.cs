@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
 
 namespace Massive
 {
 	public class Registry : IRegistry
 	{
-		private ISetFactory SetFactory { get; }
-		private Dictionary<Type, ISet> SetsLookup { get; }
+		protected IReadOnlyList<ISet> AllSets => SetCollection.AllSets;
 
-		protected List<ISet> AllSets { get; }
-
+		public IndexedSetCollection SetCollection { get; }
 		public IGroupsController Groups { get; }
 		public IEntities Entities { get; }
 
@@ -23,45 +19,17 @@ namespace Massive
 		{
 			Groups = groups;
 			Entities = entities;
-			SetFactory = setFactory;
-			SetsLookup = new Dictionary<Type, ISet>();
-			AllSets = new List<ISet>();
+			SetCollection = new IndexedSetCollection(setFactory);
 
 			Entities.BeforeDestroyed += UnassignFromAllSets;
 		}
 
 		private void UnassignFromAllSets(int id)
 		{
-			for (var i = 0; i < AllSets.Count; i++)
+			for (var i = 0; i < SetCollection.AllSets.Count; i++)
 			{
-				AllSets[i].Unassign(id);
+				SetCollection.AllSets[i].Unassign(id);
 			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IDataSet<T> Components<T>()
-		{
-			if (Any<T>() is not IDataSet<T> dataSet)
-			{
-				throw new Exception($"Type has no associated data! Maybe use {nameof(Any)}<T>() instead.");
-			}
-
-			return dataSet;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet Any<T>()
-		{
-			var type = typeof(T);
-
-			if (!SetsLookup.TryGetValue(type, out var set))
-			{
-				set = SetFactory.CreateAppropriateSet<T>();
-				SetsLookup.Add(type, set);
-				AllSets.Add(set);
-			}
-
-			return set;
 		}
 	}
 }

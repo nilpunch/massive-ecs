@@ -2,12 +2,8 @@
 {
 	public interface IRegistry
 	{
+		IndexedSetCollection SetCollection { get; }
 		IGroupsController Groups { get; }
-
 		IEntities Entities { get; }
-
-		IDataSet<T> Components<T>();
-
-		ISet Any<T>();
 	}
 }

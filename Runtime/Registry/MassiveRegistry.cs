@@ -5,7 +5,7 @@ namespace Massive
 {
 	public class MassiveRegistry : Registry, IMassive
 	{
-		private readonly MassiveEntities _massiveEntityEntities;
+		private readonly MassiveEntities _massiveEntities;
 		private readonly MassiveGroupsController _massiveGroups;
 
 		public MassiveRegistry(int setCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
@@ -14,21 +14,21 @@ namespace Massive
 				new MassiveSetFactory(setCapacity, framesCapacity, storeEmptyTypesAsDataSets, pageSize))
 		{
 			// Fetch instances from base
-			_massiveEntityEntities = (MassiveEntities)Entities;
+			_massiveEntities = (MassiveEntities)Entities;
 			_massiveGroups = (MassiveGroupsController)Groups;
 		}
 
-		public int CanRollbackFrames => _massiveEntityEntities.CanRollbackFrames;
+		public int CanRollbackFrames => _massiveEntities.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			_massiveEntityEntities.SaveFrame();
+			_massiveEntities.SaveFrame();
 			_massiveGroups.SaveFrame();
 
-			foreach (var set in AllSets)
+			for (var i = 0; i < AllSets.Count; i++)
 			{
-				if (set is IMassive massive)
+				if (AllSets[i] is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
@@ -38,12 +38,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			_massiveEntityEntities.Rollback(Math.Min(frames, _massiveEntityEntities.CanRollbackFrames));
+			_massiveEntities.Rollback(Math.Min(frames, _massiveEntities.CanRollbackFrames));
 			_massiveGroups.Rollback(Math.Min(frames, _massiveGroups.CanRollbackFrames));
 
-			foreach (var set in AllSets)
+			for (var i = 0; i < AllSets.Count; i++)
 			{
-				if (set is IMassive massive)
+				if (AllSets[i] is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}

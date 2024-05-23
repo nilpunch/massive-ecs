@@ -36,15 +36,20 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void Assign(int id)
 		{
+			// If ID is negative, nothing to be done
 			if (id < 0)
 			{
-				throw new ArgumentOutOfRangeException(nameof(id), id, $"Id must be positive.");
+				return;
 			}
 
 			// If element is alive, nothing to be done
-			if (IsAssigned(id))
+			if (id < SparseCapacity)
 			{
-				return;
+				var dense = Sparse[id];
+				if (dense < Count && Dense[dense] == id)
+				{
+					return;
+				}
 			}
 
 			int count = Count;
@@ -52,12 +57,12 @@ namespace Massive
 
 			if (id >= SparseCapacity)
 			{
-				GrowSparse(id + 1);
+				ResizeSparse(MathHelpers.GetNextPowerOf2(id + 1));
 			}
 
 			if (count >= DenseCapacity)
 			{
-				GrowDense(count + 1);
+				ResizeDense(MathHelpers.GetNextPowerOf2(count + 1));
 			}
 
 			AssignIndex(id, count);
@@ -71,7 +76,12 @@ namespace Massive
 			BeforeUnassigned?.Invoke(id);
 
 			// If element is not alive, nothing to be done
-			if (!TryGetDense(id, out var dense))
+			if (id < 0 || id >= SparseCapacity)
+			{
+				return;
+			}
+			var dense = Sparse[id];
+			if (dense >= Count || Dense[dense] != id)
 			{
 				return;
 			}
@@ -167,18 +177,6 @@ namespace Massive
 		{
 			Sparse[id] = dense;
 			Dense[dense] = id;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void GrowDense(int desiredCapacity)
-		{
-			ResizeDense(MathHelpers.GetNextPowerOf2(desiredCapacity));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void GrowSparse(int desiredCapacity)
-		{
-			ResizeSparse(MathHelpers.GetNextPowerOf2(desiredCapacity));
 		}
 	}
 }
