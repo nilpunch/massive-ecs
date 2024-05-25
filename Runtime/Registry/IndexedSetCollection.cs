@@ -19,6 +19,8 @@ namespace Massive
 			_setFactory = setFactory;
 		}
 
+		public IReadOnlyList<ISet> AllSets => _allSets;
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ISet Get<T>()
 		{
@@ -44,12 +46,6 @@ namespace Massive
 			}
 
 			return set;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public List<ISet>.Enumerator GetEnumerator()
-		{
-			return _allSets.GetEnumerator();
 		}
 
 		private static class TypeLookup<T>

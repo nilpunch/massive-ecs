@@ -22,9 +22,9 @@
 
 		private void UnassignFromAllSets(int id)
 		{
-			foreach (var set in SetCollection)
+			for (var i = 0; i < SetCollection.AllSets.Count; i++)
 			{
-				set.Unassign(id);
+				SetCollection.AllSets[i].Unassign(id);
 			}
 		}
 	}

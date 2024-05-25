@@ -26,9 +26,9 @@ namespace Massive
 			_massiveEntities.SaveFrame();
 			_massiveGroups.SaveFrame();
 
-			foreach (var set in SetCollection)
+			for (var i = 0; i < SetCollection.AllSets.Count; i++)
 			{
-				if (set is IMassive massive)
+				if (SetCollection.AllSets[i] is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
@@ -41,9 +41,9 @@ namespace Massive
 			_massiveEntities.Rollback(Math.Min(frames, _massiveEntities.CanRollbackFrames));
 			_massiveGroups.Rollback(Math.Min(frames, _massiveGroups.CanRollbackFrames));
 
-			foreach (var set in SetCollection)
+			for (var i = 0; i < SetCollection.AllSets.Count; i++)
 			{
-				if (set is IMassive massive)
+				if (SetCollection.AllSets[i] is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}

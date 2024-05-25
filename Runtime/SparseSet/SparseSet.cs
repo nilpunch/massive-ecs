@@ -168,8 +168,7 @@ namespace Massive
 		protected virtual void CopyFromToDense(int source, int destination)
 		{
 			int sourceId = Dense[source];
-			Dense[destination] = sourceId;
-			Sparse[sourceId] = destination;
+			AssignIndex(sourceId, destination);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
