@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace Massive
+﻿namespace Massive
 {
 	public class Registry : IRegistry
 	{
-		protected IReadOnlyList<ISet> AllSets => SetCollection.AllSets;
-
 		public IndexedSetCollection SetCollection { get; }
 		public IGroupsController Groups { get; }
 		public IEntities Entities { get; }
@@ -26,9 +22,9 @@ namespace Massive
 
 		private void UnassignFromAllSets(int id)
 		{
-			for (var i = 0; i < SetCollection.AllSets.Count; i++)
+			foreach (var set in SetCollection)
 			{
-				SetCollection.AllSets[i].Unassign(id);
+				set.Unassign(id);
 			}
 		}
 	}

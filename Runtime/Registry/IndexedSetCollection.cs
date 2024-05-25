@@ -9,11 +9,10 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class IndexedSetCollection
 	{
+		private readonly List<int> _allSetsIndicesSorted = new List<int>();
 		private readonly List<ISet> _allSets = new List<ISet>();
 		private readonly ISetFactory _setFactory;
 		private ISet[] _setsLookup = new ISet[16];
-
-		public IReadOnlyList<ISet> AllSets => _allSets;
 
 		public IndexedSetCollection(ISetFactory setFactory)
 		{
@@ -23,32 +22,42 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ISet Get<T>()
 		{
-			var typeIndex = CachedType<T>.Index;
+			var typeIndex = TypeLookup<T>.Index;
 
-			ISet set = typeIndex < _setsLookup.Length ? _setsLookup[typeIndex] : null;
+			// Resize lookup to fit
+			if (typeIndex >= _setsLookup.Length)
+			{
+				Array.Resize(ref _setsLookup, MathHelpers.GetNextPowerOf2(typeIndex + 1));
+			}
+
+			ISet set = _setsLookup[typeIndex];
 
 			if (set == null)
 			{
 				set = _setFactory.CreateAppropriateSet<T>();
-				_allSets.Add(set);
-
-				if (typeIndex >= _setsLookup.Length)
-				{
-					Array.Resize(ref _setsLookup, MathHelpers.GetNextPowerOf2(typeIndex + 1));
-				}
-
 				_setsLookup[typeIndex] = set;
+
+				// Maintain sets sorted
+				int insertionIndex = ~_allSetsIndicesSorted.BinarySearch(typeIndex);
+				_allSetsIndicesSorted.Insert(insertionIndex, typeIndex);
+				_allSets.Insert(insertionIndex, set);
 			}
 
 			return set;
 		}
 
-		private static class CachedType<T>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public List<ISet>.Enumerator GetEnumerator()
+		{
+			return _allSets.GetEnumerator();
+		}
+
+		private static class TypeLookup<T>
 		{
 			// ReSharper disable once StaticMemberInGenericType
 			public static readonly int Index;
 
-			static CachedType()
+			static TypeLookup()
 			{
 				Index = IndexCounter.NextIndex;
 				IndexCounter.NextIndex += 1;
