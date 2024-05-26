@@ -38,17 +38,5 @@ namespace Massive
 				}
 			}
 		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEach(EntityActionRef<T1, T2> action)
-		{
-			ForEachUniversal(new EntityActionRefInvoker<T1, T2> { Action = action });
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T1, T2, TExtra> action)
-		{
-			ForEachUniversal(new EntityActionRefExtraInvoker<T1, T2, TExtra> { Action = action, Extra = extra });
-		}
 	}
 }

@@ -36,9 +36,14 @@ namespace Massive.Serialization
 			_serializers.Add(new CustomComponentSerializer<T>(dataSerializer ?? new DefaultDataSetSerializer<T>()));
 		}
 
-		public void AddNonOwningGroup(SetSelector includeSets = null, SetSelector excludeSets = null)
+		public void AddNonOwningGroup<TInclude>() where TInclude : struct, IReadOnlySetSelector
 		{
-			_serializers.Add(new NonOwningGroupSerializer(includeSets, excludeSets));
+			AddNonOwningGroup<TInclude, None>();
+		}
+
+		public void AddNonOwningGroup<TInclude, TExclude>() where TInclude : struct, IReadOnlySetSelector where TExclude : struct, IReadOnlySetSelector
+		{
+			_serializers.Add(new NonOwningGroupSerializer<TInclude, TExclude>());
 		}
 
 		public void Serialize(IRegistry registry, Stream stream)

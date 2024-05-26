@@ -33,11 +33,5 @@ namespace Massive
 				}
 			}
 		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T, TExtra> action)
-		{
-			ForEachUniversal(new EntityActionRefExtraInvoker<T, TExtra> { Action = action, Extra = extra });
-		}
 	}
 }

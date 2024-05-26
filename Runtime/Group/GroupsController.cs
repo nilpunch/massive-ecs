@@ -5,6 +5,10 @@ namespace Massive
 {
 	public class GroupsController : IGroupsController
 	{
+		private readonly List<ISet> _ownedBuffer = new List<ISet>();
+		private readonly List<IReadOnlySet> _includeBuffer = new List<IReadOnlySet>();
+		private readonly List<IReadOnlySet> _excludeBuffer = new List<IReadOnlySet>();
+
 		private readonly IGroupFactory _groupFactory;
 		private readonly Dictionary<ISet, IOwningGroup> _ownedBase = new Dictionary<ISet, IOwningGroup>();
 		private readonly Dictionary<int, IGroup> _groupsLookup = new Dictionary<int, IGroup>();
@@ -21,15 +25,13 @@ namespace Massive
 			_groupFactory = groupFactory;
 		}
 
-		public IGroup EnsureGroup(IReadOnlyList<ISet> owned = null, IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
+		public IGroup EnsureGroup<TGroupSelector>(TGroupSelector groupSelector) where TGroupSelector : IGroupSelector
 		{
-			owned ??= Array.Empty<ISet>();
-			include ??= Array.Empty<IReadOnlySet>();
-			exclude ??= Array.Empty<IReadOnlySet>();
+			groupSelector.Select(_ownedBuffer, _includeBuffer, _excludeBuffer);
 
-			int ownedCode = owned.GetUnorderedHashCode();
-			int includeCode = include.GetUnorderedHashCode();
-			int excludeCode = exclude.GetUnorderedHashCode();
+			int ownedCode = _ownedBuffer.GetUnorderedHashCode();
+			int includeCode = _includeBuffer.GetUnorderedHashCode();
+			int excludeCode = _excludeBuffer.GetUnorderedHashCode();
 			int groupCode = MathHelpers.CombineHashes(MathHelpers.CombineHashes(ownedCode, includeCode), excludeCode);
 
 			// Try get existing
@@ -40,17 +42,17 @@ namespace Massive
 			}
 
 			// If non-owning, then just create new one
-			if (owned.Count == 0)
+			if (_ownedBuffer.Count == 0)
 			{
-				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude);
+				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(_includeBuffer, _excludeBuffer);
 				return RegisterAndSync(nonOwningGroup, groupCode);
 			}
 
 			// If there is no conflicts, just create new owning group
-			if (!_ownedBase.TryGetValue(owned[0], out var baseGroup))
+			if (!_ownedBase.TryGetValue(_ownedBuffer[0], out var baseGroup))
 			{
-				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
-				foreach (var set in owned)
+				var owningGroup = _groupFactory.CreateOwningGroup(_ownedBuffer, _includeBuffer, _excludeBuffer);
+				foreach (var set in _ownedBuffer)
 				{
 					_ownedBase.Add(set, owningGroup);
 				}
@@ -58,33 +60,33 @@ namespace Massive
 			}
 
 			// Try to create new group as extended
-			if (baseGroup.BaseForGroup(owned, include, exclude))
+			if (baseGroup.BaseForGroup(_ownedBuffer, _includeBuffer, _excludeBuffer))
 			{
 				var baseGroupNode = baseGroup;
 
 				// Find most nested group that is base for our
-				while (baseGroupNode.Extended != null && baseGroupNode.Extended.BaseForGroup(owned, include, exclude))
+				while (baseGroupNode.Extended != null && baseGroupNode.Extended.BaseForGroup(_ownedBuffer, _includeBuffer, _excludeBuffer))
 				{
 					baseGroupNode = baseGroupNode.Extended;
 				}
 
 				// Check if the next group can extend ours
-				if (baseGroupNode.Extended != null && !baseGroupNode.Extended.ExtendsGroup(owned, include, exclude))
+				if (baseGroupNode.Extended != null && !baseGroupNode.Extended.ExtendsGroup(_ownedBuffer, _includeBuffer, _excludeBuffer))
 				{
 					throw new Exception("Conflicting groups.");
 				}
 
-				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
+				var owningGroup = _groupFactory.CreateOwningGroup(_ownedBuffer, _includeBuffer, _excludeBuffer);
 				baseGroupNode.AddGroupAfterThis(owningGroup);
 				return RegisterAndSync(owningGroup, groupCode);
 			}
 
 			// Try to create group as base
-			if (baseGroup.ExtendsGroup(owned, include, exclude))
+			if (baseGroup.ExtendsGroup(_ownedBuffer, _includeBuffer, _excludeBuffer))
 			{
-				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
+				var owningGroup = _groupFactory.CreateOwningGroup(_ownedBuffer, _includeBuffer, _excludeBuffer);
 				baseGroup.AddGroupBeforeThis(owningGroup);
-				foreach (var set in owned)
+				foreach (var set in _ownedBuffer)
 				{
 					_ownedBase[set] = owningGroup;
 				}

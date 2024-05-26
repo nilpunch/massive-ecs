@@ -146,18 +146,9 @@ namespace Massive.Tests
 			registry.Assign<char>(entity2);
 			registry.Assign<float>(entity2);
 
-			var owningGroup3 = registry.Group(
-				registry.Many<int, char>(),
-				registry.Many<float, double>()
-			);
-			var owningGroup = registry.Group(
-				registry.Many<int>(),
-				registry.Many<float>()
-			);
-			var owningGroup2 = registry.Group(
-				registry.Many<int, char>(),
-				registry.Many<float>()
-			);
+			var owningGroup3 = registry.Group<Many<int, char>, Many<float, double>>();
+			var owningGroup = registry.Group<Many<int>, Many<float>>();
+			var owningGroup2 = registry.Group<Many<int, char>, Many<float>>();
 
 			var entity3 = registry.CreateEntity(3).Id;
 			registry.Assign<float>(entity3);
@@ -204,18 +195,11 @@ namespace Massive.Tests
 			switch (testGroupType)
 			{
 				case TestGroupType.FullOwningGroup:
-					return registry.Group(
-						owned: registry.Many<int, char>()
-					);
+					return registry.Group<Many<int, char>>();
 				case TestGroupType.PartialOwningGroup:
-					return registry.Group(
-						owned: registry.Many<int>(),
-						include: registry.Many<char>()
-					);
+					return registry.Group<Many<int>, Many<char>>();
 				case TestGroupType.NonOwningGroup:
-					return registry.Group(
-						include: registry.Many<int, char>()
-					);
+					return registry.Group<None, Many<int, char>>();
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
@@ -227,15 +211,9 @@ namespace Massive.Tests
 			{
 				case TestGroupType.FullOwningGroup:
 				case TestGroupType.PartialOwningGroup:
-					return registry.Group(
-						owned: registry.Many<int>(),
-						exclude: registry.Many<char>()
-					);
+					return registry.Group<Many<int>, None, Many<char>>();
 				case TestGroupType.NonOwningGroup:
-					return registry.Group(
-						include: registry.Many<int>(),
-						exclude: registry.Many<char>()
-					);
+					return registry.Group<None, Many<int>, Many<char>>();
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
