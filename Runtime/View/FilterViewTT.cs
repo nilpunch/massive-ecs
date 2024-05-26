@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct FilterView<T1, T2>
+	public readonly struct FilterView<T1, T2> : IView<T1, T2>
 	{
 		private readonly IFilter _filter;
 		private readonly IReadOnlyDataSet<T1> _components1;
@@ -19,7 +19,8 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEach(EntityActionRef<T1, T2> action)
+		public void ForEachUniversal<TInvoker>(TInvoker invoker)
+			where TInvoker : IEntityActionInvoker<T1, T2>
 		{
 			var data1 = _components1.Data;
 			var data2 = _components2.Data;
@@ -33,29 +34,21 @@ namespace Massive
 				    && _components2.TryGetDense(id, out var dense2)
 				    && _filter.ContainsId(id))
 				{
-					action.Invoke(id, ref data1[dense1], ref data2[dense2]);
+					invoker.Apply(id, ref data1[dense1], ref data2[dense2]);
 				}
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void ForEach(EntityActionRef<T1, T2> action)
+		{
+			ForEachUniversal(new EntityActionRefInvoker<T1, T2> { Action = action });
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T1, T2, TExtra> action)
 		{
-			var data1 = _components1.Data;
-			var data2 = _components2.Data;
-			var minData = SetHelpers.GetMinimalSet(_components1, _components2);
-			var ids = SetHelpers.GetMinimalSet(minData, _filter.Include).Ids;
-
-			for (int i = ids.Length - 1; i >= 0; i--)
-			{
-				var id = ids[i];
-				if (_components1.TryGetDense(id, out var dense1)
-				    && _components2.TryGetDense(id, out var dense2)
-				    && _filter.ContainsId(id))
-				{
-					action.Invoke(id, ref data1[dense1], ref data2[dense2], extra);
-				}
-			}
+			ForEachUniversal(new EntityActionRefExtraInvoker<T1, T2, TExtra> { Action = action, Extra = extra });
 		}
 	}
 }

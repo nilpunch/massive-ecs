@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct FilterView<T1, T2, T3>
+	public readonly struct FilterView<T1, T2, T3> : IView<T1, T2, T3>
 	{
 		private readonly IFilter _filter;
 		private readonly IReadOnlyDataSet<T1> _components1;
@@ -21,7 +21,8 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEach(EntityActionRef<T1, T2, T3> action)
+		public void ForEachUniversal<TInvoker>(TInvoker invoker)
+			where TInvoker : IEntityActionInvoker<T1, T2, T3>
 		{
 			var data1 = _components1.Data;
 			var data2 = _components2.Data;
@@ -37,31 +38,21 @@ namespace Massive
 				    && _components3.TryGetDense(id, out var dense3)
 				    && _filter.ContainsId(id))
 				{
-					action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
+					invoker.Apply(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
 				}
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void ForEach(EntityActionRef<T1, T2, T3> action)
+		{
+			ForEachUniversal(new EntityActionRefInvoker<T1, T2, T3> { Action = action });
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T1, T2, T3, TExtra> action)
 		{
-			var data1 = _components1.Data;
-			var data2 = _components2.Data;
-			var data3 = _components3.Data;
-			var minData = SetHelpers.GetMinimalSet(_components1, _components2, _components3);
-			var ids = SetHelpers.GetMinimalSet(minData, _filter.Include).Ids;
-
-			for (int i = ids.Length - 1; i >= 0; i--)
-			{
-				var id = ids[i];
-				if (_components1.TryGetDense(id, out var dense1)
-				    && _components2.TryGetDense(id, out var dense2)
-				    && _components3.TryGetDense(id, out var dense3)
-				    && _filter.ContainsId(id))
-				{
-					action.Invoke(id, ref data1[dense1], ref data2[dense2], ref data3[dense3], extra);
-				}
-			}
+			ForEachUniversal(new EntityActionRefExtraInvoker<T1, T2, T3, TExtra> { Action = action, Extra = extra });
 		}
 	}
 }

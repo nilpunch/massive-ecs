@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct FilterView
+	public readonly struct FilterView : IView
 	{
 		private readonly IFilter _filter;
 		private readonly IEntities _entities;
@@ -17,7 +17,8 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEach(EntityAction action)
+		public void ForEachUniversal<TInvoker>(TInvoker invoker)
+			where TInvoker : IEntityActionInvoker
 		{
 			if (_filter.Include.Count == 0)
 			{
@@ -28,7 +29,7 @@ namespace Massive
 					var entity = entities[i];
 					if (_filter.ContainsId(entity.Id))
 					{
-						action.Invoke(entity.Id);
+						invoker.Apply(entity.Id);
 					}
 				}
 			}
@@ -41,38 +42,7 @@ namespace Massive
 					var id = ids[i];
 					if (_filter.ContainsId(id))
 					{
-						action.Invoke(id);
-					}
-				}
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachExtra<TExtra>(TExtra extra, EntityActionExtra<TExtra> action)
-		{
-			if (_filter.Include.Count == 0)
-			{
-				var entities = _entities.Alive;
-
-				for (var i = entities.Length - 1; i >= 0; i--)
-				{
-					var entity = entities[i];
-					if (_filter.ContainsId(entity.Id))
-					{
-						action.Invoke(entity.Id, extra);
-					}
-				}
-			}
-			else
-			{
-				var ids = SetHelpers.GetMinimalSet(_filter.Include).Ids;
-
-				for (var i = ids.Length - 1; i >= 0; i--)
-				{
-					var id = ids[i];
-					if (_filter.ContainsId(id))
-					{
-						action.Invoke(id, extra);
+						invoker.Apply(id);
 					}
 				}
 			}

@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct GroupView
+	public readonly struct GroupView : IView
 	{
 		private readonly IGroup _group;
 
@@ -15,26 +15,15 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEach(EntityAction action)
+		public void ForEachUniversal<TInvoker>(TInvoker invoker)
+			where TInvoker : IEntityActionInvoker
 		{
 			_group.EnsureSynced();
 
 			var groupIds = _group.Ids;
 			for (var i = groupIds.Length - 1; i >= 0; i--)
 			{
-				action.Invoke(groupIds[i]);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachExtra<TExtra>(TExtra extra, EntityActionExtra<TExtra> action)
-		{
-			_group.EnsureSynced();
-
-			var groupIds = _group.Ids;
-			for (var i = groupIds.Length - 1; i >= 0; i--)
-			{
-				action.Invoke(groupIds[i], extra);
+				invoker.Apply(groupIds[i]);
 			}
 		}
 	}

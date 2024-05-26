@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct GroupView<T>
+	public readonly struct GroupView<T> : IView<T>
 	{
 		private readonly IGroup _group;
 		private readonly IReadOnlyDataSet<T> _components;
@@ -17,7 +17,8 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEach(EntityActionRef<T> action)
+		public void ForEachUniversal<TInvoker>(TInvoker invoker)
+			where TInvoker : IEntityActionInvoker<T>
 		{
 			_group.EnsureSynced();
 
@@ -32,7 +33,7 @@ namespace Massive
 					for (int dense = pageLength - 1; dense >= 0; dense--)
 					{
 						int id = groupIds[indexOffset + dense];
-						action.Invoke(id, ref page[dense]);
+						invoker.Apply(id, ref page[dense]);
 					}
 				}
 			}
@@ -41,37 +42,7 @@ namespace Massive
 				for (int dense = groupIds.Length - 1; dense >= 0; dense--)
 				{
 					int id = groupIds[dense];
-					action.Invoke(id, ref _components.Get(id));
-				}
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachExtra<TExtra>(TExtra extra, EntityActionRefExtra<T, TExtra> action)
-		{
-			_group.EnsureSynced();
-
-			var data = _components.Data;
-			var groupIds = _group.Ids;
-
-			if (_group.IsOwning(_components))
-			{
-				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, groupIds.Length))
-				{
-					var page = data.Pages[pageIndex];
-					for (int dense = pageLength - 1; dense >= 0; dense--)
-					{
-						int id = groupIds[indexOffset + dense];
-						action.Invoke(id, ref page[dense], extra);
-					}
-				}
-			}
-			else
-			{
-				for (int dense = groupIds.Length - 1; dense >= 0; dense--)
-				{
-					int id = groupIds[dense];
-					action.Invoke(id, ref _components.Get(id), extra);
+					invoker.Apply(id, ref _components.Get(id));
 				}
 			}
 		}

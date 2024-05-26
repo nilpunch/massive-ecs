@@ -60,5 +60,38 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
+
+		[Test, Performance]
+		public void ViewT_ForEachExtra()
+		{
+			var view = new View<TestState64>(_registry);
+
+			Measure.Method(() => view.ForEachExtra(0.016f, (int _, ref TestState64 _, float dt) => { }))
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
+		public void ViewTT_ForEachExtra()
+		{
+			var view = new View<TestState64, TestState64_2>(_registry);
+
+			Measure.Method(() => view.ForEachExtra(0.016f, (int _, ref TestState64 _, ref TestState64_2 _, float dt) => { }))
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
+		public void ViewTTT_ForEachExtra()
+		{
+			var view = new View<TestState64, TestState64_2, TestState64_3>(_registry);
+
+			Measure.Method(() => view.ForEachExtra(0.016f, (int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _, float dt) => { }))
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
 	}
 }

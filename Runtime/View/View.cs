@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct View
+	public readonly struct View : IView
 	{
 		private readonly IEntities _entities;
 
@@ -15,22 +15,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEach(EntityAction action)
+		public void ForEachUniversal<TInvoker>(TInvoker invoker)
+			where TInvoker : IEntityActionInvoker
 		{
 			var entities = _entities.Alive;
 			for (var i = entities.Length - 1; i >= 0; i--)
 			{
-				action.Invoke(entities[i].Id);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachExtra<TExtra>(TExtra extra, EntityActionExtra<TExtra> action)
-		{
-			var entities = _entities.Alive;
-			for (var i = entities.Length - 1; i >= 0; i--)
-			{
-				action.Invoke(entities[i].Id, extra);
+				invoker.Apply(entities[i].Id);
 			}
 		}
 	}
