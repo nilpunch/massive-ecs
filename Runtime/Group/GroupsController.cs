@@ -48,8 +48,18 @@ namespace Massive
 				return RegisterAndSync(nonOwningGroup, groupCode);
 			}
 
-			// If there is no conflicts, just create new owning group
-			if (!_ownedBase.TryGetValue(_ownedBuffer[0], out var baseGroup))
+			// Find base group for owned sets
+			IOwningGroup baseGroup = null;
+			foreach (var ownedSet in _ownedBuffer)
+			{
+				if (_ownedBase.TryGetValue(ownedSet, out baseGroup))
+				{
+					break;
+				}
+			}
+
+			// If there is no base group, just create new owning group
+			if (baseGroup == null)
 			{
 				var owningGroup = _groupFactory.CreateOwningGroup(_ownedBuffer, _includeBuffer, _excludeBuffer);
 				foreach (var set in _ownedBuffer)
@@ -59,7 +69,7 @@ namespace Massive
 				return RegisterAndSync(owningGroup, groupCode);
 			}
 
-			// Try to create new group as extended
+			// Try to create new group as extension to the base group
 			if (baseGroup.BaseForGroup(_ownedBuffer, _includeBuffer, _excludeBuffer))
 			{
 				var baseGroupNode = baseGroup;
@@ -81,7 +91,7 @@ namespace Massive
 				return RegisterAndSync(owningGroup, groupCode);
 			}
 
-			// Try to create group as base
+			// Try to create group as a new base group
 			if (baseGroup.ExtendsGroup(_ownedBuffer, _includeBuffer, _excludeBuffer))
 			{
 				var owningGroup = _groupFactory.CreateOwningGroup(_ownedBuffer, _includeBuffer, _excludeBuffer);
