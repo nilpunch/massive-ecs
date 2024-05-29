@@ -1,78 +1,107 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
 	public interface ISetSelector
 	{
-		void Select(IRegistry registry, List<ISet> result);
+		int Count { get; }
+
+		void Select(SetRegistry setRegistry, ArraySegment<ISet> result);
 	}
 
 	public interface IReadOnlySetSelector
 	{
-		void Select(IRegistry registry, List<IReadOnlySet> result);
+		int Count { get; }
+
+		void Select(SetRegistry setRegistry, ArraySegment<IReadOnlySet> result);
 	}
 
-	public struct None : ISetSelector, IReadOnlySetSelector
+	public struct None : IOwnSelector, IIncludeSelector, IExcludeSelector
 	{
-		public void Select(IRegistry registry, List<ISet> result)
+		public int Count
 		{
-			result.Clear();
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => 0;
 		}
 
-		public void Select(IRegistry registry, List<IReadOnlySet> result)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Select(SetRegistry setRegistry, ArraySegment<ISet> result)
 		{
-			result.Clear();
-		}
-	}
-
-	public struct Many<T> : ISetSelector, IReadOnlySetSelector
-	{
-		public void Select(IRegistry registry, List<ISet> result)
-		{
-			result.Clear();
-			result.Add(registry.Any<T>());
 		}
 
-		public void Select(IRegistry registry, List<IReadOnlySet> result)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Select(SetRegistry setRegistry, ArraySegment<IReadOnlySet> result)
 		{
-			result.Clear();
-			result.Add(registry.Any<T>());
 		}
 	}
 
-	public struct Many<T1, T2> : ISetSelector, IReadOnlySetSelector
+	public struct Many<T> : IOwnSelector, IIncludeSelector, IExcludeSelector
 	{
-		public void Select(IRegistry registry, List<ISet> result)
+		public int Count
 		{
-			result.Clear();
-			result.Add(registry.Any<T1>());
-			result.Add(registry.Any<T2>());
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => 1;
 		}
 
-		public void Select(IRegistry registry, List<IReadOnlySet> result)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Select(SetRegistry setRegistry, ArraySegment<ISet> result)
 		{
-			result.Clear();
-			result.Add(registry.Any<T1>());
-			result.Add(registry.Any<T2>());
+			result[0] = setRegistry.Get<T>();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Select(SetRegistry setRegistry, ArraySegment<IReadOnlySet> result)
+		{
+			result[0] = setRegistry.Get<T>();
 		}
 	}
 
-	public struct Many<T1, T2, T3> : ISetSelector, IReadOnlySetSelector
+	public struct Many<T1, T2> : IOwnSelector, IIncludeSelector, IExcludeSelector
 	{
-		public void Select(IRegistry registry, List<ISet> result)
+		public int Count
 		{
-			result.Clear();
-			result.Add(registry.Any<T1>());
-			result.Add(registry.Any<T2>());
-			result.Add(registry.Any<T3>());
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => 2;
 		}
 
-		public void Select(IRegistry registry, List<IReadOnlySet> result)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Select(SetRegistry setRegistry, ArraySegment<ISet> result)
 		{
-			result.Clear();
-			result.Add(registry.Any<T1>());
-			result.Add(registry.Any<T2>());
-			result.Add(registry.Any<T3>());
+			result[0] = setRegistry.Get<T1>();
+			result[1] = setRegistry.Get<T2>();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Select(SetRegistry setRegistry, ArraySegment<IReadOnlySet> result)
+		{
+			result[0] = setRegistry.Get<T1>();
+			result[1] = setRegistry.Get<T2>();
+		}
+	}
+
+	public struct Many<T1, T2, T3> : IOwnSelector, IIncludeSelector, IExcludeSelector
+	{
+		public int Count
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => 3;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Select(SetRegistry setRegistry, ArraySegment<ISet> result)
+		{
+			result[0] = setRegistry.Get<T1>();
+			result[1] = setRegistry.Get<T2>();
+			result[2] = setRegistry.Get<T3>();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Select(SetRegistry setRegistry, ArraySegment<IReadOnlySet> result)
+		{
+			result[0] = setRegistry.Get<T1>();
+			result[1] = setRegistry.Get<T2>();
+			result[2] = setRegistry.Get<T3>();
 		}
 	}
 }

@@ -2,8 +2,9 @@
 {
 	public interface IRegistry
 	{
-		IndexedSetCollection SetCollection { get; }
-		IGroupsController Groups { get; }
+		SetRegistry SetRegistry { get; }
+		FilterRegistry FilterRegistry { get; }
+		GroupRegistry GroupRegistry { get; }
 		IEntities Entities { get; }
 	}
 }

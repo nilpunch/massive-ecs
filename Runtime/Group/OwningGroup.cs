@@ -6,15 +6,15 @@ namespace Massive
 {
 	public class OwningGroup : IOwningGroup
 	{
-		private IReadOnlyList<IReadOnlySet> OwnedPlusIncluded { get; }
+		private ArraySegment<IReadOnlySet> OwnedPlusIncluded { get; }
 
-		private IReadOnlyList<IReadOnlySet> OwnedMinusFirstPlusIncluded { get; }
+		private ArraySegment<IReadOnlySet> OwnedMinusFirstPlusIncluded { get; }
 
-		private IReadOnlyList<ISet> Owned { get; }
+		private ArraySegment<ISet> Owned { get; }
 
-		private IReadOnlyList<IReadOnlySet> Include { get; }
+		private ArraySegment<IReadOnlySet> Include { get; }
 
-		private IReadOnlyList<IReadOnlySet> Exclude { get; }
+		private ArraySegment<IReadOnlySet> Exclude { get; }
 
 		protected int GroupLength { get; set; }
 

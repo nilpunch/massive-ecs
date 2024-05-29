@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Massive
 {
@@ -7,12 +6,11 @@ namespace Massive
 	{
 		public static EmptyFilter Instance { get; } = new EmptyFilter();
 
-		public IReadOnlyList<IReadOnlySet> Include => Array.Empty<IReadOnlySet>();
-		public IReadOnlyList<IReadOnlySet> Exclude => Array.Empty<IReadOnlySet>();
-
 		private EmptyFilter()
 		{
 		}
+
+		public ArraySegment<IReadOnlySet> Include => ArraySegment<IReadOnlySet>.Empty;
 
 		public bool ContainsId(int id)
 		{

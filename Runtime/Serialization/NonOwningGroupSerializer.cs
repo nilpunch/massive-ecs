@@ -1,10 +1,10 @@
 ﻿using System.IO;
 
-// ReSharper disable MustUseReturnValue
 namespace Massive.Serialization
 {
 	public class NonOwningGroupSerializer<TInclude, TExclude> : IRegistrySerializer
-		where TInclude : struct, IReadOnlySetSelector where TExclude : struct, IReadOnlySetSelector
+		where TInclude : struct, IIncludeSelector
+		where TExclude : struct, IExcludeSelector
 	{
 		public void Serialize(IRegistry registry, Stream stream)
 		{

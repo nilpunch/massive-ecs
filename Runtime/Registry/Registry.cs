@@ -2,29 +2,31 @@
 {
 	public class Registry : IRegistry
 	{
-		public IndexedSetCollection SetCollection { get; }
-		public IGroupsController Groups { get; }
+		public SetRegistry SetRegistry { get; }
+		public FilterRegistry FilterRegistry { get; }
+		public GroupRegistry GroupRegistry { get; }
 		public IEntities Entities { get; }
 
 		public Registry(int setCapacity = Constants.DefaultSetCapacity, bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
-			: this(new GroupsController(setCapacity), new Entities(setCapacity), new NormalSetFactory(setCapacity, storeEmptyTypesAsDataSets, pageSize))
+			: this(new GroupRegistry(setCapacity), new Entities(setCapacity), new NormalSetFactory(setCapacity, storeEmptyTypesAsDataSets, pageSize))
 		{
 		}
 
-		protected Registry(IGroupsController groups, IEntities entities, ISetFactory setFactory)
+		protected Registry(GroupRegistry groupRegistry, IEntities entities, ISetFactory setFactory)
 		{
-			Groups = groups;
+			GroupRegistry = groupRegistry;
 			Entities = entities;
-			SetCollection = new IndexedSetCollection(setFactory);
+			SetRegistry = new SetRegistry(setFactory);
+			FilterRegistry = new FilterRegistry();
 
 			Entities.BeforeDestroyed += UnassignFromAllSets;
 		}
 
 		private void UnassignFromAllSets(int id)
 		{
-			for (var i = 0; i < SetCollection.AllSets.Count; i++)
+			for (var i = 0; i < SetRegistry.All.Count; i++)
 			{
-				SetCollection.AllSets[i].Unassign(id);
+				SetRegistry.All[i].Unassign(id);
 			}
 		}
 	}

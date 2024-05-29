@@ -16,21 +16,9 @@ namespace Massive.PerformanceTests
 		{
 			_registry = new Registry().FillRegistryWith50Components(EntitiesCount);
 
-			var includeFilter = new IReadOnlySet[]
-			{
-				_registry.Any<TestState64>(),
-				_registry.Any<TestState64_2>(),
-				_registry.Any<TestState64_3>(),
-			};
-
-			var excludeFilter = new IReadOnlySet[]
-			{
-				_registry.Any<TestState64<byte, int, int>>(),
-				_registry.Any<TestState64<int, byte, int>>(),
-				_registry.Any<TestState64<int, int, byte>>(),
-			};
-
-			_filter = new Filter(includeFilter, _registry.Many<TestState64<byte, int, int>>());
+			_filter = _registry.Filter<
+				Include<TestState64, TestState64_2, TestState64_3>,
+				Exclude<TestState64<byte, int, int>, TestState64<int, byte, int>, TestState64<int, int, byte>>>();
 		}
 
 		[Test, Performance]

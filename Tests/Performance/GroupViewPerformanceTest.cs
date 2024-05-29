@@ -32,10 +32,10 @@ namespace Massive.PerformanceTests
 
 		public static readonly Func<IRegistry, IGroup>[] GroupSetups = new Func<IRegistry, IGroup>[]
 		{
-			(registry) => registry.Group<Many<TestState64, TestState64_2, TestState64_3>>(),
-			(registry) => registry.Group<Many<TestState64, TestState64_2>, Many<TestState64_3>>(),
-			(registry) => registry.Group<Many<TestState64>, Many<TestState64_2, TestState64_3>>(),
-			(registry) => registry.Group<None, Many<TestState64, TestState64_2, TestState64_3>>(),
+			(registry) => registry.Group<Own<TestState64, TestState64_2, TestState64_3>>(),
+			(registry) => registry.Group<Own<TestState64, TestState64_2>, Include<TestState64_3>>(),
+			(registry) => registry.Group<Own<TestState64>, Include<TestState64_2, TestState64_3>>(),
+			(registry) => registry.Group<None, Include<TestState64, TestState64_2, TestState64_3>>(),
 		};
 
 		public GroupViewPerformanceTest(GroupSetupType groupSetupType)

@@ -19,7 +19,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ISet Any<T>(this IRegistry registry)
 		{
-			return registry.SetCollection.Get<T>();
+			return registry.SetRegistry.Get<T>();
 		}
 	}
 }

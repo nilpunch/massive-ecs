@@ -1,40 +1,41 @@
 using System;
-using System.Collections.Generic;
 
 namespace Massive
 {
 	public class Filter : IFilter
 	{
-		public IReadOnlyList<IReadOnlySet> Include { get; }
-		public IReadOnlyList<IReadOnlySet> Exclude { get; }
+		private readonly ArraySegment<IReadOnlySet> _exclude;
+		private readonly ArraySegment<IReadOnlySet> _include;
 
-		public Filter(IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
+		public Filter(ArraySegment<IReadOnlySet> include, ArraySegment<IReadOnlySet> exclude)
 		{
-			Include = include ?? Array.Empty<IReadOnlySet>();
-			Exclude = exclude ?? Array.Empty<IReadOnlySet>();
+			_include = include;
+			_exclude = exclude;
 
-			for (int i = 0; i < Exclude.Count; i++)
+			for (int i = 0; i < _exclude.Count; i++)
 			{
-				if (Include.Contains(Exclude[i]))
+				if (_include.Contains(_exclude[i]))
 				{
 					throw new Exception("Conflicting include and exclude filter!");
 				}
 			}
 		}
 
+		public ArraySegment<IReadOnlySet> Include => _include;
+
 		public bool ContainsId(int id)
 		{
-			for (int i = 0; i < Include.Count; i++)
+			for (int i = 0; i < _include.Count; i++)
 			{
-				if (!Include[i].IsAssigned(id))
+				if (!_include[i].IsAssigned(id))
 				{
 					return false;
 				}
 			}
 
-			for (int i = 0; i < Exclude.Count; i++)
+			for (int i = 0; i < _exclude.Count; i++)
 			{
-				if (Exclude[i].IsAssigned(id))
+				if (_exclude[i].IsAssigned(id))
 				{
 					return false;
 				}

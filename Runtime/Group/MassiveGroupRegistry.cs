@@ -2,11 +2,11 @@ using System;
 
 namespace Massive
 {
-	public class MassiveGroupsController : GroupsController, IMassive
+	public class MassiveGroupRegistry : GroupRegistry, IMassive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
-		public MassiveGroupsController(int nonOwningSetCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
+		public MassiveGroupRegistry(int nonOwningSetCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
 			: base(new MassiveGroupFactory(nonOwningSetCapacity, framesCapacity))
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
@@ -18,9 +18,9 @@ namespace Massive
 		{
 			_cyclicFrameCounter.SaveFrame();
 
-			foreach (var group in AllGroups)
+			for (var i = 0; i < All.Count; i++)
 			{
-				if (group is IMassive massive)
+				if (All[i] is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
@@ -31,9 +31,9 @@ namespace Massive
 		{
 			_cyclicFrameCounter.Rollback(frames);
 
-			foreach (var group in AllGroups)
+			for (var i = 0; i < All.Count; i++)
 			{
-				if (group is IMassive massive)
+				if (All[i] is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}

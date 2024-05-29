@@ -1,6 +1,6 @@
 {
   "name": "massive-ecs",
-  "version": "6.0.1-alpha",
+  "version": "6.1.0-alpha",
   "displayName": "Massive ECS",
   "unity": "2021.2",
   "description": "Sparse set ECS library made for prediction-rollback netcode.",

@@ -6,9 +6,9 @@ namespace Massive
 {
 	public class NonOwningGroup : IGroup
 	{
-		private IReadOnlyList<IReadOnlySet> Include { get; }
+		private ArraySegment<IReadOnlySet> Include { get; }
 
-		private IReadOnlyList<IReadOnlySet> Exclude { get; }
+		private ArraySegment<IReadOnlySet> Exclude { get; }
 
 		public ISet GroupSet { get; }
 

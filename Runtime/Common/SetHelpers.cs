@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -9,7 +9,7 @@ namespace Massive
 	public static class SetHelpers
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int CountAssignedInAll(int id, IReadOnlyList<IReadOnlySet> sets)
+		public static int CountAssignedInAll(int id, ArraySegment<IReadOnlySet> sets)
 		{
 			int counter = 0;
 			for (var i = 0; i < sets.Count; i++)
@@ -25,7 +25,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AssignedInAll(int id, IReadOnlyList<IReadOnlySet> sets)
+		public static bool AssignedInAll(int id, ArraySegment<IReadOnlySet> sets)
 		{
 			for (var i = 0; i < sets.Count; i++)
 			{
@@ -40,7 +40,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool NotAssignedInAll(int id, IReadOnlyList<IReadOnlySet> sets)
+		public static bool NotAssignedInAll(int id, ArraySegment<IReadOnlySet> sets)
 		{
 			for (var i = 0; i < sets.Count; i++)
 			{
@@ -55,7 +55,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReadOnlySet GetMinimalSet(IReadOnlyList<IReadOnlySet> sets)
+		public static IReadOnlySet GetMinimalSet(ArraySegment<IReadOnlySet> sets)
 		{
 			IReadOnlySet minimal = sets[0];
 
@@ -71,7 +71,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReadOnlySet GetMinimalSet(IReadOnlySet first, IReadOnlyList<IReadOnlySet> sets)
+		public static IReadOnlySet GetMinimalSet(IReadOnlySet first, ArraySegment<IReadOnlySet> sets)
 		{
 			IReadOnlySet minimal = first;
 

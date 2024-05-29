@@ -1,23 +1,23 @@
 using System;
-using System.Collections.Generic;
 
 namespace Massive
 {
 	public class IncludeFilter : IFilter
 	{
-		public IReadOnlyList<IReadOnlySet> Include { get; }
-		public IReadOnlyList<IReadOnlySet> Exclude => Array.Empty<IReadOnlySet>();
+		private readonly ArraySegment<IReadOnlySet> _include;
 
-		public IncludeFilter(IReadOnlyList<IReadOnlySet> include = null)
+		public IncludeFilter(ArraySegment<IReadOnlySet> include)
 		{
-			Include = include ?? Array.Empty<IReadOnlySet>();
+			_include = include;
 		}
+
+		public ArraySegment<IReadOnlySet> Include => _include;
 
 		public bool ContainsId(int id)
 		{
-			for (int i = 0; i < Include.Count; i++)
+			for (int i = 0; i < _include.Count; i++)
 			{
-				if (!Include[i].IsAssigned(id))
+				if (!_include[i].IsAssigned(id))
 				{
 					return false;
 				}
