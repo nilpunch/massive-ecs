@@ -16,8 +16,8 @@ namespace Massive
 
 			if (filter == null)
 			{
-				ArraySegment<IReadOnlySet> include = new IReadOnlySet[selector.IncludeCount];
-				ArraySegment<IReadOnlySet> exclude = new IReadOnlySet[selector.ExcludeCount];
+				var include = new IReadOnlySet[selector.IncludeCount];
+				var exclude = new IReadOnlySet[selector.ExcludeCount];
 				selector.Select(include, exclude);
 
 				if (selector.IncludeCount != 0 && selector.ExcludeCount != 0)

@@ -1,5 +1,4 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 
 namespace Massive
@@ -29,16 +28,9 @@ namespace Massive
 				return group;
 			}
 
-			var owned = new ArraySegment<ISet>(ArrayPool<ISet>.Shared.Rent(groupSelector.OwnedCount), 0, groupSelector.OwnedCount);
-			var include = new ArraySegment<IReadOnlySet>(ArrayPool<IReadOnlySet>.Shared.Rent(groupSelector.IncludeCount), 0, groupSelector.IncludeCount);
-			var exclude = new ArraySegment<IReadOnlySet>(ArrayPool<IReadOnlySet>.Shared.Rent(groupSelector.ExcludeCount), 0, groupSelector.ExcludeCount);
-
-			void ReturnArrays()
-			{
-				ArrayPool<ISet>.Shared.Return(owned.Array);
-				ArrayPool<IReadOnlySet>.Shared.Return(include.Array);
-				ArrayPool<IReadOnlySet>.Shared.Return(exclude.Array);
-			}
+			var owned = new ISet[groupSelector.OwnedCount];
+			var include = new IReadOnlySet[groupSelector.IncludeCount];
+			var exclude = new IReadOnlySet[groupSelector.ExcludeCount];
 
 			groupSelector.Select(owned, include, exclude);
 
@@ -46,7 +38,6 @@ namespace Massive
 			if (groupSelector.OwnedCount == 0)
 			{
 				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude);
-				ReturnArrays();
 				return RegisterAndSync<TGroupSelector>(nonOwningGroup);
 			}
 
@@ -68,7 +59,6 @@ namespace Massive
 				{
 					_ownedBase.Add(set, owningGroup);
 				}
-				ReturnArrays();
 				return RegisterAndSync<TGroupSelector>(owningGroup);
 			}
 
@@ -86,13 +76,11 @@ namespace Massive
 				// Check if the next group can extend ours
 				if (baseGroupNode.Extended != null && !baseGroupNode.Extended.ExtendsGroup(owned, include, exclude))
 				{
-					ReturnArrays();
 					throw new Exception("Conflicting groups.");
 				}
 
 				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
 				baseGroupNode.AddGroupAfterThis(owningGroup);
-				ReturnArrays();
 				return RegisterAndSync<TGroupSelector>(owningGroup);
 			}
 
@@ -105,11 +93,9 @@ namespace Massive
 				{
 					_ownedBase[set] = owningGroup;
 				}
-				ReturnArrays();
 				return RegisterAndSync<TGroupSelector>(owningGroup);
 			}
 
-			ReturnArrays();
 			throw new Exception("Conflicting groups.");
 		}
 
