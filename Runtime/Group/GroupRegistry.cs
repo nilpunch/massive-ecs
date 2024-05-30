@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 namespace Massive
 {
-	public class GroupRegistry : TypeRegistry<IGroup>
+	public class GroupRegistry
 	{
+		private readonly GenericLookup<IGroup> _groupLookup = new GenericLookup<IGroup>();
 		private readonly IGroupFactory _groupFactory;
 		private readonly Dictionary<ISet, IOwningGroup> _ownedBase = new Dictionary<ISet, IOwningGroup>();
 
@@ -18,9 +19,11 @@ namespace Massive
 			_groupFactory = groupFactory;
 		}
 
+		public IReadOnlyList<IGroup> All => _groupLookup.All;
+
 		public IGroup Get<TGroupSelector>(TGroupSelector groupSelector) where TGroupSelector : IGroupSelector
 		{
-			var group = GetOrNull<TGroupSelector>();
+			var group = _groupLookup.GetOrDefault<TGroupSelector>();
 
 			// Try get existing
 			if (group != null)
@@ -101,7 +104,7 @@ namespace Massive
 
 		private IGroup RegisterAndSync<TGroupSelector>(IGroup group)
 		{
-			Bind<TGroupSelector>(group);
+			_groupLookup.Assign<TGroupSelector>(group);
 			group.EnsureSynced();
 			return group;
 		}

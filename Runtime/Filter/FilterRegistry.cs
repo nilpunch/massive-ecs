@@ -6,13 +6,15 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class FilterRegistry : TypeRegistry<IFilter>
+	public class FilterRegistry
 	{
+		private readonly GenericLookup<IFilter> _filterLookup = new GenericLookup<IFilter>();
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IFilter Get<TFilterSelector>(TFilterSelector selector)
 			where TFilterSelector : struct, IFilterSelector
 		{
-			var filter = GetOrNull<TFilterSelector>();
+			var filter = _filterLookup.GetOrDefault<TFilterSelector>();
 
 			if (filter == null)
 			{
@@ -33,7 +35,7 @@ namespace Massive
 					filter = new ExcludeFilter(exclude);
 				}
 
-				Bind<TFilterSelector>(filter);
+				_filterLookup.Assign<TFilterSelector>(filter);
 			}
 
 			return filter;

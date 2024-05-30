@@ -7,16 +7,29 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class TypeRegistry<TAbstract>
+	public class GenericLookup<TAbstract>
 	{
 		private readonly List<int> _allIndicesSorted = new List<int>();
-		private readonly List<TAbstract> _all = new List<TAbstract>();
+		private readonly List<TAbstract> _allSorted = new List<TAbstract>();
 		private TAbstract[] _lookup = new TAbstract[16];
 
-		public IReadOnlyList<TAbstract> All => _all;
+		public IReadOnlyList<TAbstract> All => _allSorted;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected TAbstract GetOrNull<TKey>()
+		public TAbstract GetOrDefault<TKey>()
+		{
+			var typeIndex = TypeLookup<TKey>.Index;
+
+			if (typeIndex >= _lookup.Length)
+			{
+				return default;
+			}
+
+			return _lookup[typeIndex];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Assign<TKey>(TAbstract item)
 		{
 			var typeIndex = TypeLookup<TKey>.Index;
 
@@ -26,22 +39,23 @@ namespace Massive
 				Array.Resize(ref _lookup, MathHelpers.GetNextPowerOf2(typeIndex + 1));
 			}
 
-			return _lookup[typeIndex];
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected void Bind<TKey>(TAbstract item)
-		{
-			var typeIndex = TypeLookup<TKey>.Index;
-
 			_lookup[typeIndex] = item;
 
 			// Maintain items sorted
-			int insertionIndex = ~_allIndicesSorted.BinarySearch(typeIndex);
-			_allIndicesSorted.Insert(insertionIndex, typeIndex);
-			_all.Insert(insertionIndex, item);
+			int itemIndex = _allIndicesSorted.BinarySearch(typeIndex);
+			if (itemIndex >= 0)
+			{
+				_allSorted[itemIndex] = item;
+			}
+			else
+			{
+				int insertionIndex = ~itemIndex;
+				_allIndicesSorted.Insert(insertionIndex, typeIndex);
+				_allSorted.Insert(insertionIndex, item);
+			}
 		}
 
+		// ReSharper disable once UnusedTypeParameter
 		private static class TypeLookup<TKey>
 		{
 			// ReSharper disable once StaticMemberInGenericType
