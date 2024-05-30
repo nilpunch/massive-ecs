@@ -64,13 +64,13 @@ class Program
             // ...
         });
 
-		// Iterate manually over data set
-		var velocities = registry.Components<Velocity>();
-		for (int i = 0; i < velocities.Count; ++i)
-		{
-			ref var velocity = ref velocities.Data[i];
-			// ...
-		}
+	// Iterate manually over data set
+	var velocities = registry.Components<Velocity>();
+	for (int i = 0; i < velocities.Count; ++i)
+	{
+		ref var velocity = ref velocities.Data[i];
+		// ...
+	}
     }
 
     static void Main()
