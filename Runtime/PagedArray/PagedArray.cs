@@ -91,21 +91,5 @@ namespace Massive
 		{
 			return new PagedSpan<T>(this, length);
 		}
-
-		public void CopyTo(PagedArray<T> other, int length = int.MaxValue, Action<T[], T[], int> copyMethod = null)
-		{
-			copyMethod ??= Array.Copy;
-
-			if (PageSize != other.PageSize)
-			{
-				throw new Exception("Can't copy packed arrays with different page size.");
-			}
-
-			foreach (var (pageIndex, pageLength, _) in new PageSequence(PageSize, length))
-			{
-				other.EnsurePage(pageIndex);
-				copyMethod(Pages[pageIndex], other.Pages[pageIndex], pageLength);
-			}
-		}
 	}
 }

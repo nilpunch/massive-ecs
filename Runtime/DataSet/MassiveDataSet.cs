@@ -15,9 +15,17 @@ namespace Massive
 		{
 		}
 
-		protected override void CopyData(T[] source, T[] destination, int count)
+		protected override void CopyData(PagedArray<T> source, PagedArray<T> destination, int count)
 		{
-			Array.Copy(source, destination, count);
+			foreach (var (pageIndex, pageLength, _) in new PageSequence(source.PageSize, count))
+			{
+				destination.EnsurePage(pageIndex);
+
+				var sourcePage = source.Pages[pageIndex];
+				var destinationPage = destination.Pages[pageIndex];
+
+				Array.Copy(sourcePage, destinationPage, pageLength);
+			}
 		}
 	}
 }

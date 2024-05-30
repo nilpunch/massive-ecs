@@ -1,3 +1,4 @@
+using System;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -15,11 +16,19 @@ namespace Massive
 		{
 		}
 
-		protected override void CopyData(T[] source, T[] destination, int count)
+		protected override void CopyData(PagedArray<T> source, PagedArray<T> destination, int count)
 		{
-			for (int i = 0; i < count; i++)
+			foreach (var (pageIndex, pageLength, _) in new PageSequence(source.PageSize, count))
 			{
-				source[i].CopyTo(ref destination[i]);
+				destination.EnsurePage(pageIndex);
+
+				var sourcePage = source.Pages[pageIndex];
+				var destinationPage = destination.Pages[pageIndex];
+
+				for (int i = 0; i < pageLength; i++)
+				{
+					sourcePage[i].CopyTo(ref destinationPage[i]);
+				}
 			}
 		}
 	}

@@ -47,7 +47,7 @@ namespace Massive
 			int currentCount = Count;
 
 			// Copy everything from current state to current frame
-			Data.CopyTo(_dataByFrames[currentFrame], currentCount, CopyData);
+			CopyData(Data, _dataByFrames[currentFrame], currentCount);
 			Array.Copy(Dense, _denseByFrames[currentFrame], currentCount);
 			Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
 			_countByFrames[currentFrame] = currentCount;
@@ -62,13 +62,13 @@ namespace Massive
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackCount = _countByFrames[rollbackFrame];
 
-			_dataByFrames[rollbackFrame].CopyTo(Data, rollbackCount, CopyData);
+			CopyData(_dataByFrames[rollbackFrame], Data, rollbackCount);
 			Array.Copy(_denseByFrames[rollbackFrame], Dense, rollbackCount);
 			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, SparseCapacity);
 			Count = rollbackCount;
 		}
 
-		protected abstract void CopyData(T[] source, T[] destination, int count);
+		protected abstract void CopyData(PagedArray<T> source, PagedArray<T> destination, int count);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void ResizeDense(int capacity)
