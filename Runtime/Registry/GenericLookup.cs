@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -28,7 +29,6 @@ namespace Massive
 			return _lookup[typeIndex];
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Assign<TKey>(TAbstract item)
 		{
 			var typeIndex = TypeLookup<TKey>.Index;
@@ -42,7 +42,9 @@ namespace Massive
 			_lookup[typeIndex] = item;
 
 			// Maintain items sorted
-			int itemIndex = _allIndicesSorted.BinarySearch(typeIndex);
+			int sortingKey = GetSimpleGenericTypeName(typeof(TKey)).GetHashCode();
+
+			int itemIndex = _allIndicesSorted.BinarySearch(sortingKey);
 			if (itemIndex >= 0)
 			{
 				_allSorted[itemIndex] = item;
@@ -50,9 +52,20 @@ namespace Massive
 			else
 			{
 				int insertionIndex = ~itemIndex;
-				_allIndicesSorted.Insert(insertionIndex, typeIndex);
+				_allIndicesSorted.Insert(insertionIndex, sortingKey);
 				_allSorted.Insert(insertionIndex, item);
 			}
+		}
+
+		private static string GetSimpleGenericTypeName(Type type)
+		{
+			if (type.IsGenericType)
+			{
+				string genericArguments = string.Join(",", type.GetGenericArguments().Select(GetSimpleGenericTypeName));
+				string typeItself = type.FullName[..type.FullName.IndexOf("`", StringComparison.Ordinal)];
+				return $"{typeItself}<{genericArguments}>";
+			}
+			return type.FullName;
 		}
 
 		// ReSharper disable once UnusedTypeParameter
