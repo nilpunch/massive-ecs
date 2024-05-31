@@ -25,7 +25,6 @@ namespace Massive
 		{
 			var group = _groupLookup.GetOrDefault<TGroupSelector>();
 
-			// If already exists, then just sync and return
 			if (group != null)
 			{
 				group.EnsureSynced();
