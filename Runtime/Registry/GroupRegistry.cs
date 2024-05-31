@@ -21,9 +21,12 @@ namespace Massive
 
 		public IReadOnlyList<IGroup> All => _groupLookup.All;
 
-		public IGroup Get<TGroupSelector>(TGroupSelector groupSelector) where TGroupSelector : IGroupSelector
+		public IGroup Get<TOwn, TInclude, TExclude>(SetRegistry setRegistry)
+			where TOwn : struct, IOwnSelector
+			where TInclude : struct, IIncludeSelector
+			where TExclude : struct, IExcludeSelector
 		{
-			var group = _groupLookup.GetOrDefault<TGroupSelector>();
+			var group = _groupLookup.GetOrDefault<Tuple<TOwn, TInclude, TExclude>>();
 
 			if (group != null)
 			{
@@ -31,17 +34,15 @@ namespace Massive
 				return group;
 			}
 
-			var owned = new ISet[groupSelector.OwnedCount];
-			var include = new IReadOnlySet[groupSelector.IncludeCount];
-			var exclude = new IReadOnlySet[groupSelector.ExcludeCount];
-
-			groupSelector.Select(owned, include, exclude);
+			var owned = default(TOwn).Select(setRegistry);
+			var include = default(TInclude).SelectReadOnly(setRegistry);
+			var exclude = default(TExclude).SelectReadOnly(setRegistry);
 
 			// If non-owning, then just create new one
-			if (groupSelector.OwnedCount == 0)
+			if (owned.Length == 0)
 			{
 				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude);
-				return RegisterAndSync<TGroupSelector>(nonOwningGroup);
+				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(nonOwningGroup);
 			}
 
 			// Find base group for any owned set
@@ -62,7 +63,7 @@ namespace Massive
 				{
 					_ownedBase.Add(set, owningGroup);
 				}
-				return RegisterAndSync<TGroupSelector>(owningGroup);
+				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(owningGroup);
 			}
 
 			// Try to create new group as extension to the base group
@@ -84,7 +85,7 @@ namespace Massive
 
 				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
 				baseGroupNode.AddGroupAfterThis(owningGroup);
-				return RegisterAndSync<TGroupSelector>(owningGroup);
+				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(owningGroup);
 			}
 
 			// Try to create group as a new base group
@@ -96,15 +97,15 @@ namespace Massive
 				{
 					_ownedBase[set] = owningGroup;
 				}
-				return RegisterAndSync<TGroupSelector>(owningGroup);
+				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(owningGroup);
 			}
 
 			throw new Exception("Conflicting groups.");
 		}
 
-		private IGroup RegisterAndSync<TGroupSelector>(IGroup group)
+		private IGroup RegisterAndSync<TGroupKey>(IGroup group)
 		{
-			_groupLookup.Assign<TGroupSelector>(group);
+			_groupLookup.Assign<TGroupKey>(group);
 			group.EnsureSynced();
 			return group;
 		}

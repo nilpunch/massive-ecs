@@ -1,4 +1,3 @@
-using System;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
