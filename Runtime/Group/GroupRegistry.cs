@@ -25,9 +25,10 @@ namespace Massive
 		{
 			var group = _groupLookup.GetOrDefault<TGroupSelector>();
 
-			// Try get existing
+			// If already exists, then just sync and return
 			if (group != null)
 			{
+				group.EnsureSynced();
 				return group;
 			}
 
@@ -44,7 +45,7 @@ namespace Massive
 				return RegisterAndSync<TGroupSelector>(nonOwningGroup);
 			}
 
-			// Find base group for owned sets
+			// Find base group for any owned set
 			IOwningGroup baseGroup = null;
 			foreach (var ownedSet in owned)
 			{

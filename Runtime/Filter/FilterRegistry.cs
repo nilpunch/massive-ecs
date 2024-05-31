@@ -30,9 +30,13 @@ namespace Massive
 				{
 					filter = new IncludeFilter(include);
 				}
-				else
+				else if (selector.ExcludeCount != 0)
 				{
 					filter = new ExcludeFilter(exclude);
+				}
+				else
+				{
+					filter = EmptyFilter.Instance;
 				}
 
 				_filterLookup.Assign<TFilterSelector>(filter);
