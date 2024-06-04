@@ -24,6 +24,8 @@ namespace Massive
 
 		int GetDense(int id);
 
+		int GetDenseOrInvalid(int id);
+
 		bool TryGetDense(int id, out int dense);
 
 		bool IsAssigned(int id);

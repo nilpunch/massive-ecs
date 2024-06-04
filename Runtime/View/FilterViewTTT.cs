@@ -33,9 +33,12 @@ namespace Massive
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				if (_components1.TryGetDense(id, out var dense1)
-				    && _components2.TryGetDense(id, out var dense2)
-				    && _components3.TryGetDense(id, out var dense3)
+				var dense1 = _components1.GetDenseOrInvalid(id);
+				var dense2 = _components2.GetDenseOrInvalid(id);
+				var dense3 = _components3.GetDenseOrInvalid(id);
+				if (dense1 != Constants.InvalidId
+				    && dense2 != Constants.InvalidId
+				    && dense3 != Constants.InvalidId
 				    && _filter.ContainsId(id))
 				{
 					invoker.Apply(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);

@@ -7,5 +7,7 @@
 
 		public const int DefaultPageSize = 1024;
 		public const int DefaultPagesAmount = 8;
+
+		public const int InvalidId = -1;
 	}
 }

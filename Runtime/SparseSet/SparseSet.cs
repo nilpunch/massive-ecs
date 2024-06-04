@@ -21,6 +21,8 @@ namespace Massive
 		{
 			_dense = new int[setCapacity];
 			_sparse = new int[setCapacity];
+
+			Array.Fill(_sparse, Constants.InvalidId);
 		}
 
 		public ReadOnlySpan<int> Ids => new ReadOnlySpan<int>(Dense, 0, Count);
@@ -43,13 +45,9 @@ namespace Massive
 			}
 
 			// If element is alive, nothing to be done
-			if (id < SparseCapacity)
+			if (id < SparseCapacity && Sparse[id] != Constants.InvalidId)
 			{
-				var dense = Sparse[id];
-				if (dense < Count && Dense[dense] == id)
-				{
-					return;
-				}
+				return;
 			}
 
 			int count = Count;
@@ -81,13 +79,14 @@ namespace Massive
 				return;
 			}
 			var dense = Sparse[id];
-			if (dense >= Count || Dense[dense] != id)
+			if (dense == Constants.InvalidId)
 			{
 				return;
 			}
 
 			int count = Count;
 			Count -= 1;
+			Sparse[id] = Constants.InvalidId;
 
 			// If dense is the last used element, decreasing alive count is enough
 			if (dense == count - 1)
@@ -105,14 +104,27 @@ namespace Massive
 			var ids = Ids;
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
+				int id = ids[i];
 				BeforeUnassigned?.Invoke(ids[i]);
 				Count -= 1;
+				Sparse[id] = Constants.InvalidId;
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetDense(int id)
 		{
+			return Sparse[id];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int GetDenseOrInvalid(int id)
+		{
+			if (id < 0 || id >= SparseCapacity)
+			{
+				return Constants.InvalidId;
+			}
+
 			return Sparse[id];
 		}
 
@@ -127,20 +139,13 @@ namespace Massive
 
 			dense = Sparse[id];
 
-			return dense < Count && Dense[dense] == id;
+			return dense != Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAssigned(int id)
 		{
-			if (id < 0 || id >= SparseCapacity)
-			{
-				return false;
-			}
-
-			int dense = Sparse[id];
-
-			return dense < Count && Dense[dense] == id;
+			return id >= 0 && id < SparseCapacity && Sparse[id] != Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -161,7 +166,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void ResizeSparse(int capacity)
 		{
+			int previousCapacity = SparseCapacity;
 			Array.Resize(ref _sparse, capacity);
+			Array.Fill(_sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -26,8 +26,8 @@ namespace Massive
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				if (_components.TryGetDense(id, out var dense)
-				    && _filter.ContainsId(id))
+				var dense = _components.GetDenseOrInvalid(id);
+				if (dense != Constants.InvalidId && _filter.ContainsId(id))
 				{
 					invoker.Apply(id, ref data[dense]);
 				}

@@ -38,7 +38,8 @@ namespace Massive
 					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
 					{
 						int id = ids1[indexOffset + dense1];
-						if (_components2.TryGetDense(id, out var dense2))
+						int dense2 = _components2.GetDenseOrInvalid(id);
+						if (dense2 != Constants.InvalidId)
 						{
 							invoker.Apply(id, ref page1[dense1], ref data2[dense2]);
 						}
@@ -59,7 +60,8 @@ namespace Massive
 					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
 					{
 						int id = ids2[indexOffset + dense2];
-						if (_components1.TryGetDense(id, out var dense1))
+						int dense1 = _components1.GetDenseOrInvalid(id);
+						if (dense1 != Constants.InvalidId)
 						{
 							invoker.Apply(id, ref data1[dense1], ref page2[dense2]);
 						}
