@@ -84,11 +84,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void ResizeSparse(int capacity)
 		{
+			int previousCapacity = SparseCapacity;
 			base.ResizeSparse(capacity);
 
 			for (int i = 0; i < _cyclicFrameCounter.FramesCapacity; i++)
 			{
 				Array.Resize(ref _sparseByFrames[i], capacity);
+				Array.Fill(_sparseByFrames[i], Constants.InvalidId, previousCapacity, capacity - previousCapacity);
 			}
 		}
 	}
