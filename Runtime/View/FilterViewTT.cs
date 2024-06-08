@@ -11,11 +11,11 @@ namespace Massive
 		private readonly IReadOnlyDataSet<T1> _components1;
 		private readonly IReadOnlyDataSet<T2> _components2;
 
-		public FilterView(IRegistry registry, IFilter filter = null)
+		public FilterView(IReadOnlyDataSet<T1> components1, IReadOnlyDataSet<T2> components2, IFilter filter = null)
 		{
+			_components1 = components1;
+			_components2 = components2;
 			_filter = filter ?? EmptyFilter.Instance;
-			_components1 = registry.Components<T1>();
-			_components2 = registry.Components<T2>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -15,7 +15,7 @@
 	{
 		static void Update(IRegistry registry, float deltaTime)
 		{
-			var view = new View<Position, Velocity>(registry);
+			var view = registry.View<Position, Velocity>();
 
 			// Iterate using view
 			view.ForEach((int entity, ref Position position, ref Velocity velocity) =>

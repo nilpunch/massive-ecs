@@ -11,11 +11,11 @@ namespace Massive
 		private readonly IReadOnlyDataSet<T2> _components2;
 		private readonly IReadOnlyDataSet<T3> _components3;
 
-		public View(IRegistry registry)
+		public View(IReadOnlyDataSet<T1> components1, IReadOnlyDataSet<T2> components2, IReadOnlyDataSet<T3> components3)
 		{
-			_components1 = registry.Components<T1>();
-			_components2 = registry.Components<T2>();
-			_components3 = registry.Components<T3>();
+			_components1 = components1;
+			_components2 = components2;
+			_components3 = components3;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

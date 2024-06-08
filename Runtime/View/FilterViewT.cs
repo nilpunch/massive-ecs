@@ -10,10 +10,10 @@ namespace Massive
 		private readonly IFilter _filter;
 		private readonly IReadOnlyDataSet<T> _components;
 
-		public FilterView(IRegistry registry, IFilter filter = null)
+		public FilterView(IReadOnlyDataSet<T> components, IFilter filter = null)
 		{
+			_components = components;
 			_filter = filter ?? EmptyFilter.Instance;
-			_components = registry.Components<T>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

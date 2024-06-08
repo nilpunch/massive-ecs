@@ -9,9 +9,9 @@ namespace Massive
 	{
 		private readonly IEntities _entities;
 
-		public View(IRegistry registry)
+		public View(IEntities entities)
 		{
-			_entities = registry.Entities;
+			_entities = entities;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

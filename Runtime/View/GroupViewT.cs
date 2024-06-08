@@ -10,10 +10,10 @@ namespace Massive
 		private readonly IGroup _group;
 		private readonly IReadOnlyDataSet<T> _components;
 
-		public GroupView(IRegistry registry, IGroup group)
+		public GroupView(IReadOnlyDataSet<T> components, IGroup group)
 		{
+			_components = components;
 			_group = group;
-			_components = registry.Components<T>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

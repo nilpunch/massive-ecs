@@ -10,10 +10,10 @@ namespace Massive
 		private readonly IFilter _filter;
 		private readonly IEntities _entities;
 
-		public FilterView(IRegistry registry, IFilter filter = null)
+		public FilterView(IEntities entities, IFilter filter = null)
 		{
+			_entities = entities;
 			_filter = filter ?? EmptyFilter.Instance;
-			_entities = registry.Entities;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

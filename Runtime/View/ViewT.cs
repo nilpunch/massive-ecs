@@ -9,9 +9,9 @@ namespace Massive
 	{
 		private readonly IReadOnlyDataSet<T> _components;
 
-		public View(IRegistry registry)
+		public View(IReadOnlyDataSet<T> components)
 		{
-			_components = registry.Components<T>();
+			_components = components;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

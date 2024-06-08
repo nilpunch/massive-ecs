@@ -47,9 +47,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void GroupView_ForEach()
 		{
-			var view = new GroupView(_group);
-
-			Measure.Method(() => view.ForEach((_) => { }))
+			Measure.Method(() => _registry.GroupView(_group).ForEach((_) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -58,9 +56,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void GroupViewT_ForEach()
 		{
-			var view = new GroupView<TestState64>(_registry, _group);
-
-			Measure.Method(() => view.ForEach((int _, ref TestState64 _) => { }))
+			Measure.Method(() => _registry.GroupView<TestState64>(_group).ForEach((int _, ref TestState64 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -69,9 +65,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void GroupViewTT_ForEach()
 		{
-			var view = new GroupView<TestState64, TestState64_2>(_registry, _group);
-
-			Measure.Method(() => view.ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
+			Measure.Method(() => _registry.GroupView<TestState64, TestState64_2>(_group).ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -80,9 +74,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void GroupViewTTT_ForEach()
 		{
-			var view = new GroupView<TestState64, TestState64_2, TestState64_3>(_registry, _group);
-
-			Measure.Method(() => view.ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
+			Measure.Method(() => _registry.GroupView<TestState64, TestState64_2, TestState64_3>(_group).ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

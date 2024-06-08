@@ -11,11 +11,11 @@ namespace Massive
 		private readonly IReadOnlyDataSet<T1> _components1;
 		private readonly IReadOnlyDataSet<T2> _components2;
 
-		public GroupView(IRegistry registry, IGroup group)
+		public GroupView(IReadOnlyDataSet<T1> components1, IReadOnlyDataSet<T2> components2, IGroup group)
 		{
+			_components1 = components1;
+			_components2 = components2;
 			_group = group;
-			_components1 = registry.Components<T1>();
-			_components2 = registry.Components<T2>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

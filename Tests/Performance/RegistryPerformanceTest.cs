@@ -36,7 +36,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Registry_Create()
 		{
-			View entities = new View(_registry);
+			View entities = _registry.View();
 
 			Measure.Method(() =>
 				{
@@ -55,7 +55,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Registry_Destroy()
 		{
-			View entities = new View(_registry);
+			View entities = _registry.View();
 
 			Measure.Method(() => entities.ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity)))
 				.SetUp(() =>
