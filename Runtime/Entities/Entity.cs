@@ -5,14 +5,17 @@ namespace Massive
 {
 	public readonly struct Entity : IEquatable<Entity>
 	{
-		public readonly int IdPlusOne;
+		private const int DefaultId = Constants.InvalidId;
+		private const int IdOffset = -DefaultId;
+		
+		public readonly int IdWithOffset;
 		public readonly uint ReuseCount;
 
-		public int Id => IdPlusOne - 1;
+		public int Id => IdWithOffset - IdOffset;
 
 		public Entity(int id, uint reuseCount)
 		{
-			IdPlusOne = id + 1;
+			IdWithOffset = id + IdOffset;
 			ReuseCount = reuseCount;
 		}
 
@@ -42,7 +45,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Equals(Entity other)
 		{
-			return IdPlusOne == other.IdPlusOne && ReuseCount == other.ReuseCount;
+			return IdWithOffset == other.IdWithOffset && ReuseCount == other.ReuseCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
