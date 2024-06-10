@@ -1,4 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using NUnit.Framework;
 using Unity.PerformanceTesting;
 
 namespace Massive.PerformanceTests
@@ -16,9 +19,26 @@ namespace Massive.PerformanceTests
 		{
 			_registry = new Registry().FillRegistryWith50Components(EntitiesCount);
 
-			_filter = _registry.Filter<
+			_filter = GetTestFilter(_registry);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static IFilter GetTestFilter(IRegistry registry)
+		{
+			return registry.Filter<
 				Include<TestState64, TestState64_2, TestState64_3>,
 				Exclude<TestState64<byte, int, int>, TestState64<int, byte, int>, TestState64<int, int, byte>>>();
+		}
+
+		[Test, Performance]
+		public void FilterView_Fill()
+		{
+			var result = new List<int>();
+			Measure.Method(() => _registry.FilterView(_filter).Fill(result))
+				.CleanUp(result.Clear)
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
 		}
 
 		[Test, Performance]
@@ -52,6 +72,16 @@ namespace Massive.PerformanceTests
 		public void FilterViewTTT_ForEach()
 		{
 			Measure.Method(() => _registry.FilterView<TestState64, TestState64_2, TestState64_3>(_filter).ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
+		public void FilterViewTTT_ForEach_NoFilterCache()
+		{
+			Measure.Method(() => _registry.FilterView<TestState64, TestState64_2, TestState64_3>(GetTestFilter(_registry))
+					.ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

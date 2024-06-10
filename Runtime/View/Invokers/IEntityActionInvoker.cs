@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
@@ -27,6 +28,17 @@ namespace Massive
 		public void Apply(int id)
 		{
 			Action.Invoke(id, Extra);
+		}
+	}
+
+	public struct EntityFillInvoker : IEntityActionInvoker
+	{
+		public IList<int> Result;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Apply(int id)
+		{
+			Result.Add(id);
 		}
 	}
 }

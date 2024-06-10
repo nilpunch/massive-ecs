@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
@@ -52,6 +53,13 @@ namespace Massive
 			where TView : IView<T1, T2, T3>
 		{
 			view.ForEachUniversal(new EntityActionRefExtraInvoker<T1, T2, T3, TExtra> { Action = action, Extra = extra });
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void Fill<TView>(this TView view, IList<int> result)
+			where TView : IView
+		{
+			view.ForEachUniversal(new EntityFillInvoker { Result = result });
 		}
 	}
 }
