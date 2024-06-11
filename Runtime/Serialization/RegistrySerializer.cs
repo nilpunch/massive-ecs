@@ -37,14 +37,14 @@ namespace Massive.Serialization
 		}
 
 		public void AddNonOwningGroup<TInclude>()
-			where TInclude : struct, IIncludeSelector
+			where TInclude : IIncludeSelector, new()
 		{
 			AddNonOwningGroup<TInclude, None>();
 		}
 
 		public void AddNonOwningGroup<TInclude, TExclude>()
-			where TInclude : struct, IIncludeSelector
-			where TExclude : struct, IExcludeSelector
+			where TInclude : IIncludeSelector, new()
+			where TExclude : IExcludeSelector, new()
 		{
 			_serializers.Add(new NonOwningGroupSerializer<TInclude, TExclude>());
 		}

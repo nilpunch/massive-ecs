@@ -133,7 +133,7 @@ namespace Massive
 		{
 			if (id < 0 || id >= SparseCapacity)
 			{
-				dense = default;
+				dense = Constants.InvalidId;
 				return false;
 			}
 

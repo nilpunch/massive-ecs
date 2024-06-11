@@ -6,15 +6,15 @@ namespace Massive
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IFilter Filter<TInclude>(this IRegistry registry)
-			where TInclude : struct, IIncludeSelector
+			where TInclude : IIncludeSelector, new()
 		{
 			return registry.FilterRegistry.Get<TInclude, None>(registry.SetRegistry);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IFilter Filter<TInclude, TExclude>(this IRegistry registry)
-			where TInclude : struct, IIncludeSelector
-			where TExclude : struct, IExcludeSelector
+			where TInclude : IIncludeSelector, new()
+			where TExclude : IExcludeSelector, new()
 		{
 			return registry.FilterRegistry.Get<TInclude, TExclude>(registry.SetRegistry);
 		}

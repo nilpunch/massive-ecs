@@ -12,15 +12,15 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IFilter Get<TInclude, TExclude>(SetRegistry setRegistry)
-			where TInclude : struct, IIncludeSelector
-			where TExclude : struct, IExcludeSelector
+			where TInclude : IIncludeSelector, new()
+			where TExclude : IExcludeSelector, new()
 		{
 			var filter = _filterLookup.GetOrDefault<Tuple<TInclude, TExclude>>();
 
 			if (filter == null)
 			{
-				var include = default(TInclude).SelectReadOnly(setRegistry);
-				var exclude = default(TExclude).SelectReadOnly(setRegistry);
+				var include = new TInclude().SelectReadOnly(setRegistry);
+				var exclude = new TExclude().SelectReadOnly(setRegistry);
 
 				if (include.Length != 0 && exclude.Length != 0)
 				{

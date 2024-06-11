@@ -7,40 +7,20 @@ namespace Massive
 	{
 	}
 
-	public struct Exclude<T> : IExcludeSelector
+	public class Exclude<T> : ReadOnlySelector<T>, IExcludeSelector
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IReadOnlySet[] SelectReadOnly(SetRegistry setRegistry)
-		{
-			return default(Many<T>).SelectReadOnly(setRegistry);
-		}
 	}
 
-	public struct Exclude<T1, T2> : IExcludeSelector
+	public class Exclude<T1, T2> : ReadOnlySelector<T1, T2>, IExcludeSelector
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IReadOnlySet[] SelectReadOnly(SetRegistry setRegistry)
-		{
-			return default(Many<T1, T2>).SelectReadOnly(setRegistry);
-		}
 	}
 
-	public struct Exclude<T1, T2, T3> : IExcludeSelector
+	public class Exclude<T1, T2, T3> : ReadOnlySelector<T1, T2, T3>, IExcludeSelector
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IReadOnlySet[] SelectReadOnly(SetRegistry setRegistry)
-		{
-			return default(Many<T1, T2, T3>).SelectReadOnly(setRegistry);
-		}
 	}
 
-	public struct Exclude<T1, T2, T3, TExclude> : IExcludeSelector
-		where TExclude : IExcludeSelector
+	public class Exclude<T1, T2, T3, TExclude> : ReadOnlySelector<T1, T2, T3, TExclude>, IExcludeSelector
+		where TExclude : IExcludeSelector, new()
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IReadOnlySet[] SelectReadOnly(SetRegistry setRegistry)
-		{
-			return default(TExclude).SelectReadOnly(setRegistry).Concat(default(Many<T1, T2, T3>).SelectReadOnly(setRegistry)).ToArray();
-		}
 	}
 }

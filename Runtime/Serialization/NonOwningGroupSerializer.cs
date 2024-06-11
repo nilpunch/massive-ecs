@@ -3,8 +3,8 @@
 namespace Massive.Serialization
 {
 	public class NonOwningGroupSerializer<TInclude, TExclude> : IRegistrySerializer
-		where TInclude : struct, IIncludeSelector
-		where TExclude : struct, IExcludeSelector
+		where TInclude : IIncludeSelector, new()
+		where TExclude : IExcludeSelector, new()
 	{
 		public void Serialize(IRegistry registry, Stream stream)
 		{

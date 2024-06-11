@@ -22,9 +22,9 @@ namespace Massive
 		public IReadOnlyList<IGroup> All => _groupLookup.All;
 
 		public IGroup Get<TOwn, TInclude, TExclude>(SetRegistry setRegistry)
-			where TOwn : struct, IOwnSelector
-			where TInclude : struct, IIncludeSelector
-			where TExclude : struct, IExcludeSelector
+			where TOwn : IOwnSelector, new()
+			where TInclude : IIncludeSelector, new()
+			where TExclude : IExcludeSelector, new()
 		{
 			var group = _groupLookup.GetOrDefault<Tuple<TOwn, TInclude, TExclude>>();
 
@@ -34,9 +34,9 @@ namespace Massive
 				return group;
 			}
 
-			var owned = default(TOwn).Select(setRegistry);
-			var include = default(TInclude).SelectReadOnly(setRegistry);
-			var exclude = default(TExclude).SelectReadOnly(setRegistry);
+			var owned = new TOwn().Select(setRegistry);
+			var include = new TInclude().SelectReadOnly(setRegistry);
+			var exclude = new TExclude().SelectReadOnly(setRegistry);
 
 			// If non-owning, then just create new one
 			if (owned.Length == 0)
