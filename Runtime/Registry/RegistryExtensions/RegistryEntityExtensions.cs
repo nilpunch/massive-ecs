@@ -37,6 +37,16 @@ namespace Massive
 		}
 
 		/// <summary>
+		/// Creates a unique entity with components of another entity.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Entity Clone(this IRegistry registry, Entity entity)
+		{
+			int cloneId = registry.Clone(entity.Id);
+			return registry.GetEntity(cloneId);
+		}
+
+		/// <summary>
 		/// Destroys this entity if alive.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

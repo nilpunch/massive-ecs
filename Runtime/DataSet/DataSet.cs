@@ -42,7 +42,13 @@ namespace Massive
 
 			Data.EnsurePageForIndex(Count);
 			base.Assign(id);
-			Data[Sparse[id]] = data;
+			Get(id) = data;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyData(int sourceId, int targetId)
+		{
+			Get(targetId) = Get(sourceId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
