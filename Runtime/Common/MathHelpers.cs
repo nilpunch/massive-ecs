@@ -47,7 +47,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int FastLog2(int value)
 		{
-			return sizeof(int) * 8 - LeadingZerosCount(value) - 1;
+			return sizeof(int) * 8 - LeadingZeroesCount(value) - 1;
 		}
 
 		/// <summary>
@@ -73,7 +73,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int LeadingZerosCount(int x)
+		public static int LeadingZeroesCount(int x)
 		{
 			x |= x >> 1;
 			x |= x >> 2;
