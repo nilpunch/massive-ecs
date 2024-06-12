@@ -96,7 +96,7 @@ class Program
 
 		// Create queries right in the update loop with no overhead
 		var filter = registry.Filter<Include<PlayerTag>, Exclude<Velocity>>();
-		registry.FilterView<Position>(filter).ForEach((int entity, ref Position position) =>
+		registry.FilterView<Position>(filter).ForEach((ref Position position) =>
 		{
 			// ...
 		});
