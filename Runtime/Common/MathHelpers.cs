@@ -34,17 +34,60 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPowerOfTwo(int value)
 		{
-			uint v = (uint)value;
-			return v != 0 && (v & (v - 1)) == 0;
+			return value > 0 && unchecked(value & (value - 1)) == 0;
+		}
+
+		/// <summary>
+		/// Fast log2 for powers of two only.
+		/// </summary>
+		/// <param name="value"> Non-negative power of two value. </param>
+		/// <remarks>
+		/// Returns -1 when value is 0.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FastLog2(int value)
+		{
+			return sizeof(int) * 8 - LeadingZerosCount(value) - 1;
 		}
 
 		/// <summary>
 		/// Fast module for powers of two only.
 		/// </summary>
+		/// <param name="value"> Non-negative value. </param>
+		/// <param name="mod"> Power of two value. </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int FastMod(int value, int mod)
 		{
-			return (int)((uint)value & ((uint)mod - 1));
+			return unchecked(value & (mod - 1));
+		}
+
+		/// <summary>
+		/// Fast division for powers of two only.
+		/// </summary>
+		/// <param name="value"> Non-negative value. </param>
+		/// <param name="powerOfTwo"> Power of divider. </param>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FastPowDiv(int value, int powerOfTwo)
+		{
+			return value >> powerOfTwo;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int LeadingZerosCount(int x)
+		{
+			x |= x >> 1;
+			x |= x >> 2;
+			x |= x >> 4;
+			x |= x >> 8;
+			x |= x >> 16;
+
+			x -= x >> 1 & 0x55555555;
+			x = (x >> 2 & 0x33333333) + (x & 0x33333333);
+			x = (x >> 4) + x & 0x0f0f0f0f;
+			x += x >> 8;
+			x += x >> 16;
+
+			return sizeof(int) * 8 - (x & 0x0000003f);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -19,7 +19,8 @@ namespace Massive.Tests
 
 			for (int i = 0; i < length; i++)
 			{
-				packedArray.GetSafe(i) = i;
+				packedArray.EnsurePageForIndex(i);
+				packedArray[i] = i;
 			}
 
 			var span = new PagedSpan<int>(packedArray, length);
