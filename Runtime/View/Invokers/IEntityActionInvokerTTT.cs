@@ -29,4 +29,27 @@ namespace Massive
 			Action.Invoke(id, ref a, ref b, ref c, Extra);
 		}
 	}
+
+	public struct ActionRefInvoker<T1, T2, T3> : IEntityActionInvoker<T1, T2, T3>
+	{
+		public ActionRef<T1, T2, T3> Action;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c)
+		{
+			Action.Invoke(ref a, ref b, ref c);
+		}
+	}
+
+	public struct ActionRefExtraInvoker<T1, T2, T3, TExtra> : IEntityActionInvoker<T1, T2, T3>
+	{
+		public ActionRefExtra<T1, T2, T3, TExtra> Action;
+		public TExtra Extra;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c)
+		{
+			Action.Invoke(ref a, ref b, ref c, Extra);
+		}
+	}
 }
