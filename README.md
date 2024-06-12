@@ -27,6 +27,10 @@ Consider this list a work in progress as well as the project.
 ```cs
 using Massive;
 
+struct PlayerTag
+{
+}
+
 struct Position
 {
 	public float X;
@@ -40,15 +44,33 @@ struct Velocity
 
 class Program
 {
+	static IRegistry CreateRegistry()
+	{
+		var registry = new Registry();
+
+		for (int i = 0; i < 10; ++i)
+		{
+			var entity = registry.Create(new Position() { X = i * 10f });
+
+			if (i % 2 == 0)
+				registry.Assign(entity, new Velocity() { Magnitude = i * 10f });
+
+			if (i % 3 == 0)
+				registry.Assign<PlayerTag>(entity);
+		}
+
+		return registry;
+	}
+
 	static void Update(IRegistry registry, float deltaTime)
 	{
+		// Select components with views
 		var view = registry.View<Position, Velocity>();
 
 		// Iterate using view
 		view.ForEach((int entity, ref Position position, ref Velocity velocity) =>
 		{
 			position.Y += velocity.Magnitude * deltaTime;
-
 			if (position.Y > 5f)
 			{
 				// Create and destroy entities during iteration
@@ -71,28 +93,19 @@ class Program
 			ref var velocity = ref velocities.Data[i];
 			// ...
 		}
+
+		// Create queries right in the update loop with no overhead
+		var filter = registry.Filter<Include<PlayerTag>, Exclude<Velocity>>();
+		registry.FilterView<Position>(filter).ForEach((int entity, ref Position position) =>
+		{
+			// ...
+		});
 	}
 
 	static void Main()
 	{
-		var registry = new MassiveRegistry();
-
-		for (int i = 0; i < 10; ++i)
-		{
-			var entity = registry.Create();
-			registry.Assign<Position>(entity, new Position() { X = i * 10f });
-			if (i % 2 == 0)
-			{
-				registry.Assign<Velocity>(entity, new Velocity() { Magnitude = i * 10f });
-			}
-		}
-
-		registry.SaveFrame();
-
+		var registry = CreateRegistry();
 		Update(registry, 1f / 60f);
-
-		// Restore full state up to the last SaveFrame() call
-		registry.Rollback(0);
 	}
 }
 ```
