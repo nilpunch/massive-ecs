@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using NUnit.Framework;
 using Unity.PerformanceTesting;
 
@@ -9,6 +10,8 @@ namespace Massive.PerformanceTests
 	[TestFixture(RegistryFilling.FillWith50Tags)]
 	public class RegistryPerformanceTest
 	{
+		private readonly RegistryFilling _registryFilling;
+
 		public enum RegistryFilling
 		{
 			FillWithSingleComponent,
@@ -24,20 +27,38 @@ namespace Massive.PerformanceTests
 
 		public RegistryPerformanceTest(RegistryFilling registryFilling)
 		{
-			_registry = registryFilling switch
+			_registryFilling = registryFilling;
+			_registry = PrepareTestRegistry(registryFilling);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IRegistry PrepareTestRegistry(RegistryFilling registryFilling)
+		{
+			return registryFilling switch
 			{
-				RegistryFilling.FillWithSingleComponent => new Registry().FillRegistryWithSingleComponent(EntitiesCount),
-				RegistryFilling.FillWith50Components => new Registry().FillRegistryWith50Components(EntitiesCount),
-				RegistryFilling.FillWith50Tags => new Registry().FillRegistryWith50Tags(EntitiesCount),
-				_ => throw new ArgumentOutOfRangeException(nameof(registryFilling))
+				RegistryFilling.FillWithSingleComponent => new Registry().FillRegistryWithSingleComponent(1),
+				RegistryFilling.FillWith50Components => new Registry().FillRegistryWith50Components(1),
+				RegistryFilling.FillWith50Tags => new Registry().FillRegistryWith50Tags(1),
+				_ => throw new ArgumentOutOfRangeException(nameof(_registryFilling))
 			};
+		}
+
+		[Test, Performance]
+		public void Registry_Initialization()
+		{
+			Measure.Method(() =>
+				{
+					PrepareTestRegistry(_registryFilling);
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(1)
+				.CleanUp(GC.Collect)
+				.Run();
 		}
 
 		[Test, Performance]
 		public void Registry_Create()
 		{
-			View entities = _registry.View();
-
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -45,8 +66,8 @@ namespace Massive.PerformanceTests
 						_registry.Create();
 					}
 				})
-				.SetUp(() => entities.ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity)))
-				.CleanUp(() => entities.ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity)))
+				.SetUp(() => _registry.View().ForEach((entity) => _registry.Destroy(entity)))
+				.CleanUp(() => _registry.View().ForEach((entity) => _registry.Destroy(entity)))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -55,9 +76,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Registry_Destroy()
 		{
-			View entities = _registry.View();
-
-			Measure.Method(() => entities.ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity)))
+			Measure.Method(() => _registry.View().ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity)))
 				.SetUp(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -65,7 +84,7 @@ namespace Massive.PerformanceTests
 						_registry.Create();
 					}
 				})
-				.CleanUp(() => entities.ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity)))
+				.CleanUp(() => _registry.View().ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity)))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

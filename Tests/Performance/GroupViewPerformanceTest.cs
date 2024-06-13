@@ -38,19 +38,14 @@ namespace Massive.PerformanceTests
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static IGroup GetTestGroup(IRegistry registry, GroupSetupType type)
 		{
-			switch (type)
+			return type switch
 			{
-				case GroupSetupType.Owning3:
-					return registry.Group<Own<TestState64, TestState64_2, TestState64_3>>();
-				case GroupSetupType.Owning2Include1:
-					return registry.Group<Own<TestState64, TestState64_2>, Include<TestState64_3>>();
-				case GroupSetupType.Owning1Include2:
-					return registry.Group<Own<TestState64>, Include<TestState64_2, TestState64_3>>();
-				case GroupSetupType.Include3:
-					return registry.Group<None, Include<TestState64, TestState64_2, TestState64_3>>();
-				default:
-					throw new ArgumentOutOfRangeException(nameof(type), type, null);
-			}
+				GroupSetupType.Owning3 => registry.Group<Own<TestState64, TestState64_2, TestState64_3>>(),
+				GroupSetupType.Owning2Include1 => registry.Group<Own<TestState64, TestState64_2>, Include<TestState64_3>>(),
+				GroupSetupType.Owning1Include2 => registry.Group<Own<TestState64>, Include<TestState64_2, TestState64_3>>(),
+				GroupSetupType.Include3 => registry.Group<None, Include<TestState64, TestState64_2, TestState64_3>>(),
+				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+			};
 		}
 
 		[Test, Performance]
