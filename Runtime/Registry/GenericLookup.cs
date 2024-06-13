@@ -4,17 +4,18 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
+// ReSharper disable StaticMemberInGenericType
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class GenericLookup<TAbstract>
 	{
-		private readonly List<int> _allIndicesSorted = new List<int>();
-		private readonly List<TAbstract> _allSorted = new List<TAbstract>();
+		private readonly List<string> _itemIds = new List<string>();
+		private readonly List<TAbstract> _items = new List<TAbstract>();
 		private TAbstract[] _lookup = new TAbstract[16];
 
-		public IReadOnlyList<TAbstract> All => _allSorted;
+		public IReadOnlyList<TAbstract> All => _items;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TAbstract GetOrDefault<TKey>()
@@ -42,49 +43,35 @@ namespace Massive
 			_lookup[typeIndex] = item;
 
 			// Maintain items sorted
-			int sortingKey = GetSimpleGenericTypeName(typeof(TKey)).GetHashCode();
-
-			int itemIndex = _allIndicesSorted.BinarySearch(sortingKey);
+			var itemId = TypeLookup<TKey>.FullName;
+			var itemIndex = _itemIds.BinarySearch(itemId);
 			if (itemIndex >= 0)
 			{
-				_allSorted[itemIndex] = item;
+				_items[itemIndex] = item;
 			}
 			else
 			{
-				int insertionIndex = ~itemIndex;
-				_allIndicesSorted.Insert(insertionIndex, sortingKey);
-				_allSorted.Insert(insertionIndex, item);
+				var insertionIndex = ~itemIndex;
+				_itemIds.Insert(insertionIndex, itemId);
+				_items.Insert(insertionIndex, item);
 			}
 		}
 
-		private static string GetSimpleGenericTypeName(Type type)
-		{
-			if (type.IsGenericType)
-			{
-				string genericArguments = string.Join(",", type.GetGenericArguments().Select(GetSimpleGenericTypeName));
-				string typeItself = type.FullName[..type.FullName.IndexOf("`", StringComparison.Ordinal)];
-				return $"{typeItself}<{genericArguments}>";
-			}
-			return type.FullName;
-		}
-
-		// ReSharper disable once UnusedTypeParameter
 		private static class TypeLookup<TKey>
 		{
-			// ReSharper disable once StaticMemberInGenericType
-			public static readonly int Index;
+			public static int Index { get; }
+			public static string FullName { get; }
 
 			static TypeLookup()
 			{
-				Index = IndexCounter.NextIndex;
-				IndexCounter.NextIndex += 1;
+				Index = IndexCounter.NextIndex++;
+				FullName = ReflectionHelpers.GetFullName(typeof(TKey));
 			}
 		}
 
 		private static class IndexCounter
 		{
-			// ReSharper disable once StaticMemberInGenericType
-			public static int NextIndex;
+			public static int NextIndex { get; set; }
 		}
 	}
 }

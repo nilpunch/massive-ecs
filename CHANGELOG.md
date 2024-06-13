@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.3.1 - June 14, 2024
+
+- Changed: items sorting in `GenericLookup` now works with full type names instead of type names hashes, which eliminates possible problems related to hash collisions.
+
 ## 7.3.0 - June 12, 2024
 
 - Added: `ActionRef` delegates similar to `EntityActionRef`, but without *id* parameter.
