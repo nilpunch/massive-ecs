@@ -15,7 +15,7 @@ namespace Massive
 		{
 			var result = new ISet[1];
 			result[0] = setRegistry.Get<T>();
-			return result;
+			return result.Distinct().ToArray();
 		}
 	}
 
@@ -27,7 +27,7 @@ namespace Massive
 			var result = new ISet[2];
 			result[0] = setRegistry.Get<T1>();
 			result[1] = setRegistry.Get<T2>();
-			return result;
+			return result.Distinct().ToArray();
 		}
 	}
 
@@ -40,7 +40,7 @@ namespace Massive
 			result[0] = setRegistry.Get<T1>();
 			result[1] = setRegistry.Get<T2>();
 			result[2] = setRegistry.Get<T3>();
-			return result;
+			return result.Distinct().ToArray();
 		}
 	}
 
@@ -50,7 +50,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ISet[] Select(SetRegistry setRegistry)
 		{
-			return new TSelector().Select(setRegistry).Concat(new Selector<T1, T2, T3>().Select(setRegistry)).ToArray();
+			return new TSelector().Select(setRegistry).Concat(new Selector<T1, T2, T3>().Select(setRegistry)).Distinct().ToArray();
 		}
 	}
 }

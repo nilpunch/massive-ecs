@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.3.2 - June 14, 2024
+
+- Changed: set selectors now return distinct sets. This is useful when the user duplicates generic arguments.  
+  We can't prevent this from happening at compile time, so now at least it doesn't affect runtime.
+
 ## 7.3.1 - June 14, 2024
 
 - Changed: items sorting in `GenericLookup` now works with full type names instead of type names hashes, which eliminates possible problems related to hash collisions.
