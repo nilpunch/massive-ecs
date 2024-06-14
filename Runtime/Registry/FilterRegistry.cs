@@ -9,9 +9,15 @@ namespace Massive
 	public class FilterRegistry
 	{
 		private readonly GenericLookup<IFilter> _filterLookup = new GenericLookup<IFilter>();
+		private readonly SetRegistry _setRegistry;
+
+		public FilterRegistry(SetRegistry setRegistry)
+		{
+			_setRegistry = setRegistry;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IFilter Get<TInclude, TExclude>(SetRegistry setRegistry)
+		public IFilter Get<TInclude, TExclude>()
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
@@ -19,8 +25,8 @@ namespace Massive
 
 			if (filter == null)
 			{
-				var include = new TInclude().SelectReadOnly(setRegistry);
-				var exclude = new TExclude().SelectReadOnly(setRegistry);
+				var include = new TInclude().SelectReadOnly(_setRegistry);
+				var exclude = new TExclude().SelectReadOnly(_setRegistry);
 
 				if (include.Length != 0 && exclude.Length != 0)
 				{

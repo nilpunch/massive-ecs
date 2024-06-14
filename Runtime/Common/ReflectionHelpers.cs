@@ -8,7 +8,7 @@ namespace Massive
 		/// <summary>
 		/// Returns full type name with namespace and generic arguments.
 		/// </summary>
-		public static string GetFullName(Type type)
+		public static string GetFullName(this Type type)
 		{
 			if (type.IsGenericType)
 			{

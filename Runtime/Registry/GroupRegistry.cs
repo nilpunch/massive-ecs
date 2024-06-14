@@ -1,27 +1,25 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Massive
 {
 	public class GroupRegistry
 	{
 		private readonly GenericLookup<IGroup> _groupLookup = new GenericLookup<IGroup>();
-		private readonly IGroupFactory _groupFactory;
 		private readonly Dictionary<ISet, IOwningGroup> _ownedBase = new Dictionary<ISet, IOwningGroup>();
+		private readonly SetRegistry _setRegistry;
+		private readonly IGroupFactory _groupFactory;
 
-		public GroupRegistry(int nonOwningSetCapacity = Constants.DefaultSetCapacity)
-			: this(new NormalGroupFactory(nonOwningSetCapacity))
+		public GroupRegistry(SetRegistry setRegistry, IGroupFactory groupFactory)
 		{
-		}
-
-		protected GroupRegistry(IGroupFactory groupFactory)
-		{
+			_setRegistry = setRegistry;
 			_groupFactory = groupFactory;
 		}
 
 		public IReadOnlyList<IGroup> All => _groupLookup.All;
 
-		public IGroup Get<TOwn, TInclude, TExclude>(SetRegistry setRegistry)
+		public IGroup Get<TOwn, TInclude, TExclude>()
 			where TOwn : IOwnSelector, new()
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
@@ -34,9 +32,9 @@ namespace Massive
 				return group;
 			}
 
-			var owned = new TOwn().Select(setRegistry);
-			var include = new TInclude().SelectReadOnly(setRegistry);
-			var exclude = new TExclude().SelectReadOnly(setRegistry);
+			var owned = new TOwn().Select(_setRegistry);
+			var include = new TInclude().SelectReadOnly(_setRegistry);
+			var exclude = new TExclude().SelectReadOnly(_setRegistry);
 
 			// If non-owning, then just create new one
 			if (owned.Length == 0)
@@ -80,7 +78,7 @@ namespace Massive
 				// Check if the next group can extend ours
 				if (baseGroupNode.Extended != null && !baseGroupNode.Extended.ExtendsGroup(owned, include, exclude))
 				{
-					throw new Exception("Conflicting groups.");
+					throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullName()}, {typeof(TInclude).GetFullName()}, {typeof(TExclude).GetFullName()}>.");
 				}
 
 				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
@@ -100,7 +98,7 @@ namespace Massive
 				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(owningGroup);
 			}
 
-			throw new Exception("Conflicting groups.");
+			throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullName()}, {typeof(TInclude).GetFullName()}, {typeof(TExclude).GetFullName()}>.");
 		}
 
 		private IGroup RegisterAndSync<TGroupKey>(IGroup group)

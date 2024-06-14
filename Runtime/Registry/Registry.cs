@@ -8,16 +8,16 @@
 		public IEntities Entities { get; }
 
 		public Registry(int setCapacity = Constants.DefaultSetCapacity, bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
-			: this(new GroupRegistry(setCapacity), new Entities(setCapacity), new NormalSetFactory(setCapacity, storeEmptyTypesAsDataSets, pageSize))
+			: this(new NormalSetFactory(setCapacity, storeEmptyTypesAsDataSets, pageSize), new NormalGroupFactory(setCapacity), new Entities(setCapacity))
 		{
 		}
 
-		protected Registry(GroupRegistry groupRegistry, IEntities entities, ISetFactory setFactory)
+		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, IEntities entities)
 		{
-			GroupRegistry = groupRegistry;
-			Entities = entities;
 			SetRegistry = new SetRegistry(setFactory);
-			FilterRegistry = new FilterRegistry();
+			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory);
+			FilterRegistry = new FilterRegistry(SetRegistry);
+			Entities = entities;
 
 			Entities.BeforeDestroyed += UnassignFromAllSets;
 		}

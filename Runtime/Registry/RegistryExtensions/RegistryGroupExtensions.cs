@@ -25,7 +25,7 @@ namespace Massive
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
-			return registry.GroupRegistry.Get<TOwned, TInclude, TExclude>(registry.SetRegistry);
+			return registry.GroupRegistry.Get<TOwned, TInclude, TExclude>();
 		}
 	}
 }

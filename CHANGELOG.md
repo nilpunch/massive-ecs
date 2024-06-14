@@ -1,8 +1,15 @@
 # Changelog
 
+## 8.0.0 - June 14, 2024
+
+- Changed: removed `SetRegistry` parameter from `Get()` method in `FilterRegistry` and `GroupRegistry`.
+  Now it is proper dependency.
+- Removed: `MassiveGroupRegistry` has been removed, and now `MassiveRegistry` is responsible for saving and rollbacking groups.
+- Changed: reworked protected `Registry` ctor to fit API changes.
+
 ## 7.3.2 - June 14, 2024
 
-- Changed: set selectors now return distinct sets. This is useful when the user duplicates generic arguments.  
+- Changed: set selectors now return distinct sets. This is useful when the user duplicates generic arguments.
   We can't prevent this from happening at compile time, so now at least it doesn't affect runtime.
 
 ## 7.3.1 - June 14, 2024
