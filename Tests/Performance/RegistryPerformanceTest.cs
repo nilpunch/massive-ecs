@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using NUnit.Framework;
 using Unity.PerformanceTesting;
@@ -71,6 +72,30 @@ namespace Massive.PerformanceTests
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
+		}
+		
+		[Test, Performance]
+		public void Registry_Fill()
+		{
+			var result = new List<Entity>();
+
+			_registry.View().ForEach((entity) => _registry.Destroy(entity));
+
+			for (int i = 0; i < EntitiesCount; i++)
+			{
+				_registry.Create<TestState64>();
+			}
+
+			Measure.Method(() =>
+				{
+					_registry.Fill<Include<TestState64>>(result);
+				})
+				.CleanUp(result.Clear)
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+
+			_registry.View().ForEach((entity) => _registry.Destroy(entity));
 		}
 
 		[Test, Performance]

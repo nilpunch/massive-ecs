@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.1.0 - June 14, 2024
+
+- Added: `Fill()` extension methods for `IRegistry` to populate the result list with filtered ids and entities.
+
 ## 8.0.0 - June 14, 2024
 
 - Changed: removed `SetRegistry` parameter from `Get()` method in `FilterRegistry` and `GroupRegistry`.

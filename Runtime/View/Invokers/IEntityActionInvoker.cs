@@ -41,4 +41,16 @@ namespace Massive
 			Result.Add(id);
 		}
 	}
+
+	public struct EntityFillEntitiesInvoker : IEntityActionInvoker
+	{
+		public IList<Entity> Result;
+		public IEntities Entities;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Apply(int id)
+		{
+			Result.Add(Entities.GetEntity(id));
+		}
+	}
 }

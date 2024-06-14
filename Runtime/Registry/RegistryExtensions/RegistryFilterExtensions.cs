@@ -8,7 +8,7 @@ namespace Massive
 		public static IFilter Filter<TInclude>(this IRegistry registry)
 			where TInclude : IIncludeSelector, new()
 		{
-			return registry.FilterRegistry.Get<TInclude, None>();
+			return registry.Filter<TInclude, None>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
