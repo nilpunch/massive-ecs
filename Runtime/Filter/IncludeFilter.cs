@@ -15,15 +15,13 @@ namespace Massive
 
 		public bool ContainsId(int id)
 		{
+			int includeOr = 0;
 			for (int i = 0; i < _include.Count; i++)
 			{
-				if (!_include[i].IsAssigned(id))
-				{
-					return false;
-				}
+				includeOr |= _include[i].GetDenseOrInvalid(id);
 			}
 
-			return true;
+			return includeOr != Constants.InvalidId;
 		}
 	}
 }

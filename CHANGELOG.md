@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.1.1 - June 15, 2024
+
+- Optimized: add funky bitwise stuff into filters, so now they are working 20% faster.
+
 ## 8.1.0 - June 14, 2024
 
 - Added: `Fill()` extension methods for `IRegistry` to populate the result list with filtered ids and entities.
@@ -18,7 +22,8 @@
 
 ## 7.3.1 - June 14, 2024
 
-- Changed: items sorting in `GenericLookup` now works with full type names instead of type names hashes, which eliminates possible problems related to hash collisions.
+- Changed: items sorting in `GenericLookup` now works with full type names instead of type names hashes,
+  which eliminates possible problems related to hash collisions.
 
 ## 7.3.0 - June 12, 2024
 
