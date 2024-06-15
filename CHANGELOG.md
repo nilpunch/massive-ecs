@@ -1,12 +1,17 @@
 # Changelog
 
+## 9.1.0 - June 15, 2024
+
+- Added: added `Include()` and `Exclude()` extension methods for basic `View`. That simplifies querying.
+
 ## 9.0.0 - June 15, 2024
 
 - Changed: major redesign of the views API for ease of use and extensibility.
+- Removed: `Fill()` extension methods from `IRegistry`. Views still have them.
 
 ## 8.1.1 - June 15, 2024
 
-- Optimized: add funky bitwise stuff into filters, so now they are working 20% faster.
+- Optimized: added funky bitwise stuff into filters, so now they are working 20% faster.
 
 ## 8.1.0 - June 14, 2024
 
