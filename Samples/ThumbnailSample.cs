@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.Thumbnail
 {
-	struct PlayerTag
+	struct Player
 	{
 	}
 
@@ -29,7 +29,7 @@
 					registry.Assign(entity, new Velocity() { Magnitude = i * 10f });
 
 				if (i % 3 == 0)
-					registry.Assign<PlayerTag>(entity);
+					registry.Assign<Player>(entity);
 			}
 
 			return registry;
@@ -39,7 +39,7 @@
 		{
 			var view = registry.View();
 
-			// Iterate using view
+			// Iterate using views
 			view.ForEach((int entity, ref Position position, ref Velocity velocity) =>
 			{
 				position.Y += velocity.Magnitude * deltaTime;
@@ -54,12 +54,12 @@
 			// Pass extra arguments to avoid boxing
 			view.ForEachExtra((registry, deltaTime),
 				(ref Position position, ref Velocity velocity,
-					(IRegistry Registry, float DeltaTime) passedArguments) =>
-			{
-				// ...
-			});
+					(IRegistry Registry, float DeltaTime) args) =>
+				{
+					// ...
+				});
 
-			// Iterate manually over data set
+			// Iterate manually over data sets
 			var velocities = registry.Components<Velocity>();
 			for (int i = 0; i < velocities.Count; ++i)
 			{
@@ -67,11 +67,14 @@
 				// ...
 			}
 
-			// Construct queries right in your update loop with no overhead
-			view.Filter<Include<PlayerTag>, Exclude<Velocity>>().ForEach((ref Position position) =>
-			{
-				// ...
-			});
+			// Make queries right in place where they are used
+			// You don't have to cache anything!
+			registry.View()
+				.Filter<Include<Player>, Exclude<Velocity>>()
+				.ForEach((ref Position position) =>
+				{
+					// ...
+				});
 		}
 
 		static void Main()

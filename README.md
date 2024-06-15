@@ -27,7 +27,7 @@ Consider this list a work in progress as well as the project.
 ```cs
 using Massive;
 
-struct PlayerTag
+struct Player
 {
 }
 
@@ -56,7 +56,7 @@ class Program
 				registry.Assign(entity, new Velocity() { Magnitude = i * 10f });
 
 			if (i % 3 == 0)
-				registry.Assign<PlayerTag>(entity);
+				registry.Assign<Player>(entity);
 		}
 
 		return registry;
@@ -64,13 +64,13 @@ class Program
 
 	static void Update(IRegistry registry, float deltaTime)
 	{
-		// Select components with views
-		var view = registry.View<Position, Velocity>();
+		var view = registry.View();
 
 		// Iterate using view
 		view.ForEach((int entity, ref Position position, ref Velocity velocity) =>
 		{
 			position.Y += velocity.Magnitude * deltaTime;
+
 			if (position.Y > 5f)
 			{
 				// Create and destroy entities during iteration
@@ -80,11 +80,11 @@ class Program
 
 		// Pass extra arguments to avoid boxing
 		view.ForEachExtra((registry, deltaTime),
-			(int entity, ref Position position, ref Velocity velocity,
-				(IRegistry Registry, float DeltaTime) passedArguments) =>
-		{
-			// ...
-		});
+			(ref Position position, ref Velocity velocity,
+				(IRegistry Registry, float DeltaTime) args) =>
+			{
+				// ...
+			});
 
 		// Iterate manually over data set
 		var velocities = registry.Components<Velocity>();
@@ -94,12 +94,14 @@ class Program
 			// ...
 		}
 
-		// Create queries right in the update loop with no overhead
-		var filter = registry.Filter<Include<PlayerTag>, Exclude<Velocity>>();
-		registry.FilterView<Position>(filter).ForEach((ref Position position) =>
-		{
-			// ...
-		});
+		// Make queries right in place where they are used
+		// You don't have to cache anything!
+		registry.View()
+			.Filter<Include<Player>, Exclude<Velocity>>()
+			.ForEach((ref Position position) =>
+			{
+				// ...
+			});
 	}
 
 	static void Main()
