@@ -51,7 +51,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void GroupView_ForEach()
 		{
-			Measure.Method(() => _registry.GroupView(_group).ForEach((_) => { }))
+			Measure.Method(() => _registry.View().Group(_group).ForEach((_) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -61,7 +61,7 @@ namespace Massive.PerformanceTests
 		public void GroupView_Fill()
 		{
 			var result = new List<int>();
-			Measure.Method(() => _registry.GroupView(_group).Fill(result))
+			Measure.Method(() => _registry.View().Group(_group).Fill(result))
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -71,7 +71,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void GroupViewT_ForEach()
 		{
-			Measure.Method(() => _registry.GroupView<TestState64>(_group).ForEach((int _, ref TestState64 _) => { }))
+			Measure.Method(() => _registry.View().Group(_group).ForEach((int _, ref TestState64 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -80,7 +80,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void GroupViewTT_ForEach()
 		{
-			Measure.Method(() => _registry.GroupView<TestState64, TestState64_2>(_group).ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
+			Measure.Method(() => _registry.View().Group(_group).ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -89,7 +89,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void GroupViewTTT_ForEach()
 		{
-			Measure.Method(() => _registry.GroupView<TestState64, TestState64_2, TestState64_3>(_group).ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
+			Measure.Method(() => _registry.View().Group(_group).ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -98,7 +98,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void GroupViewTTT_ForEach_NoGroupCache()
 		{
-			Measure.Method(() => _registry.GroupView<TestState64, TestState64_2, TestState64_3>(GetTestGroup(_registry, _groupSetupType)).ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
+			Measure.Method(() => _registry.View().Group(GetTestGroup(_registry, _groupSetupType)).ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

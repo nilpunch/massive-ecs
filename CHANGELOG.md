@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.0.0 - June 15, 2024
+
+- Changed: major redesign of the views API for ease of use and extensibility.
+
 ## 8.1.1 - June 15, 2024
 
 - Optimized: add funky bitwise stuff into filters, so now they are working 20% faster.

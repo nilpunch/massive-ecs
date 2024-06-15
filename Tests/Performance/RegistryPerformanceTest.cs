@@ -88,7 +88,7 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					_registry.Fill<Include<TestState64>>(result);
+					_registry.View().Filter<Include<TestState64>>().Fill(result);
 				})
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)

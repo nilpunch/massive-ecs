@@ -37,8 +37,7 @@
 
 		static void Update(IRegistry registry, float deltaTime)
 		{
-			// Select components with views
-			var view = registry.View<Position, Velocity>();
+			var view = registry.View();
 
 			// Iterate using view
 			view.ForEach((int entity, ref Position position, ref Velocity velocity) =>
@@ -69,8 +68,7 @@
 			}
 
 			// Construct queries right in your update loop with no overhead
-			var filter = registry.Filter<Include<PlayerTag>, Exclude<Velocity>>();
-			registry.FilterView<Position>(filter).ForEach((ref Position position) =>
+			view.Filter<Include<PlayerTag>, Exclude<Velocity>>().ForEach((ref Position position) =>
 			{
 				// ...
 			});
