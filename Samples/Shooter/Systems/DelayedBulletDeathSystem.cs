@@ -1,13 +1,13 @@
 ﻿namespace Massive.Samples.Shooter
 {
 	/// <summary>
-	/// Just delays a full destruction of an entity to apply some visual death effect.
+	/// Just delays a full destruction of a bullet to apply some visual death effect.
 	/// </summary>
-	public static class DeathSystem
+	public static class DelayedBulletDeathSystem
 	{
 		public static void Update(IRegistry registry, float deltaTime)
 		{
-			registry.View().ForEachExtra((registry, deltaTime),
+			registry.View().Include<Bullet>().ForEachExtra((registry, deltaTime),
 				(int id, ref Dead dead, (IRegistry Registry, float DeltaTime) args) =>
 				{
 					dead.ElapsedTimeSinceDeath += args.DeltaTime;

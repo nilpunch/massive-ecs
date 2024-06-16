@@ -31,12 +31,25 @@
 						if (character.Health <= 0)
 						{
 							registry.Assign<Dead>(characterId);
+							DestroyCharacterBullets(characterId);
 							break;
 						}
 					}
 				}
 			}
 
+			void DestroyCharacterBullets(int characterId)
+			{
+				registry.View().Exclude<Dead>().ForEachExtra(registry,
+					(int bulletId, ref Bullet bullet, IRegistry registry) =>
+				{
+					if (bullet.Owner == registry.GetEntity(characterId))
+					{
+						registry.Assign<Dead>(bulletId);
+					}
+				});
+			}
+			
 			bool IsCollided(int firstId, int secondId)
 			{
 				ref var firstPosition = ref positions.Get(firstId);

@@ -7,5 +7,9 @@ namespace Massive.Samples.Shooter
 		public float ShootingDelay;
 		public float Cooldown;
 		public Vector2 ShootingDirection;
+
+		public float BulletSpeed;
+		public float BulletLifetime;
+		public int BulletDamage;
 	}
 }

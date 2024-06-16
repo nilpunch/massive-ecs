@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Massive.Samples.Shooter
+﻿namespace Massive.Samples.Shooter
 {
 	public static class ShootingSystem
 	{
@@ -19,11 +17,10 @@ namespace Massive.Samples.Shooter
 				weapon.Cooldown += weapon.ShootingDelay;
 
 				var registry = args.Registry;
-
 				var bulletId = registry.Create();
 				registry.Assign(bulletId, position);
-				registry.Assign(bulletId, new Bullet() { Damage = 1, Lifetime = 5f, Owner = registry.GetEntity(id) });
-				registry.Assign(bulletId, new Velocity() { Value = new Vector2(0f, 5f) });
+				registry.Assign(bulletId, new Bullet() { Damage = weapon.BulletDamage, Lifetime = weapon.BulletLifetime, Owner = registry.GetEntity(id) });
+				registry.Assign(bulletId, new Velocity() { Value = weapon.ShootingDirection * weapon.BulletSpeed });
 				registry.Assign(bulletId, new VelocityDamper() { DampingFactor = 0.05f });
 			});
 		}
