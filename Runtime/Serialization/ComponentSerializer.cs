@@ -1,12 +1,13 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 // ReSharper disable MustUseReturnValue
 namespace Massive.Serialization
 {
 	public class ComponentSerializer<T> : IRegistrySerializer where T : unmanaged
 	{
-		public unsafe void Serialize(IRegistry registry, Stream stream)
+		public void Serialize(IRegistry registry, Stream stream)
 		{
 			var set = (SparseSet)registry.Any<T>();
 
@@ -17,15 +18,12 @@ namespace Massive.Serialization
 				var pagedData = dataSet.Data;
 				foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedData.PageSize, set.Count))
 				{
-					fixed (T* page = pagedData.Pages[pageIndex])
-					{
-						stream.Write(new ReadOnlySpan<byte>(page, pageLength * sizeof(T)));
-					}
+					stream.Write(MemoryMarshal.Cast<T, byte>(pagedData.Pages[pageIndex].AsSpan(0, pageLength)));
 				}
 			}
 		}
 
-		public unsafe void Deserialize(IRegistry registry, Stream stream)
+		public void Deserialize(IRegistry registry, Stream stream)
 		{
 			var set = (SparseSet)registry.Any<T>();
 
@@ -37,10 +35,7 @@ namespace Massive.Serialization
 				foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedData.PageSize, set.Count))
 				{
 					pagedData.EnsurePage(pageIndex);
-					fixed (T* page = pagedData.Pages[pageIndex])
-					{
-						stream.Read(new Span<byte>(page, pageLength * sizeof(T)));
-					}
+					stream.Read(MemoryMarshal.Cast<T, byte>(pagedData.Pages[pageIndex].AsSpan(0, pageLength)));
 				}
 			}
 		}

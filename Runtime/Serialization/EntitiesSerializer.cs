@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 // ReSharper disable MustUseReturnValue
 namespace Massive.Serialization
@@ -8,7 +9,7 @@ namespace Massive.Serialization
 	{
 		private static readonly byte[] s_buffer4Bytes = new byte[4];
 
-		public unsafe void Serialize(IRegistry registry, Stream stream)
+		public void Serialize(IRegistry registry, Stream stream)
 		{
 			var entities = (Entities)registry.Entities;
 
@@ -18,18 +19,11 @@ namespace Massive.Serialization
 			BitConverter.TryWriteBytes(s_buffer4Bytes, entities.MaxId);
 			stream.Write(s_buffer4Bytes);
 
-			fixed (Entity* dense = entities.Dense)
-			{
-				stream.Write(new ReadOnlySpan<byte>(dense, entities.MaxId * sizeof(Entity)));
-			}
-
-			fixed (int* sparse = entities.Sparse)
-			{
-				stream.Write(new ReadOnlySpan<byte>(sparse, entities.MaxId * sizeof(int)));
-			}
+			stream.Write(MemoryMarshal.Cast<Entity, byte>(entities.Dense.AsSpan(0, entities.MaxId)));
+			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
 		}
 
-		public unsafe void Deserialize(IRegistry registry, Stream stream)
+		public void Deserialize(IRegistry registry, Stream stream)
 		{
 			var entities = (Entities)registry.Entities;
 
@@ -42,15 +36,8 @@ namespace Massive.Serialization
 			entities.ResizeDense(entities.MaxId);
 			entities.ResizeSparse(entities.MaxId);
 
-			fixed (Entity* dense = entities.Dense)
-			{
-				stream.Read(new Span<byte>(dense, entities.MaxId * sizeof(Entity)));
-			}
-
-			fixed (int* sparse = entities.Sparse)
-			{
-				stream.Read(new Span<byte>(sparse, entities.MaxId * sizeof(int)));
-			}
+			stream.Read(MemoryMarshal.Cast<Entity, byte>(entities.Dense.AsSpan(0, entities.MaxId)));
+			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
 		}
 	}
 }

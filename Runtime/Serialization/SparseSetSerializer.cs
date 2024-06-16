@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 // ReSharper disable MustUseReturnValue
 namespace Massive.Serialization
@@ -8,7 +9,7 @@ namespace Massive.Serialization
 	{
 		private static readonly byte[] s_buffer4Bytes = new byte[4];
 
-		public static unsafe void Serialize(SparseSet set, Stream stream)
+		public static void Serialize(SparseSet set, Stream stream)
 		{
 			BitConverter.TryWriteBytes(s_buffer4Bytes, set.Count);
 			stream.Write(s_buffer4Bytes);
@@ -16,18 +17,11 @@ namespace Massive.Serialization
 			BitConverter.TryWriteBytes(s_buffer4Bytes, set.SparseCapacity);
 			stream.Write(s_buffer4Bytes);
 
-			fixed (int* dense = set.Dense)
-			{
-				stream.Write(new ReadOnlySpan<byte>(dense, set.Count * sizeof(int)));
-			}
-
-			fixed (int* sparse = set.Sparse)
-			{
-				stream.Write(new ReadOnlySpan<byte>(sparse, set.SparseCapacity * sizeof(int)));
-			}
+			stream.Write(MemoryMarshal.Cast<int, byte>(set.Dense.AsSpan(0, set.Count)));
+			stream.Write(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, set.SparseCapacity)));
 		}
 
-		public static unsafe void Deserialize(SparseSet set, Stream stream)
+		public static void Deserialize(SparseSet set, Stream stream)
 		{
 			stream.Read(s_buffer4Bytes);
 			set.Count = BitConverter.ToInt32(s_buffer4Bytes);
@@ -37,15 +31,8 @@ namespace Massive.Serialization
 			var sparseCapacity = BitConverter.ToInt32(s_buffer4Bytes);
 			set.ResizeSparse(sparseCapacity);
 
-			fixed (int* dense = set.Dense)
-			{
-				stream.Read(new Span<byte>(dense, set.Count * sizeof(int)));
-			}
-
-			fixed (int* sparse = set.Sparse)
-			{
-				stream.Read(new Span<byte>(sparse, set.SparseCapacity * sizeof(int)));
-			}
+			stream.Read(MemoryMarshal.Cast<int, byte>(set.Dense.AsSpan(0, set.Count)));
+			stream.Read(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, set.SparseCapacity)));
 		}
 	}
 }
