@@ -67,14 +67,14 @@ class Program
 		var view = registry.View();
 
 		// Iterate using view
-		view.ForEach((int entity, ref Position position, ref Velocity velocity) =>
+		view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
 		{
 			position.Y += velocity.Magnitude * deltaTime;
 
 			if (position.Y > 5f)
 			{
 				// Create and destroy entities during iteration
-				registry.Destroy(entity);
+				registry.Destroy(entityId);
 			}
 		});
 
@@ -86,14 +86,6 @@ class Program
 				// ...
 			});
 
-		// Iterate manually over data set
-		var velocities = registry.Components<Velocity>();
-		for (int i = 0; i < velocities.Count; ++i)
-		{
-			ref var velocity = ref velocities.Data[i];
-			// ...
-		}
-
 		// Make queries right in place where they are used
 		// You don't have to cache anything!
 		registry.View()
@@ -102,6 +94,20 @@ class Program
 			{
 				// ...
 			});
+
+		// Iterate using foreach
+		foreach (var entityId in registry.View().Include<Player, Position>())
+		{
+			ref var position = ref registry.Get<Position>(entityId);
+		}
+
+		// Iterate manually over data set
+		var velocities = registry.Components<Velocity>();
+		for (int i = 0; i < velocities.Count; ++i)
+		{
+			ref var velocity = ref velocities.Data[i];
+			// ...
+		}
 	}
 
 	static void Main()
