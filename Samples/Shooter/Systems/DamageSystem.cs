@@ -42,14 +42,14 @@
 			{
 				registry.View().Exclude<Dead>().ForEachExtra(registry,
 					(int bulletId, ref Bullet bullet, IRegistry registry) =>
-				{
-					if (bullet.Owner == registry.GetEntity(characterId))
 					{
-						registry.Assign<Dead>(bulletId);
-					}
-				});
+						if (bullet.Owner == registry.GetEntity(characterId))
+						{
+							registry.Assign<Dead>(bulletId);
+						}
+					});
 			}
-			
+
 			bool IsCollided(int firstId, int secondId)
 			{
 				ref var firstPosition = ref positions.Get(firstId);
