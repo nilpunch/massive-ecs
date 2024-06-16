@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.3.1 - June 16, 2024
+
+- Changed: renamed `EntityFillInvoker` and `EntityFillEntitiesInvoker` to `FillIdsInvoker` and `FillEntitiesInvoker`.
+
 ## 9.3.0 - June 16, 2024
 
 - Changed: removed final bits of unsafe code from the project.

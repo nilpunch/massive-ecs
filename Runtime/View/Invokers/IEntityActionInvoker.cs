@@ -31,7 +31,7 @@ namespace Massive
 		}
 	}
 
-	public struct EntityFillInvoker : IEntityActionInvoker
+	public struct FillIdsInvoker : IEntityActionInvoker
 	{
 		public IList<int> Result;
 
@@ -42,7 +42,7 @@ namespace Massive
 		}
 	}
 
-	public struct EntityFillEntitiesInvoker : IEntityActionInvoker
+	public struct FillEntitiesInvoker : IEntityActionInvoker
 	{
 		public IList<Entity> Result;
 		public IEntities Entities;

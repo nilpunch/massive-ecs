@@ -107,14 +107,14 @@ namespace Massive
 		public static void Fill<TView>(this TView view, IList<int> result)
 			where TView : IView
 		{
-			view.ForEachUniversal(new EntityFillInvoker { Result = result });
+			view.ForEachUniversal(new FillIdsInvoker { Result = result });
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Fill<TView>(this TView view, IList<Entity> result)
 			where TView : IView
 		{
-			view.ForEachUniversal(new EntityFillEntitiesInvoker { Result = result, Entities = view.Registry.Entities });
+			view.ForEachUniversal(new FillEntitiesInvoker { Result = result, Entities = view.Registry.Entities });
 		}
 	}
 }
