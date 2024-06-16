@@ -19,20 +19,45 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void FilterView_ForEach()
+		public void FilterView_Fill()
 		{
-			Measure.Method(() => _registry.View().Filter().ForEach((_) => { }))
+			var result = new List<int>();
+			Measure.Method(() => _registry.View().Filter().Fill(result))
+				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
 
 		[Test, Performance]
-		public void FilterView_Fill()
+		public void FilterView_FillEntities()
 		{
-			var result = new List<int>();
+			var result = new List<Entity>();
 			Measure.Method(() => _registry.View().Filter().Fill(result))
 				.CleanUp(result.Clear)
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
+		public void FilterView_Enumerator()
+		{
+			Measure.Method(() =>
+				{
+					foreach (var entityId in _registry.View().Filter())
+					{
+					}
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
+		public void FilterView_ForEach()
+		{
+			Measure.Method(() => _registry.View().Filter().ForEach((_) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

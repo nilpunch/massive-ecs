@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -239,6 +240,12 @@ namespace Massive
 					}
 					break;
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ReadOnlySpan<int>.Enumerator GetEnumerator()
+		{
+			return Group.Ids.GetEnumerator();
 		}
 	}
 }

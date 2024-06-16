@@ -1,8 +1,12 @@
 # Changelog
 
+## 9.2.0 - June 16, 2024
+
+- Added: id enumerators for the views.
+
 ## 9.1.0 - June 15, 2024
 
-- Added: added `Include()` and `Exclude()` extension methods for basic `View`. That simplifies querying.
+- Added: `Include()` and `Exclude()` extension methods for basic `View`. That simplifies querying.
 
 ## 9.0.0 - June 15, 2024
 

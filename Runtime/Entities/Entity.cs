@@ -6,7 +6,7 @@ namespace Massive
 	public readonly struct Entity : IEquatable<Entity>
 	{
 		private const int DefaultId = Constants.InvalidId;
-		private const int IdOffset = -DefaultId;
+		public const int IdOffset = -DefaultId;
 		
 		public readonly int IdWithOffset;
 		public readonly uint ReuseCount;

@@ -1,4 +1,6 @@
+using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -182,6 +184,36 @@ namespace Massive
 						}
 					}
 				}
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Enumerator GetEnumerator()
+		{
+			return new Enumerator(Registry.Entities.Alive);
+		}
+
+		public ref struct Enumerator
+		{
+			private readonly ReadOnlySpan<int> _ids;
+			private int _index;
+
+			public Enumerator(ReadOnlySpan<Entity> entities)
+			{
+				_ids = MemoryMarshal.Cast<Entity, int>(entities);
+				_index = _ids.Length / 2;
+			}
+
+			public int Current
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => _ids[_index * 2] - Entity.IdOffset;
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool MoveNext()
+			{
+				return --_index >= 0;
 			}
 		}
 	}

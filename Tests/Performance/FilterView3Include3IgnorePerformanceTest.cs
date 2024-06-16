@@ -42,6 +42,31 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
+		public void FilterView_FillEntities()
+		{
+			var result = new List<Entity>();
+			Measure.Method(() => _registry.View().Filter(_filter).Fill(result))
+				.CleanUp(result.Clear)
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
+		public void FilterView_Enumerator()
+		{
+			Measure.Method(() =>
+				{
+					foreach (var entityId in _registry.View().Filter(_filter))
+					{
+					}
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
 		public void FilterView_ForEach()
 		{
 			Measure.Method(() => _registry.View().Filter(_filter).ForEach((_) => { }))

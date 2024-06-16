@@ -49,20 +49,45 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void GroupView_ForEach()
+		public void GroupView_Fill()
 		{
-			Measure.Method(() => _registry.View().Group(_group).ForEach((_) => { }))
+			var result = new List<int>();
+			Measure.Method(() => _registry.View().Group(_group).Fill(result))
+				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
 
 		[Test, Performance]
-		public void GroupView_Fill()
+		public void GroupView_FillEntities()
 		{
-			var result = new List<int>();
+			var result = new List<Entity>();
 			Measure.Method(() => _registry.View().Group(_group).Fill(result))
 				.CleanUp(result.Clear)
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
+		public void GroupView_Enumerator()
+		{
+			Measure.Method(() =>
+				{
+					foreach (var entityId in _registry.View().Group(_group))
+					{
+					}
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
+		public void GroupView_ForEach()
+		{
+			Measure.Method(() => _registry.View().Group(_group).ForEach((_) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

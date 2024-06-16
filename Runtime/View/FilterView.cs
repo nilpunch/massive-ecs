@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -122,6 +124,64 @@ namespace Massive
 				{
 					invoker.Apply(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
 				}
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Enumerator GetEnumerator()
+		{
+			if (Filter.Include.Count == 0)
+			{
+				return new Enumerator(Registry.Entities.Alive, Filter);
+			}
+			else
+			{
+				var ids = SetHelpers.GetMinimalSet(Filter.Include).Ids;
+				return new Enumerator(ids, Filter);
+			}
+		}
+
+		public ref struct Enumerator
+		{
+			private readonly ReadOnlySpan<int> _ids;
+			private readonly IFilter _filter;
+			private readonly int _stride;
+			private readonly int _idOffset;
+			private int _index;
+
+			public Enumerator(ReadOnlySpan<Entity> entities, IFilter filter)
+				: this(MemoryMarshal.Cast<Entity, int>(entities), filter, 2, Entity.IdOffset)
+			{
+			}
+
+			public Enumerator(ReadOnlySpan<int> ids, IFilter filter)
+				: this(ids, filter, 1, 0)
+			{
+			}
+
+			private Enumerator(ReadOnlySpan<int> ids, IFilter filter, int stride, int idOffset)
+			{
+				_ids = ids;
+				_filter = filter;
+				_stride = stride;
+				_idOffset = idOffset;
+				_index = _ids.Length / _stride;
+			}
+
+			public int Current
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => _ids[_index * _stride] - _idOffset;
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool MoveNext()
+			{
+				while (--_index >= 0 && !_filter.ContainsId(Current))
+				{
+				}
+
+				return _index >= 0;
 			}
 		}
 	}
