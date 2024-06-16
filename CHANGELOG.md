@@ -2,7 +2,7 @@
 
 ## 9.3.0 - June 16, 2024
 
-- Changed: remove final bits of unsafe code from the project.
+- Changed: removed final bits of unsafe code from the project.
 
 ## 9.2.0 - June 16, 2024
 
