@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Runtime.CompilerServices;
-
-namespace Massive
+﻿namespace Massive
 {
 	public interface IIncludeSelector : IReadOnlySetSelector
 	{
