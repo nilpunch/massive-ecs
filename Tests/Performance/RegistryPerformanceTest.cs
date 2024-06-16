@@ -30,6 +30,7 @@ namespace Massive.PerformanceTests
 		{
 			_registryFilling = registryFilling;
 			_registry = PrepareTestRegistry(registryFilling);
+			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -109,10 +110,73 @@ namespace Massive.PerformanceTests
 						_registry.Create();
 					}
 				})
-				.CleanUp(() => _registry.View().ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity)))
+				.CleanUp(() => _registry.View().ForEach((entityId) => _registry.Destroy(entityId)))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
+		}
+
+		[Test, Performance]
+		public void Registry_GetTwoComponents()
+		{
+			for (int i = 0; i < EntitiesCount; i++)
+			{
+				var entity = _registry.Create();
+				_registry.Assign(entity, new PositionComponent() { X = i, Y = i });
+				_registry.Assign(entity, new VelocityComponent() { X = 1, Y = 1 });
+			}
+
+			Measure.Method(() =>
+				{
+					_registry.View().ForEach((entityId) =>
+					{
+						_registry.Get<PositionComponent>(entityId);
+						_registry.Get<VelocityComponent>(entityId);
+					});
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+
+			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
+		}
+
+		[Test, Performance]
+		public void Registry_RemoveAndAddComponent()
+		{
+			for (int i = 0; i < EntitiesCount; i++)
+			{
+				_registry.Create(new PositionComponent() { X = i, Y = i });
+			}
+
+			Measure.Method(() =>
+				{
+					_registry.View().ForEach((entityId) =>
+					{
+						_registry.Unassign<PositionComponent>(entityId);
+						_registry.Assign(entityId, new PositionComponent() { X = entityId, Y = entityId });
+					});
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+
+			_registry.View().ForEach((entityId) =>
+			{
+				_registry.Destroy(entityId);
+			});
+		}
+
+		public struct PositionComponent
+		{
+			public float X;
+			public float Y;
+		}
+
+		public struct VelocityComponent
+		{
+			public float X;
+			public float Y;
 		}
 	}
 }

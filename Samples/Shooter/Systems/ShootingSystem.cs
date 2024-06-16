@@ -14,13 +14,14 @@
 					return;
 				}
 
-				weapon.Cooldown += weapon.ShootingDelay;
+				weapon.Cooldown += weapon.BulletsPerSecond;
 
 				var registry = args.Registry;
 				var bulletId = registry.Create();
 				registry.Assign(bulletId, position);
 				registry.Assign(bulletId, new Bullet() { Damage = weapon.BulletDamage, Lifetime = weapon.BulletLifetime, Owner = registry.GetEntity(id) });
 				registry.Assign(bulletId, new Velocity() { Value = weapon.ShootingDirection * weapon.BulletSpeed });
+				registry.Assign(bulletId, new CircleCollider() { Radius = 0.1f });
 				registry.Assign(bulletId, new VelocityDamper() { DampingFactor = 0.05f });
 			});
 		}

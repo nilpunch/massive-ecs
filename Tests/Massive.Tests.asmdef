@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "Massive",
         "Unity.PerformanceTesting",
-        "Unity.PerformanceTesting.Editor"
+        "Unity.PerformanceTesting.Editor",
+        "Massive.Samples"
     ],
     "includePlatforms": [
         "Editor"

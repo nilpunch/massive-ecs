@@ -12,7 +12,7 @@
 				{
 					dead.ElapsedTimeSinceDeath += args.DeltaTime;
 
-					if (dead.ElapsedTimeSinceDeath > 5f)
+					if (dead.ElapsedTimeSinceDeath > 3f)
 					{
 						args.Registry.Unassign<Dead>(characterId);
 						character.Health = character.MaxHealth;
