@@ -25,19 +25,7 @@ namespace Massive
 
 		public bool ContainsId(int id)
 		{
-			int includeOr = 0;
-			for (int i = 0; i < _include.Count; i++)
-			{
-				includeOr |= _include[i].GetDenseOrInvalid(id);
-			}
-
-			int excludeAnd = Constants.InvalidId;
-			for (int i = 0; i < _exclude.Count; i++)
-			{
-				excludeAnd &= _exclude[i].GetDenseOrInvalid(id);
-			}
-
-			return includeOr != Constants.InvalidId && excludeAnd == Constants.InvalidId;
+			return SetHelpers.AssignedInAll(id, _include) && SetHelpers.NotAssignedInAll(id, _exclude);
 		}
 	}
 }
