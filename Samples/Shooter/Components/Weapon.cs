@@ -5,7 +5,7 @@ namespace Massive.Samples.Shooter
 	public struct Weapon
 	{
 		public float BulletsPerSecond;
-		public float Cooldown;
+		public float Charge;
 		public Vector2 ShootingDirection;
 
 		public float BulletSpeed;

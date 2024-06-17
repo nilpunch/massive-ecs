@@ -26,8 +26,8 @@ namespace Massive.Samples.Shooter
 
 			for (int i = 0; i < amount; i++)
 			{
-				CreateCharacter(startPosition - offset + axis * i, offset, 0.2f + (float)random.Next() / int.MaxValue * 0.1f);
-				CreateCharacter(startPosition + offset + axis * i, -offset, 0.3f + (float)random.Next() / int.MaxValue * 0.1f);
+				CreateCharacter(startPosition - offset + axis * i, offset, 5f + (float)random.Next() / int.MaxValue * 2f);
+				CreateCharacter(startPosition + offset + axis * i, -offset, 4f + (float)random.Next() / int.MaxValue * 2f);
 			}
 		}
 

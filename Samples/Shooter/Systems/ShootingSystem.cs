@@ -7,14 +7,14 @@
 			registry.View().Exclude<Dead>().ForEachExtra((registry, deltaTime),
 				(int id, ref Weapon weapon, ref Position position, (IRegistry Registry, float DeltaTime) args) =>
 			{
-				weapon.Cooldown -= args.DeltaTime;
+				weapon.Charge += weapon.BulletsPerSecond * args.DeltaTime;
 
-				if (weapon.Cooldown > 0f)
+				if (weapon.Charge < 1f)
 				{
 					return;
 				}
 
-				weapon.Cooldown += weapon.BulletsPerSecond;
+				weapon.Charge -= 1f;
 
 				var registry = args.Registry;
 				var bulletId = registry.Create();
