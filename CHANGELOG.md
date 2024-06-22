@@ -1,5 +1,10 @@
 # Changelog
 
+## 9.4.0 - June 22, 2024
+
+- Removed: `Assign<T>` method from `IDataSet<T>` interface.
+- Added: `Assign<T>` and `AssignCopy<T>` extensions methods for `IDataSet<T>`.
+
 ## 9.3.1 - June 16, 2024
 
 - Changed: renamed `EntityFillInvoker` and `EntityFillEntitiesInvoker` to `FillIdsInvoker` and `FillEntitiesInvoker`.
