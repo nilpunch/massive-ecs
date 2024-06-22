@@ -27,25 +27,23 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AssignedInAll(int id, ArraySegment<IReadOnlySet> sets)
 		{
-			int shouldNotBecomeNegative = 0;
+			int includeOr = 0;
 			for (int i = 0; i < sets.Count; i++)
 			{
-				shouldNotBecomeNegative |= sets[i].GetDenseOrInvalid(id);
+				includeOr |= sets[i].GetDenseOrInvalid(id);
 			}
-
-			return shouldNotBecomeNegative < 0;
+			return includeOr != Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool NotAssignedInAll(int id, ArraySegment<IReadOnlySet> sets)
 		{
-			int shouldStayNegative = ~0;
+			int excludeAnd = Constants.InvalidId;
 			for (int i = 0; i < sets.Count; i++)
 			{
-				shouldStayNegative &= sets[i].GetDenseOrInvalid(id);
+				excludeAnd &= sets[i].GetDenseOrInvalid(id);
 			}
-
-			return shouldStayNegative >= 0;
+			return excludeAnd == Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

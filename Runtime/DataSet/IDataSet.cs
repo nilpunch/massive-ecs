@@ -7,5 +7,6 @@ namespace Massive
 
 	public interface IDataSet<T> : IDataSet, IReadOnlyDataSet<T>
 	{
+		void Assign(int id, T data);
 	}
 }

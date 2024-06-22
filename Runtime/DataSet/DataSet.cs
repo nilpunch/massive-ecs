@@ -21,6 +21,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void Assign(int id)
 		{
+			// If ID is negative, nothing to be done
 			if (id < 0)
 			{
 				return;
@@ -28,6 +29,20 @@ namespace Massive
 
 			Data.EnsurePageForIndex(Count);
 			base.Assign(id);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Assign(int id, T data)
+		{
+			// If ID is negative, nothing to be done
+			if (id < 0)
+			{
+				return;
+			}
+
+			Data.EnsurePageForIndex(Count);
+			base.Assign(id);
+			Get(id) = data;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
