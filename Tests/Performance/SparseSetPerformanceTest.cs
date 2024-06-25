@@ -99,5 +99,23 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
+		
+		[TestCaseSource(nameof(FixtureMassiveSets)), Performance]
+		public void MassiveSparseSet_BigSave(ISet set)
+		{
+			set.Clear();
+			IMassive massive = (IMassive)set;
+
+			for (int i = 0; i < EntitiesCount * IterationsPerMeasurement; i++)
+			{
+				set.Assign(i);
+			}
+			
+			Measure.Method(() => { massive.SaveFrame(); })
+				.WarmupCount(Constants.DefaultFramesCapacity)
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(1)
+				.Run();
+		}
 	}
 }

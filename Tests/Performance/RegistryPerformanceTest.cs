@@ -167,6 +167,33 @@ namespace Massive.PerformanceTests
 			});
 		}
 
+		[Test, Performance]
+		public void Registry_RemoveAndAddComponentFast()
+		{
+			for (int i = 0; i < EntitiesCount; i++)
+			{
+				_registry.Create(new PositionComponent() { X = i, Y = i });
+			}
+
+			Measure.Method(() =>
+				{
+					var positions = _registry.Components<PositionComponent>();
+					_registry.View().ForEach((entityId) =>
+					{
+						positions.Unassign(entityId);
+						positions.Assign(entityId, new PositionComponent() { X = entityId, Y = entityId });
+					});
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+
+			_registry.View().ForEach((entityId) =>
+			{
+				_registry.Destroy(entityId);
+			});
+		}
+
 		public struct PositionComponent
 		{
 			public float X;
