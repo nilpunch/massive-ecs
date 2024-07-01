@@ -30,7 +30,7 @@ namespace Massive
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
-				_dataByFrames[i] = new PagedArray<T>();
+				_dataByFrames[i] = new PagedArray<T>(pageSize);
 				_denseByFrames[i] = new int[DenseCapacity];
 				_sparseByFrames[i] = new int[SparseCapacity];
 			}
