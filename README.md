@@ -18,13 +18,12 @@ ECS features:
 - Data pagination for stable resizing during iteration
 - Full state serialization and deserialization
 - IL2CPP friendly, tested with high stripping level on PC | Android | WebGL
+- [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
 
 Rollback features:
 
 - Ultra-fast saving and rollbacking with cyclic buffers
 - Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
-
-[Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
 
 Consider this list a work in progress as well as the project.
 
