@@ -8,17 +8,23 @@ Prediction-rollback netcode has very stable nature, and is mainly used in fast p
 
 This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.
 
-Provided features:
+ECS features:
 
 - Fast and simple ECS without any code generation
-- Ultra-fast saving and rollbacking with cyclic buffers
-- Zero GC allocations during runtime (after full initialization)
-- Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
+- Support сomponents of any type
+- No deferred commands execution
+- Garbage-free API. Make in-place queries, no caching required!
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - Data pagination for stable resizing during iteration
-- Full state serialization
+- Full state serialization and deserialization
 - IL2CPP friendly, tested with high stripping level on PC | Android | WebGL
-- [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
+
+Rollback features:
+
+- Ultra-fast saving and rollbacking with cyclic buffers
+- Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
+
+[Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
 
 Consider this list a work in progress as well as the project.
 
@@ -118,6 +124,9 @@ class Program
 }
 ```
 
+> [!NOTE]
+> Some APIs are subject to change, but overall the architecture is stable.
+
 ## Installation
 
 Make sure you have standalone [Git](https://git-scm.com/downloads) installed first. Reboot after installation.  
@@ -125,26 +134,6 @@ In Unity, open "Window" -> "Package Manager".
 Click the "+" sign at the top left corner -> "Add package from git URL..."  
 Paste this: `https://github.com/nilpunch/massive-ecs.git`  
 See minimum required Unity version in the `package.json` file.
-
-## Types Overview
-
-> [!NOTE]
-> Some APIs are subject to change, but overall the architecture is stable.
-
-You can just use these types if you don't need the rollback functionality:
-
-- `SparseSet` - data structure containing ids, similar to `HashSet<int>`
-- `DataSet<T>` - data extension for `SparseSet`, similar to `Dictionary<int, T>`
-- `Entities` - data structure to generate and reuse entities - unique ids
-- `Registry` - container for entities, components and tags
-
-Each type has a *Massive* counterpart with added rollback functionality:
-
-- `MassiveSparseSet` - counterpart to `SparseSet`
-- `MassiveDataSet<T>` - counterpart to `DataSet<T>`
-- `MassiveManagedDataSet<T>` - same as `MassiveDataSet<T>`, but with customizable saving
-- `MassiveEntities` - counterpart to `Entities`
-- `MassiveRegistry` - counterpart to `Registry`
 
 ### How it works
 
