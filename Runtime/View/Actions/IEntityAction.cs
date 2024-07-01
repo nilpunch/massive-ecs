@@ -3,12 +3,12 @@ using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	public interface IEntityActionInvoker
+	public interface IEntityAction
 	{
 		void Apply(int id);
 	}
 
-	public struct EntityActionInvoker : IEntityActionInvoker
+	public struct EntityActionAdapter : IEntityAction
 	{
 		public EntityAction Action;
 
@@ -19,7 +19,7 @@ namespace Massive
 		}
 	}
 
-	public struct EntityActionExtraInvoker<TExtra> : IEntityActionInvoker
+	public struct EntityActionExtraAdapter<TExtra> : IEntityAction
 	{
 		public EntityActionExtra<TExtra> Action;
 		public TExtra Extra;
@@ -31,7 +31,7 @@ namespace Massive
 		}
 	}
 
-	public struct FillIdsInvoker : IEntityActionInvoker
+	public struct FillIds : IEntityAction
 	{
 		public IList<int> Result;
 
@@ -42,7 +42,7 @@ namespace Massive
 		}
 	}
 
-	public struct FillEntitiesInvoker : IEntityActionInvoker
+	public struct FillEntities : IEntityAction
 	{
 		public IList<Entity> Result;
 		public IEntities Entities;

@@ -20,8 +20,8 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker
+		public void ForEach<TAction>(TAction action)
+			where TAction : IEntityAction
 		{
 			if (Filter.Include.Count == 0)
 			{
@@ -32,7 +32,7 @@ namespace Massive
 					var entity = entities[i];
 					if (Filter.ContainsId(entity.Id))
 					{
-						invoker.Apply(entity.Id);
+						action.Apply(entity.Id);
 					}
 				}
 			}
@@ -45,15 +45,15 @@ namespace Massive
 					var id = ids[i];
 					if (Filter.ContainsId(id))
 					{
-						invoker.Apply(id);
+						action.Apply(id);
 					}
 				}
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker, T>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T>
+		public void ForEach<TAction, T>(TAction action)
+			where TAction : IEntityAction<T>
 		{
 			var components = Registry.Components<T>();
 
@@ -66,14 +66,14 @@ namespace Massive
 				var dense = components.GetDenseOrInvalid(id);
 				if (dense != Constants.InvalidId && Filter.ContainsId(id))
 				{
-					invoker.Apply(id, ref data[dense]);
+					action.Apply(id, ref data[dense]);
 				}
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker, T1, T2>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T1, T2>
+		public void ForEach<TAction, T1, T2>(TAction action)
+			where TAction : IEntityAction<T1, T2>
 		{
 			var components1 = Registry.Components<T1>();
 			var components2 = Registry.Components<T2>();
@@ -92,14 +92,14 @@ namespace Massive
 				    && dense2 != Constants.InvalidId
 				    && Filter.ContainsId(id))
 				{
-					invoker.Apply(id, ref data1[dense1], ref data2[dense2]);
+					action.Apply(id, ref data1[dense1], ref data2[dense2]);
 				}
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker, T1, T2, T3>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T1, T2, T3>
+		public void ForEach<TAction, T1, T2, T3>(TAction action)
+			where TAction : IEntityAction<T1, T2, T3>
 		{
 			var components1 = Registry.Components<T1>();
 			var components2 = Registry.Components<T2>();
@@ -122,7 +122,7 @@ namespace Massive
 				    && dense3 != Constants.InvalidId
 				    && Filter.ContainsId(id))
 				{
-					invoker.Apply(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
+					action.Apply(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
 				}
 			}
 		}

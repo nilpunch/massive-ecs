@@ -2,12 +2,12 @@
 
 namespace Massive
 {
-	public interface IEntityActionInvoker<T1, T2>
+	public interface IEntityAction<T1, T2>
 	{
 		void Apply(int id, ref T1 a, ref T2 b);
 	}
 
-	public struct EntityActionRefInvoker<T1, T2> : IEntityActionInvoker<T1, T2>
+	public struct EntityActionRefAdapter<T1, T2> : IEntityAction<T1, T2>
 	{
 		public EntityActionRef<T1, T2> Action;
 
@@ -18,7 +18,7 @@ namespace Massive
 		}
 	}
 
-	public struct EntityActionRefExtraInvoker<T1, T2, TExtra> : IEntityActionInvoker<T1, T2>
+	public struct EntityActionRefExtraAdapter<T1, T2, TExtra> : IEntityAction<T1, T2>
 	{
 		public EntityActionRefExtra<T1, T2, TExtra> Action;
 		public TExtra Extra;
@@ -30,7 +30,7 @@ namespace Massive
 		}
 	}
 
-	public struct ActionRefInvoker<T1, T2> : IEntityActionInvoker<T1, T2>
+	public struct ActionRefAdapter<T1, T2> : IEntityAction<T1, T2>
 	{
 		public ActionRef<T1, T2> Action;
 
@@ -41,7 +41,7 @@ namespace Massive
 		}
 	}
 
-	public struct ActionRefExtraInvoker<T1, T2, TExtra> : IEntityActionInvoker<T1, T2>
+	public struct ActionRefExtraAdapter<T1, T2, TExtra> : IEntityAction<T1, T2>
 	{
 		public ActionRefExtra<T1, T2, TExtra> Action;
 		public TExtra Extra;

@@ -19,21 +19,21 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker
+		public void ForEach<TAction>(TAction action)
+			where TAction : IEntityAction
 		{
 			Group.EnsureSynced();
 
 			var groupIds = Group.Ids;
 			for (var i = groupIds.Length - 1; i >= 0; i--)
 			{
-				invoker.Apply(groupIds[i]);
+				action.Apply(groupIds[i]);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker, T>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T>
+		public void ForEach<TAction, T>(TAction action)
+			where TAction : IEntityAction<T>
 		{
 			Group.EnsureSynced();
 
@@ -50,7 +50,7 @@ namespace Massive
 					for (int dense = pageLength - 1; dense >= 0; dense--)
 					{
 						int id = groupIds[indexOffset + dense];
-						invoker.Apply(id, ref page[dense]);
+						action.Apply(id, ref page[dense]);
 					}
 				}
 			}
@@ -59,14 +59,14 @@ namespace Massive
 				for (int dense = groupIds.Length - 1; dense >= 0; dense--)
 				{
 					int id = groupIds[dense];
-					invoker.Apply(id, ref components.Get(id));
+					action.Apply(id, ref components.Get(id));
 				}
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker, T1, T2>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T1, T2>
+		public void ForEach<TAction, T1, T2>(TAction action)
+			where TAction : IEntityAction<T1, T2>
 		{
 			Group.EnsureSynced();
 
@@ -87,7 +87,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref page1[dense], ref page2[dense]);
+							action.Apply(id, ref page1[dense], ref page2[dense]);
 						}
 					}
 					break;
@@ -99,7 +99,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref components1.Get(id), ref page2[dense]);
+							action.Apply(id, ref components1.Get(id), ref page2[dense]);
 						}
 					}
 					break;
@@ -111,7 +111,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref page1[dense], ref components2.Get(id));
+							action.Apply(id, ref page1[dense], ref components2.Get(id));
 						}
 					}
 					break;
@@ -120,15 +120,15 @@ namespace Massive
 					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
 					{
 						int id = groupIds[dense];
-						invoker.Apply(id, ref components1.Get(id), ref components2.Get(id));
+						action.Apply(id, ref components1.Get(id), ref components2.Get(id));
 					}
 					break;
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker, T1, T2, T3>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T1, T2, T3>
+		public void ForEach<TAction, T1, T2, T3>(TAction action)
+			where TAction : IEntityAction<T1, T2, T3>
 		{
 			Group.EnsureSynced();
 
@@ -152,7 +152,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref page1[dense], ref page2[dense], ref page3[dense]);
+							action.Apply(id, ref page1[dense], ref page2[dense], ref page3[dense]);
 						}
 					}
 					break;
@@ -165,7 +165,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref components1.Get(id), ref page2[dense], ref page3[dense]);
+							action.Apply(id, ref components1.Get(id), ref page2[dense], ref page3[dense]);
 						}
 					}
 					break;
@@ -178,7 +178,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref page1[dense], ref components2.Get(id), ref page3[dense]);
+							action.Apply(id, ref page1[dense], ref components2.Get(id), ref page3[dense]);
 						}
 					}
 					break;
@@ -190,7 +190,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref components1.Get(id), ref components2.Get(id), ref page3[dense]);
+							action.Apply(id, ref components1.Get(id), ref components2.Get(id), ref page3[dense]);
 						}
 					}
 					break;
@@ -203,7 +203,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref page1[dense], ref page2[dense], ref components3.Get(id));
+							action.Apply(id, ref page1[dense], ref page2[dense], ref components3.Get(id));
 						}
 					}
 					break;
@@ -215,7 +215,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref components1.Get(id), ref page2[dense], ref components3.Get(id));
+							action.Apply(id, ref components1.Get(id), ref page2[dense], ref components3.Get(id));
 						}
 					}
 					break;
@@ -227,7 +227,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							invoker.Apply(id, ref page1[dense], ref components2.Get(id), ref components3.Get(id));
+							action.Apply(id, ref page1[dense], ref components2.Get(id), ref components3.Get(id));
 						}
 					}
 					break;
@@ -236,7 +236,7 @@ namespace Massive
 					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
 					{
 						int id = groupIds[dense];
-						invoker.Apply(id, ref components1.Get(id), ref components2.Get(id), ref components3.Get(id));
+						action.Apply(id, ref components1.Get(id), ref components2.Get(id), ref components3.Get(id));
 					}
 					break;
 			}

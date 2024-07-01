@@ -17,19 +17,19 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker
+		public void ForEach<TAction>(TAction action)
+			where TAction : IEntityAction
 		{
 			var entities = Registry.Entities.Alive;
 			for (var i = entities.Length - 1; i >= 0; i--)
 			{
-				invoker.Apply(entities[i].Id);
+				action.Apply(entities[i].Id);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker, T>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T>
+		public void ForEach<TAction, T>(TAction action)
+			where TAction : IEntityAction<T>
 		{
 			var components = Registry.Components<T>();
 
@@ -41,14 +41,14 @@ namespace Massive
 				for (int dense = pageLength - 1; dense >= 0; dense--)
 				{
 					var id = ids[indexOffset + dense];
-					invoker.Apply(id, ref page[dense]);
+					action.Apply(id, ref page[dense]);
 				}
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker, T1, T2>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T1, T2>
+		public void ForEach<TAction, T1, T2>(TAction action)
+			where TAction : IEntityAction<T1, T2>
 		{
 			var components1 = Registry.Components<T1>();
 			var components2 = Registry.Components<T2>();
@@ -74,7 +74,7 @@ namespace Massive
 						int dense2 = components2.GetDenseOrInvalid(id);
 						if (dense2 != Constants.InvalidId)
 						{
-							invoker.Apply(id, ref page1[dense1], ref data2[dense2]);
+							action.Apply(id, ref page1[dense1], ref data2[dense2]);
 						}
 					}
 				}
@@ -96,7 +96,7 @@ namespace Massive
 						int dense1 = components1.GetDenseOrInvalid(id);
 						if (dense1 != Constants.InvalidId)
 						{
-							invoker.Apply(id, ref data1[dense1], ref page2[dense2]);
+							action.Apply(id, ref data1[dense1], ref page2[dense2]);
 						}
 					}
 				}
@@ -104,8 +104,8 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ForEachUniversal<TInvoker, T1, T2, T3>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T1, T2, T3>
+		public void ForEach<TAction, T1, T2, T3>(TAction action)
+			where TAction : IEntityAction<T1, T2, T3>
 		{
 			var components1 = Registry.Components<T1>();
 			var components2 = Registry.Components<T2>();
@@ -134,7 +134,7 @@ namespace Massive
 						int dense3 = components3.GetDenseOrInvalid(id);
 						if (dense2 != Constants.InvalidId && dense3 != Constants.InvalidId)
 						{
-							invoker.Apply(id, ref page1[dense1], ref data2[dense2], ref data3[dense3]);
+							action.Apply(id, ref page1[dense1], ref data2[dense2], ref data3[dense3]);
 						}
 					}
 				}
@@ -157,7 +157,7 @@ namespace Massive
 						int dense3 = components3.GetDenseOrInvalid(id);
 						if (dense1 != Constants.InvalidId && dense3 != Constants.InvalidId)
 						{
-							invoker.Apply(id, ref data1[dense1], ref page2[dense2], ref data3[dense3]);
+							action.Apply(id, ref data1[dense1], ref page2[dense2], ref data3[dense3]);
 						}
 					}
 				}
@@ -180,7 +180,7 @@ namespace Massive
 						int dense2 = components2.GetDenseOrInvalid(id);
 						if (dense1 != Constants.InvalidId && dense2 != Constants.InvalidId)
 						{
-							invoker.Apply(id, ref data1[dense1], ref data2[dense2], ref page3[dense3]);
+							action.Apply(id, ref data1[dense1], ref data2[dense2], ref page3[dense3]);
 						}
 					}
 				}

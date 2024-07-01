@@ -4,16 +4,16 @@
 	{
 		IRegistry Registry { get; }
 
-		void ForEachUniversal<TInvoker>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker;
+		void ForEach<TAction>(TAction action)
+			where TAction : IEntityAction;
 
-		void ForEachUniversal<TInvoker, T>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T>;
+		void ForEach<TAction, T>(TAction action)
+			where TAction : IEntityAction<T>;
 
-		void ForEachUniversal<TInvoker, T1, T2>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T1, T2>;
+		void ForEach<TAction, T1, T2>(TAction action)
+			where TAction : IEntityAction<T1, T2>;
 
-		void ForEachUniversal<TInvoker, T1, T2, T3>(TInvoker invoker)
-			where TInvoker : IEntityActionInvoker<T1, T2, T3>;
+		void ForEach<TAction, T1, T2, T3>(TAction action)
+			where TAction : IEntityAction<T1, T2, T3>;
 	}
 }

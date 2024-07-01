@@ -1,5 +1,12 @@
 # Changelog
 
+## 10.0.0 - July 1, 2024
+
+Minor API renaming, but major up. None the less.
+
+- Changed: renamed `IView` methods.
+- Changed: renamed `Invokers` to `Actions`.
+
 ## 9.3.1 - June 16, 2024
 
 - Changed: renamed `EntityFillInvoker` and `EntityFillEntitiesInvoker` to `FillIdsInvoker` and `FillEntitiesInvoker`.
