@@ -7,8 +7,7 @@ namespace Massive
 	/// <summary>
 	/// Data extension for <see cref="Massive.MassiveSparseSet"/>.
 	/// </summary>
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public abstract class MassiveDataSetBase<T> : DataSet<T>, IMassive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;

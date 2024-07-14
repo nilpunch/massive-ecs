@@ -6,8 +6,7 @@ namespace Massive
 	/// <summary>
 	/// Data extension for <see cref="Massive.SparseSet"/>.
 	/// </summary>
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class DataSet<T> : SparseSet, IDataSet<T>
 	{
 		public PagedArray<T> Data { get; }

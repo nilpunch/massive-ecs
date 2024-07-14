@@ -6,8 +6,7 @@ namespace Massive
 	/// <summary>
 	/// Data extension for <see cref="Massive.MassiveSparseSet"/>.
 	/// </summary>
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class MassiveDataSet<T> : MassiveDataSetBase<T>
 	{
 		public MassiveDataSet(int setCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
