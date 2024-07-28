@@ -4,6 +4,7 @@ namespace Unity.IL2CPP.CompilerServices
 {
 	using System;
 
+	[Flags]
 	internal enum Option
 	{
 		NullChecks = 1,

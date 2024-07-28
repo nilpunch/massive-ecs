@@ -4,8 +4,7 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public static class SetHelpers
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

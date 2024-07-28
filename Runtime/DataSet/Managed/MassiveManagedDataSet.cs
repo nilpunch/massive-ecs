@@ -5,8 +5,7 @@ namespace Massive
 	/// <summary>
 	/// Data extension for <see cref="Massive.MassiveSparseSet"/> with managed data support.
 	/// </summary>
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class MassiveManagedDataSet<T> : MassiveDataSetBase<T> where T : IManaged<T>
 	{
 		public MassiveManagedDataSet(int capacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
