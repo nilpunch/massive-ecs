@@ -6,7 +6,7 @@ namespace Massive
 	{
 		ISet CreateAppropriateSet<T>() => GenerateVirtualGenericsForAOT<T>();
 
-		// This is a hint for IL2CPP
+		// Hint for AOT
 		private static ISet GenerateVirtualGenericsForAOT<T>()
 		{
 			new NormalSetFactory().CreateAppropriateSet<T>();

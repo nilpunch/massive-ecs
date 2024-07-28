@@ -14,7 +14,7 @@ namespace Massive.Serialization
 
 		public void Serialize(IRegistry registry, Stream stream)
 		{
-			var set = (SparseSet)registry.Any<T>();
+			var set = (SparseSet)registry.Set<T>();
 
 			SparseSetSerializer.Serialize(set, stream);
 
@@ -26,7 +26,7 @@ namespace Massive.Serialization
 
 		public void Deserialize(IRegistry registry, Stream stream)
 		{
-			var set = (SparseSet)registry.Any<T>();
+			var set = (SparseSet)registry.Set<T>();
 
 			SparseSetSerializer.Deserialize(set, stream);
 

@@ -44,8 +44,8 @@ namespace Massive
 			int currentMaxId = MaxId;
 
 			// Copy everything from current state to current frame
-			Array.Copy(Dense, 0, _denseByFrames[currentFrame], 0, currentMaxId);
-			Array.Copy(Sparse, 0, _sparseByFrames[currentFrame], 0, currentMaxId);
+			Array.Copy(Dense, _denseByFrames[currentFrame], currentMaxId);
+			Array.Copy(Sparse, _sparseByFrames[currentFrame], currentMaxId);
 			_countByFrames[currentFrame] = currentCount;
 			_maxIdByFrames[currentFrame] = currentMaxId;
 		}
@@ -60,8 +60,8 @@ namespace Massive
 			int rollbackCount = _countByFrames[rollbackFrame];
 			int rollbackMaxId = _maxIdByFrames[rollbackFrame];
 
-			Array.Copy(_denseByFrames[rollbackFrame], 0, Dense, 0, rollbackMaxId);
-			Array.Copy(_sparseByFrames[rollbackFrame], 0, Sparse, 0, rollbackMaxId);
+			Array.Copy(_denseByFrames[rollbackFrame], Dense, rollbackMaxId);
+			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackMaxId);
 			Count = rollbackCount;
 			MaxId = rollbackMaxId;
 		}

@@ -37,12 +37,12 @@ namespace Massive
 		{
 			Group.EnsureSynced();
 
-			var components = Registry.Components<T>();
+			var dataSet = Registry.DataSet<T>();
 
-			var data = components.Data;
+			var data = dataSet.Data;
 			var groupIds = Group.Ids;
 
-			if (Group.IsOwning(components))
+			if (Group.IsOwning(dataSet))
 			{
 				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, groupIds.Length))
 				{
@@ -59,7 +59,7 @@ namespace Massive
 				for (int dense = groupIds.Length - 1; dense >= 0; dense--)
 				{
 					int id = groupIds[dense];
-					action.Apply(id, ref components.Get(id));
+					action.Apply(id, ref dataSet.Get(id));
 				}
 			}
 		}
@@ -70,14 +70,14 @@ namespace Massive
 		{
 			Group.EnsureSynced();
 
-			var components1 = Registry.Components<T1>();
-			var components2 = Registry.Components<T2>();
+			var dataSet1 = Registry.DataSet<T1>();
+			var dataSet2 = Registry.DataSet<T2>();
 
-			var data1 = components1.Data;
-			var data2 = components2.Data;
+			var data1 = dataSet1.Data;
+			var data2 = dataSet2.Data;
 			var groupIds = Group.Ids;
 
-			switch (Group.IsOwning(components1), Group.IsOwning(components2))
+			switch (Group.IsOwning(dataSet1), Group.IsOwning(dataSet2))
 			{
 				case (true, true):
 					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
@@ -99,7 +99,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							action.Apply(id, ref components1.Get(id), ref page2[dense]);
+							action.Apply(id, ref dataSet1.Get(id), ref page2[dense]);
 						}
 					}
 					break;
@@ -111,7 +111,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							action.Apply(id, ref page1[dense], ref components2.Get(id));
+							action.Apply(id, ref page1[dense], ref dataSet2.Get(id));
 						}
 					}
 					break;
@@ -120,7 +120,7 @@ namespace Massive
 					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
 					{
 						int id = groupIds[dense];
-						action.Apply(id, ref components1.Get(id), ref components2.Get(id));
+						action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id));
 					}
 					break;
 			}
@@ -132,16 +132,16 @@ namespace Massive
 		{
 			Group.EnsureSynced();
 
-			var components1 = Registry.Components<T1>();
-			var components2 = Registry.Components<T2>();
-			var components3 = Registry.Components<T3>();
+			var dataSet1 = Registry.DataSet<T1>();
+			var dataSet2 = Registry.DataSet<T2>();
+			var dataSet3 = Registry.DataSet<T3>();
 
-			var data1 = components1.Data;
-			var data2 = components2.Data;
-			var data3 = components3.Data;
+			var data1 = dataSet1.Data;
+			var data2 = dataSet2.Data;
+			var data3 = dataSet3.Data;
 			var groupIds = Group.Ids;
 
-			switch (Group.IsOwning(components1), Group.IsOwning(components2), Group.IsOwning(components3))
+			switch (Group.IsOwning(dataSet1), Group.IsOwning(dataSet2), Group.IsOwning(dataSet3))
 			{
 				case (true, true, true):
 					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
@@ -165,7 +165,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							action.Apply(id, ref components1.Get(id), ref page2[dense], ref page3[dense]);
+							action.Apply(id, ref dataSet1.Get(id), ref page2[dense], ref page3[dense]);
 						}
 					}
 					break;
@@ -178,7 +178,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							action.Apply(id, ref page1[dense], ref components2.Get(id), ref page3[dense]);
+							action.Apply(id, ref page1[dense], ref dataSet2.Get(id), ref page3[dense]);
 						}
 					}
 					break;
@@ -190,7 +190,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							action.Apply(id, ref components1.Get(id), ref components2.Get(id), ref page3[dense]);
+							action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id), ref page3[dense]);
 						}
 					}
 					break;
@@ -203,7 +203,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							action.Apply(id, ref page1[dense], ref page2[dense], ref components3.Get(id));
+							action.Apply(id, ref page1[dense], ref page2[dense], ref dataSet3.Get(id));
 						}
 					}
 					break;
@@ -215,7 +215,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							action.Apply(id, ref components1.Get(id), ref page2[dense], ref components3.Get(id));
+							action.Apply(id, ref dataSet1.Get(id), ref page2[dense], ref dataSet3.Get(id));
 						}
 					}
 					break;
@@ -227,7 +227,7 @@ namespace Massive
 						for (int dense = pageLength - 1; dense >= 0; dense--)
 						{
 							int id = groupIds[indexOffset + dense];
-							action.Apply(id, ref page1[dense], ref components2.Get(id), ref components3.Get(id));
+							action.Apply(id, ref page1[dense], ref dataSet2.Get(id), ref dataSet3.Get(id));
 						}
 					}
 					break;
@@ -236,7 +236,7 @@ namespace Massive
 					for (int dense = groupIds.Length - 1; dense >= 0; dense--)
 					{
 						int id = groupIds[dense];
-						action.Apply(id, ref components1.Get(id), ref components2.Get(id), ref components3.Get(id));
+						action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id), ref dataSet3.Get(id));
 					}
 					break;
 			}

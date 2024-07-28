@@ -177,7 +177,7 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					var positions = _registry.Components<PositionComponent>();
+					var positions = _registry.DataSet<PositionComponent>();
 					_registry.View().ForEach((entityId) =>
 					{
 						positions.Unassign(entityId);

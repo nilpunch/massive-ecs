@@ -64,7 +64,7 @@ namespace Massive
 			static TypeLookup()
 			{
 				Index = IndexCounter.NextIndex++;
-				FullName = ReflectionHelpers.GetFullName(typeof(TKey));
+				FullName = typeof(TKey).GetFullBeautifulName();
 			}
 		}
 

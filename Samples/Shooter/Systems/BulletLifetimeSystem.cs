@@ -5,13 +5,15 @@
 		public static void Update(IRegistry registry, float deltaTime)
 		{
 			registry.View().Exclude<Dead>().ForEachExtra((registry, deltaTime),
-				(int bulletId, ref Bullet bullet, (IRegistry Registry, float DeltaTime) args) =>
+				static (int bulletId, ref Bullet bullet, (IRegistry Registry, float DeltaTime) args) =>
 				{
-					bullet.Lifetime -= args.DeltaTime;
+					var (registry, deltaTime) = args;
+
+					bullet.Lifetime -= deltaTime;
 
 					if (bullet.Lifetime <= 0f)
 					{
-						args.Registry.Assign<Dead>(bulletId);
+						registry.Assign<Dead>(bulletId);
 					}
 				});
 		}

@@ -4,10 +4,10 @@
 	{
 		public static void Update(IRegistry registry, float deltaTime)
 		{
-			var characters = registry.Components<Character>();
-			var bullets = registry.Components<Bullet>();
-			var colliders = registry.Components<CircleCollider>();
-			var positions = registry.Components<Position>();
+			var characters = registry.DataSet<Character>();
+			var bullets = registry.DataSet<Bullet>();
+			var colliders = registry.DataSet<CircleCollider>();
+			var positions = registry.DataSet<Position>();
 
 			foreach (var characterId in registry.View().Filter<Include<Character>, Exclude<Dead>>())
 			{
@@ -40,9 +40,11 @@
 
 			void DestroyCharacterBullets(int characterId)
 			{
-				registry.View().Exclude<Dead>().ForEachExtra(registry,
-					(int bulletId, ref Bullet bullet, IRegistry registry) =>
+				registry.View().Exclude<Dead>().ForEachExtra((characterId, registry),
+					static (int bulletId, ref Bullet bullet, (int CharacterId, IRegistry Registry) args) =>
 					{
+						var (characterId, registry) = args;
+
 						if (bullet.Owner == registry.GetEntity(characterId))
 						{
 							registry.Assign<Dead>(bulletId);

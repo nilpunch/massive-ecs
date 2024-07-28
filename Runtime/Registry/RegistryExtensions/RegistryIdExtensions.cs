@@ -35,7 +35,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this IRegistry registry, int id)
 		{
-			if (!registry.Entities.IsAlive(id))
+			if (!registry.IsAlive(id))
 			{
 				throw new Exception("The entity you want to clone is not alive!");
 			}
@@ -87,7 +87,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this IRegistry registry, int id, T data = default)
 		{
-			var set = registry.Any<T>();
+			var set = registry.Set<T>();
 			if (set is IDataSet<T> dataSet)
 			{
 				dataSet.Assign(id, data);
@@ -107,7 +107,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Unassign<T>(this IRegistry registry, int id)
 		{
-			registry.Any<T>().Unassign(id);
+			registry.Set<T>().Unassign(id);
 		}
 
 		/// <summary>
@@ -119,7 +119,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this IRegistry registry, int id)
 		{
-			return registry.Any<T>().IsAssigned(id);
+			return registry.Set<T>().IsAssigned(id);
 		}
 
 		/// <summary>
@@ -132,7 +132,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this IRegistry registry, int id)
 		{
-			if (registry.Any<T>() is not IDataSet<T> dataSet)
+			if (registry.Set<T>() is not IDataSet<T> dataSet)
 			{
 				throw new Exception("Type has no associated data!");
 			}

@@ -8,13 +8,15 @@
 		public static void Update(IRegistry registry, float deltaTime)
 		{
 			registry.View().Include<Bullet>().ForEachExtra((registry, deltaTime),
-				(int id, ref Dead dead, (IRegistry Registry, float DeltaTime) args) =>
+				static (int id, ref Dead dead, (IRegistry Registry, float DeltaTime) args) =>
 				{
-					dead.ElapsedTimeSinceDeath += args.DeltaTime;
+					var (registry, deltaTime) = args;
+
+					dead.ElapsedTimeSinceDeath += deltaTime;
 
 					if (dead.ElapsedTimeSinceDeath > 1f)
 					{
-						args.Registry.Destroy(id);
+						registry.Destroy(id);
 					}
 				});
 		}

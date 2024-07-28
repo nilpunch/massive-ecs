@@ -55,15 +55,15 @@ namespace Massive
 		public void ForEach<TAction, T>(TAction action)
 			where TAction : IEntityAction<T>
 		{
-			var components = Registry.Components<T>();
+			var dataSet = Registry.DataSet<T>();
 
-			var data = components.Data;
-			var ids = SetHelpers.GetMinimalSet(components, Filter.Include).Ids;
+			var data = dataSet.Data;
+			var ids = SetHelpers.GetMinimalSet(dataSet, Filter.Include).Ids;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				var dense = components.GetDenseOrInvalid(id);
+				var dense = dataSet.GetDenseOrInvalid(id);
 				if (dense != Constants.InvalidId && Filter.ContainsId(id))
 				{
 					action.Apply(id, ref data[dense]);
@@ -75,19 +75,19 @@ namespace Massive
 		public void ForEach<TAction, T1, T2>(TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			var components1 = Registry.Components<T1>();
-			var components2 = Registry.Components<T2>();
+			var dataSet1 = Registry.DataSet<T1>();
+			var dataSet2 = Registry.DataSet<T2>();
 
-			var data1 = components1.Data;
-			var data2 = components2.Data;
-			var minData = SetHelpers.GetMinimalSet(components1, components2);
+			var data1 = dataSet1.Data;
+			var data2 = dataSet2.Data;
+			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
 			var ids = SetHelpers.GetMinimalSet(minData, Filter.Include).Ids;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				var dense1 = components1.GetDenseOrInvalid(id);
-				var dense2 = components2.GetDenseOrInvalid(id);
+				var dense1 = dataSet1.GetDenseOrInvalid(id);
+				var dense2 = dataSet2.GetDenseOrInvalid(id);
 				if (dense1 != Constants.InvalidId
 				    && dense2 != Constants.InvalidId
 				    && Filter.ContainsId(id))
@@ -101,22 +101,22 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3>(TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			var components1 = Registry.Components<T1>();
-			var components2 = Registry.Components<T2>();
-			var components3 = Registry.Components<T3>();
+			var dataSet1 = Registry.DataSet<T1>();
+			var dataSet2 = Registry.DataSet<T2>();
+			var dataSet3 = Registry.DataSet<T3>();
 
-			var data1 = components1.Data;
-			var data2 = components2.Data;
-			var data3 = components3.Data;
-			var minData = SetHelpers.GetMinimalSet(components1, components2, components3);
+			var data1 = dataSet1.Data;
+			var data2 = dataSet2.Data;
+			var data3 = dataSet3.Data;
+			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3);
 			var ids = SetHelpers.GetMinimalSet(minData, Filter.Include).Ids;
 
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				var id = ids[i];
-				var dense1 = components1.GetDenseOrInvalid(id);
-				var dense2 = components2.GetDenseOrInvalid(id);
-				var dense3 = components3.GetDenseOrInvalid(id);
+				var dense1 = dataSet1.GetDenseOrInvalid(id);
+				var dense2 = dataSet2.GetDenseOrInvalid(id);
+				var dense3 = dataSet3.GetDenseOrInvalid(id);
 				if (dense1 != Constants.InvalidId
 				    && dense2 != Constants.InvalidId
 				    && dense3 != Constants.InvalidId

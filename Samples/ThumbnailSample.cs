@@ -72,10 +72,11 @@
 			foreach (var entityId in registry.View().Include<Player, Position>())
 			{
 				ref var position = ref registry.Get<Position>(entityId);
+				// ...
 			}
 
 			// Iterate manually over data sets
-			var velocities = registry.Components<Velocity>();
+			var velocities = registry.DataSet<Velocity>();
 			for (int i = 0; i < velocities.Count; ++i)
 			{
 				ref var velocity = ref velocities.Data[i];

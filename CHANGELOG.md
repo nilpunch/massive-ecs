@@ -1,5 +1,12 @@
 # Changelog
 
+## 11.0.0 - July 28, 2024
+
+Refactoring and some API change.
+
+- Changed: renamed registry `Components<T>` extension method to `DataSet<T>`.
+- Changed: renamed registry `Any<T>` extension method to `Set<T>`.
+
 ## 10.0.0 - July 1, 2024
 
 Minor API renaming, but major up. None the less.

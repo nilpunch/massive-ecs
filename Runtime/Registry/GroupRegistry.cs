@@ -77,7 +77,8 @@ namespace Massive
 				// Check if the next group can extend ours
 				if (baseGroupNode.Extended != null && !baseGroupNode.Extended.ExtendsGroup(owned, include, exclude))
 				{
-					throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullName()}, {typeof(TInclude).GetFullName()}, {typeof(TExclude).GetFullName()}>.");
+					throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullBeautifulName()}, " +
+					                    $"{typeof(TInclude).GetFullBeautifulName()}, {typeof(TExclude).GetFullBeautifulName()}>.");
 				}
 
 				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
@@ -97,7 +98,8 @@ namespace Massive
 				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(owningGroup);
 			}
 
-			throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullName()}, {typeof(TInclude).GetFullName()}, {typeof(TExclude).GetFullName()}>.");
+			throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullBeautifulName()}, " +
+			                    $"{typeof(TInclude).GetFullBeautifulName()}, {typeof(TExclude).GetFullBeautifulName()}>.");
 		}
 
 		private IGroup RegisterAndSync<TGroupKey>(IGroup group)

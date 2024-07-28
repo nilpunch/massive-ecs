@@ -105,7 +105,7 @@ namespace Massive
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
 				int id = ids[i];
-				BeforeUnassigned?.Invoke(ids[i]);
+				BeforeUnassigned?.Invoke(id);
 				Count -= 1;
 				Sparse[id] = Constants.InvalidId;
 			}
@@ -168,7 +168,11 @@ namespace Massive
 		{
 			int previousCapacity = SparseCapacity;
 			Array.Resize(ref _sparse, capacity);
-			Array.Fill(_sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
+
+			if (capacity > previousCapacity)
+			{
+				Array.Fill(_sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

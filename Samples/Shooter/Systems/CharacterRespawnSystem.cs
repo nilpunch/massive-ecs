@@ -8,13 +8,15 @@
 		public static void Update(IRegistry registry, float deltaTime)
 		{
 			registry.View().ForEachExtra((registry, deltaTime),
-				(int characterId, ref Dead dead, ref Character character, (IRegistry Registry, float DeltaTime) args) =>
+				static (int characterId, ref Dead dead, ref Character character, (IRegistry Registry, float DeltaTime) args) =>
 				{
-					dead.ElapsedTimeSinceDeath += args.DeltaTime;
+					var (registry, deltaTime) = args;
+
+					dead.ElapsedTimeSinceDeath += deltaTime;
 
 					if (dead.ElapsedTimeSinceDeath > 3f)
 					{
-						args.Registry.Unassign<Dead>(characterId);
+						registry.Unassign<Dead>(characterId);
 						character.Health = character.MaxHealth;
 					}
 				});

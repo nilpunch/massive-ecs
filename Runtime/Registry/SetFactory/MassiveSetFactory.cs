@@ -41,18 +41,12 @@
 
 		private ISet CreateDataSet<T>()
 		{
-			if (ManagedUtils.IsManaged<T>())
-			{
-				var massiveManagedDataSet = ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize);
-				((IMassive)massiveManagedDataSet).SaveFrame();
-				return massiveManagedDataSet;
-			}
-			else
-			{
-				var massiveDataSet = new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize);
-				massiveDataSet.SaveFrame();
-				return massiveDataSet;
-			}
+			var massiveDataSet = ManagedUtils.IsManaged<T>()
+				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize)
+				: new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize);
+
+			((IMassive)massiveDataSet).SaveFrame();
+			return massiveDataSet;
 		}
 	}
 }

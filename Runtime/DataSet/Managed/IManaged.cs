@@ -4,7 +4,7 @@ namespace Massive
 	{
 		void CopyTo(ref T other);
 
-		// This is a hint for IL2CPP
+		// Hint for AOT
 		private static void ReflectionSupportForAOT()
 		{
 			_ = new MassiveManagedDataSet<T>();

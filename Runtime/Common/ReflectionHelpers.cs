@@ -8,11 +8,11 @@ namespace Massive
 		/// <summary>
 		/// Returns full type name with namespace and generic arguments.
 		/// </summary>
-		public static string GetFullName(this Type type)
+		public static string GetFullBeautifulName(this Type type)
 		{
 			if (type.IsGenericType)
 			{
-				string genericArguments = string.Join(',', type.GetGenericArguments().Select(GetFullName));
+				string genericArguments = string.Join(',', type.GetGenericArguments().Select(GetFullBeautifulName));
 				string typeItself = type.FullName[..type.FullName.IndexOf('`', StringComparison.Ordinal)];
 				return $"{typeItself}<{genericArguments}>";
 			}
