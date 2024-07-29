@@ -1,52 +1,37 @@
 ﻿namespace Massive.Samples.Thumbnail
 {
-	struct Player
-	{
-	}
+	struct Player { }
+	struct Position { public float X; public float Y; }
+	class Velocity { public float Magnitude; } // Classes work just fine
 
-	struct Position
+	class Program
 	{
-		public float X;
-		public float Y;
-	}
-
-	struct Velocity
-	{
-		public float Magnitude;
-	}
-
-	class ThumbnailSample
-	{
-		static IRegistry CreateRegistry()
+		static void Main()
 		{
 			var registry = new Registry();
+			var deltaTime = 1f / 60f;
 
-			for (int i = 0; i < 10; ++i)
-			{
-				var entity = registry.Create(new Position() { X = i * 10f });
+			// Create empty entity
+			var enemy = registry.Create();
 
-				if (i % 2 == 0)
-					registry.Assign(entity, new Velocity() { Magnitude = i * 10f });
+			// Or with a component
+			var player = registry.Create(new Player());
 
-				if (i % 3 == 0)
-					registry.Assign<Player>(entity);
-			}
+			// Assign components
+			registry.Assign(player, new Velocity() { Magnitude = 10f });
+			registry.Assign(enemy, new Velocity());
+			registry.Assign<Position>(enemy); // Assigns default
 
-			return registry;
-		}
-
-		static void Update(IRegistry registry, float deltaTime)
-		{
 			var view = registry.View();
 
-			// Iterate using views
+			// Iterate using lightweight views
 			view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
 			{
 				position.Y += velocity.Magnitude * deltaTime;
 
 				if (position.Y > 5f)
 				{
-					// Create and destroy entities during iteration
+					// Create (many) and destroy (current) entities during iteration
 					registry.Destroy(entityId);
 				}
 			});
@@ -59,8 +44,8 @@
 					// ...
 				});
 
-			// Make queries right in place where they are used
-			// You don't have to cache anything!
+			// Make queries right in place where they are used.
+			// You don't have to cache anything
 			registry.View()
 				.Filter<Include<Player>, Exclude<Velocity>>()
 				.ForEach((ref Position position) =>
@@ -82,12 +67,16 @@
 				ref var velocity = ref velocities.Data[i];
 				// ...
 			}
-		}
 
-		static void Main()
-		{
-			var registry = CreateRegistry();
-			Update(registry, 1f / 60f);
+			// Chain any amount of components in filters
+			var filter = registry.Filter<
+				Include<int, string, bool, Include<short, byte, uint, Include<ushort>>>,
+				Exclude<long, char, float, Exclude<double>>>();
+
+			// Reuse filter variable to reduce code duplication
+			// in case of multiple iterations
+			registry.View().Filter(filter).ForEach((ref int n, ref bool b) => { });
+			registry.View().Filter(filter).ForEach((ref string str) => { });
 		}
 	}
 }
