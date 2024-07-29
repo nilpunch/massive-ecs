@@ -52,7 +52,7 @@ class Program
 		// Assign components
 		registry.Assign(player, new Velocity() { Magnitude = 10f });
 		registry.Assign(enemy, new Velocity());
-		registry.Assign<Position>(enemy); // Assigns default
+		registry.Assign<Position>(enemy); // Assigns default value
 
 		// Iterate using lightweight views
 		var view = registry.View();
