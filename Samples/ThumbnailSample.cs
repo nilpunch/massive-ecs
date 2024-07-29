@@ -9,7 +9,6 @@
 		static void Main()
 		{
 			var registry = new Registry();
-			var deltaTime = 1f / 60f;
 
 			// Create empty entity
 			var enemy = registry.Create();
@@ -20,11 +19,12 @@
 			// Assign components
 			registry.Assign(player, new Velocity() { Magnitude = 10f });
 			registry.Assign(enemy, new Velocity());
-			registry.Assign<Position>(enemy); // Assigns default
+			registry.Assign<Position>(enemy); // Assigns default value
 
-			var view = registry.View();
+			var deltaTime = 1f / 60f;
 
 			// Iterate using lightweight views
+			var view = registry.View();
 			view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
 			{
 				position.Y += velocity.Magnitude * deltaTime;

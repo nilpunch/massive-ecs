@@ -41,7 +41,6 @@ class Program
 	static void Main()
 	{
 		var registry = new Registry();
-		var deltaTime = 1f / 60f;
 
 		// Create empty entity
 		var enemy = registry.Create();
@@ -53,6 +52,8 @@ class Program
 		registry.Assign(player, new Velocity() { Magnitude = 10f });
 		registry.Assign(enemy, new Velocity());
 		registry.Assign<Position>(enemy); // Assigns default value
+
+		var deltaTime = 1f / 60f;
 
 		// Iterate using lightweight views
 		var view = registry.View();
