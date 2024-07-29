@@ -13,7 +13,7 @@ ECS features:
 - Fast and simple ECS without any code generation
 - Support сomponents of any type
 - No deferred commands execution
-- Garbage-free API. Make in-place queries, no caching required!
+- Garbage-free API. Make in-place queries, no caching required
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - Data pagination for stable resizing during iteration
 - Full state serialization and deserialization
@@ -22,7 +22,9 @@ ECS features:
 
 Rollback features:
 
-- Ultra-fast saving and rollbacking with cyclic buffers
+- This is an extension for ECS and is completely optional to use
+- It's natively fast with Array.Copy and cyclic buffers
+- Minimalistic API - `SaveFrame()` and `Rollback(frames)`
 - Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
 
 Consider this list a work in progress as well as the project.
