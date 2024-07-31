@@ -65,7 +65,7 @@ class Program
 
 			if (position.Y > 5f)
 			{
-				// Create (many) and destroy (current) entities during iteration
+				// Destroy (current) and create (many) entities during iteration
 				registry.Destroy(entityId);
 			}
 		});
