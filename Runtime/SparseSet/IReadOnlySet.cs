@@ -18,7 +18,7 @@ namespace Massive
 		event Action<int> AfterAssigned;
 
 		/// <summary>
-		/// Shoots before each <see cref="ISet.Unassign"/> call, even if the id is already dead.
+		/// Shoots before each <see cref="ISet.Unassign"/> call, when the id was alive.
 		/// </summary>
 		event Action<int> BeforeUnassigned;
 

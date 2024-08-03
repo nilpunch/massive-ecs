@@ -15,7 +15,7 @@ namespace Massive
 		event Action<Entity> AfterCreated;
 
 		/// <summary>
-		/// Shoots before each <see cref="IEntities.Destroy"/> call, even if the entity is already dead.
+		/// Shoots before each <see cref="IEntities.Destroy"/> call, when the id was alive.
 		/// </summary>
 		event Action<int> BeforeDestroyed;
 

@@ -17,12 +17,6 @@ namespace Massive
 		public IReadOnlyList<TAbstract> All => _items;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetIndex<TKey>()
-		{
-			return TypeLookup<TKey>.Index;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TAbstract GetOrDefault<TKey>()
 		{
 			var typeIndex = TypeLookup<TKey>.Index;
@@ -33,6 +27,12 @@ namespace Massive
 			}
 
 			return _lookup[typeIndex];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int GetIndex<TKey>()
+		{
+			return TypeLookup<TKey>.Index;
 		}
 
 		public void Assign<TKey>(TAbstract item)

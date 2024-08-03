@@ -32,29 +32,26 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Create()
 		{
-			int count = Count;
-			Count += 1;
-
-			if (count == Dense.Length)
+			if (Count == Dense.Length)
 			{
-				GrowCapacity(count + 1);
+				GrowCapacity(Count + 1);
 			}
 
 			Entity entity;
-			int maxId = MaxId;
 
 			// If there are unused elements in the dense array, return last
-			if (count < maxId)
+			if (Count < MaxId)
 			{
-				entity = Dense[count];
+				entity = Dense[Count];
 			}
 			else
 			{
-				entity = new Entity(maxId, 0);
+				entity = new Entity(MaxId, 0);
 				MaxId += 1;
-				AssignEntity(entity, count);
+				AssignEntity(entity, Count);
 			}
-
+			
+			Count += 1;
 			AfterCreated?.Invoke(entity);
 			return entity;
 		}
@@ -62,38 +59,20 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int id)
 		{
+			// If ID is negative or element is not alive, nothing to be done
+			if (id < 0 || id >= MaxId || Sparse[id] >= Count || Dense[Sparse[id]].Id != id)
+			{
+				return;
+			}
+
 			BeforeDestroyed?.Invoke(id);
 
-			// If element is not alive, nothing to be done
-			if (id < 0 || id >= MaxId)
-			{
-				return;
-			}
-			var dense = Sparse[id];
-			if (dense >= Count)
-			{
-				return;
-			}
-			var entity = Dense[dense];
-			if (entity.Id != id)
-			{
-				return;
-			}
-
-			int count = Count;
 			Count -= 1;
 
-			// If dense is the last used element, decreasing alive count and apply reuse is enough
-			if (dense == count - 1)
-			{
-				Dense[dense] = Entity.Reuse(entity);
-				return;
-			}
-
 			// Swap dense with last element
-			int lastDense = count - 1;
-			AssignEntity(Dense[lastDense], dense);
-			AssignEntity(Entity.Reuse(entity), lastDense);
+			var entity = Dense[Sparse[id]];
+			AssignEntity(Dense[Count], Sparse[id]);
+			AssignEntity(Entity.Reuse(entity), Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

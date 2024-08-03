@@ -31,5 +31,11 @@ namespace Massive
 
 			return set;
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int GetIndex<TKey>()
+		{
+			return _setLookup.GetIndex<TKey>();
+		}
 	}
 }
