@@ -3,20 +3,22 @@
 	public interface IMassive
 	{
 		/// <summary>
-		/// Can be negative when there are absolutely no saved frames to restore data.
+		/// The number of frames that can be rolled back.<br/>
+		/// Can be negative if there are no saved frames to restore data.
 		/// </summary>
 		int CanRollbackFrames { get; }
 
 		/// <summary>
-		/// Saves current frame data.
+		/// Saves the current frame data.
 		/// </summary>
 		void SaveFrame();
 
 		/// <summary>
-		/// Restores data from some frames ago.<br/>
+		/// Restores data from the specified number of frames ago.<br/>
+		/// A value of 0 restores data to the state of the last <see cref="IMassive.SaveFrame"/> call.
 		/// </summary>
 		/// <param name="frames">
-		/// Must be non-negative and not exceed <see cref="IMassive.CanRollbackFrames"/>.
+		/// The number of frames to roll back. Must be non-negative and not exceed <see cref="IMassive.CanRollbackFrames"/>.
 		/// </param>
 		void Rollback(int frames);
 	}

@@ -37,32 +37,20 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void Assign(int id)
 		{
-			// If ID is negative, nothing to be done
-			if (id < 0)
+			// If ID is negative or if element is alive, nothing to be done
+			if (id < 0 || id < SparseCapacity && Sparse[id] != Constants.InvalidId)
 			{
 				return;
 			}
 
-			// If element is alive, nothing to be done
-			if (id < SparseCapacity && Sparse[id] != Constants.InvalidId)
-			{
-				return;
-			}
-
-			int count = Count;
-			Count += 1;
-
-			if (id >= SparseCapacity)
+			if (id >= SparseCapacity || Count >= DenseCapacity)
 			{
 				ResizeSparse(MathHelpers.GetNextPowerOf2(id + 1));
+				ResizeDense(MathHelpers.GetNextPowerOf2(Count + 1));
 			}
 
-			if (count >= DenseCapacity)
-			{
-				ResizeDense(MathHelpers.GetNextPowerOf2(count + 1));
-			}
-
-			AssignIndex(id, count);
+			AssignIndex(id, Count);
+			Count += 1;
 
 			AfterAssigned?.Invoke(id);
 		}
@@ -72,29 +60,15 @@ namespace Massive
 		{
 			BeforeUnassigned?.Invoke(id);
 
-			// If element is not alive, nothing to be done
-			if (id < 0 || id >= SparseCapacity)
-			{
-				return;
-			}
-			var dense = Sparse[id];
-			if (dense == Constants.InvalidId)
+			// If ID is negative or if element is alive, nothing to be done
+			if (id < 0 || id >= SparseCapacity || Sparse[id] == Constants.InvalidId)
 			{
 				return;
 			}
 
-			int count = Count;
 			Count -= 1;
+			CopyFromToDense(Count, Sparse[id]);
 			Sparse[id] = Constants.InvalidId;
-
-			// If dense is the last used element, decreasing alive count is enough
-			if (dense == count - 1)
-			{
-				return;
-			}
-
-			int lastElement = count - 1;
-			CopyFromToDense(lastElement, dense);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -103,10 +77,9 @@ namespace Massive
 			var ids = Ids;
 			for (int i = ids.Length - 1; i >= 0; i--)
 			{
-				int id = ids[i];
-				BeforeUnassigned?.Invoke(id);
+				BeforeUnassigned?.Invoke(ids[i]);
 				Count -= 1;
-				Sparse[id] = Constants.InvalidId;
+				Sparse[ids[i]] = Constants.InvalidId;
 			}
 		}
 
