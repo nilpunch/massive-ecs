@@ -16,7 +16,6 @@ namespace Massive
 			Registry = registry;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach<TAction>(TAction action)
 			where TAction : IEntityAction
 		{
@@ -27,7 +26,6 @@ namespace Massive
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach<TAction, T>(TAction action)
 			where TAction : IEntityAction<T>
 		{
@@ -46,7 +44,6 @@ namespace Massive
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach<TAction, T1, T2>(TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
@@ -103,7 +100,6 @@ namespace Massive
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach<TAction, T1, T2, T3>(TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
