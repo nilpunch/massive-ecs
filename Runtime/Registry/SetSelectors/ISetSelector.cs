@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Massive
 {
@@ -10,7 +9,6 @@ namespace Massive
 
 	public class Selector<T> : ISetSelector
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet[] Select(SetRegistry setRegistry)
 		{
 			var result = new SparseSet[1];
@@ -21,7 +19,6 @@ namespace Massive
 
 	public class Selector<T1, T2> : ISetSelector
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet[] Select(SetRegistry setRegistry)
 		{
 			var result = new SparseSet[2];
@@ -33,7 +30,6 @@ namespace Massive
 
 	public class Selector<T1, T2, T3> : ISetSelector
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet[] Select(SetRegistry setRegistry)
 		{
 			var result = new SparseSet[3];
@@ -47,7 +43,6 @@ namespace Massive
 	public class Selector<T1, T2, T3, TSelector> : ISetSelector
 		where TSelector : ISetSelector, new()
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet[] Select(SetRegistry setRegistry)
 		{
 			return new TSelector().Select(setRegistry).Concat(new Selector<T1, T2, T3>().Select(setRegistry)).Distinct().ToArray();

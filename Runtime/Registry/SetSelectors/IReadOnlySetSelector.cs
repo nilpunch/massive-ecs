@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Massive
 {
@@ -10,7 +9,6 @@ namespace Massive
 
 	public class ReadOnlySelector<T> : IReadOnlySetSelector
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet[] SelectReadOnly(SetRegistry setRegistry)
 		{
 			var result = new SparseSet[1];
@@ -21,7 +19,6 @@ namespace Massive
 
 	public class ReadOnlySelector<T1, T2> : IReadOnlySetSelector
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet[] SelectReadOnly(SetRegistry setRegistry)
 		{
 			var result = new SparseSet[2];
@@ -33,7 +30,6 @@ namespace Massive
 
 	public class ReadOnlySelector<T1, T2, T3> : IReadOnlySetSelector
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet[] SelectReadOnly(SetRegistry setRegistry)
 		{
 			var result = new SparseSet[3];
@@ -47,7 +43,6 @@ namespace Massive
 	public class ReadOnlySelector<T1, T2, T3, TSelector> : IReadOnlySetSelector
 		where TSelector : IReadOnlySetSelector, new()
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet[] SelectReadOnly(SetRegistry setRegistry)
 		{
 			return new TSelector().SelectReadOnly(setRegistry).Concat(new ReadOnlySelector<T1, T2, T3>().SelectReadOnly(setRegistry)).Distinct().ToArray();
