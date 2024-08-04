@@ -11,8 +11,17 @@ namespace Massive
 		private Entity[] _dense;
 		private int[] _sparse;
 
-		public Entity[] Dense => _dense;
-		public int[] Sparse => _sparse;
+		public Entity[] Dense
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _dense;
+		}
+
+		public int[] Sparse
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _sparse;
+		}
 
 		public int Count { get; set; }
 		public int MaxId { get; set; }
@@ -23,7 +32,11 @@ namespace Massive
 			_sparse = new int[setCapacity];
 		}
 
-		public ReadOnlySpan<Entity> Alive => new ReadOnlySpan<Entity>(Dense, 0, Count);
+		public ReadOnlySpan<Entity> Alive
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new ReadOnlySpan<Entity>(Dense, 0, Count);
+		}
 
 		public event Action<Entity> AfterCreated;
 

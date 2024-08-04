@@ -21,8 +21,17 @@ namespace Massive
 			set => Array.Resize(ref _items, value);
 		}
 
-		public Span<T> Span => new Span<T>(_items, 0, Count);
-		public ReadOnlySpan<T> ReadOnlySpan => new ReadOnlySpan<T>(_items, 0, Count);
+		public Span<T> Span
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new Span<T>(_items, 0, Count);
+		}
+
+		public ReadOnlySpan<T> ReadOnlySpan
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new ReadOnlySpan<T>(_items, 0, Count);
+		}
 
 		public ref T this[int index]
 		{

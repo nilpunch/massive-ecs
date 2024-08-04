@@ -10,9 +10,17 @@ namespace Massive
 		private int[] _dense;
 		private int[] _sparse;
 
-		public int[] Dense => _dense;
+		public int[] Dense
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _dense;
+		}
 
-		public int[] Sparse => _sparse;
+		public int[] Sparse
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _sparse;
+		}
 
 		public int Count { get; set; }
 
@@ -26,9 +34,17 @@ namespace Massive
 
 		public ReadOnlySpan<int> Ids => new ReadOnlySpan<int>(Dense, 0, Count);
 
-		public int DenseCapacity => Dense.Length;
+		public int DenseCapacity
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => Dense.Length;
+		}
 
-		public int SparseCapacity => Sparse.Length;
+		public int SparseCapacity
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => Sparse.Length;
+		}
 
 		public event Action<int> AfterAssigned;
 

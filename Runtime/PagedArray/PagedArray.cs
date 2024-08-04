@@ -9,6 +9,8 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class PagedArray<T>
 	{
+		private const int DefaultPagesAmount = 4;
+
 		private readonly int _pageSizePower;
 		private T[][] _pages;
 
@@ -21,10 +23,14 @@ namespace Massive
 
 			PageSize = pageSize;
 			_pageSizePower = MathHelpers.FastLog2(pageSize);
-			_pages = new T[Constants.DefaultPagesAmount][];
+			_pages = new T[DefaultPagesAmount][];
 		}
 
-		public T[][] Pages => _pages;
+		public T[][] Pages
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _pages;
+		}
 
 		public int PageSize { get; }
 
