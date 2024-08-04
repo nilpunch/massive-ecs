@@ -4,10 +4,10 @@ namespace Massive
 {
 	public interface ISetFactory
 	{
-		ISet CreateAppropriateSet<T>() => GenerateVirtualGenericsForAOT<T>();
+		SparseSet CreateAppropriateSet<T>() => GenerateVirtualGenericsForAOT<T>();
 
 		// Hint for AOT
-		private static ISet GenerateVirtualGenericsForAOT<T>()
+		private static SparseSet GenerateVirtualGenericsForAOT<T>()
 		{
 			new NormalSetFactory().CreateAppropriateSet<T>();
 			new MassiveSetFactory().CreateAppropriateSet<T>();

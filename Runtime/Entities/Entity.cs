@@ -11,8 +11,13 @@ namespace Massive
 		public readonly int IdWithOffset;
 		public readonly uint ReuseCount;
 
-		public int Id => IdWithOffset - IdOffset;
+		public int Id
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => IdWithOffset - IdOffset;
+		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity(int id, uint reuseCount)
 		{
 			IdWithOffset = id + IdOffset;

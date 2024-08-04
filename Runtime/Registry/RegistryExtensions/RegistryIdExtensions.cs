@@ -43,7 +43,7 @@ namespace Massive
 			var cloneId = registry.Create();
 
 			var allSets = registry.SetRegistry.All;
-			for (int i = 0; i < allSets.Count; i++)
+			for (int i = 0; i < allSets.Length; i++)
 			{
 				var set = allSets[i];
 				if (set.IsAssigned(id))
@@ -88,7 +88,7 @@ namespace Massive
 		public static void Assign<T>(this IRegistry registry, int id, T data = default)
 		{
 			var set = registry.Set<T>();
-			if (set is IDataSet<T> dataSet)
+			if (set is DataSet<T> dataSet)
 			{
 				dataSet.Assign(id, data);
 			}
@@ -132,7 +132,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this IRegistry registry, int id)
 		{
-			if (registry.Set<T>() is not IDataSet<T> dataSet)
+			if (registry.Set<T>() is not DataSet<T> dataSet)
 			{
 				throw new Exception("Type has no associated data!");
 			}

@@ -4,14 +4,14 @@ namespace Massive
 {
 	public class ExcludeFilter : IFilter
 	{
-		private readonly ArraySegment<IReadOnlySet> _exclude;
+		private readonly ArraySegment<SparseSet> _exclude;
 
-		public ExcludeFilter(ArraySegment<IReadOnlySet> exclude)
+		public ExcludeFilter(ArraySegment<SparseSet> exclude)
 		{
 			_exclude = exclude;
 		}
 
-		public ArraySegment<IReadOnlySet> Include => ArraySegment<IReadOnlySet>.Empty;
+		public ArraySegment<SparseSet> Include => ArraySegment<SparseSet>.Empty;
 
 		public bool ContainsId(int id)
 		{

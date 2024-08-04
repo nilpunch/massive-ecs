@@ -14,7 +14,7 @@
 			_pageSize = pageSize;
 		}
 
-		public ISet CreateAppropriateSet<T>()
+		public SparseSet CreateAppropriateSet<T>()
 		{
 			if (TypeInfo<T>.HasNoFields && !_storeEmptyTypesAsDataSets)
 			{
@@ -24,12 +24,12 @@
 			return CreateDataSet<T>();
 		}
 
-		private ISet CreateSparseSet()
+		private SparseSet CreateSparseSet()
 		{
 			return new SparseSet(_setCapacity);
 		}
 
-		private ISet CreateDataSet<T>()
+		private SparseSet CreateDataSet<T>()
 		{
 			return new DataSet<T>(_setCapacity, _pageSize);
 		}

@@ -5,6 +5,6 @@
 		SetRegistry SetRegistry { get; }
 		FilterRegistry FilterRegistry { get; }
 		GroupRegistry GroupRegistry { get; }
-		IEntities Entities { get; }
+		Entities Entities { get; }
 	}
 }

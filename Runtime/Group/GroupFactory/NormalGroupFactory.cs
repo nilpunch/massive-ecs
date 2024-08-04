@@ -11,12 +11,12 @@ namespace Massive
 			_nonOwningSetCapacity = nonOwningSetCapacity;
 		}
 
-		public IOwningGroup CreateOwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
+		public IOwningGroup CreateOwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
 		{
 			return new OwningGroup(owned, include, exclude);
 		}
 
-		public IGroup CreateNonOwningGroup(IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null)
+		public IGroup CreateNonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
 		{
 			return new NonOwningGroup(include, exclude, _nonOwningSetCapacity);
 		}

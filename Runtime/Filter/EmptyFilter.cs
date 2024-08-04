@@ -10,7 +10,7 @@ namespace Massive
 		{
 		}
 
-		public ArraySegment<IReadOnlySet> Include => ArraySegment<IReadOnlySet>.Empty;
+		public ArraySegment<SparseSet> Include => ArraySegment<SparseSet>.Empty;
 
 		public bool ContainsId(int id)
 		{

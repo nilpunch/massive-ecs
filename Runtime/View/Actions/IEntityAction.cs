@@ -45,7 +45,7 @@ namespace Massive
 	public struct FillEntities : IEntityAction
 	{
 		public IList<Entity> Result;
-		public IEntities Entities;
+		public Entities Entities;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id)

@@ -6,15 +6,15 @@ namespace Massive
 {
 	public class OwningGroup : IOwningGroup
 	{
-		private ArraySegment<IReadOnlySet> OwnedPlusIncluded { get; }
+		private ArraySegment<SparseSet> OwnedPlusIncluded { get; }
 
-		private ArraySegment<IReadOnlySet> OwnedMinusFirstPlusIncluded { get; }
+		private ArraySegment<SparseSet> OwnedMinusFirstPlusIncluded { get; }
 
-		private ArraySegment<ISet> Owned { get; }
+		private ArraySegment<SparseSet> Owned { get; }
 
-		private ArraySegment<IReadOnlySet> Include { get; }
+		private ArraySegment<SparseSet> Include { get; }
 
-		private ArraySegment<IReadOnlySet> Exclude { get; }
+		private ArraySegment<SparseSet> Exclude { get; }
 
 		protected int GroupLength { get; set; }
 
@@ -26,11 +26,11 @@ namespace Massive
 
 		public ReadOnlySpan<int> Ids => Owned[0].Ids.Slice(0, GroupLength);
 
-		public OwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include = null, IReadOnlyList<IReadOnlySet> exclude = null)
+		public OwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
 		{
 			Owned = owned.ToArray();
-			Include = (include ?? Array.Empty<IReadOnlySet>()).ToArray();
-			Exclude = (exclude ?? Array.Empty<IReadOnlySet>()).ToArray();
+			Include = (include ?? Array.Empty<SparseSet>()).ToArray();
+			Exclude = (exclude ?? Array.Empty<SparseSet>()).ToArray();
 
 			OwnedPlusIncluded = Owned.Concat(Include).ToArray();
 			OwnedMinusFirstPlusIncluded = OwnedPlusIncluded.Skip(1).ToArray();
@@ -65,17 +65,17 @@ namespace Massive
 			}
 		}
 
-		public bool IsOwning(IReadOnlySet set)
+		public bool IsOwning(SparseSet set)
 		{
 			return Owned.Contains(set);
 		}
 
-		public bool ExtendsGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude)
+		public bool ExtendsGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude)
 		{
 			return Owned.Contains(owned) && Include.Contains(include) && Exclude.Contains(exclude);
 		}
 
-		public bool BaseForGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude)
+		public bool BaseForGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude)
 		{
 			return owned.Contains(Owned) && include.Contains(Include) && exclude.Contains(Exclude);
 		}

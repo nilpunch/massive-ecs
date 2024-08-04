@@ -9,8 +9,8 @@ namespace Massive
 		private readonly int[] _lengthByFrames;
 		private readonly bool[] _syncedByFrames;
 
-		public MassiveOwningGroup(IReadOnlyList<ISet> owned, IReadOnlyList<IReadOnlySet> include = null,
-			IReadOnlyList<IReadOnlySet> exclude = null, int framesCapacity = Constants.DefaultFramesCapacity)
+		public MassiveOwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null,
+			IReadOnlyList<SparseSet> exclude = null, int framesCapacity = Constants.DefaultFramesCapacity)
 			: base(owned, include, exclude)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);

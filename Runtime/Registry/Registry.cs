@@ -5,14 +5,14 @@
 		public SetRegistry SetRegistry { get; }
 		public FilterRegistry FilterRegistry { get; }
 		public GroupRegistry GroupRegistry { get; }
-		public IEntities Entities { get; }
+		public Entities Entities { get; }
 
 		public Registry(int setCapacity = Constants.DefaultSetCapacity, bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
 			: this(new NormalSetFactory(setCapacity, storeEmptyTypesAsDataSets, pageSize), new NormalGroupFactory(setCapacity), new Entities(setCapacity))
 		{
 		}
 
-		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, IEntities entities)
+		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities)
 		{
 			SetRegistry = new SetRegistry(setFactory);
 			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory);
@@ -24,9 +24,10 @@
 
 		private void UnassignFromAllSets(int id)
 		{
-			for (var i = 0; i < SetRegistry.All.Count; i++)
+			var sets = SetRegistry.All;
+			for (var i = 0; i < sets.Length; i++)
 			{
-				SetRegistry.All[i].Unassign(id);
+				sets[i].Unassign(id);
 			}
 		}
 	}

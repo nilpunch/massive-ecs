@@ -6,7 +6,7 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class Entities : IEntities
+	public class Entities
 	{
 		private Entity[] _dense;
 		private int[] _sparse;

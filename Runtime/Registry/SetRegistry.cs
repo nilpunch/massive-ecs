@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -8,7 +9,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class SetRegistry
 	{
-		private readonly GenericLookup<ISet> _setLookup = new GenericLookup<ISet>();
+		private readonly GenericLookup<SparseSet> _setLookup = new GenericLookup<SparseSet>();
 		private readonly ISetFactory _setFactory;
 
 		public SetRegistry(ISetFactory setFactory)
@@ -16,26 +17,24 @@ namespace Massive
 			_setFactory = setFactory;
 		}
 
-		public IReadOnlyList<ISet> All => _setLookup.All;
+		public ReadOnlySpan<SparseSet> All
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _setLookup.All;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet Get<TKey>()
+		public SparseSet Get<TKey>()
 		{
 			var set = _setLookup.GetOrDefault<TKey>();
 
 			if (set == null)
 			{
-				set = _setFactory.CreateAppropriateSet<TKey>();
+				set = (SparseSet)_setFactory.CreateAppropriateSet<TKey>();
 				_setLookup.Assign<TKey>(set);
 			}
 
 			return set;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetIndex<TKey>()
-		{
-			return _setLookup.GetIndex<TKey>();
 		}
 	}
 }

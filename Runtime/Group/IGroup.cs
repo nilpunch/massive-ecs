@@ -12,6 +12,6 @@ namespace Massive
 
 		void EnsureSynced();
 
-		bool IsOwning(IReadOnlySet set);
+		bool IsOwning(SparseSet set);
 	}
 }

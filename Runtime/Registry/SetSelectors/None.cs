@@ -6,9 +6,9 @@ namespace Massive
 	public class None : IOwnSelector, IIncludeSelector, IExcludeSelector
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet[] Select(SetRegistry setRegistry) => Array.Empty<ISet>();
+		public SparseSet[] Select(SetRegistry setRegistry) => Array.Empty<SparseSet>();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IReadOnlySet[] SelectReadOnly(SetRegistry setRegistry) => Array.Empty<IReadOnlySet>();
+		public SparseSet[] SelectReadOnly(SetRegistry setRegistry) => Array.Empty<SparseSet>();
 	}
 }

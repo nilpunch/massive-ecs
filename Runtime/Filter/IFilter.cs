@@ -4,7 +4,7 @@ namespace Massive
 {
 	public interface IFilter
 	{
-		ArraySegment<IReadOnlySet> Include { get; }
+		ArraySegment<SparseSet> Include { get; }
 
 		bool ContainsId(int id);
 	}

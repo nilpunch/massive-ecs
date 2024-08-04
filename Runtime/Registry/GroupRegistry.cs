@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
 	public class GroupRegistry
 	{
 		private readonly GenericLookup<IGroup> _groupLookup = new GenericLookup<IGroup>();
-		private readonly Dictionary<ISet, IOwningGroup> _ownedBase = new Dictionary<ISet, IOwningGroup>();
+		private readonly Dictionary<SparseSet, IOwningGroup> _ownedBase = new Dictionary<SparseSet, IOwningGroup>();
 		private readonly SetRegistry _setRegistry;
 		private readonly IGroupFactory _groupFactory;
 
@@ -16,7 +17,11 @@ namespace Massive
 			_groupFactory = groupFactory;
 		}
 
-		public IReadOnlyList<IGroup> All => _groupLookup.All;
+		public ReadOnlySpan<IGroup> All
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _groupLookup.All;
+		}
 
 		public IGroup Get<TOwn, TInclude, TExclude>()
 			where TOwn : IOwnSelector, new()

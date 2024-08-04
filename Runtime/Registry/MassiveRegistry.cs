@@ -23,17 +23,19 @@ namespace Massive
 		{
 			_massiveEntities.SaveFrame();
 
-			for (var i = 0; i < SetRegistry.All.Count; i++)
+			var sets = SetRegistry.All;
+			for (var i = 0; i < sets.Length; i++)
 			{
-				if (SetRegistry.All[i] is IMassive massive)
+				if (sets[i] is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
 			}
 
-			for (var i = 0; i < GroupRegistry.All.Count; i++)
+			var groups = GroupRegistry.All;
+			for (var i = 0; i < groups.Length; i++)
 			{
-				if (GroupRegistry.All[i] is IMassive massive)
+				if (groups[i] is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
@@ -45,17 +47,19 @@ namespace Massive
 		{
 			_massiveEntities.Rollback(Math.Min(frames, _massiveEntities.CanRollbackFrames));
 
-			for (var i = 0; i < SetRegistry.All.Count; i++)
+			var sets = SetRegistry.All;
+			for (var i = 0; i < sets.Length; i++)
 			{
-				if (SetRegistry.All[i] is IMassive massive)
+				if (sets[i] is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}
 			}
 
-			for (var i = 0; i < GroupRegistry.All.Count; i++)
+			var groups = GroupRegistry.All;
+			for (var i = 0; i < groups.Length; i++)
 			{
-				if (GroupRegistry.All[i] is IMassive massive)
+				if (groups[i] is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}

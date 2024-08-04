@@ -6,26 +6,26 @@ namespace Massive
 {
 	public class NonOwningGroup : IGroup
 	{
-		private ArraySegment<IReadOnlySet> Include { get; }
+		private ArraySegment<SparseSet> Include { get; }
 
-		private ArraySegment<IReadOnlySet> Exclude { get; }
+		private ArraySegment<SparseSet> Exclude { get; }
 
-		public ISet GroupSet { get; }
+		public SparseSet GroupSet { get; }
 
 		public bool IsSynced { get; protected set; }
 
 		public ReadOnlySpan<int> Ids => GroupSet.Ids;
 
-		public NonOwningGroup(IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null, int setCapacity = Constants.DefaultSetCapacity)
+		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, int setCapacity = Constants.DefaultSetCapacity)
 			: this(new SparseSet(setCapacity), include, exclude)
 		{
 		}
 
-		protected NonOwningGroup(ISet groupSet, IReadOnlyList<IReadOnlySet> include, IReadOnlyList<IReadOnlySet> exclude = null)
+		protected NonOwningGroup(SparseSet groupSet, IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
 		{
 			GroupSet = groupSet;
-			Include = (include ?? Array.Empty<IReadOnlySet>()).ToArray();
-			Exclude = (exclude ?? Array.Empty<IReadOnlySet>()).ToArray();
+			Include = (include ?? Array.Empty<SparseSet>()).ToArray();
+			Exclude = (exclude ?? Array.Empty<SparseSet>()).ToArray();
 
 			foreach (var set in Include)
 			{
@@ -57,7 +57,7 @@ namespace Massive
 			}
 		}
 
-		public bool IsOwning(IReadOnlySet set)
+		public bool IsOwning(SparseSet set)
 		{
 			return false;
 		}

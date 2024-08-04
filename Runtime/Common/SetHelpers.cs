@@ -8,7 +8,7 @@ namespace Massive
 	public static class SetHelpers
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int CountAssignedInAll(int id, ArraySegment<IReadOnlySet> sets)
+		public static int CountAssignedInAll(int id, ArraySegment<SparseSet> sets)
 		{
 			int counter = 0;
 			for (var i = 0; i < sets.Count; i++)
@@ -24,7 +24,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AssignedInAll(int id, ArraySegment<IReadOnlySet> sets)
+		public static bool AssignedInAll(int id, ArraySegment<SparseSet> sets)
 		{
 			int shouldNotBecomeNegative = 0;
 			for (int i = 0; i < sets.Count; i++)
@@ -36,7 +36,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool NotAssignedInAll(int id, ArraySegment<IReadOnlySet> sets)
+		public static bool NotAssignedInAll(int id, ArraySegment<SparseSet> sets)
 		{
 			int shouldStayNegative = ~0;
 			for (int i = 0; i < sets.Count; i++)
@@ -48,9 +48,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReadOnlySet GetMinimalSet(ArraySegment<IReadOnlySet> sets)
+		public static SparseSet GetMinimalSet(ArraySegment<SparseSet> sets)
 		{
-			IReadOnlySet minimal = sets[0];
+			SparseSet minimal = sets[0];
 
 			for (int i = 1; i < sets.Count; i++)
 			{
@@ -64,9 +64,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReadOnlySet GetMinimalSet(IReadOnlySet first, ArraySegment<IReadOnlySet> sets)
+		public static SparseSet GetMinimalSet(SparseSet first, ArraySegment<SparseSet> sets)
 		{
-			IReadOnlySet minimal = first;
+			SparseSet minimal = first;
 
 			for (int i = 0; i < sets.Count; i++)
 			{
@@ -80,7 +80,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReadOnlySet GetMinimalSet(IReadOnlySet set1, IReadOnlySet set2)
+		public static SparseSet GetMinimalSet(SparseSet set1, SparseSet set2)
 		{
 			if (set1.Count <= set2.Count)
 			{
@@ -93,7 +93,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IReadOnlySet GetMinimalSet(IReadOnlySet set1, IReadOnlySet set2, IReadOnlySet set3)
+		public static SparseSet GetMinimalSet(SparseSet set1, SparseSet set2, SparseSet set3)
 		{
 			if (set1.Count <= set2.Count && set1.Count <= set3.Count)
 			{

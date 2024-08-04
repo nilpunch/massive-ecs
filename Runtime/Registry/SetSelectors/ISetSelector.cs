@@ -5,15 +5,15 @@ namespace Massive
 {
 	public interface ISetSelector
 	{
-		ISet[] Select(SetRegistry setRegistry);
+		SparseSet[] Select(SetRegistry setRegistry);
 	}
 
 	public class Selector<T> : ISetSelector
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet[] Select(SetRegistry setRegistry)
+		public SparseSet[] Select(SetRegistry setRegistry)
 		{
-			var result = new ISet[1];
+			var result = new SparseSet[1];
 			result[0] = setRegistry.Get<T>();
 			return result.Distinct().ToArray();
 		}
@@ -22,9 +22,9 @@ namespace Massive
 	public class Selector<T1, T2> : ISetSelector
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet[] Select(SetRegistry setRegistry)
+		public SparseSet[] Select(SetRegistry setRegistry)
 		{
-			var result = new ISet[2];
+			var result = new SparseSet[2];
 			result[0] = setRegistry.Get<T1>();
 			result[1] = setRegistry.Get<T2>();
 			return result.Distinct().ToArray();
@@ -34,9 +34,9 @@ namespace Massive
 	public class Selector<T1, T2, T3> : ISetSelector
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet[] Select(SetRegistry setRegistry)
+		public SparseSet[] Select(SetRegistry setRegistry)
 		{
-			var result = new ISet[3];
+			var result = new SparseSet[3];
 			result[0] = setRegistry.Get<T1>();
 			result[1] = setRegistry.Get<T2>();
 			result[2] = setRegistry.Get<T3>();
@@ -48,7 +48,7 @@ namespace Massive
 		where TSelector : ISetSelector, new()
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ISet[] Select(SetRegistry setRegistry)
+		public SparseSet[] Select(SetRegistry setRegistry)
 		{
 			return new TSelector().Select(setRegistry).Concat(new Selector<T1, T2, T3>().Select(setRegistry)).Distinct().ToArray();
 		}

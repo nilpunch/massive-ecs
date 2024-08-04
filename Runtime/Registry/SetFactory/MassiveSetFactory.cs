@@ -22,7 +22,7 @@
 			_pageSize = pageSize;
 		}
 
-		public ISet CreateAppropriateSet<T>()
+		public SparseSet CreateAppropriateSet<T>()
 		{
 			if (TypeInfo<T>.HasNoFields && !_storeEmptyTypesAsDataSets)
 			{
@@ -32,14 +32,14 @@
 			return CreateDataSet<T>();
 		}
 
-		private ISet CreateSparseSet()
+		private SparseSet CreateSparseSet()
 		{
 			var massiveSparseSet = new MassiveSparseSet(_setCapacity, _framesCapacity);
 			massiveSparseSet.SaveFrame();
 			return massiveSparseSet;
 		}
 
-		private ISet CreateDataSet<T>()
+		private SparseSet CreateDataSet<T>()
 		{
 			var massiveDataSet = ManagedUtils.IsManaged<T>()
 				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize)

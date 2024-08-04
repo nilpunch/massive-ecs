@@ -10,11 +10,15 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class GenericLookup<TAbstract>
 	{
-		private readonly List<string> _itemIds = new List<string>();
-		private readonly List<TAbstract> _items = new List<TAbstract>();
-		private TAbstract[] _lookup = new TAbstract[16];
+		private readonly FastList<string> _itemIds = new FastList<string>();
+		private readonly FastList<TAbstract> _items = new FastList<TAbstract>();
+		private TAbstract[] _lookup = new TAbstract[4];
 
-		public IReadOnlyList<TAbstract> All => _items;
+		public ReadOnlySpan<TAbstract> All
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _items.ReadOnlySpan;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TAbstract GetOrDefault<TKey>()
@@ -27,6 +31,17 @@ namespace Massive
 			}
 
 			return _lookup[typeIndex];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public TAbstract GetOrDefault(int index)
+		{
+			if (index >= _lookup.Length)
+			{
+				return default;
+			}
+
+			return _lookup[index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
