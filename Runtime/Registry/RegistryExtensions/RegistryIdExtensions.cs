@@ -9,7 +9,7 @@ namespace Massive
 		/// Creates a unique entity and returns its ID.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Create(this IRegistry registry)
+		public static int Create(this Registry registry)
 		{
 			return registry.Entities.Create().Id;
 		}
@@ -19,7 +19,7 @@ namespace Massive
 		/// </summary>
 		/// <param name="data"> Initial data for the assigned component. </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Create<T>(this IRegistry registry, T data = default)
+		public static int Create<T>(this Registry registry, T data = default)
 		{
 			var id = registry.Create();
 			registry.Assign(id, data);
@@ -33,7 +33,7 @@ namespace Massive
 		/// Cloning entity that is not alive will throw an exception.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Clone(this IRegistry registry, int id)
+		public static int Clone(this Registry registry, int id)
 		{
 			if (!registry.IsAlive(id))
 			{
@@ -63,7 +63,7 @@ namespace Massive
 		/// Destroys any alive entity with this ID, regardless of generation.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Destroy(this IRegistry registry, int id)
+		public static void Destroy(this Registry registry, int id)
 		{
 			registry.Entities.Destroy(id);
 		}
@@ -72,7 +72,7 @@ namespace Massive
 		/// Checks whether an entity with this ID is alive, regardless of generation.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsAlive(this IRegistry registry, int id)
+		public static bool IsAlive(this Registry registry, int id)
 		{
 			return registry.Entities.IsAlive(id);
 		}
@@ -85,7 +85,7 @@ namespace Massive
 		/// Assigning a component to an entity that is being destroyed can lead to undefined behavior.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this IRegistry registry, int id, T data = default)
+		public static void Assign<T>(this Registry registry, int id, T data = default)
 		{
 			var set = registry.Set<T>();
 			if (set is DataSet<T> dataSet)
@@ -105,7 +105,7 @@ namespace Massive
 		/// Unassigning a component from an entity that is being destroyed can lead to undefined behavior.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Unassign<T>(this IRegistry registry, int id)
+		public static void Unassign<T>(this Registry registry, int id)
 		{
 			registry.Set<T>().Unassign(id);
 		}
@@ -117,7 +117,7 @@ namespace Massive
 		/// Returns false if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool Has<T>(this IRegistry registry, int id)
+		public static bool Has<T>(this Registry registry, int id)
 		{
 			return registry.Set<T>().IsAssigned(id);
 		}
@@ -130,7 +130,7 @@ namespace Massive
 		/// and this method may throw an exception if the type has no associated data.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ref T Get<T>(this IRegistry registry, int id)
+		public static ref T Get<T>(this Registry registry, int id)
 		{
 			if (registry.Set<T>() is not DataSet<T> dataSet)
 			{

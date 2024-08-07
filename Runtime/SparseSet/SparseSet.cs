@@ -61,8 +61,8 @@ namespace Massive
 
 			if (id >= SparseCapacity || Count >= DenseCapacity)
 			{
-				ResizeSparse(MathHelpers.GetNextPowerOf2(id + 1));
-				ResizeDense(MathHelpers.GetNextPowerOf2(Count + 1));
+				EnsureSparseCapacity(id + 1);
+				EnsureDenseCapacity(Count + 1);
 			}
 
 			AssignIndex(id, Count);
@@ -175,6 +175,24 @@ namespace Massive
 		{
 			Sparse[id] = dense;
 			Dense[dense] = id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void EnsureDenseCapacity(int capacity)
+		{
+			if (capacity > DenseCapacity)
+			{
+				ResizeDense(MathHelpers.GetNextPowerOf2(capacity));
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void EnsureSparseCapacity(int capacity)
+		{
+			if (capacity > SparseCapacity)
+			{
+				ResizeSparse(MathHelpers.GetNextPowerOf2(capacity));
+			}
 		}
 	}
 }

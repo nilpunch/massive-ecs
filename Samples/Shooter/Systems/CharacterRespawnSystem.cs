@@ -5,10 +5,10 @@
 	/// </summary>
 	public static class CharacterRespawnSystem
 	{
-		public static void Update(IRegistry registry, float deltaTime)
+		public static void Update(Registry registry, float deltaTime)
 		{
 			registry.View().ForEachExtra((registry, deltaTime),
-				static (int characterId, ref Dead dead, ref Character character, (IRegistry Registry, float DeltaTime) args) =>
+				static (int characterId, ref Dead dead, ref Character character, (Registry Registry, float DeltaTime) args) =>
 				{
 					var (registry, deltaTime) = args;
 

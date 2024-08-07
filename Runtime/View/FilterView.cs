@@ -11,9 +11,9 @@ namespace Massive
 	{
 		private IFilter Filter { get; }
 
-		public IRegistry Registry { get; }
+		public Registry Registry { get; }
 
-		public FilterView(IRegistry registry, IFilter filter = null)
+		public FilterView(Registry registry, IFilter filter = null)
 		{
 			Registry = registry;
 			Filter = filter ?? EmptyFilter.Instance;

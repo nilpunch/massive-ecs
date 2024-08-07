@@ -7,7 +7,7 @@ namespace Massive.Serialization
 {
 	public class ComponentSerializer<T> : IRegistrySerializer where T : unmanaged
 	{
-		public void Serialize(IRegistry registry, Stream stream)
+		public void Serialize(Registry registry, Stream stream)
 		{
 			var set = (SparseSet)registry.Set<T>();
 
@@ -23,7 +23,7 @@ namespace Massive.Serialization
 			}
 		}
 
-		public void Deserialize(IRegistry registry, Stream stream)
+		public void Deserialize(Registry registry, Stream stream)
 		{
 			var set = (SparseSet)registry.Set<T>();
 

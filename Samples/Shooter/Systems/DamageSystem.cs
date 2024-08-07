@@ -2,7 +2,7 @@
 {
 	public static class DamageSystem
 	{
-		public static void Update(IRegistry registry, float deltaTime)
+		public static void Update(Registry registry, float deltaTime)
 		{
 			var characters = registry.DataSet<Character>();
 			var bullets = registry.DataSet<Bullet>();
@@ -41,7 +41,7 @@
 			void DestroyCharacterBullets(int characterId)
 			{
 				registry.View().Exclude<Dead>().ForEachExtra((characterId, registry),
-					static (int bulletId, ref Bullet bullet, (int CharacterId, IRegistry Registry) args) =>
+					static (int bulletId, ref Bullet bullet, (int CharacterId, Registry Registry) args) =>
 					{
 						var (characterId, registry) = args;
 

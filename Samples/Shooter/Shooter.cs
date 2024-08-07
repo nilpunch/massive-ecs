@@ -5,9 +5,9 @@ namespace Massive.Samples.Shooter
 {
 	public class Shooter
 	{
-		public IRegistry Registry { get; } = new Registry();
+		public Registry Registry { get; } = new Registry();
 
-		public Action<IRegistry, float> Systems { get; } = (_, _) => { };
+		public Action<Registry, float> Systems { get; } = (_, _) => { };
 
 		public Shooter()
 		{

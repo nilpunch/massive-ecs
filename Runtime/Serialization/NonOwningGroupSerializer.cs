@@ -6,7 +6,7 @@ namespace Massive.Serialization
 		where TInclude : IIncludeSelector, new()
 		where TExclude : IExcludeSelector, new()
 	{
-		public void Serialize(IRegistry registry, Stream stream)
+		public void Serialize(Registry registry, Stream stream)
 		{
 			var nonOwningGroup = (NonOwningGroup)registry.Group<None, TInclude, TExclude>();
 
@@ -15,7 +15,7 @@ namespace Massive.Serialization
 			SparseSetSerializer.Serialize(set, stream);
 		}
 
-		public void Deserialize(IRegistry registry, Stream stream)
+		public void Deserialize(Registry registry, Stream stream)
 		{
 			var nonOwningGroup = (NonOwningGroup)registry.Group<None, TInclude, TExclude>();
 

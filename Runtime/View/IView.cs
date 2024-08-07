@@ -2,7 +2,7 @@
 {
 	public interface IView
 	{
-		IRegistry Registry { get; }
+		Registry Registry { get; }
 
 		void ForEach<TAction>(TAction action)
 			where TAction : IEntityAction;

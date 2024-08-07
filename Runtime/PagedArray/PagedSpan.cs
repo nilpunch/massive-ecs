@@ -7,8 +7,7 @@ namespace Massive
 	/// <summary>
 	/// Reverse iterator for <see cref="PagedArray{T}"/>.
 	/// </summary>
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public readonly struct PagedSpan<T>
 	{
 		private readonly PagedArray<T> _pagedArray;
@@ -71,7 +70,11 @@ namespace Massive
 				_currentPage = new Span<T>(_pagedData[_pageIndex]);
 			}
 
-			public ref T Current => ref _currentPage[_indexInPage];
+			public ref T Current
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => ref _currentPage[_indexInPage];
+			}
 		}
 	}
 }

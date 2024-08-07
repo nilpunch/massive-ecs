@@ -2,7 +2,7 @@
 {
 	public static class RegistryTestUtils
 	{
-		public static IRegistry FillRegistryWithSingleComponent(this IRegistry registry, int entitiesAmount)
+		public static Registry FillRegistryWithSingleComponent(this Registry registry, int entitiesAmount)
 		{
 			while (entitiesAmount != 0)
 			{
@@ -13,7 +13,7 @@
 			return registry;
 		}
 
-		public static IRegistry FillRegistryWith50Components(this IRegistry registry, int entitiesAmount)
+		public static Registry FillRegistryWith50Components(this Registry registry, int entitiesAmount)
 		{
 			while (entitiesAmount != 0)
 			{
@@ -75,7 +75,7 @@
 			return registry;
 		}
 
-		public static IRegistry FillRegistryWith50Tags(this IRegistry registry, int entitiesAmount)
+		public static Registry FillRegistryWith50Tags(this Registry registry, int entitiesAmount)
 		{
 			while (entitiesAmount != 0)
 			{

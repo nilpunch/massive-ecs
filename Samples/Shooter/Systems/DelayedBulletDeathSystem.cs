@@ -5,10 +5,10 @@
 	/// </summary>
 	public static class DelayedBulletDeathSystem
 	{
-		public static void Update(IRegistry registry, float deltaTime)
+		public static void Update(Registry registry, float deltaTime)
 		{
 			registry.View().Include<Bullet>().ForEachExtra((registry, deltaTime),
-				static (int id, ref Dead dead, (IRegistry Registry, float DeltaTime) args) =>
+				static (int id, ref Dead dead, (Registry Registry, float DeltaTime) args) =>
 				{
 					var (registry, deltaTime) = args;
 

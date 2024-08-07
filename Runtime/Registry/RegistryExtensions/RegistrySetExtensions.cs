@@ -6,7 +6,7 @@ namespace Massive
 	public static class RegistrySetExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static DataSet<T> DataSet<T>(this IRegistry registry)
+		public static DataSet<T> DataSet<T>(this Registry registry)
 		{
 			if (registry.Set<T>() is not DataSet<T> dataSet)
 			{
@@ -17,7 +17,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static SparseSet Set<T>(this IRegistry registry)
+		public static SparseSet Set<T>(this Registry registry)
 		{
 			return registry.SetRegistry.Get<T>();
 		}

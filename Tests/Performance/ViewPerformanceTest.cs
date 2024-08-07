@@ -11,7 +11,7 @@ namespace Massive.PerformanceTests
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
 
-		private readonly IRegistry _registry;
+		private readonly Registry _registry;
 
 		public ViewPerformanceTest()
 		{

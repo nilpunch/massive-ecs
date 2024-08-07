@@ -45,7 +45,7 @@ namespace Massive.Samples.Serialization
 			// Done, use your registry as you wish
 		}
 
-		private static void PopulateEntitiesAndComponents(IRegistry registry)
+		private static void PopulateEntitiesAndComponents(Registry registry)
 		{
 			for (int i = 0; i < 10; ++i)
 			{

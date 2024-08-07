@@ -5,7 +5,7 @@ namespace Massive
 	public static class RegistryViewExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static View View(this IRegistry registry)
+		public static View View(this Registry registry)
 		{
 			return new View(registry);
 		}

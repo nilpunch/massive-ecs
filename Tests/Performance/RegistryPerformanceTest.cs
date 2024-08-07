@@ -24,7 +24,7 @@ namespace Massive.PerformanceTests
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
 
-		private readonly IRegistry _registry;
+		private readonly Registry _registry;
 
 		public RegistryPerformanceTest(RegistryFilling registryFilling)
 		{
@@ -34,7 +34,7 @@ namespace Massive.PerformanceTests
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IRegistry PrepareTestRegistry(RegistryFilling registryFilling)
+		public static Registry PrepareTestRegistry(RegistryFilling registryFilling)
 		{
 			return registryFilling switch
 			{
@@ -102,7 +102,10 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Registry_Destroy()
 		{
-			Measure.Method(() => _registry.View().ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity)))
+			Measure.Method(() =>
+				{
+					_registry.View().ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity));
+				})
 				.SetUp(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)

@@ -49,7 +49,7 @@ namespace Massive.Serialization
 			_serializers.Add(new NonOwningGroupSerializer<TInclude, TExclude>());
 		}
 
-		public void Serialize(IRegistry registry, Stream stream)
+		public void Serialize(Registry registry, Stream stream)
 		{
 			foreach (var parser in _serializers)
 			{
@@ -57,7 +57,7 @@ namespace Massive.Serialization
 			}
 		}
 
-		public void Deserialize(IRegistry registry, Stream stream)
+		public void Deserialize(Registry registry, Stream stream)
 		{
 			foreach (var parser in _serializers)
 			{

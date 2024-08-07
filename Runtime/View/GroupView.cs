@@ -10,9 +10,9 @@ namespace Massive
 	{
 		private IGroup Group { get; }
 
-		public IRegistry Registry { get; }
+		public Registry Registry { get; }
 
-		public GroupView(IRegistry registry, IGroup group)
+		public GroupView(Registry registry, IGroup group)
 		{
 			Registry = registry;
 			Group = group;

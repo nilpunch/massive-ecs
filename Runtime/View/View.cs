@@ -9,9 +9,9 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct View : IView
 	{
-		public IRegistry Registry { get; }
+		public Registry Registry { get; }
 
-		public View(IRegistry registry)
+		public View(Registry registry)
 		{
 			Registry = registry;
 		}

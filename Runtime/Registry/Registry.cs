@@ -1,6 +1,6 @@
 ﻿namespace Massive
 {
-	public class Registry : IRegistry
+	public class Registry
 	{
 		public SetRegistry SetRegistry { get; }
 		public FilterRegistry FilterRegistry { get; }

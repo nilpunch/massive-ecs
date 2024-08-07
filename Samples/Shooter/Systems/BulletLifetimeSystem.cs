@@ -2,10 +2,10 @@
 {
 	public static class BulletLifetimeSystem
 	{
-		public static void Update(IRegistry registry, float deltaTime)
+		public static void Update(Registry registry, float deltaTime)
 		{
 			registry.View().Exclude<Dead>().ForEachExtra((registry, deltaTime),
-				static (int bulletId, ref Bullet bullet, (IRegistry Registry, float DeltaTime) args) =>
+				static (int bulletId, ref Bullet bullet, (Registry Registry, float DeltaTime) args) =>
 				{
 					var (registry, deltaTime) = args;
 

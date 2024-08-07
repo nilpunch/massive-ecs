@@ -73,7 +73,13 @@ namespace Massive
 		public void Destroy(int id)
 		{
 			// If ID is negative or element is not alive, nothing to be done
-			if (id < 0 || id >= MaxId || Sparse[id] >= Count || Dense[Sparse[id]].Id != id)
+			if (id < 0 || id >= MaxId)
+			{
+				return;
+			}
+			var dense = Sparse[id];
+			var entity = Dense[dense];
+			if (dense >= Count || entity.Id != id)
 			{
 				return;
 			}
@@ -83,8 +89,7 @@ namespace Massive
 			Count -= 1;
 
 			// Swap dense with last element
-			var entity = Dense[Sparse[id]];
-			AssignEntity(Dense[Count], Sparse[id]);
+			AssignEntity(Dense[Count], dense);
 			AssignEntity(Entity.Reuse(entity), Count);
 		}
 

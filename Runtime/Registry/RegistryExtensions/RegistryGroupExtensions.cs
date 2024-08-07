@@ -5,14 +5,14 @@ namespace Massive
 	public static class RegistryGroupExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IGroup Group<TOwned>(this IRegistry registry)
+		public static IGroup Group<TOwned>(this Registry registry)
 			where TOwned : IOwnSelector, new()
 		{
 			return registry.Group<TOwned, None, None>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IGroup Group<TOwned, TInclude>(this IRegistry registry)
+		public static IGroup Group<TOwned, TInclude>(this Registry registry)
 			where TOwned : IOwnSelector, new()
 			where TInclude : IIncludeSelector, new()
 		{
@@ -20,7 +20,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IGroup Group<TOwned, TInclude, TExclude>(this IRegistry registry)
+		public static IGroup Group<TOwned, TInclude, TExclude>(this Registry registry)
 			where TOwned : IOwnSelector, new()
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()

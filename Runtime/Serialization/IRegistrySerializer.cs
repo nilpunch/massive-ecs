@@ -4,7 +4,7 @@ namespace Massive.Serialization
 {
 	public interface IRegistrySerializer
 	{
-		void Serialize(IRegistry registry, Stream stream);
-		void Deserialize(IRegistry registry, Stream stream);
+		void Serialize(Registry registry, Stream stream);
+		void Deserialize(Registry registry, Stream stream);
 	}
 }

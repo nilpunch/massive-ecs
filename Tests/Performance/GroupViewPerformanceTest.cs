@@ -17,7 +17,7 @@ namespace Massive.PerformanceTests
 		private const int IterationsPerMeasurement = 120;
 
 		private readonly GroupSetupType _groupSetupType;
-		private readonly IRegistry _registry;
+		private readonly Registry _registry;
 		private readonly IGroup _group;
 
 		public enum GroupSetupType
@@ -36,7 +36,7 @@ namespace Massive.PerformanceTests
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static IGroup GetTestGroup(IRegistry registry, GroupSetupType type)
+		private static IGroup GetTestGroup(Registry registry, GroupSetupType type)
 		{
 			return type switch
 			{

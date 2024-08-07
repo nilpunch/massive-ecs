@@ -9,7 +9,7 @@ namespace Massive.Serialization
 	{
 		private static readonly byte[] s_buffer4Bytes = new byte[4];
 
-		public void Serialize(IRegistry registry, Stream stream)
+		public void Serialize(Registry registry, Stream stream)
 		{
 			var entities = (Entities)registry.Entities;
 
@@ -23,7 +23,7 @@ namespace Massive.Serialization
 			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
 		}
 
-		public void Deserialize(IRegistry registry, Stream stream)
+		public void Deserialize(Registry registry, Stream stream)
 		{
 			var entities = (Entities)registry.Entities;
 
