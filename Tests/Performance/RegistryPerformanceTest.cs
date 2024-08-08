@@ -74,7 +74,30 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
-		
+
+		[Test, Performance]
+		public void Registry_Destroy()
+		{
+			Measure.Method(() =>
+				{
+					foreach (var entityId in _registry.View())
+					{
+						_registry.Destroy(entityId);
+					}
+				})
+				.SetUp(() =>
+				{
+					for (int i = 0; i < EntitiesCount; i++)
+					{
+						_registry.Create();
+					}
+				})
+				.CleanUp(() => _registry.View().ForEach((entityId) => _registry.Destroy(entityId)))
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
 		[Test, Performance]
 		public void Registry_Fill()
 		{
@@ -100,26 +123,6 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void Registry_Destroy()
-		{
-			Measure.Method(() =>
-				{
-					_registry.View().ForEachExtra(_registry, (entity, registry) => registry.Destroy(entity));
-				})
-				.SetUp(() =>
-				{
-					for (int i = 0; i < EntitiesCount; i++)
-					{
-						_registry.Create();
-					}
-				})
-				.CleanUp(() => _registry.View().ForEach((entityId) => _registry.Destroy(entityId)))
-				.MeasurementCount(MeasurementCount)
-				.IterationsPerMeasurement(IterationsPerMeasurement)
-				.Run();
-		}
-
-		[Test, Performance]
 		public void Registry_GetTwoComponents()
 		{
 			for (int i = 0; i < EntitiesCount; i++)
@@ -136,6 +139,33 @@ namespace Massive.PerformanceTests
 						_registry.Get<PositionComponent>(entityId);
 						_registry.Get<VelocityComponent>(entityId);
 					});
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+
+			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
+		}
+		
+		[Test, Performance]
+		public void Registry_GetTwoComponentsFast()
+		{
+			for (int i = 0; i < EntitiesCount; i++)
+			{
+				var entityId = _registry.Create();
+				_registry.Assign(entityId, new PositionComponent() { X = i, Y = i });
+				_registry.Assign(entityId, new VelocityComponent() { X = 1, Y = 1 });
+			}
+
+			Measure.Method(() =>
+				{
+					var positions = _registry.DataSet<PositionComponent>();
+					var velocities = _registry.DataSet<VelocityComponent>();
+					foreach (var entityId in _registry.View())
+					{
+						positions.Get(entityId);
+						velocities.Get(entityId);
+					}
 				})
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -181,11 +211,11 @@ namespace Massive.PerformanceTests
 			Measure.Method(() =>
 				{
 					var positions = _registry.DataSet<PositionComponent>();
-					_registry.View().ForEach((entityId) =>
+					foreach (var entityId in _registry.View())
 					{
 						positions.Unassign(entityId);
 						positions.Assign(entityId, new PositionComponent() { X = entityId, Y = entityId });
-					});
+					}
 				})
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
