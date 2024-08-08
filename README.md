@@ -73,7 +73,7 @@ class Program
 		// Pass extra arguments to avoid boxing
 		view.ForEachExtra((registry, deltaTime),
 			(ref Position position, ref Velocity velocity,
-				(IRegistry Registry, float DeltaTime) args) =>
+				(Registry Registry, float DeltaTime) args) =>
 			{
 				// ...
 			});
