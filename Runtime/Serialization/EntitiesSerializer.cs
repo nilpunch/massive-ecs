@@ -11,7 +11,7 @@ namespace Massive.Serialization
 
 		public void Serialize(Registry registry, Stream stream)
 		{
-			var entities = (Entities)registry.Entities;
+			var entities = registry.Entities;
 
 			BitConverter.TryWriteBytes(s_buffer4Bytes, entities.Count);
 			stream.Write(s_buffer4Bytes);
@@ -25,7 +25,7 @@ namespace Massive.Serialization
 
 		public void Deserialize(Registry registry, Stream stream)
 		{
-			var entities = (Entities)registry.Entities;
+			var entities = registry.Entities;
 
 			stream.Read(s_buffer4Bytes);
 			entities.Count = BitConverter.ToInt32(s_buffer4Bytes);

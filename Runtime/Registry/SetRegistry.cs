@@ -29,7 +29,7 @@ namespace Massive
 
 			if (set == null)
 			{
-				set = (SparseSet)_setFactory.CreateAppropriateSet<TKey>();
+				set = _setFactory.CreateAppropriateSet<TKey>();
 				_setLookup.Assign<TKey>(set);
 			}
 
