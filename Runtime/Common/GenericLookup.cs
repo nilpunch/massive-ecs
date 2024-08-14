@@ -56,7 +56,7 @@ namespace Massive
 			// Resize lookup to fit
 			if (typeIndex >= _lookup.Length)
 			{
-				Array.Resize(ref _lookup, MathHelpers.GetNextPowerOf2(typeIndex + 1));
+				Array.Resize(ref _lookup, MathHelpers.NextPowerOf2(typeIndex + 1));
 			}
 
 			_lookup[typeIndex] = item;

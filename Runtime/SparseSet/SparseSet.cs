@@ -10,6 +10,16 @@ namespace Massive
 		private int[] _dense;
 		private int[] _sparse;
 
+		public int Count { get; set; }
+
+		public SparseSet(int setCapacity = Constants.DefaultSetCapacity)
+		{
+			_dense = new int[setCapacity];
+			_sparse = new int[setCapacity];
+
+			Array.Fill(_sparse, Constants.InvalidId);
+		}
+
 		public int[] Dense
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -22,17 +32,11 @@ namespace Massive
 			get => _sparse;
 		}
 
-		public int Count { get; set; }
-
-		public SparseSet(int setCapacity = Constants.DefaultSetCapacity)
+		public ReadOnlySpan<int> Ids
 		{
-			_dense = new int[setCapacity];
-			_sparse = new int[setCapacity];
-
-			Array.Fill(_sparse, Constants.InvalidId);
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new ReadOnlySpan<int>(Dense, 0, Count);
 		}
-
-		public ReadOnlySpan<int> Ids => new ReadOnlySpan<int>(Dense, 0, Count);
 
 		public int DenseCapacity
 		{
@@ -182,7 +186,7 @@ namespace Massive
 		{
 			if (capacity > DenseCapacity)
 			{
-				ResizeDense(MathHelpers.GetNextPowerOf2(capacity));
+				ResizeDense(MathHelpers.NextPowerOf2(capacity));
 			}
 		}
 
@@ -191,7 +195,7 @@ namespace Massive
 		{
 			if (capacity > SparseCapacity)
 			{
-				ResizeSparse(MathHelpers.GetNextPowerOf2(capacity));
+				ResizeSparse(MathHelpers.NextPowerOf2(capacity));
 			}
 		}
 	}

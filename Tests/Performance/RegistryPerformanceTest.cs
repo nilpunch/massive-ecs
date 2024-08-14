@@ -48,10 +48,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Registry_Initialization()
 		{
-			Measure.Method(() =>
-				{
-					PrepareTestRegistry(_registryFilling);
-				})
+			Measure.Method(() => { PrepareTestRegistry(_registryFilling); })
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(1)
 				.CleanUp(GC.Collect)
@@ -76,6 +73,27 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
+		public void Registry_CloneWithTwoComponents()
+		{
+			Measure.Method(() =>
+				{
+					var entityToClone = _registry.Create();
+					_registry.Assign(entityToClone, new PositionComponent() { X = 2, Y = 2 });
+					_registry.Assign(entityToClone, new VelocityComponent() { X = 1, Y = 1 });
+
+					for (int i = 0; i < EntitiesCount; i++)
+					{
+						_registry.Clone(entityToClone);
+					}
+				})
+				.SetUp(() => _registry.View().ForEach((entity) => _registry.Destroy(entity)))
+				.CleanUp(() => _registry.View().ForEach((entity) => _registry.Destroy(entity)))
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
+
+		[Test, Performance]
 		public void Registry_Destroy()
 		{
 			Measure.Method(() =>
@@ -89,7 +107,8 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_registry.Create();
+						int id = _registry.Create();
+						_registry.Assign<PositionComponent>(id);
 					}
 				})
 				.CleanUp(() => _registry.View().ForEach((entityId) => _registry.Destroy(entityId)))
@@ -110,10 +129,7 @@ namespace Massive.PerformanceTests
 				_registry.Create<TestState64>();
 			}
 
-			Measure.Method(() =>
-				{
-					_registry.View().Filter<Include<TestState64>>().Fill(result);
-				})
+			Measure.Method(() => { _registry.View().Filter<Include<TestState64>>().Fill(result); })
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -134,10 +150,10 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					_registry.View().ForEach((entityId) =>
+					_registry.View().ForEachExtra(_registry, static (entityId, registry) =>
 					{
-						_registry.Get<PositionComponent>(entityId);
-						_registry.Get<VelocityComponent>(entityId);
+						registry.Get<PositionComponent>(entityId);
+						registry.Get<VelocityComponent>(entityId);
 					});
 				})
 				.MeasurementCount(MeasurementCount)
@@ -146,7 +162,7 @@ namespace Massive.PerformanceTests
 
 			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
 		}
-		
+
 		[Test, Performance]
 		public void Registry_GetTwoComponentsFast()
 		{
@@ -175,6 +191,24 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
+		public void Registry_GetTwoComponentsViaView()
+		{
+			for (int i = 0; i < EntitiesCount; i++)
+			{
+				var entity = _registry.Create();
+				_registry.Assign(entity, new PositionComponent() { X = i, Y = i });
+				_registry.Assign(entity, new VelocityComponent() { X = 1, Y = 1 });
+			}
+
+			Measure.Method(() => { _registry.View().ForEach((ref PositionComponent position, ref VelocityComponent velocity) => { }); })
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+
+			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
+		}
+
+		[Test, Performance]
 		public void Registry_RemoveAndAddComponent()
 		{
 			for (int i = 0; i < EntitiesCount; i++)
@@ -194,10 +228,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().ForEach((entityId) =>
-			{
-				_registry.Destroy(entityId);
-			});
+			_registry.View().ForEach((entityId) => { _registry.Destroy(entityId); });
 		}
 
 		[Test, Performance]
@@ -221,10 +252,22 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().ForEach((entityId) =>
-			{
-				_registry.Destroy(entityId);
-			});
+			_registry.View().ForEach((entityId) => { _registry.Destroy(entityId); });
+		}
+
+		[Test, Performance]
+		public void Registry_SetLookupOverhead()
+		{
+			Measure.Method(() =>
+				{
+					for (int i = 0; i < EntitiesCount; i++)
+					{
+						_registry.Set<PositionComponent>();
+					}
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
 		}
 
 		public struct PositionComponent

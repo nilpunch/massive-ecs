@@ -11,6 +11,16 @@ namespace Massive
 		private Entity[] _dense;
 		private int[] _sparse;
 
+		public int Count { get; set; }
+
+		public int MaxId { get; set; }
+
+		public Entities(int setCapacity = Constants.DefaultSetCapacity)
+		{
+			_dense = new Entity[setCapacity];
+			_sparse = new int[setCapacity];
+		}
+
 		public Entity[] Dense
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -21,15 +31,6 @@ namespace Massive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _sparse;
-		}
-
-		public int Count { get; set; }
-		public int MaxId { get; set; }
-
-		public Entities(int setCapacity = Constants.DefaultSetCapacity)
-		{
-			_dense = new Entity[setCapacity];
-			_sparse = new int[setCapacity];
 		}
 
 		public ReadOnlySpan<Entity> Alive
@@ -106,19 +107,17 @@ namespace Massive
 			{
 				int count = Count;
 				Count += 1;
-				action?.Invoke(Dense[count]);
 				needToCreate -= 1;
+				action?.Invoke(Dense[count]);
 			}
 
 			for (int i = 0; i < needToCreate; i++)
 			{
-				int count = Count;
-				int maxId = MaxId;
-				var newId = new Entity(maxId, 0);
+				var newEntity = new Entity(MaxId, 0);
+				AssignEntity(newEntity, Count);
 				Count += 1;
 				MaxId += 1;
-				AssignEntity(newId, count);
-				action?.Invoke(newId);
+				action?.Invoke(newEntity);
 			}
 		}
 
@@ -176,7 +175,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void GrowCapacity(int desiredCapacity)
 		{
-			int newCapacity = MathHelpers.GetNextPowerOf2(desiredCapacity);
+			int newCapacity = MathHelpers.NextPowerOf2(desiredCapacity);
 			ResizeDense(newCapacity);
 			ResizeSparse(newCapacity);
 		}

@@ -8,7 +8,7 @@ namespace Massive
 		/// Computes the smallest power of two greater than or equal to a value.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int GetNextPowerOf2(int value)
+		public static int NextPowerOf2(int value)
 		{
 			uint v = (uint)value;
 

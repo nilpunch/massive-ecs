@@ -48,6 +48,38 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Remove(T item)
+		{
+			int index = IndexOf(item);
+			if (index >= 0)
+			{
+				RemoveAt(index);
+				return true;
+			}
+
+			return false;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void RemoveAt(int index)
+		{
+			Count -= 1;
+
+			if (index < Count)
+			{
+				Array.Copy(_items, index + 1, _items, index, Count - index);
+			}
+
+			_items[Count] = default;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(T item)
+		{
+			return Array.IndexOf(_items, item, 0, Count);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Insert(int index, T item)
 		{
 			EnsureCapacity(Count + 1);
@@ -84,7 +116,7 @@ namespace Massive
 		{
 			if (Capacity < min)
 			{
-				Capacity = MathHelpers.GetNextPowerOf2(min);
+				Capacity = MathHelpers.NextPowerOf2(min);
 			}
 		}
 	}
