@@ -17,7 +17,7 @@ namespace Massive
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _countByFrames;
 
-		protected MassiveDataSetBase(int setCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
+		protected MassiveDataSetBase(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
 			int pageSize = Constants.DefaultPageSize) : base(setCapacity, pageSize)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);

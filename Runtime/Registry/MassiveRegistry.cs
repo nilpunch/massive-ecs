@@ -6,14 +6,17 @@ namespace Massive
 	public class MassiveRegistry : Registry, IMassive
 	{
 		private readonly MassiveEntities _massiveEntities;
+		private readonly MassiveBitsetSet _massiveBitsetSet;
 
-		public MassiveRegistry(int setCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
+		public MassiveRegistry(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
 			bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
 			: base(new MassiveSetFactory(setCapacity, framesCapacity, storeEmptyTypesAsDataSets, pageSize),
-				new MassiveGroupFactory(setCapacity, framesCapacity), new MassiveEntities(setCapacity, framesCapacity))
+				new MassiveGroupFactory(setCapacity, framesCapacity), new MassiveEntities(setCapacity, framesCapacity),
+				new MassiveBitsetSet(capacity: setCapacity, framesCapacity: framesCapacity))
 		{
 			// Fetch instances from base
 			_massiveEntities = (MassiveEntities)Entities;
+			_massiveBitsetSet = (MassiveBitsetSet)BitsetSet;
 		}
 
 		public int CanRollbackFrames => _massiveEntities.CanRollbackFrames;
@@ -22,6 +25,7 @@ namespace Massive
 		public void SaveFrame()
 		{
 			_massiveEntities.SaveFrame();
+			_massiveBitsetSet.SaveFrame();
 
 			var sets = SetRegistry.All;
 			for (var i = 0; i < sets.Length; i++)
@@ -46,6 +50,7 @@ namespace Massive
 		public void Rollback(int frames)
 		{
 			_massiveEntities.Rollback(Math.Min(frames, _massiveEntities.CanRollbackFrames));
+			_massiveBitsetSet.Rollback(Math.Min(frames, _massiveBitsetSet.CanRollbackFrames));
 
 			var sets = SetRegistry.All;
 			for (var i = 0; i < sets.Length; i++)

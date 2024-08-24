@@ -6,7 +6,7 @@
 		private readonly bool _storeEmptyTypesAsDataSets;
 		private readonly int _pageSize;
 
-		public NormalSetFactory(int setCapacity = Constants.DefaultSetCapacity, bool storeEmptyTypesAsDataSets = false,
+		public NormalSetFactory(int setCapacity = Constants.DefaultCapacity, bool storeEmptyTypesAsDataSets = false,
 			int pageSize = Constants.DefaultPageSize)
 		{
 			_setCapacity = setCapacity;

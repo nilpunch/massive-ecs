@@ -13,7 +13,7 @@
 		private readonly bool _storeEmptyTypesAsDataSets;
 		private readonly int _pageSize;
 
-		public MassiveSetFactory(int setCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
+		public MassiveSetFactory(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
 			bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
 		{
 			_setCapacity = setCapacity;

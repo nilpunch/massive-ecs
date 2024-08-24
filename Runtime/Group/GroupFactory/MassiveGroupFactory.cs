@@ -7,7 +7,7 @@ namespace Massive
 		private readonly int _nonOwningSetCapacity;
 		private readonly int _framesCapacity;
 
-		public MassiveGroupFactory(int nonOwningSetCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
+		public MassiveGroupFactory(int nonOwningSetCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
 		{
 			_nonOwningSetCapacity = nonOwningSetCapacity;
 			_framesCapacity = framesCapacity;

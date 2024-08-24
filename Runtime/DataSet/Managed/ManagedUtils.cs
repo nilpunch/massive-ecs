@@ -14,7 +14,7 @@ namespace Massive
 		/// <summary>
 		/// Create <see cref="Massive.MassiveManagedDataSet{T}"/> bypassing <see cref="Massive.IManaged{T}"/> constraint.
 		/// </summary>
-		public static DataSet<T> CreateMassiveManagedDataSet<T>(int setCapacity = Constants.DefaultSetCapacity,
+		public static DataSet<T> CreateMassiveManagedDataSet<T>(int setCapacity = Constants.DefaultCapacity,
 			int framesCapacity = Constants.DefaultFramesCapacity, int pageSize = Constants.DefaultPageSize)
 		{
 			var constructedType = typeof(MassiveManagedDataSet<>).MakeGenericType(typeof(T));

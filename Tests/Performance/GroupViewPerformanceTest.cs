@@ -40,10 +40,10 @@ namespace Massive.PerformanceTests
 		{
 			return type switch
 			{
-				GroupSetupType.Owning3 => registry.Group<Own<TestState64, TestState64_2, TestState64_3>>(),
-				GroupSetupType.Owning2Include1 => registry.Group<Own<TestState64, TestState64_2>, Include<TestState64_3>>(),
-				GroupSetupType.Owning1Include2 => registry.Group<Own<TestState64>, Include<TestState64_2, TestState64_3>>(),
-				GroupSetupType.Include3 => registry.Group<None, Include<TestState64, TestState64_2, TestState64_3>>(),
+				GroupSetupType.Owning3 => registry.Group<None, None, Own<TestState64, TestState64_2, TestState64_3>>(),
+				GroupSetupType.Owning2Include1 => registry.Group<Include<TestState64_3>, None, Own<TestState64, TestState64_2>>(),
+				GroupSetupType.Owning1Include2 => registry.Group<Include<TestState64_2, TestState64_3>, None, Own<TestState64>>(),
+				GroupSetupType.Include3 => registry.Group<Include<TestState64, TestState64_2, TestState64_3>>(),
 				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 			};
 		}

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class GroupRegistry
 	{
 		private readonly GenericLookup<IGroup> _groupLookup = new GenericLookup<IGroup>();
@@ -23,12 +25,12 @@ namespace Massive
 			get => _groupLookup.All;
 		}
 
-		public IGroup Get<TOwn, TInclude, TExclude>()
-			where TOwn : IOwnSelector, new()
+		public IGroup Get<TInclude, TExclude, TOwn>()
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
+			where TOwn : IOwnSelector, new()
 		{
-			var group = _groupLookup.GetOrDefault<Tuple<TOwn, TInclude, TExclude>>();
+			var group = _groupLookup.GetOrDefault<Tuple<TInclude, TExclude, TOwn>>();
 
 			if (group != null)
 			{
@@ -44,7 +46,7 @@ namespace Massive
 			if (owned.Length == 0)
 			{
 				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude);
-				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(nonOwningGroup);
+				return RegisterAndSync<Tuple<TInclude, TExclude, TOwn>>(nonOwningGroup);
 			}
 
 			// Find base group for any owned set
@@ -65,7 +67,7 @@ namespace Massive
 				{
 					_ownedBase.Add(set, owningGroup);
 				}
-				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(owningGroup);
+				return RegisterAndSync<Tuple<TInclude, TExclude, TOwn>>(owningGroup);
 			}
 
 			// Try to create new group as extension to the base group
@@ -88,7 +90,7 @@ namespace Massive
 
 				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
 				baseGroupNode.AddGroupAfterThis(owningGroup);
-				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(owningGroup);
+				return RegisterAndSync<Tuple<TInclude, TExclude, TOwn>>(owningGroup);
 			}
 
 			// Try to create group as a new base group
@@ -100,7 +102,7 @@ namespace Massive
 				{
 					_ownedBase[set] = owningGroup;
 				}
-				return RegisterAndSync<Tuple<TOwn, TInclude, TExclude>>(owningGroup);
+				return RegisterAndSync<Tuple<TInclude, TExclude, TOwn>>(owningGroup);
 			}
 
 			throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullBeautifulName()}, " +

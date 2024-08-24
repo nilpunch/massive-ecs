@@ -12,7 +12,7 @@ namespace Massive
 
 		public int Count { get; set; }
 
-		public SparseSet(int setCapacity = Constants.DefaultSetCapacity)
+		public SparseSet(int setCapacity = Constants.DefaultCapacity)
 		{
 			_dense = new int[setCapacity];
 			_sparse = new int[setCapacity];

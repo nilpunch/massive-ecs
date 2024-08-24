@@ -8,7 +8,7 @@ namespace Massive.Serialization
 	{
 		public void Serialize(Registry registry, Stream stream)
 		{
-			var nonOwningGroup = (NonOwningGroup)registry.Group<None, TInclude, TExclude>();
+			var nonOwningGroup = (NonOwningGroup)registry.Group<TInclude, TExclude>();
 
 			var set = nonOwningGroup.GroupSet;
 
@@ -17,7 +17,7 @@ namespace Massive.Serialization
 
 		public void Deserialize(Registry registry, Stream stream)
 		{
-			var nonOwningGroup = (NonOwningGroup)registry.Group<None, TInclude, TExclude>();
+			var nonOwningGroup = (NonOwningGroup)registry.Group<TInclude, TExclude>();
 
 			var set = nonOwningGroup.GroupSet;
 

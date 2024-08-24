@@ -15,7 +15,7 @@ namespace Massive
 
 		public int MaxId { get; set; }
 
-		public Entities(int setCapacity = Constants.DefaultSetCapacity)
+		public Entities(int setCapacity = Constants.DefaultCapacity)
 		{
 			_dense = new Entity[setCapacity];
 			_sparse = new int[setCapacity];
@@ -42,6 +42,8 @@ namespace Massive
 		public event Action<Entity> AfterCreated;
 
 		public event Action<int> BeforeDestroyed;
+
+		public event Action<int> SparseResized;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Create()
@@ -163,6 +165,8 @@ namespace Massive
 		public virtual void ResizeSparse(int capacity)
 		{
 			Array.Resize(ref _sparse, capacity);
+
+			SparseResized?.Invoke(capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

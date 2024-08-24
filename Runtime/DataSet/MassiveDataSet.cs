@@ -9,7 +9,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class MassiveDataSet<T> : MassiveDataSetBase<T>
 	{
-		public MassiveDataSet(int setCapacity = Constants.DefaultSetCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
+		public MassiveDataSet(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
 			int pageSize = Constants.DefaultPageSize) : base(setCapacity, framesCapacity, pageSize)
 		{
 		}

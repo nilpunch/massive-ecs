@@ -6,7 +6,7 @@ namespace Massive
 	{
 		private readonly int _nonOwningSetCapacity;
 
-		public NormalGroupFactory(int nonOwningSetCapacity = Constants.DefaultSetCapacity)
+		public NormalGroupFactory(int nonOwningSetCapacity = Constants.DefaultCapacity)
 		{
 			_nonOwningSetCapacity = nonOwningSetCapacity;
 		}

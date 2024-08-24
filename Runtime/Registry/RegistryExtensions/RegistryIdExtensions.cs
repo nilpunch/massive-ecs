@@ -42,17 +42,14 @@ namespace Massive
 
 			var cloneId = registry.Create();
 
-			var allSets = registry.SetRegistry.All;
-			for (int i = 0; i < allSets.Length; i++)
+			var sets = registry.BitsetSet.GetAllBits(id);
+			for (var i = 0; i < sets.Length; i++)
 			{
-				var set = allSets[i];
-				if (set.IsAssigned(id))
+				var set = registry.SetRegistry.FindSetById(sets[i]);
+				set.Assign(cloneId);
+				if (set is IDataSet dataSet)
 				{
-					set.Assign(cloneId);
-					if (set is IDataSet dataSet)
-					{
-						dataSet.CopyData(id, cloneId);
-					}
+					dataSet.CopyData(id, cloneId);
 				}
 			}
 

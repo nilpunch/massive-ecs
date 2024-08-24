@@ -5,27 +5,27 @@ namespace Massive
 	public static class RegistryGroupExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IGroup Group<TOwned>(this Registry registry)
-			where TOwned : IOwnSelector, new()
-		{
-			return registry.Group<TOwned, None, None>();
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IGroup Group<TOwned, TInclude>(this Registry registry)
-			where TOwned : IOwnSelector, new()
+		public static IGroup Group<TInclude>(this Registry registry)
 			where TInclude : IIncludeSelector, new()
 		{
-			return registry.Group<TOwned, TInclude, None>();
+			return registry.Group<TInclude, None, None>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IGroup Group<TOwned, TInclude, TExclude>(this Registry registry)
-			where TOwned : IOwnSelector, new()
+		public static IGroup Group<TInclude, TExclude>(this Registry registry)
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
-			return registry.GroupRegistry.Get<TOwned, TInclude, TExclude>();
+			return registry.Group<TInclude, TExclude, None>();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IGroup Group<TInclude, TExclude, TOwned>(this Registry registry)
+			where TInclude : IIncludeSelector, new()
+			where TExclude : IExcludeSelector, new()
+			where TOwned : IOwnSelector, new()
+		{
+			return registry.GroupRegistry.Get<TInclude, TExclude, TOwned>();
 		}
 	}
 }
