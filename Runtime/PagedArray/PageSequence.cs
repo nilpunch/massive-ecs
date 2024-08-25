@@ -6,8 +6,7 @@ namespace Massive
 	/// <summary>
 	/// Reverse page sequence.
 	/// </summary>
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public readonly struct PageSequence
 	{
 		private readonly int _pageSize;

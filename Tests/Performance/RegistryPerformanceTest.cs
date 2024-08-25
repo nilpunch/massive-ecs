@@ -8,6 +8,7 @@ namespace Massive.PerformanceTests
 {
 	[TestFixture(RegistryFilling.FillWithSingleComponent)]
 	[TestFixture(RegistryFilling.FillWith50Components)]
+	[TestFixture(RegistryFilling.FillWith50ComponentsPlusNonOwningGroup)]
 	[TestFixture(RegistryFilling.FillWith50Tags)]
 	public class RegistryPerformanceTest
 	{
@@ -17,6 +18,7 @@ namespace Massive.PerformanceTests
 		{
 			FillWithSingleComponent,
 			FillWith50Components,
+			FillWith50ComponentsPlusNonOwningGroup,
 			FillWith50Tags,
 		}
 
@@ -40,6 +42,7 @@ namespace Massive.PerformanceTests
 			{
 				RegistryFilling.FillWithSingleComponent => new Registry().FillRegistryWithSingleComponent(1),
 				RegistryFilling.FillWith50Components => new Registry().FillRegistryWith50Components(1),
+				RegistryFilling.FillWith50ComponentsPlusNonOwningGroup => new Registry().FillRegistryWith50Components(1).FillRegistryWithNonOwningGroup<Include<PositionComponent>>(),
 				RegistryFilling.FillWith50Tags => new Registry().FillRegistryWith50Tags(1),
 				_ => throw new ArgumentOutOfRangeException(nameof(_registryFilling))
 			};

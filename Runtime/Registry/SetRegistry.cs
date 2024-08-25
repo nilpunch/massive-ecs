@@ -10,9 +10,9 @@ namespace Massive
 		private readonly GenericLookup<SparseSet> _setLookup;
 		private readonly ISetFactory _setFactory;
 
-		public SetRegistry(ISetFactory setFactory, int maxTypesAmount = Constants.DefaultMaxTypesAmount)
+		public SetRegistry(ISetFactory setFactory)
 		{
-			_setLookup = new GenericLookup<SparseSet>(maxTypesAmount);
+			_setLookup = new GenericLookup<SparseSet>();
 			_setFactory = setFactory;
 		}
 
@@ -43,6 +43,12 @@ namespace Massive
 		public SparseSet Find(int id)
 		{
 			return _setLookup.GetOrDefault(id);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(SparseSet set)
+		{
+			return _setLookup.IndexOf(set);
 		}
 	}
 }

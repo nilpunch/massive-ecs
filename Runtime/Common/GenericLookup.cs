@@ -10,13 +10,7 @@ namespace Massive
 	{
 		private readonly FastList<string> _itemIds = new FastList<string>();
 		private readonly FastList<TAbstract> _items = new FastList<TAbstract>();
-		private readonly TAbstract[] _lookup;
-
-		public GenericLookup(int maxTypesAmount = Constants.DefaultMaxTypesAmount)
-		{
-			_lookup = new TAbstract[maxTypesAmount];
-			Array.Fill(_lookup, default);
-		}
+		private TAbstract[] _lookup = new TAbstract[Constants.DefaultCapacity];
 
 		public ReadOnlySpan<TAbstract> All
 		{
@@ -27,12 +21,24 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TAbstract GetOrDefault<TKey>()
 		{
-			return _lookup[TypeLookup<TKey>.Index];
+			var typeIndex = TypeLookup<TKey>.Index;
+
+			if (typeIndex >= _lookup.Length)
+			{
+				return default;
+			}
+
+			return _lookup[typeIndex];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TAbstract GetOrDefault(int index)
 		{
+			if (index >= _lookup.Length)
+			{
+				return default;
+			}
+			
 			return _lookup[index];
 		}
 
@@ -42,9 +48,21 @@ namespace Massive
 			return TypeLookup<TKey>.Index;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(TAbstract item)
+		{
+			return Array.IndexOf(_lookup, item);
+		}
+
 		public void Assign<TKey>(TAbstract item)
 		{
 			var typeIndex = TypeLookup<TKey>.Index;
+
+			// Resize lookup to fit
+			if (typeIndex >= _lookup.Length)
+			{
+				Array.Resize(ref _lookup, MathHelpers.NextPowerOf2(typeIndex + 1));
+			}
 
 			_lookup[typeIndex] = item;
 

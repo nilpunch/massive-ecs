@@ -8,11 +8,5 @@
 
 		public const int InvalidId = -1;
 		public const int DefaultMaxTypesAmount = 32768;
-
-		public static class Bitset
-		{
-			public const int DefaultMaxSetsPerEntity = 64;
-			public const int DefaultMaxDifferentSets = 256;
-		}
 	}
 }

@@ -92,16 +92,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void UnassignUnsafe(int id)
-		{
-			BeforeUnassigned?.Invoke(id);
-
-			Count -= 1;
-			CopyFromToDense(Count, Sparse[id]);
-			Sparse[id] = Constants.InvalidId;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
 			var ids = Ids;
