@@ -1,5 +1,11 @@
 # Changelog
 
+## 13.0.0 - August 25, 2024
+
+- Changed: Divided `Assign<T>()` into two distinct overloads - with data initialization and without it.
+  This will allow the sets to be used as objects pools.
+- Changed: Order of groups to more common pattern `Group<Include, Exclude, Owned>`.
+
 ## 12.0.0 - August 10, 2024
 
 Devirtualize usages for better inlining and performance.

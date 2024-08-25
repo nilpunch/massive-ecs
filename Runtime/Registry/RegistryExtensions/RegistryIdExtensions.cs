@@ -94,9 +94,9 @@ namespace Massive
 				dataSet.Get(id) = data;
 			}
 		}
-		
+
 		/// <summary>
-		/// Assigns a component to an entity with this ID, regardless of generation.
+		/// Assigns a component to an entity with this ID, regardless of generation, without data initialization.
 		/// </summary>
 		/// <remarks>
 		/// Assigning a component to an entity that is being destroyed can lead to undefined behavior.

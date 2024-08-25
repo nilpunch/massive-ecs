@@ -75,7 +75,7 @@ namespace Massive
 		/// <param name="data"> Initial data for the assigned component. </param>
 		/// <remarks> If the entity is not alive, nothing happens. </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this Registry registry, Entity entity, T data = default)
+		public static void Assign<T>(this Registry registry, Entity entity, T data)
 		{
 			if (!registry.Entities.IsAlive(entity))
 			{
@@ -83,6 +83,21 @@ namespace Massive
 			}
 
 			registry.Assign(entity.Id, data);
+		}
+
+		/// <summary>
+		/// Assigns a component to an entity, without data initialization.
+		/// </summary>
+		/// <remarks> If the entity is not alive, nothing happens. </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void Assign<T>(this Registry registry, Entity entity)
+		{
+			if (!registry.Entities.IsAlive(entity))
+			{
+				return;
+			}
+
+			registry.Assign<T>(entity.Id);
 		}
 
 		/// <summary>
