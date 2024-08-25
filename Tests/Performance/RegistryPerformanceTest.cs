@@ -218,11 +218,11 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					_registry.View().ForEach((entityId) =>
+					foreach (var entityId in _registry.View())
 					{
 						_registry.Unassign<PositionComponent>(entityId);
 						_registry.Assign(entityId, new PositionComponent() { X = entityId, Y = entityId });
-					});
+					}
 				})
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -262,7 +262,7 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_registry.Set<PositionComponent>();
+						_registry.DataSet<PositionComponent>();
 					}
 				})
 				.MeasurementCount(MeasurementCount)

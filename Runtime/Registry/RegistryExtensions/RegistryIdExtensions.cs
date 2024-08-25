@@ -42,14 +42,33 @@ namespace Massive
 
 			var cloneId = registry.Create();
 
-			var sets = registry.BitsetSet.GetAllBits(id);
-			for (var i = 0; i < sets.Length; i++)
+			if (registry.BitsetSet is null)
 			{
-				var set = registry.SetRegistry.FindSetById(sets[i]);
-				set.Assign(cloneId);
-				if (set is IDataSet dataSet)
+				var sets = registry.SetRegistry.All;
+				for (var i = 0; i < sets.Length; i++)
 				{
-					dataSet.CopyData(id, cloneId);
+					var set = sets[i];
+					if (set.IsAssigned(id))
+					{
+						set.Assign(cloneId);
+						if (set is IDataSet dataSet)
+						{
+							dataSet.CopyData(id, cloneId);
+						}
+					}
+				}
+			}
+			else
+			{
+				var sets = registry.BitsetSet.GetAllBits(id);
+				for (var i = 0; i < sets.Length; i++)
+				{
+					var set = registry.SetRegistry.Find(sets[i]);
+					set.Assign(cloneId);
+					if (set is IDataSet dataSet)
+					{
+						dataSet.CopyData(id, cloneId);
+					}
 				}
 			}
 
@@ -82,25 +101,31 @@ namespace Massive
 		/// Assigning a component to an entity that is being destroyed can lead to undefined behavior.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this Registry registry, int id, T data = default)
+		public static void Assign<T>(this Registry registry, int id, T data)
 		{
 			var set = registry.Set<T>();
+			set.Assign(id);
 			if (set is DataSet<T> dataSet)
 			{
-				dataSet.Assign(id, data);
+				dataSet.Get(id) = data;
 			}
-			else
-			{
-				set.Assign(id);
-			}
+		}
+		
+		/// <summary>
+		/// Assigns a component to an entity with this ID, regardless of generation.
+		/// </summary>
+		/// <remarks>
+		/// Assigning a component to an entity that is being destroyed can lead to undefined behavior.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void Assign<T>(this Registry registry, int id)
+		{
+			registry.Set<T>().Assign(id);
 		}
 
 		/// <summary>
 		/// Unassigns a component from an entity with this ID, regardless of generation.
 		/// </summary>
-		/// <remarks>
-		/// Unassigning a component from an entity that is being destroyed can lead to undefined behavior.
-		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Unassign<T>(this Registry registry, int id)
 		{

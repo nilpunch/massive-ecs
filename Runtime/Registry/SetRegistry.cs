@@ -7,11 +7,12 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class SetRegistry
 	{
-		private readonly GenericLookup<SparseSet> _setLookup = new GenericLookup<SparseSet>();
+		private readonly GenericLookup<SparseSet> _setLookup;
 		private readonly ISetFactory _setFactory;
 
-		public SetRegistry(ISetFactory setFactory)
+		public SetRegistry(ISetFactory setFactory, int maxTypesAmount = Constants.DefaultMaxTypesAmount)
 		{
+			_setLookup = new GenericLookup<SparseSet>(maxTypesAmount);
 			_setFactory = setFactory;
 		}
 
@@ -28,7 +29,7 @@ namespace Massive
 		{
 			var set = _setLookup.GetOrDefault<TKey>();
 
-			if (set == null)
+			if (set is null)
 			{
 				set = _setFactory.CreateAppropriateSet<TKey>();
 				_setLookup.Assign<TKey>(set);
@@ -39,15 +40,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet FindSetById(int id)
+		public SparseSet Find(int id)
 		{
 			return _setLookup.GetOrDefault(id);
-		}
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetId<TKey>()
-		{
-			return _setLookup.GetIndex<TKey>();
 		}
 	}
 }

@@ -5,13 +5,18 @@ using Unity.IL2CPP.CompilerServices;
 // ReSharper disable StaticMemberInGenericType
 namespace Massive
 {
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class GenericLookup<TAbstract>
 	{
 		private readonly FastList<string> _itemIds = new FastList<string>();
 		private readonly FastList<TAbstract> _items = new FastList<TAbstract>();
-		private TAbstract[] _lookup = new TAbstract[4];
+		private readonly TAbstract[] _lookup;
+
+		public GenericLookup(int maxTypesAmount = Constants.DefaultMaxTypesAmount)
+		{
+			_lookup = new TAbstract[maxTypesAmount];
+			Array.Fill(_lookup, default);
+		}
 
 		public ReadOnlySpan<TAbstract> All
 		{
@@ -22,24 +27,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TAbstract GetOrDefault<TKey>()
 		{
-			var typeIndex = TypeLookup<TKey>.Index;
-
-			if (typeIndex >= _lookup.Length)
-			{
-				return default;
-			}
-
-			return _lookup[typeIndex];
+			return _lookup[TypeLookup<TKey>.Index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TAbstract GetOrDefault(int index)
 		{
-			if (index >= _lookup.Length)
-			{
-				return default;
-			}
-
 			return _lookup[index];
 		}
 
@@ -52,12 +45,6 @@ namespace Massive
 		public void Assign<TKey>(TAbstract item)
 		{
 			var typeIndex = TypeLookup<TKey>.Index;
-
-			// Resize lookup to fit
-			if (typeIndex >= _lookup.Length)
-			{
-				Array.Resize(ref _lookup, MathHelpers.NextPowerOf2(typeIndex + 1));
-			}
 
 			_lookup[typeIndex] = item;
 

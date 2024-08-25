@@ -11,42 +11,36 @@ namespace Massive
 		public GroupRegistry GroupRegistry { get; }
 		public Entities Entities { get; }
 
-		public Registry(int setCapacity = Constants.DefaultCapacity, bool storeEmptyTypesAsDataSets = true, int pageSize = Constants.DefaultPageSize)
-			: this(new NormalSetFactory(setCapacity, storeEmptyTypesAsDataSets, pageSize), new NormalGroupFactory(setCapacity),
-				new Entities(setCapacity), new BitsetSet(capacity: setCapacity))
+		public Registry()
+			: this(new RegistryConfig())
 		{
 		}
 
-		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities, BitsetSet bitsetSet)
+		public Registry(RegistryConfig registryConfig)
+			: this(new NormalSetFactory(registryConfig.SetCapacity, registryConfig.StoreEmptyTypesAsDataSets, registryConfig.DataPageSize),
+				new NormalGroupFactory(registryConfig.SetCapacity), new Entities(registryConfig.SetCapacity),
+				registryConfig.UseBitsets ? new BitsetSet(registryConfig.SetCapacity, registryConfig.BitsetMaxSetsPerEntity, registryConfig.BitsetMaxDifferentSets) : null,
+				registryConfig.MaxTypesAmount)
 		{
-			SetRegistry = new SetRegistry(setFactory);
+		}
+
+		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities, BitsetSet bitsetSet, int maxTypesAmount = Constants.DefaultMaxTypesAmount)
+		{
+			SetRegistry = new SetRegistry(setFactory, maxTypesAmount);
 			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory);
 			FilterRegistry = new FilterRegistry(SetRegistry);
 			Entities = entities;
 			BitsetSet = bitsetSet;
 
-			// Entities.BeforeDestroyed += UnassignFromAllSets;
-			// return;
-			
-			// Connect entity sets
-			Entities.SparseResized += BitsetSet.Resize;
-			SetRegistry.SetCreated += OnSetCreated;
-			Entities.BeforeDestroyed += UnassignFromAllSetsUsingEntitySets;
-		}
-
-		private void OnSetCreated(SparseSet set, int setId)
-		{
-			//set.AttachBitset(BitsetSet, setId);
-			set.AfterAssigned += entityId => BitsetSet.AssignBit(entityId, setId);
-			set.BeforeUnassigned += entityId => BitsetSet.UnassignBit(entityId, setId);
-		}
-
-		private void UnassignFromAllSetsUsingEntitySets(int entityId)
-		{
-			var sets = BitsetSet.GetAllBits(entityId);
-			for (var i = 0; i < sets.Length; i++)
+			if (BitsetSet is not null)
 			{
-				SetRegistry.FindSetById(sets[i]).Unassign(entityId);
+				Entities.SparseResized += BitsetSet.Resize;
+				SetRegistry.SetCreated += ConnectBitset;
+				Entities.BeforeDestroyed += UnassignFromAllSetsUsingBitset;
+			}
+			else
+			{
+				Entities.BeforeDestroyed += UnassignFromAllSets;
 			}
 		}
 
@@ -57,6 +51,21 @@ namespace Massive
 			{
 				sets[i].Unassign(entityId);
 			}
+		}
+
+		private void UnassignFromAllSetsUsingBitset(int entityId)
+		{
+			var sets = BitsetSet.GetAllBits(entityId);
+			for (var i = 0; i < sets.Length; i++)
+			{
+				SetRegistry.Find(sets[i]).UnassignUnsafe(entityId);
+			}
+		}
+
+		private void ConnectBitset(SparseSet set, int setId)
+		{
+			set.AfterAssigned += entityId => { BitsetSet.AssignBit(entityId, setId); };
+			set.BeforeUnassigned += entityId => { BitsetSet.UnassignBit(entityId, setId); };
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace Massive
 		public int BitsetSize { get; }
 		public int ElementSize { get; }
 
-		public BitsetSet(int bitsPerElement = Constants.DefaultBitsPerElement, int bitsPerBitset = Constants.DefaultBitsPerBitset, int capacity = Constants.DefaultCapacity)
+		public BitsetSet(int capacity = Constants.DefaultCapacity, int bitsPerElement = Constants.Bitset.DefaultMaxSetsPerEntity, int bitsPerBitset = Constants.Bitset.DefaultMaxDifferentSets)
 		{
 			if (bitsPerBitset <= 0 || bitsPerBitset % 16 != 0)
 			{
@@ -64,7 +64,7 @@ namespace Massive
 			// Append this bit to the bits
 			int countIndex = elementIndex + BitsetSize;
 			_data[countIndex + 1 + _data[countIndex]] = (short)bit;
-			_data[countIndex]++;
+			_data[countIndex] += 1;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,10 +92,11 @@ namespace Massive
 			_data[countIndex] -= 1;
 			int setsStart = countIndex + 1;
 			int setsEnd = setsStart + _data[countIndex];
+			short bitAsShort = (short)bit;
 
 			for (int i = setsStart; i <= setsEnd; i++)
 			{
-				if (_data[i] == bit)
+				if (_data[i] == bitAsShort)
 				{
 					_data[i] = _data[setsEnd];
 					return;
@@ -138,14 +139,16 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsBitAssigned(int id, int bit)
 		{
-			int elementIndex = GetElementIndex(id);
-			if (elementIndex < 0 || elementIndex >= _data.Length)
-			{
-				return false;
-			}
+			//return false;
+			
+			//int elementIndex = GetElementIndex(id);
+			// if (elementIndex < 0 || elementIndex >= _data.Length)
+			// {
+			// 	return false;
+			// }
 
-			int bitsetElementIndex = elementIndex + BitsetElementIndex(bit);
-			int mask = 1 << BitsetBitIndex(bit);
+			int bitsetElementIndex = GetElementIndex(id) + BitsetElementIndex(bit);
+			short mask = (short)(1 << BitsetBitIndex(bit));
 			return (_data[bitsetElementIndex] & mask) != 0;
 		}
 

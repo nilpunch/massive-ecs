@@ -8,11 +8,16 @@ namespace Massive
 		private readonly MassiveEntities _massiveEntities;
 		private readonly MassiveBitsetSet _massiveBitsetSet;
 
-		public MassiveRegistry(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
-			bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
-			: base(new MassiveSetFactory(setCapacity, framesCapacity, storeEmptyTypesAsDataSets, pageSize),
-				new MassiveGroupFactory(setCapacity, framesCapacity), new MassiveEntities(setCapacity, framesCapacity),
-				new MassiveBitsetSet(capacity: setCapacity, framesCapacity: framesCapacity))
+		public MassiveRegistry()
+			: this(new MassiveRegistryConfig())
+		{
+		}
+
+		public MassiveRegistry(MassiveRegistryConfig registryConfig)
+			: base(new MassiveSetFactory(registryConfig.SetCapacity, registryConfig.FramesCapacity, registryConfig.StoreEmptyTypesAsDataSets, registryConfig.DataPageSize),
+				new MassiveGroupFactory(registryConfig.SetCapacity, registryConfig.FramesCapacity), new MassiveEntities(registryConfig.SetCapacity, registryConfig.FramesCapacity),
+				registryConfig.UseBitsets ? new MassiveBitsetSet(registryConfig.SetCapacity, registryConfig.BitsetMaxSetsPerEntity, registryConfig.BitsetMaxDifferentSets, registryConfig.FramesCapacity) : null,
+				registryConfig.MaxTypesAmount)
 		{
 			// Fetch instances from base
 			_massiveEntities = (MassiveEntities)Entities;
@@ -25,7 +30,7 @@ namespace Massive
 		public void SaveFrame()
 		{
 			_massiveEntities.SaveFrame();
-			_massiveBitsetSet.SaveFrame();
+			_massiveBitsetSet?.SaveFrame();
 
 			var sets = SetRegistry.All;
 			for (var i = 0; i < sets.Length; i++)
@@ -50,7 +55,7 @@ namespace Massive
 		public void Rollback(int frames)
 		{
 			_massiveEntities.Rollback(Math.Min(frames, _massiveEntities.CanRollbackFrames));
-			_massiveBitsetSet.Rollback(Math.Min(frames, _massiveBitsetSet.CanRollbackFrames));
+			_massiveBitsetSet?.Rollback(Math.Min(frames, _massiveBitsetSet.CanRollbackFrames));
 
 			var sets = SetRegistry.All;
 			for (var i = 0; i < sets.Length; i++)

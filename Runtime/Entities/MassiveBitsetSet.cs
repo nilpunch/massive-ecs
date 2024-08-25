@@ -9,8 +9,8 @@ namespace Massive
 
 		private readonly short[][] _dataByFrames;
 
-		public MassiveBitsetSet(int bitsPerElement = Constants.DefaultBitsPerElement, int bitsPerBitset = Constants.DefaultBitsPerBitset, int capacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
-			: base(bitsPerElement, bitsPerBitset, capacity)
+		public MassiveBitsetSet(int capacity = Constants.DefaultCapacity, int bitsPerElement = Constants.Bitset.DefaultMaxSetsPerEntity, int bitsPerBitset = Constants.Bitset.DefaultMaxDifferentSets, int framesCapacity = Constants.DefaultFramesCapacity)
+			: base(capacity, bitsPerElement, bitsPerBitset)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
