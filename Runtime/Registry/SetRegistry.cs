@@ -27,13 +27,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet Get<TKey>()
 		{
-			var set = _setLookup.GetOrDefault<TKey>();
+			var set = _setLookup.Find<TKey>();
 
 			if (set is null)
 			{
 				set = _setFactory.CreateAppropriateSet<TKey>();
 				_setLookup.Assign<TKey>(set);
-				SetCreated?.Invoke(set, _setLookup.GetIndex<TKey>());
+				SetCreated?.Invoke(set, _setLookup.IndexOf<TKey>());
 			}
 
 			return set;
@@ -42,7 +42,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet Find(int id)
 		{
-			return _setLookup.GetOrDefault(id);
+			return _setLookup.Find(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -19,7 +19,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public TAbstract GetOrDefault<TKey>()
+		public TAbstract Find<TKey>()
 		{
 			var typeIndex = TypeLookup<TKey>.Index;
 
@@ -32,7 +32,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public TAbstract GetOrDefault(int index)
+		public TAbstract Find(int index)
 		{
 			if (index >= _lookup.Length)
 			{
@@ -43,7 +43,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetIndex<TKey>()
+		public int IndexOf<TKey>()
 		{
 			return TypeLookup<TKey>.Index;
 		}

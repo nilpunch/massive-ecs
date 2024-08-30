@@ -30,7 +30,7 @@ namespace Massive
 			where TExclude : IExcludeSelector, new()
 			where TOwn : IOwnSelector, new()
 		{
-			var group = _groupLookup.GetOrDefault<Tuple<TInclude, TExclude, TOwn>>();
+			var group = _groupLookup.Find<Tuple<TInclude, TExclude, TOwn>>();
 
 			if (group != null)
 			{

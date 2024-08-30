@@ -20,7 +20,7 @@ namespace Massive
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
-			var filter = _filterLookup.GetOrDefault<Tuple<TInclude, TExclude>>();
+			var filter = _filterLookup.Find<Tuple<TInclude, TExclude>>();
 
 			if (filter == null)
 			{
