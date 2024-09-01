@@ -20,6 +20,9 @@ namespace Massive
 			_massiveEntities = (MassiveEntities)Entities;
 		}
 
+		public event Action FrameSaved;
+		public event Action<int> Rollbacked;
+
 		public int CanRollbackFrames => _massiveEntities.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,6 +47,8 @@ namespace Massive
 					massive.SaveFrame();
 				}
 			}
+
+			FrameSaved?.Invoke();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -68,6 +73,8 @@ namespace Massive
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}
 			}
+
+			Rollbacked?.Invoke(frames);
 		}
 	}
 }

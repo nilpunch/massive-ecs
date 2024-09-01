@@ -2,22 +2,22 @@
 
 namespace Massive
 {
-	public class MassiveManagedValue<TValue> : IMassive where TValue : IManaged<TValue>
+	public class MassiveManagedVariable<T> : IMassive where T : IManaged<T>
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
-		private readonly TValue[] _valueByFrames;
-		private TValue _value;
+		private readonly T[] _valueByFrames;
+		private T _value;
 
-		public ref TValue Value
+		public ref T Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => ref _value;
 		}
 
-		public MassiveManagedValue(TValue initialValue = default, int framesCapacity = Constants.DefaultFramesCapacity)
+		public MassiveManagedVariable(T initialValue = default, int framesCapacity = Constants.DefaultFramesCapacity)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
-			_valueByFrames = new TValue[framesCapacity];
+			_valueByFrames = new T[framesCapacity];
 			Value = initialValue;
 		}
 

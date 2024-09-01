@@ -2,17 +2,17 @@
 
 namespace Massive
 {
-	public class MassiveValue<TValue> : IMassive
+	public class MassiveVariable<T> : IMassive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
-		private readonly TValue[] _valueByFrames;
+		private readonly T[] _valueByFrames;
 
-		public TValue Value { get; set; }
+		public T Value { get; set; }
 
-		public MassiveValue(TValue initialValue = default, int framesCapacity = Constants.DefaultFramesCapacity)
+		public MassiveVariable(T initialValue = default, int framesCapacity = Constants.DefaultFramesCapacity)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
-			_valueByFrames = new TValue[framesCapacity];
+			_valueByFrames = new T[framesCapacity];
 			Value = initialValue;
 		}
 
