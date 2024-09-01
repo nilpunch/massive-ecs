@@ -7,11 +7,5 @@ namespace Massive
 		void Unassign(int id);
 
 		void Clear();
-
-		void SwapDense(int denseA, int denseB);
-
-		void ResizeDense(int setCapacity);
-
-		void ResizeSparse(int capacity);
 	}
 }
