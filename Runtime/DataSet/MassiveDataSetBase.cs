@@ -23,14 +23,17 @@ namespace Massive
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
 			_dataByFrames = new PagedArray<T>[framesCapacity];
-			_denseByFrames = new int[framesCapacity][];
+			_denseByFrames = InPlace ? null : new int[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_countByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
 				_dataByFrames[i] = new PagedArray<T>(pageSize);
-				_denseByFrames[i] = new int[DenseCapacity];
+				if (!InPlace)
+				{
+					_denseByFrames[i] = new int[DenseCapacity];
+				}
 				_sparseByFrames[i] = new int[SparseCapacity];
 			}
 		}
@@ -71,7 +74,11 @@ namespace Massive
 			CopyData(_dataByFrames[rollbackFrame], Data, rollbackCount);
 			if (InPlace)
 			{
-				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, Math.Max(Count, rollbackCount));
+				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackCount);
+				if (rollbackCount < Count)
+				{
+					Array.Fill(Sparse, Constants.InvalidId, rollbackCount, Count - rollbackCount);
+				}
 			}
 			else
 			{
