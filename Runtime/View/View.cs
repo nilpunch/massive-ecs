@@ -32,13 +32,32 @@ namespace Massive
 
 			var data = dataSet.Data;
 			var ids = dataSet.Ids;
-			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
+
+			if (!dataSet.InPlace)
 			{
-				var page = data.Pages[pageIndex];
-				for (int dense = pageLength - 1; dense >= 0; dense--)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
 				{
-					var id = ids[indexOffset + dense];
-					action.Apply(id, ref page[dense]);
+					var page = data.Pages[pageIndex];
+					for (int dense = pageLength - 1; dense >= 0; dense--)
+					{
+						var id = ids[indexOffset + dense];
+						action.Apply(id, ref page[dense]);
+					}
+				}
+			}
+			else
+			{
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
+				{
+					var page = data.Pages[pageIndex];
+					for (int dense = pageLength - 1; dense >= 0; dense--)
+					{
+						var id = ids[indexOffset + dense];
+						if (id != Constants.InvalidId)
+						{
+							action.Apply(id, ref page[dense]);
+						}
+					}
 				}
 			}
 		}

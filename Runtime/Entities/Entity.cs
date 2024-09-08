@@ -7,7 +7,7 @@ namespace Massive
 	{
 		private const int DefaultId = Constants.InvalidId;
 		public const int IdOffset = -DefaultId;
-		
+
 		public readonly int IdWithOffset;
 		public readonly uint ReuseCount;
 

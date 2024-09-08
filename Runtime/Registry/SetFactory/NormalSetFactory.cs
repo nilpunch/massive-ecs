@@ -18,20 +18,20 @@
 		{
 			if (TypeInfo<T>.HasNoFields && !_storeEmptyTypesAsDataSets)
 			{
-				return CreateSparseSet();
+				return CreateSparseSet<T>();
 			}
 
 			return CreateDataSet<T>();
 		}
 
-		private SparseSet CreateSparseSet()
+		private SparseSet CreateSparseSet<T>()
 		{
-			return new SparseSet(_setCapacity);
+			return new SparseSet(_setCapacity, IInPlace.IsImplementedFor<T>());
 		}
 
 		private SparseSet CreateDataSet<T>()
 		{
-			return new DataSet<T>(_setCapacity, _pageSize);
+			return new DataSet<T>(_setCapacity, _pageSize, IInPlace.IsImplementedFor<T>());
 		}
 	}
 }

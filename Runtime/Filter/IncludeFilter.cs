@@ -15,7 +15,7 @@ namespace Massive
 
 		public bool ContainsId(int id)
 		{
-			return SetHelpers.AssignedInAll(id, _include);
+			return id >= 0 && SetHelpers.AssignedInAll(id, _include);
 		}
 	}
 }

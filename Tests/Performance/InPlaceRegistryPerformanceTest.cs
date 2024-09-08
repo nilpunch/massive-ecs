@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using NUnit.Framework;
 using Unity.PerformanceTesting;
+using UnityEngine;
 
 namespace Massive.PerformanceTests
 {
@@ -10,7 +11,7 @@ namespace Massive.PerformanceTests
 	[TestFixture(RegistryFilling.FillWith50Components)]
 	// [TestFixture(RegistryFilling.FillWith50ComponentsPlusNonOwningGroup)]
 	[TestFixture(RegistryFilling.FillWith50Tags)]
-	public class RegistryPerformanceTest
+	public class InPlaceRegistryPerformanceTest
 	{
 		private readonly RegistryFilling _registryFilling;
 
@@ -28,11 +29,12 @@ namespace Massive.PerformanceTests
 
 		private readonly Registry _registry;
 
-		public RegistryPerformanceTest(RegistryFilling registryFilling)
+		public InPlaceRegistryPerformanceTest(RegistryFilling registryFilling)
 		{
 			_registryFilling = registryFilling;
 			_registry = PrepareTestRegistry(registryFilling);
 			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
+			Debug.Log(IInPlace.IsImplementedFor<VelocityComponent>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -129,10 +131,10 @@ namespace Massive.PerformanceTests
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				_registry.Create<TestState64>();
+				_registry.Create<TestStateInPlace64>();
 			}
 
-			Measure.Method(() => { _registry.View().Filter<Include<TestState64>>().Fill(result); })
+			Measure.Method(() => { _registry.View().Filter<Include<TestStateInPlace64>>().Fill(result); })
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -273,13 +275,13 @@ namespace Massive.PerformanceTests
 				.Run();
 		}
 
-		public struct PositionComponent
+		public struct PositionComponent : IInPlace
 		{
 			public float X;
 			public float Y;
 		}
 
-		public struct VelocityComponent
+		public struct VelocityComponent : IInPlace
 		{
 			public float X;
 			public float Y;

@@ -66,7 +66,7 @@ namespace Massive
 				MaxId += 1;
 				AssignEntity(entity, Count);
 			}
-			
+
 			Count += 1;
 			AfterCreated?.Invoke(entity);
 			return entity;

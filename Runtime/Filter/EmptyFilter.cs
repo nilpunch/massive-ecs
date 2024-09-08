@@ -14,7 +14,7 @@ namespace Massive
 
 		public bool ContainsId(int id)
 		{
-			return true;
+			return id >= 0;
 		}
 	}
 }

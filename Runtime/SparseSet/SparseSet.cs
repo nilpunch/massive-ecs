@@ -10,11 +10,13 @@ namespace Massive
 		private int[] _dense;
 		private int[] _sparse;
 
+		public bool InPlace { get; }
 		public int Count { get; set; }
 
-		public SparseSet(int setCapacity = Constants.DefaultCapacity)
+		public SparseSet(int setCapacity = Constants.DefaultCapacity, bool inPlace = false)
 		{
-			_dense = new int[setCapacity];
+			InPlace = inPlace;
+			_dense = inPlace ? null : new int[setCapacity];
 			_sparse = new int[setCapacity];
 
 			Array.Fill(_sparse, Constants.InvalidId);
@@ -35,7 +37,7 @@ namespace Massive
 		public ReadOnlySpan<int> Ids
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ReadOnlySpan<int>(Dense, 0, Count);
+			get => InPlace ? new ReadOnlySpan<int>(Sparse, 0, Count) : new ReadOnlySpan<int>(Dense, 0, Count);
 		}
 
 		public int DenseCapacity
@@ -63,14 +65,31 @@ namespace Massive
 				return;
 			}
 
-			if (id >= SparseCapacity || Count >= DenseCapacity)
+			if (InPlace)
 			{
-				EnsureSparseCapacity(id + 1);
-				EnsureDenseCapacity(Count + 1);
-			}
+				if (id >= Count)
+				{
+					Count = id + 1;
 
-			AssignIndex(id, Count);
-			Count += 1;
+					if (id >= SparseCapacity)
+					{
+						EnsureSparseCapacity(id + 1);
+					}
+				}
+
+				Sparse[id] = id;
+			}
+			else
+			{
+				if (id >= SparseCapacity || Count >= DenseCapacity)
+				{
+					EnsureSparseCapacity(id + 1);
+					EnsureDenseCapacity(Count + 1);
+				}
+
+				AssignIndex(id, Count);
+				Count += 1;
+			}
 
 			AfterAssigned?.Invoke(id);
 		}
@@ -86,20 +105,42 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			Count -= 1;
-			CopyFromToDense(Count, Sparse[id]);
-			Sparse[id] = Constants.InvalidId;
+			if (InPlace)
+			{
+				Sparse[id] = Constants.InvalidId;
+			}
+			else
+			{
+				Count -= 1;
+				CopyFromToDense(Count, Sparse[id]);
+				Sparse[id] = Constants.InvalidId;
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
 			var ids = Ids;
-			for (int i = ids.Length - 1; i >= 0; i--)
+			if (InPlace)
 			{
-				BeforeUnassigned?.Invoke(ids[i]);
-				Count -= 1;
-				Sparse[ids[i]] = Constants.InvalidId;
+				for (int i = ids.Length - 1; i >= 0; i--)
+				{
+					if (ids[i] != Constants.InvalidId)
+					{
+						BeforeUnassigned?.Invoke(ids[i]);
+						Count = i;
+						Sparse[ids[i]] = Constants.InvalidId;
+					}
+				}
+			}
+			else
+			{
+				for (int i = ids.Length - 1; i >= 0; i--)
+				{
+					BeforeUnassigned?.Invoke(ids[i]);
+					Count -= 1;
+					Sparse[ids[i]] = Constants.InvalidId;
+				}
 			}
 		}
 

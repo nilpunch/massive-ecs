@@ -26,15 +26,15 @@
 		{
 			if (TypeInfo<T>.HasNoFields && !_storeEmptyTypesAsDataSets)
 			{
-				return CreateSparseSet();
+				return CreateSparseSet<T>();
 			}
 
 			return CreateDataSet<T>();
 		}
 
-		private SparseSet CreateSparseSet()
+		private SparseSet CreateSparseSet<T>()
 		{
-			var massiveSparseSet = new MassiveSparseSet(_setCapacity, _framesCapacity);
+			var massiveSparseSet = new MassiveSparseSet(_setCapacity, _framesCapacity, IInPlace.IsImplementedFor<T>());
 			massiveSparseSet.SaveFrame();
 			return massiveSparseSet;
 		}
@@ -42,8 +42,8 @@
 		private SparseSet CreateDataSet<T>()
 		{
 			var massiveDataSet = ManagedUtils.IsManaged<T>()
-				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize)
-				: new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize);
+				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize, IInPlace.IsImplementedFor<T>())
+				: new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize, IInPlace.IsImplementedFor<T>());
 
 			((IMassive)massiveDataSet).SaveFrame();
 			return massiveDataSet;

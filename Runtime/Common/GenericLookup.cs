@@ -38,7 +38,7 @@ namespace Massive
 			{
 				return default;
 			}
-			
+
 			return _lookup[index];
 		}
 
