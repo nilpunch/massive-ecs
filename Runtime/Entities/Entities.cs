@@ -43,8 +43,6 @@ namespace Massive
 
 		public event Action<int> BeforeDestroyed;
 
-		public event Action<int> SparseResized;
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Create()
 		{
@@ -165,8 +163,6 @@ namespace Massive
 		public virtual void ResizeSparse(int capacity)
 		{
 			Array.Resize(ref _sparse, capacity);
-
-			SparseResized?.Invoke(capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

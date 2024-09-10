@@ -42,9 +42,9 @@ namespace Massive
 			var include = new TInclude().SelectReadOnly(_setRegistry);
 			var exclude = new TExclude().SelectReadOnly(_setRegistry);
 
-			if (!Array.TrueForAll(owned, set => !set.InPlace))
+			if (Array.Exists(owned, set => set.IsStable))
 			{
-				throw new Exception($"In-place sets are not supported for owning: <{typeof(TOwn).GetFullBeautifulName()}>.");
+				throw new Exception($"Stable sets are not supported for owning: <{typeof(TOwn).GetFullBeautifulName()}>.");
 			}
 
 			// If non-owning, then just create new one

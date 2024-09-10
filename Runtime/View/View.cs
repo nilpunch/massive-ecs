@@ -33,7 +33,7 @@ namespace Massive
 			var data = dataSet.Data;
 			var ids = dataSet.Ids;
 
-			if (!dataSet.InPlace)
+			if (!dataSet.IsStable)
 			{
 				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
 				{

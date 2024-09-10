@@ -10,7 +10,7 @@ namespace Massive
 	public class MassiveDataSet<T> : MassiveDataSetBase<T>
 	{
 		public MassiveDataSet(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
-			int pageSize = Constants.DefaultPageSize, bool inPlace = false) : base(setCapacity, framesCapacity, pageSize, inPlace)
+			int pageSize = Constants.DefaultPageSize, bool isStable = false) : base(setCapacity, framesCapacity, pageSize, isStable)
 		{
 		}
 

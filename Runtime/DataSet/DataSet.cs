@@ -11,8 +11,8 @@ namespace Massive
 	{
 		public PagedArray<T> Data { get; }
 
-		public DataSet(int setCapacity = Constants.DefaultCapacity, int pageSize = Constants.DefaultPageSize, bool inPlace = false)
-			: base(setCapacity, inPlace)
+		public DataSet(int setCapacity = Constants.DefaultCapacity, int pageSize = Constants.DefaultPageSize, bool isStable = false)
+			: base(setCapacity, isStable)
 		{
 			Data = new PagedArray<T>(pageSize);
 		}
@@ -26,7 +26,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			return ref InPlace ? ref Data[id] : ref Data[Sparse[id]];
+			return ref Data[Sparse[id]];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

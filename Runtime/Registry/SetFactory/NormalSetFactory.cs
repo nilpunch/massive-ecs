@@ -26,12 +26,12 @@
 
 		private SparseSet CreateSparseSet<T>()
 		{
-			return new SparseSet(_setCapacity, IInPlace.IsImplementedFor<T>());
+			return new SparseSet(_setCapacity, IStable.IsImplementedFor<T>());
 		}
 
 		private SparseSet CreateDataSet<T>()
 		{
-			return new DataSet<T>(_setCapacity, _pageSize, IInPlace.IsImplementedFor<T>());
+			return new DataSet<T>(_setCapacity, _pageSize, IStable.IsImplementedFor<T>());
 		}
 	}
 }

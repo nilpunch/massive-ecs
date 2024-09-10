@@ -10,13 +10,13 @@ namespace Massive
 		private int[] _dense;
 		private int[] _sparse;
 
-		public bool InPlace { get; }
+		public bool IsStable { get; }
 		public int Count { get; set; }
 
-		public SparseSet(int setCapacity = Constants.DefaultCapacity, bool inPlace = false)
+		public SparseSet(int setCapacity = Constants.DefaultCapacity, bool isStable = false)
 		{
-			InPlace = inPlace;
-			_dense = inPlace ? Array.Empty<int>() : new int[setCapacity];
+			IsStable = isStable;
+			_dense = isStable ? Array.Empty<int>() : new int[setCapacity];
 			_sparse = new int[setCapacity];
 
 			Array.Fill(_sparse, Constants.InvalidId);
@@ -37,7 +37,7 @@ namespace Massive
 		public ReadOnlySpan<int> Ids
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => InPlace ? new ReadOnlySpan<int>(Sparse, 0, Count) : new ReadOnlySpan<int>(Dense, 0, Count);
+			get => IsStable ? new ReadOnlySpan<int>(Sparse, 0, Count) : new ReadOnlySpan<int>(Dense, 0, Count);
 		}
 
 		public int DenseCapacity
@@ -65,7 +65,7 @@ namespace Massive
 				return;
 			}
 
-			if (InPlace)
+			if (IsStable)
 			{
 				if (id >= Count)
 				{
@@ -100,7 +100,7 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			if (InPlace)
+			if (IsStable)
 			{
 				Sparse[id] = Constants.InvalidId;
 			}
@@ -116,7 +116,7 @@ namespace Massive
 		public void Clear()
 		{
 			var ids = Ids;
-			if (InPlace)
+			if (IsStable)
 			{
 				for (int i = ids.Length - 1; i >= 0; i--)
 				{

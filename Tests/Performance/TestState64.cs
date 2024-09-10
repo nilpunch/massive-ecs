@@ -41,7 +41,7 @@ namespace Massive.PerformanceTests
 	/// <summary>
 	/// 64 Byte structure.
 	/// </summary>
-	public struct TestStateInPlace64 : IInPlace
+	public struct TestStateInPlace64 : IStable
 	{
 		public Quaternion Bytes16_1;
 		public Quaternion Bytes16_2;

@@ -24,7 +24,7 @@ namespace Massive
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
-				_denseByFrames[i] = InPlace ? Array.Empty<int>() : new int[DenseCapacity];
+				_denseByFrames[i] = IsStable ? Array.Empty<int>() : new int[DenseCapacity];
 				_sparseByFrames[i] = new int[SparseCapacity];
 			}
 		}
@@ -40,7 +40,7 @@ namespace Massive
 			int currentCount = Count;
 
 			// Copy everything from current state to current frame
-			if (InPlace)
+			if (IsStable)
 			{
 				Array.Copy(Sparse, _sparseByFrames[currentFrame], currentCount);
 			}
@@ -61,7 +61,7 @@ namespace Massive
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackCount = _countByFrames[rollbackFrame];
 
-			if (InPlace)
+			if (IsStable)
 			{
 				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackCount);
 				if (rollbackCount < Count)

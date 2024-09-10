@@ -11,7 +11,7 @@ namespace Massive.PerformanceTests
 	[TestFixture(RegistryFilling.FillWith50Components)]
 	// [TestFixture(RegistryFilling.FillWith50ComponentsPlusNonOwningGroup)]
 	[TestFixture(RegistryFilling.FillWith50Tags)]
-	public class InPlaceRegistryPerformanceTest
+	public class StableRegistryPerformanceTest
 	{
 		private readonly RegistryFilling _registryFilling;
 
@@ -29,12 +29,11 @@ namespace Massive.PerformanceTests
 
 		private readonly Registry _registry;
 
-		public InPlaceRegistryPerformanceTest(RegistryFilling registryFilling)
+		public StableRegistryPerformanceTest(RegistryFilling registryFilling)
 		{
 			_registryFilling = registryFilling;
 			_registry = PrepareTestRegistry(registryFilling);
 			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
-			Debug.Log(IInPlace.IsImplementedFor<VelocityComponent>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -275,13 +274,13 @@ namespace Massive.PerformanceTests
 				.Run();
 		}
 
-		public struct PositionComponent : IInPlace
+		public struct PositionComponent : IStable
 		{
 			public float X;
 			public float Y;
 		}
 
-		public struct VelocityComponent : IInPlace
+		public struct VelocityComponent : IStable
 		{
 			public float X;
 			public float Y;

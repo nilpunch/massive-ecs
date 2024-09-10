@@ -2,12 +2,12 @@
 
 namespace Massive
 {
-	public interface IInPlace
+	public interface IStable
 	{
 		static bool IsImplementedFor<T>()
 		{
 			return typeof(T).GetInterfaces()
-				.Any(@interface => @interface == typeof(IInPlace));
+				.Any(@interface => @interface == typeof(IStable));
 		}
 	}
 }

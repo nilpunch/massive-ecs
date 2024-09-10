@@ -17,7 +17,7 @@ namespace Massive.Serialization
 			BitConverter.TryWriteBytes(s_buffer4Bytes, set.SparseCapacity);
 			stream.Write(s_buffer4Bytes);
 
-			if (!set.InPlace)
+			if (!set.IsStable)
 			{
 				stream.Write(MemoryMarshal.Cast<int, byte>(set.Dense.AsSpan(0, set.Count)));
 			}
@@ -34,7 +34,7 @@ namespace Massive.Serialization
 			var sparseCapacity = BitConverter.ToInt32(s_buffer4Bytes);
 			set.ResizeSparse(sparseCapacity);
 
-			if (!set.InPlace)
+			if (!set.IsStable)
 			{
 				stream.Read(MemoryMarshal.Cast<int, byte>(set.Dense.AsSpan(0, set.Count)));
 			}

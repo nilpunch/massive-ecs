@@ -34,7 +34,7 @@
 
 		private SparseSet CreateSparseSet<T>()
 		{
-			var massiveSparseSet = new MassiveSparseSet(_setCapacity, _framesCapacity, IInPlace.IsImplementedFor<T>());
+			var massiveSparseSet = new MassiveSparseSet(_setCapacity, _framesCapacity, IStable.IsImplementedFor<T>());
 			massiveSparseSet.SaveFrame();
 			return massiveSparseSet;
 		}
@@ -42,8 +42,8 @@
 		private SparseSet CreateDataSet<T>()
 		{
 			var massiveDataSet = ManagedUtils.IsManaged<T>()
-				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize, IInPlace.IsImplementedFor<T>())
-				: new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize, IInPlace.IsImplementedFor<T>());
+				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize, IStable.IsImplementedFor<T>())
+				: new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize, IStable.IsImplementedFor<T>());
 
 			((IMassive)massiveDataSet).SaveFrame();
 			return massiveDataSet;

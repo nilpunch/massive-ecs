@@ -18,7 +18,7 @@ namespace Massive
 		private readonly int[] _countByFrames;
 
 		protected MassiveDataSetBase(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
-			int pageSize = Constants.DefaultPageSize, bool inPlace = false) : base(setCapacity, pageSize, inPlace)
+			int pageSize = Constants.DefaultPageSize, bool isStable = false) : base(setCapacity, pageSize, isStable)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
@@ -30,7 +30,7 @@ namespace Massive
 			for (int i = 0; i < framesCapacity; i++)
 			{
 				_dataByFrames[i] = new PagedArray<T>(pageSize);
-				_denseByFrames[i] = InPlace ? Array.Empty<int>() : new int[DenseCapacity];
+				_denseByFrames[i] = IsStable ? Array.Empty<int>() : new int[DenseCapacity];
 				_sparseByFrames[i] = new int[SparseCapacity];
 			}
 		}
@@ -47,7 +47,7 @@ namespace Massive
 
 			// Copy everything from current state to current frame
 			CopyData(Data, _dataByFrames[currentFrame], currentCount);
-			if (InPlace)
+			if (IsStable)
 			{
 				Array.Copy(Sparse, _sparseByFrames[currentFrame], currentCount);
 			}
@@ -69,7 +69,7 @@ namespace Massive
 			int rollbackCount = _countByFrames[rollbackFrame];
 
 			CopyData(_dataByFrames[rollbackFrame], Data, rollbackCount);
-			if (InPlace)
+			if (IsStable)
 			{
 				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackCount);
 				if (rollbackCount < Count)
