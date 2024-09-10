@@ -57,7 +57,7 @@ namespace Massive
 		public event Action<int> BeforeUnassigned;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void Assign(int id)
+		public void Assign(int id)
 		{
 			// If ID is negative or element is alive, nothing to be done
 			if (id < 0 || id < SparseCapacity && Sparse[id] != Constants.InvalidId)
@@ -70,15 +70,17 @@ namespace Massive
 				if (id >= Count)
 				{
 					Count = id + 1;
-					EnsureSparseCapacity(id + 1);
 				}
 
+				EnsureSparseForIndex(id);
+				EnsureDataForIndex(id);
 				Sparse[id] = id;
 			}
 			else
 			{
-				EnsureSparseCapacity(id + 1);
-				EnsureDenseCapacity(Count + 1);
+				EnsureSparseForIndex(id);
+				EnsureDenseForIndex(Count);
+				EnsureDataForIndex(Count);
 
 				AssignIndex(id, Count);
 				Count += 1;
@@ -210,6 +212,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected virtual void EnsureDataForIndex(int dense)
+		{
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void AssignIndex(int id, int dense)
 		{
 			Sparse[id] = dense;
@@ -217,20 +224,20 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureDenseCapacity(int capacity)
+		private void EnsureDenseForIndex(int index)
 		{
-			if (capacity > DenseCapacity)
+			if (index >= DenseCapacity)
 			{
-				ResizeDense(MathHelpers.NextPowerOf2(capacity));
+				ResizeDense(MathHelpers.NextPowerOf2(index + 1));
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureSparseCapacity(int capacity)
+		private void EnsureSparseForIndex(int index)
 		{
-			if (capacity > SparseCapacity)
+			if (index >= SparseCapacity)
 			{
-				ResizeSparse(MathHelpers.NextPowerOf2(capacity));
+				ResizeSparse(MathHelpers.NextPowerOf2(index + 1));
 			}
 		}
 	}

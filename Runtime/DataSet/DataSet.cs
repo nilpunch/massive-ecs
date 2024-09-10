@@ -18,18 +18,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void Assign(int id)
-		{
-			if (id < 0)
-			{
-				return;
-			}
-
-			Data.EnsurePageForIndex(InPlace ? id : Count);
-			base.Assign(id);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyData(int sourceId, int targetId)
 		{
 			Get(targetId) = Get(sourceId);
@@ -53,6 +41,12 @@ namespace Massive
 		{
 			base.CopyFromToDense(source, destination);
 			Data[destination] = Data[source];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected override void EnsureDataForIndex(int dense)
+		{
+			Data.EnsurePageForIndex(dense);
 		}
 	}
 }
