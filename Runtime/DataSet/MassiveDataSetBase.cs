@@ -23,17 +23,14 @@ namespace Massive
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
 			_dataByFrames = new PagedArray<T>[framesCapacity];
-			_denseByFrames = InPlace ? null : new int[framesCapacity][];
+			_denseByFrames = new int[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_countByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
 				_dataByFrames[i] = new PagedArray<T>(pageSize);
-				if (!InPlace)
-				{
-					_denseByFrames[i] = new int[DenseCapacity];
-				}
+				_denseByFrames[i] = InPlace ? Array.Empty<int>() : new int[DenseCapacity];
 				_sparseByFrames[i] = new int[SparseCapacity];
 			}
 		}
@@ -110,7 +107,10 @@ namespace Massive
 			for (int i = 0; i < _cyclicFrameCounter.FramesCapacity; i++)
 			{
 				Array.Resize(ref _sparseByFrames[i], capacity);
-				Array.Fill(_sparseByFrames[i], Constants.InvalidId, previousCapacity, capacity - previousCapacity);
+				if (capacity > previousCapacity)
+				{
+					Array.Fill(_sparseByFrames[i], Constants.InvalidId, previousCapacity, capacity - previousCapacity);
+				}
 			}
 		}
 	}

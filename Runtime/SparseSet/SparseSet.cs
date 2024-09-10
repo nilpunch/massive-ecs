@@ -16,7 +16,7 @@ namespace Massive
 		public SparseSet(int setCapacity = Constants.DefaultCapacity, bool inPlace = false)
 		{
 			InPlace = inPlace;
-			_dense = inPlace ? null : new int[setCapacity];
+			_dense = inPlace ? Array.Empty<int>() : new int[setCapacity];
 			_sparse = new int[setCapacity];
 
 			Array.Fill(_sparse, Constants.InvalidId);
@@ -70,22 +70,15 @@ namespace Massive
 				if (id >= Count)
 				{
 					Count = id + 1;
-
-					if (id >= SparseCapacity)
-					{
-						EnsureSparseCapacity(id + 1);
-					}
+					EnsureSparseCapacity(id + 1);
 				}
 
 				Sparse[id] = id;
 			}
 			else
 			{
-				if (id >= SparseCapacity || Count >= DenseCapacity)
-				{
-					EnsureSparseCapacity(id + 1);
-					EnsureDenseCapacity(Count + 1);
-				}
+				EnsureSparseCapacity(id + 1);
+				EnsureDenseCapacity(Count + 1);
 
 				AssignIndex(id, Count);
 				Count += 1;
@@ -132,6 +125,7 @@ namespace Massive
 						Sparse[ids[i]] = Constants.InvalidId;
 					}
 				}
+				Count = 0;
 			}
 			else
 			{

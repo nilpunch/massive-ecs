@@ -12,19 +12,25 @@ namespace Massive.PerformanceTests
 		public static SparseSet[] FixtureSets =
 		{
 			new SparseSet(EntitiesCount),
+			new SparseSet(EntitiesCount, inPlace: true),
 			new DataSet<TestState64>(EntitiesCount),
+			new DataSet<TestState64>(EntitiesCount, inPlace: true),
 		};
 
 		public static SparseSet[] FixtureMassiveSets =
 		{
 			new MassiveSparseSet(EntitiesCount),
+			new MassiveSparseSet(EntitiesCount, inPlace: true),
 			new MassiveDataSet<TestState64>(EntitiesCount),
+			new MassiveDataSet<TestState64>(EntitiesCount, inPlace: true),
 		};
 
 		[TestCaseSource(nameof(FixtureSets)), Performance]
 		public void SparseSet_Ensure(SparseSet set)
 		{
 			set.Clear();
+			set.ResizeSparse(0);
+			set.ResizeDense(0);
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -48,6 +54,8 @@ namespace Massive.PerformanceTests
 		public void SparseSet_Remove(SparseSet set)
 		{
 			set.Clear();
+			set.ResizeSparse(0);
+			set.ResizeDense(0);
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -71,6 +79,8 @@ namespace Massive.PerformanceTests
 		public void SparseSet_RemoveNonExisting(SparseSet set)
 		{
 			set.Clear();
+			set.ResizeSparse(0);
+			set.ResizeDense(0);
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -87,6 +97,8 @@ namespace Massive.PerformanceTests
 		public void MassiveSparseSet_Save(SparseSet set)
 		{
 			set.Clear();
+			set.ResizeSparse(0);
+			set.ResizeDense(0);
 			IMassive massive = (IMassive)set;
 
 			for (int i = 0; i < EntitiesCount; i++)
@@ -104,6 +116,8 @@ namespace Massive.PerformanceTests
 		public void MassiveSparseSet_BigSave(SparseSet set)
 		{
 			set.Clear();
+			set.ResizeSparse(0);
+			set.ResizeDense(0);
 			IMassive massive = (IMassive)set;
 
 			for (int i = 0; i < EntitiesCount * IterationsPerMeasurement; i++)
