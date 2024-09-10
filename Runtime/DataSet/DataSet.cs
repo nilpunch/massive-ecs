@@ -20,6 +20,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void Assign(int id)
 		{
+			if (id < 0)
+			{
+				return;
+			}
+
 			Data.EnsurePageForIndex(InPlace ? id : Count);
 			base.Assign(id);
 		}
