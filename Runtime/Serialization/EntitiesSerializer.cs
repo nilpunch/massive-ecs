@@ -19,7 +19,8 @@ namespace Massive.Serialization
 			BitConverter.TryWriteBytes(s_buffer4Bytes, entities.MaxId);
 			stream.Write(s_buffer4Bytes);
 
-			stream.Write(MemoryMarshal.Cast<Entity, byte>(entities.Dense.AsSpan(0, entities.MaxId)));
+			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
+			stream.Write(MemoryMarshal.Cast<uint, byte>(entities.Reuses.AsSpan(0, entities.MaxId)));
 			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
 		}
 
@@ -36,7 +37,8 @@ namespace Massive.Serialization
 			entities.ResizeDense(entities.MaxId);
 			entities.ResizeSparse(entities.MaxId);
 
-			stream.Read(MemoryMarshal.Cast<Entity, byte>(entities.Dense.AsSpan(0, entities.MaxId)));
+			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
+			stream.Read(MemoryMarshal.Cast<uint, byte>(entities.Reuses.AsSpan(0, entities.MaxId)));
 			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
 		}
 	}

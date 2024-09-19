@@ -24,7 +24,7 @@ namespace Massive
 
 		public IOwningGroup Base { get; set; }
 
-		public ReadOnlySpan<int> Ids => Owned[0].Ids.Slice(0, GroupLength);
+		public ReadOnlySpan<int> Ids => Owned[0].Ids.AsSpan(0, GroupLength);
 
 		public OwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
 		{
@@ -58,10 +58,10 @@ namespace Massive
 			IsSynced = true;
 
 			GroupLength = 0;
-			var minimal = SetHelpers.GetMinimalSet(OwnedPlusIncluded).Ids;
-			for (var i = 0; i < minimal.Length; i++)
+			var minimal = SetHelpers.GetMinimalSet(OwnedPlusIncluded);
+			for (var i = 0; i < minimal.Count; i++)
 			{
-				AddToGroup(minimal[i]);
+				AddToGroup(minimal.Ids[i]);
 			}
 		}
 

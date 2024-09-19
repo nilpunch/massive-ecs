@@ -34,10 +34,10 @@ namespace Massive
 			get => _sparse;
 		}
 
-		public ReadOnlySpan<int> Ids
+		public int[] Ids
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => IsStable ? new ReadOnlySpan<int>(Sparse, 0, Count) : new ReadOnlySpan<int>(Dense, 0, Count);
+			get => IsStable ? Sparse : Dense;
 		}
 
 		public int DenseCapacity
@@ -115,29 +115,26 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			var ids = Ids;
 			if (IsStable)
 			{
-				for (int i = ids.Length - 1; i >= 0; i--)
+				for (int i = Count - 1; i >= 0; i--)
 				{
-					if (ids[i] != Constants.InvalidId)
+					if (Sparse[i] != Constants.InvalidId)
 					{
-						BeforeUnassigned?.Invoke(ids[i]);
-						Count = i;
-						Sparse[ids[i]] = Constants.InvalidId;
+						BeforeUnassigned?.Invoke(Sparse[i]);
+						Sparse[i] = Constants.InvalidId;
 					}
 				}
-				Count = 0;
 			}
 			else
 			{
-				for (int i = ids.Length - 1; i >= 0; i--)
+				for (int i = Count - 1; i >= 0; i--)
 				{
-					BeforeUnassigned?.Invoke(ids[i]);
-					Count -= 1;
-					Sparse[ids[i]] = Constants.InvalidId;
+					BeforeUnassigned?.Invoke(Dense[i]);
+					Sparse[Dense[i]] = Constants.InvalidId;
 				}
 			}
+			Count = 0;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

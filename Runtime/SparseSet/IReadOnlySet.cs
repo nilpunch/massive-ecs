@@ -2,12 +2,8 @@ using System;
 
 namespace Massive
 {
-	public interface IReadOnlySet
+	public interface IReadOnlySet : IIdsSource
 	{
-		int Count { get; }
-
-		ReadOnlySpan<int> Ids { get; }
-
 		/// <summary>
 		/// Shoots only after <see cref="ISet.Assign"/> call, when the id was not alive and therefore was created.
 		/// </summary>

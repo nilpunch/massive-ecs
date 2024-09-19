@@ -6,9 +6,10 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class Entities
+	public class Entities : IIdsSource
 	{
-		private Entity[] _dense;
+		private int[] _ids;
+		private uint[] _reuses;
 		private int[] _sparse;
 
 		public int Count { get; set; }
@@ -17,14 +18,21 @@ namespace Massive
 
 		public Entities(int setCapacity = Constants.DefaultCapacity)
 		{
-			_dense = new Entity[setCapacity];
+			_ids = new int[setCapacity];
+			_reuses = new uint[setCapacity];
 			_sparse = new int[setCapacity];
 		}
 
-		public Entity[] Dense
+		public int[] Ids
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _dense;
+			get => _ids;
+		}
+
+		public uint[] Reuses
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _reuses;
 		}
 
 		public int[] Sparse
@@ -33,10 +41,10 @@ namespace Massive
 			get => _sparse;
 		}
 
-		public ReadOnlySpan<Entity> Alive
+		public ReadOnlySpan<int> Alive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ReadOnlySpan<Entity>(Dense, 0, Count);
+			get => new ReadOnlySpan<int>(Ids, 0, Count);
 		}
 
 		public event Action<Entity> AfterCreated;
@@ -46,17 +54,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Create()
 		{
-			if (Count == Dense.Length)
-			{
-				GrowCapacity(Count + 1);
-			}
+			EnsureCapacityForIndex(Count);
 
 			Entity entity;
 
 			// If there are unused elements in the dense array, return last
 			if (Count < MaxId)
 			{
-				entity = Dense[Count];
+				entity = GetDenseEntity(Count);
 			}
 			else
 			{
@@ -79,7 +84,7 @@ namespace Massive
 				return;
 			}
 			var dense = Sparse[id];
-			var entity = Dense[dense];
+			var entity = GetDenseEntity(dense);
 			if (dense >= Count || entity.Id != id)
 			{
 				return;
@@ -90,7 +95,7 @@ namespace Massive
 			Count -= 1;
 
 			// Swap dense with last element
-			AssignEntity(Dense[Count], dense);
+			AssignEntity(GetDenseEntity(Count), dense);
 			AssignEntity(Entity.Reuse(entity), Count);
 		}
 
@@ -98,17 +103,14 @@ namespace Massive
 		public void CreateMany(int amount, [MaybeNull] Action<Entity> action = null)
 		{
 			int needToCreate = amount;
-			if (needToCreate + Count >= Dense.Length)
-			{
-				GrowCapacity(needToCreate + Count + 1);
-			}
+			EnsureCapacityForIndex(needToCreate + Count);
 
 			while (Count < MaxId && needToCreate > 0)
 			{
 				int count = Count;
 				Count += 1;
 				needToCreate -= 1;
-				action?.Invoke(Dense[count]);
+				action?.Invoke(GetDenseEntity(count));
 			}
 
 			for (int i = 0; i < needToCreate; i++)
@@ -124,7 +126,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
-			return Dense[Sparse[id]];
+			return GetDenseEntity(Sparse[id]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -137,7 +139,7 @@ namespace Massive
 
 			int dense = Sparse[entity.Id];
 
-			return dense < Count && Dense[dense] == entity;
+			return dense < Count && Ids[dense] == entity.Id && Reuses[dense] == entity.ReuseCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -150,13 +152,14 @@ namespace Massive
 
 			int dense = Sparse[id];
 
-			return dense < Count && Dense[dense].Id == id;
+			return dense < Count && Ids[dense] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void ResizeDense(int capacity)
 		{
-			Array.Resize(ref _dense, capacity);
+			Array.Resize(ref _ids, capacity);
+			Array.Resize(ref _reuses, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -166,18 +169,28 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignEntity(Entity entity, int dense)
+		private Entity GetDenseEntity(int dense)
 		{
-			Sparse[entity.Id] = dense;
-			Dense[dense] = entity;
+			return new Entity(Ids[dense], Reuses[dense]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void GrowCapacity(int desiredCapacity)
+		private void AssignEntity(Entity entity, int dense)
 		{
-			int newCapacity = MathHelpers.NextPowerOf2(desiredCapacity);
-			ResizeDense(newCapacity);
-			ResizeSparse(newCapacity);
+			Sparse[entity.Id] = dense;
+			Ids[dense] = entity.Id;
+			Reuses[dense] = entity.ReuseCount;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void EnsureCapacityForIndex(int index)
+		{
+			if (index >= Sparse.Length)
+			{
+				int newCapacity = MathHelpers.NextPowerOf2(index + 1);
+				ResizeDense(newCapacity);
+				ResizeSparse(newCapacity);
+			}
 		}
 	}
 }

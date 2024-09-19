@@ -14,7 +14,7 @@ namespace Massive
 
 		public bool IsSynced { get; protected set; }
 
-		public ReadOnlySpan<int> Ids => GroupSet.Ids;
+		public ReadOnlySpan<int> Ids => GroupSet.Ids.AsSpan(0, GroupSet.Count);
 
 		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, int setCapacity = Constants.DefaultCapacity)
 			: this(new SparseSet(setCapacity), include, exclude)
@@ -50,10 +50,10 @@ namespace Massive
 			IsSynced = true;
 
 			GroupSet.Clear();
-			var minimal = SetHelpers.GetMinimalSet(Include).Ids;
-			for (var i = 0; i < minimal.Length; i++)
+			var minimal = SetHelpers.GetMinimalSet(Include);
+			for (var i = 0; i < minimal.Count; i++)
 			{
-				AddToGroup(minimal[i]);
+				AddToGroup(minimal.Ids[i]);
 			}
 		}
 

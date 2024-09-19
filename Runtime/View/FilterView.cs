@@ -23,24 +23,35 @@ namespace Massive
 		{
 			if (Filter.Include.Count == 0)
 			{
-				var entities = Registry.Entities.Alive;
-
-				for (var i = entities.Length - 1; i >= 0; i--)
+				var entities = Registry.Entities;
+				for (var i = entities.Count - 1; i >= 0; i--)
 				{
-					var entity = entities[i];
-					if (Filter.ContainsId(entity.Id))
+					if (i > entities.Count)
 					{
-						action.Apply(entity.Id);
+						i = entities.Count;
+						continue;
+					}
+
+					var entityId = Registry.Entities.Ids[i];
+					if (Filter.ContainsId(entityId))
+					{
+						action.Apply(entityId);
 					}
 				}
 			}
 			else
 			{
-				var ids = SetHelpers.GetMinimalSet(Filter.Include).Ids;
+				var set = SetHelpers.GetMinimalSet(Filter.Include);
 
-				for (var i = ids.Length - 1; i >= 0; i--)
+				for (var i = set.Count - 1; i >= 0; i--)
 				{
-					var id = ids[i];
+					if (i > set.Count)
+					{
+						i = set.Count;
+						continue;
+					}
+
+					var id = set.Ids[i];
 					if (Filter.ContainsId(id))
 					{
 						action.Apply(id);
@@ -55,11 +66,17 @@ namespace Massive
 			var dataSet = Registry.DataSet<T>();
 
 			var data = dataSet.Data;
-			var ids = SetHelpers.GetMinimalSet(dataSet, Filter.Include).Ids;
+			var set = SetHelpers.GetMinimalSet(dataSet, Filter.Include);
 
-			for (int i = ids.Length - 1; i >= 0; i--)
+			for (int i = set.Count - 1; i >= 0; i--)
 			{
-				var id = ids[i];
+				if (i > set.Count)
+				{
+					i = set.Count;
+					continue;
+				}
+
+				var id = set.Ids[i];
 				var dense = dataSet.GetDenseOrInvalid(id);
 				if (dense != Constants.InvalidId && Filter.ContainsId(id))
 				{
@@ -77,11 +94,17 @@ namespace Massive
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
 			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
-			var ids = SetHelpers.GetMinimalSet(minData, Filter.Include).Ids;
+			var set = SetHelpers.GetMinimalSet(minData, Filter.Include);
 
-			for (int i = ids.Length - 1; i >= 0; i--)
+			for (int i = set.Count - 1; i >= 0; i--)
 			{
-				var id = ids[i];
+				if (i > set.Count)
+				{
+					i = set.Count;
+					continue;
+				}
+
+				var id = set.Ids[i];
 				var dense1 = dataSet1.GetDenseOrInvalid(id);
 				var dense2 = dataSet2.GetDenseOrInvalid(id);
 				if (dense1 != Constants.InvalidId
@@ -104,11 +127,17 @@ namespace Massive
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
 			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3);
-			var ids = SetHelpers.GetMinimalSet(minData, Filter.Include).Ids;
+			var set = SetHelpers.GetMinimalSet(minData, Filter.Include);
 
-			for (int i = ids.Length - 1; i >= 0; i--)
+			for (int i = set.Count - 1; i >= 0; i--)
 			{
-				var id = ids[i];
+				if (i > set.Count)
+				{
+					i = set.Count;
+					continue;
+				}
+
+				var id = set.Ids[i];
 				var dense1 = dataSet1.GetDenseOrInvalid(id);
 				var dense2 = dataSet2.GetDenseOrInvalid(id);
 				var dense3 = dataSet3.GetDenseOrInvalid(id);
@@ -127,53 +156,45 @@ namespace Massive
 		{
 			if (Filter.Include.Count == 0)
 			{
-				return new Enumerator(Registry.Entities.Alive, Filter);
+				return new Enumerator(Registry.Entities, Filter);
 			}
 			else
 			{
-				var ids = SetHelpers.GetMinimalSet(Filter.Include).Ids;
+				var ids = SetHelpers.GetMinimalSet(Filter.Include);
 				return new Enumerator(ids, Filter);
 			}
 		}
 
 		public ref struct Enumerator
 		{
-			private readonly ReadOnlySpan<int> _ids;
+			private readonly IIdsSource _idsSource;
 			private readonly IFilter _filter;
-			private readonly int _stride;
-			private readonly int _idOffset;
 			private int _index;
 
-			public Enumerator(ReadOnlySpan<Entity> entities, IFilter filter)
-				: this(MemoryMarshal.Cast<Entity, int>(entities), filter, 2, Entity.IdOffset)
+			public Enumerator(IIdsSource idsSource, IFilter filter)
 			{
-			}
-
-			public Enumerator(ReadOnlySpan<int> ids, IFilter filter)
-				: this(ids, filter, 1, 0)
-			{
-			}
-
-			private Enumerator(ReadOnlySpan<int> ids, IFilter filter, int stride, int idOffset)
-			{
-				_ids = ids;
+				_idsSource = idsSource;
 				_filter = filter;
-				_stride = stride;
-				_idOffset = idOffset;
-				_index = _ids.Length / _stride;
+				_index = _idsSource.Count;
 			}
 
 			public int Current
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => _ids[_index * _stride] - _idOffset;
+				get => _idsSource.Ids[_index];
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool MoveNext()
 			{
-				while (--_index >= 0 && !_filter.ContainsId(Current))
+				if (--_index > _idsSource.Count)
 				{
+					_index = _idsSource.Count - 1;
+				}
+
+				while (_index >= 0 && !_filter.ContainsId(Current))
+				{
+					--_index;
 				}
 
 				return _index >= 0;
