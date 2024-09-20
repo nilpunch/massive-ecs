@@ -4,7 +4,7 @@
 	struct Position { public float X; public float Y; }
 	class Velocity { public float Magnitude; } // Classes work just fine
 	delegate void ShootingMethod(); // So are the delegates
-	interface IDontEvenAsk { void Lol(); }
+	interface IDontEvenAsk { }
 
 	class Program
 	{
