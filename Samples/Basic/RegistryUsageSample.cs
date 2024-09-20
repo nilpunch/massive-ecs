@@ -10,7 +10,7 @@ namespace Massive.Samples.Basic
 
 			var entity2 = registry.CreateEntity<int>(); // Creates unique entity with a component
 
-			registry.Assign<int>(entity1); // Assigns component with default value to an entity
+			registry.Assign<int>(entity1); // Assigns component without initialization to an entity
 
 			registry.Assign(entity2, "String component"); // Assigns component with specific value
 

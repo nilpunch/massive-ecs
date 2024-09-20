@@ -32,11 +32,11 @@ Consider this list a work in progress as well as the project.
 ## Code Examples
 
 ```cs
-using Massive;
-
 struct Player { }
 struct Position { public float X; public float Y; }
 class Velocity { public float Magnitude; } // Classes work just fine
+delegate void ShootingMethod(); // So are the delegates
+interface IDontEvenAsk { void Lol(); }
 
 class Program
 {
@@ -53,7 +53,11 @@ class Program
 		// Assign components
 		registry.Assign(player, new Velocity() { Magnitude = 10f });
 		registry.Assign(enemy, new Velocity());
-		registry.Assign<Position>(enemy); // Assigns default value
+		registry.Assign<Position>(enemy); // Assigns component without initialization
+
+		// Get full entity identifier from player ID.
+		// Handy when uniqueness is required, for example, when storing entities for later
+		Entity playerEntity = registry.GetEntity(player);
 
 		var deltaTime = 1f / 60f;
 
@@ -62,10 +66,9 @@ class Program
 		view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
 		{
 			position.Y += velocity.Magnitude * deltaTime;
-
 			if (position.Y > 5f)
 			{
-				// Destroy (current) and create (many) entities during iteration
+				// Create and destroy any amount of entities during iteration
 				registry.Destroy(entityId);
 			}
 		});
