@@ -130,10 +130,10 @@ namespace Massive.PerformanceTests
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				_registry.Create<TestStateInPlace64>();
+				_registry.Create<TestState64Stable>();
 			}
 
-			Measure.Method(() => { _registry.View().Filter<Include<TestStateInPlace64>>().Fill(result); })
+			Measure.Method(() => { _registry.View().Filter<Include<TestState64Stable>>().Fill(result); })
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
