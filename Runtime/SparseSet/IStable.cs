@@ -6,8 +6,7 @@ namespace Massive
 	{
 		static bool IsImplementedFor<T>()
 		{
-			return typeof(T).GetInterfaces()
-				.Any(@interface => @interface == typeof(IStable));
+			return typeof(T).GetInterfaces().Any(@interface => @interface == typeof(IStable));
 		}
 	}
 }

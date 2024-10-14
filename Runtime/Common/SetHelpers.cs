@@ -29,7 +29,7 @@ namespace Massive
 			int shouldNotBecomeNegative = 0;
 			for (int i = 0; i < sets.Count; i++)
 			{
-				shouldNotBecomeNegative |= sets[i].GetDenseOrInvalid(id);
+				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
 			}
 
 			return shouldNotBecomeNegative >= 0;
@@ -41,7 +41,7 @@ namespace Massive
 			int shouldStayNegative = ~0;
 			for (int i = 0; i < sets.Count; i++)
 			{
-				shouldStayNegative &= sets[i].GetDenseOrInvalid(id);
+				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
 			}
 
 			return shouldStayNegative < 0;

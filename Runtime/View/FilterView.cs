@@ -77,10 +77,10 @@ namespace Massive
 				}
 
 				var id = set.Ids[i];
-				var dense = dataSet.GetDenseOrInvalid(id);
-				if (dense != Constants.InvalidId && Filter.ContainsId(id))
+				var packed = dataSet.GetIndexOrInvalid(id);
+				if (packed != Constants.InvalidId && Filter.ContainsId(id))
 				{
-					action.Apply(id, ref data[dense]);
+					action.Apply(id, ref data[packed]);
 				}
 			}
 		}
@@ -105,13 +105,13 @@ namespace Massive
 				}
 
 				var id = set.Ids[i];
-				var dense1 = dataSet1.GetDenseOrInvalid(id);
-				var dense2 = dataSet2.GetDenseOrInvalid(id);
-				if (dense1 != Constants.InvalidId
-				    && dense2 != Constants.InvalidId
+				var packed1 = dataSet1.GetIndexOrInvalid(id);
+				var packed2 = dataSet2.GetIndexOrInvalid(id);
+				if (packed1 != Constants.InvalidId
+				    && packed2 != Constants.InvalidId
 				    && Filter.ContainsId(id))
 				{
-					action.Apply(id, ref data1[dense1], ref data2[dense2]);
+					action.Apply(id, ref data1[packed1], ref data2[packed2]);
 				}
 			}
 		}
@@ -138,15 +138,15 @@ namespace Massive
 				}
 
 				var id = set.Ids[i];
-				var dense1 = dataSet1.GetDenseOrInvalid(id);
-				var dense2 = dataSet2.GetDenseOrInvalid(id);
-				var dense3 = dataSet3.GetDenseOrInvalid(id);
-				if (dense1 != Constants.InvalidId
-				    && dense2 != Constants.InvalidId
-				    && dense3 != Constants.InvalidId
+				var packed1 = dataSet1.GetIndexOrInvalid(id);
+				var packed2 = dataSet2.GetIndexOrInvalid(id);
+				var packed3 = dataSet3.GetIndexOrInvalid(id);
+				if (packed1 != Constants.InvalidId
+				    && packed2 != Constants.InvalidId
+				    && packed3 != Constants.InvalidId
 				    && Filter.ContainsId(id))
 				{
-					action.Apply(id, ref data1[dense1], ref data2[dense2], ref data3[dense3]);
+					action.Apply(id, ref data1[packed1], ref data2[packed2], ref data3[packed3]);
 				}
 			}
 		}

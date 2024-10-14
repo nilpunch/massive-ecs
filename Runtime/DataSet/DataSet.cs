@@ -11,8 +11,8 @@ namespace Massive
 	{
 		public PagedArray<T> Data { get; }
 
-		public DataSet(int setCapacity = Constants.DefaultCapacity, int pageSize = Constants.DefaultPageSize, bool isStable = false)
-			: base(setCapacity, isStable)
+		public DataSet(int setCapacity = Constants.DefaultCapacity, int pageSize = Constants.DefaultPageSize, IndexingMode indexingMode = IndexingMode.Packed)
+			: base(setCapacity, indexingMode)
 		{
 			Data = new PagedArray<T>(pageSize);
 		}
@@ -30,23 +30,23 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void SwapDense(int denseA, int denseB)
+		public override void SwapPacked(int packedA, int packedB)
 		{
-			base.SwapDense(denseA, denseB);
-			Data.Swap(denseA, denseB);
+			base.SwapPacked(packedA, packedB);
+			Data.Swap(packedA, packedB);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override void CopyFromToDense(int source, int destination)
+		protected override void CopyFromToPacked(int source, int destination)
 		{
-			base.CopyFromToDense(source, destination);
+			base.CopyFromToPacked(source, destination);
 			Data[destination] = Data[source];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override void EnsureDataForIndex(int dense)
+		protected override void EnsureDataForIndex(int index)
 		{
-			Data.EnsurePageForIndex(dense);
+			Data.EnsurePageForIndex(index);
 		}
 	}
 }

@@ -7,50 +7,40 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class SparseSet : ISet
 	{
-		private int[] _dense;
+		private int[] _packed;
 		private int[] _sparse;
 
-		public bool IsStable { get; }
+		public IndexingMode IndexingMode { get; }
 		public int Count { get; set; }
 
-		public SparseSet(int setCapacity = Constants.DefaultCapacity, bool isStable = false)
+		public SparseSet(int setCapacity = Constants.DefaultCapacity, IndexingMode indexingMode = IndexingMode.Packed)
 		{
-			IsStable = isStable;
-			_dense = isStable ? Array.Empty<int>() : new int[setCapacity];
+			IndexingMode = indexingMode;
+			_packed = indexingMode == IndexingMode.Packed ? new int[setCapacity] : Array.Empty<int>();
 			_sparse = new int[setCapacity];
 
 			Array.Fill(_sparse, Constants.InvalidId);
 		}
 
-		public int[] Dense
+		public bool IsPacked
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _dense;
+			get => IndexingMode == IndexingMode.Packed;
 		}
 
-		public int[] Sparse
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _sparse;
-		}
+		public int[] Packed => _packed;
+
+		public int[] Sparse => _sparse;
 
 		public int[] Ids
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => IsStable ? Sparse : Dense;
+			get => IsPacked ? Packed : Sparse;
 		}
 
-		public int DenseCapacity
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Dense.Length;
-		}
+		public int PackedCapacity => Packed.Length;
 
-		public int SparseCapacity
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Sparse.Length;
-		}
+		public int SparseCapacity => Sparse.Length;
 
 		public event Action<int> AfterAssigned;
 
@@ -65,25 +55,23 @@ namespace Massive
 				return;
 			}
 
-			if (IsStable)
+			EnsureSparseForIndex(id);
+
+			if (IsPacked)
 			{
+				EnsurePackedForIndex(Count);
+				EnsureDataForIndex(Count);
+				AssignIndex(id, Count);
+				Count += 1;
+			}
+			else
+			{
+				EnsureDataForIndex(id);
+				Sparse[id] = id;
 				if (id >= Count)
 				{
 					Count = id + 1;
 				}
-
-				EnsureSparseForIndex(id);
-				EnsureDataForIndex(id);
-				Sparse[id] = id;
-			}
-			else
-			{
-				EnsureSparseForIndex(id);
-				EnsureDenseForIndex(Count);
-				EnsureDataForIndex(Count);
-
-				AssignIndex(id, Count);
-				Count += 1;
 			}
 
 			AfterAssigned?.Invoke(id);
@@ -100,14 +88,14 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			if (IsStable)
+			if (IsPacked)
 			{
+				Count -= 1;
+				CopyFromToPacked(Count, Sparse[id]);
 				Sparse[id] = Constants.InvalidId;
 			}
 			else
 			{
-				Count -= 1;
-				CopyFromToDense(Count, Sparse[id]);
 				Sparse[id] = Constants.InvalidId;
 			}
 		}
@@ -115,7 +103,15 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			if (IsStable)
+			if (IsPacked)
+			{
+				for (int i = Count - 1; i >= 0; i--)
+				{
+					BeforeUnassigned?.Invoke(Packed[i]);
+					Sparse[Packed[i]] = Constants.InvalidId;
+				}
+			}
+			else
 			{
 				for (int i = Count - 1; i >= 0; i--)
 				{
@@ -126,25 +122,17 @@ namespace Massive
 					}
 				}
 			}
-			else
-			{
-				for (int i = Count - 1; i >= 0; i--)
-				{
-					BeforeUnassigned?.Invoke(Dense[i]);
-					Sparse[Dense[i]] = Constants.InvalidId;
-				}
-			}
 			Count = 0;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetDense(int id)
+		public int GetIndex(int id)
 		{
 			return Sparse[id];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetDenseOrInvalid(int id)
+		public int GetIndexOrInvalid(int id)
 		{
 			if (id < 0 || id >= SparseCapacity)
 			{
@@ -155,17 +143,17 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool TryGetDense(int id, out int dense)
+		public bool TryGetIndex(int id, out int index)
 		{
 			if (id < 0 || id >= SparseCapacity)
 			{
-				dense = Constants.InvalidId;
+				index = Constants.InvalidId;
 				return false;
 			}
 
-			dense = Sparse[id];
+			index = Sparse[id];
 
-			return dense != Constants.InvalidId;
+			return index != Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -175,18 +163,18 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void SwapDense(int denseA, int denseB)
+		public virtual void SwapPacked(int packedA, int packedB)
 		{
-			int idA = Dense[denseA];
-			int idB = Dense[denseB];
-			AssignIndex(idA, denseB);
-			AssignIndex(idB, denseA);
+			int idA = Packed[packedA];
+			int idB = Packed[packedB];
+			AssignIndex(idA, packedB);
+			AssignIndex(idB, packedA);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void ResizeDense(int capacity)
+		public virtual void ResizePacked(int capacity)
 		{
-			Array.Resize(ref _dense, capacity);
+			Array.Resize(ref _packed, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -202,30 +190,30 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected virtual void CopyFromToDense(int source, int destination)
+		protected virtual void CopyFromToPacked(int source, int destination)
 		{
-			int sourceId = Dense[source];
+			int sourceId = Packed[source];
 			AssignIndex(sourceId, destination);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected virtual void EnsureDataForIndex(int dense)
+		protected virtual void EnsureDataForIndex(int index)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignIndex(int id, int dense)
+		private void AssignIndex(int id, int packed)
 		{
-			Sparse[id] = dense;
-			Dense[dense] = id;
+			Sparse[id] = packed;
+			Packed[packed] = id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureDenseForIndex(int index)
+		private void EnsurePackedForIndex(int index)
 		{
-			if (index >= DenseCapacity)
+			if (index >= PackedCapacity)
 			{
-				ResizeDense(MathHelpers.NextPowerOf2(index + 1));
+				ResizePacked(MathHelpers.NextPowerOf2(index + 1));
 			}
 		}
 
@@ -237,5 +225,11 @@ namespace Massive
 				ResizeSparse(MathHelpers.NextPowerOf2(index + 1));
 			}
 		}
+	}
+
+	public enum IndexingMode
+	{
+		Packed,
+		Direct,
 	}
 }

@@ -14,7 +14,7 @@ namespace Massive
 		/// </summary>
 		event Action<int> BeforeUnassigned;
 
-		int GetDenseOrInvalid(int id);
+		int GetIndexOrInvalid(int id);
 
 		bool IsAssigned(int id);
 	}

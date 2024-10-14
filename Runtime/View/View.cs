@@ -46,18 +46,18 @@ namespace Massive
 				}
 
 				var page = data.Pages[pageIndex];
-				for (int dense = pageLength - 1; dense >= 0; dense--)
+				for (int packed = pageLength - 1; packed >= 0; packed--)
 				{
-					if (indexOffset + dense > dataSet.Count)
+					if (indexOffset + packed > dataSet.Count)
 					{
-						dense = dataSet.Count - indexOffset;
+						packed = dataSet.Count - indexOffset;
 						continue;
 					}
 
-					var id = dataSet.Ids[indexOffset + dense];
+					var id = dataSet.Ids[indexOffset + packed];
 					if (id != Constants.InvalidId)
 					{
-						action.Apply(id, ref page[dense]);
+						action.Apply(id, ref page[packed]);
 					}
 				}
 			}
@@ -83,19 +83,19 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
+					for (int packed1 = pageLength - 1; packed1 >= 0; packed1--)
 					{
-						if (indexOffset + dense1 > dataSet1.Count)
+						if (indexOffset + packed1 > dataSet1.Count)
 						{
-							dense1 = dataSet1.Count - indexOffset;
+							packed1 = dataSet1.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet1.Ids[indexOffset + dense1];
-						int dense2 = dataSet2.GetDenseOrInvalid(id);
-						if (dense2 != Constants.InvalidId)
+						int id = dataSet1.Ids[indexOffset + packed1];
+						int packed2 = dataSet2.GetIndexOrInvalid(id);
+						if (packed2 != Constants.InvalidId)
 						{
-							action.Apply(id, ref page1[dense1], ref data2[dense2]);
+							action.Apply(id, ref page1[packed1], ref data2[packed2]);
 						}
 					}
 				}
@@ -110,19 +110,19 @@ namespace Massive
 					}
 
 					var page2 = data2.Pages[pageIndex];
-					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
+					for (int packed2 = pageLength - 1; packed2 >= 0; packed2--)
 					{
-						if (indexOffset + dense2 > dataSet2.Count)
+						if (indexOffset + packed2 > dataSet2.Count)
 						{
-							dense2 = dataSet2.Count - indexOffset;
+							packed2 = dataSet2.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + dense2];
-						int dense1 = dataSet1.GetDenseOrInvalid(id);
-						if (dense1 != Constants.InvalidId)
+						int id = dataSet2.Ids[indexOffset + packed2];
+						int packed1 = dataSet1.GetIndexOrInvalid(id);
+						if (packed1 != Constants.InvalidId)
 						{
-							action.Apply(id, ref data1[dense1], ref page2[dense2]);
+							action.Apply(id, ref data1[packed1], ref page2[packed2]);
 						}
 					}
 				}
@@ -151,20 +151,20 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					for (int dense1 = pageLength - 1; dense1 >= 0; dense1--)
+					for (int packed1 = pageLength - 1; packed1 >= 0; packed1--)
 					{
-						if (indexOffset + dense1 > dataSet1.Count)
+						if (indexOffset + packed1 > dataSet1.Count)
 						{
-							dense1 = dataSet1.Count - indexOffset;
+							packed1 = dataSet1.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet1.Ids[indexOffset + dense1];
-						int dense2 = dataSet2.GetDenseOrInvalid(id);
-						int dense3 = dataSet3.GetDenseOrInvalid(id);
-						if (dense2 != Constants.InvalidId && dense3 != Constants.InvalidId)
+						int id = dataSet1.Ids[indexOffset + packed1];
+						int packed2 = dataSet2.GetIndexOrInvalid(id);
+						int packed3 = dataSet3.GetIndexOrInvalid(id);
+						if (packed2 != Constants.InvalidId && packed3 != Constants.InvalidId)
 						{
-							action.Apply(id, ref page1[dense1], ref data2[dense2], ref data3[dense3]);
+							action.Apply(id, ref page1[packed1], ref data2[packed2], ref data3[packed3]);
 						}
 					}
 				}
@@ -179,20 +179,20 @@ namespace Massive
 					}
 
 					var page2 = data2.Pages[pageIndex];
-					for (int dense2 = pageLength - 1; dense2 >= 0; dense2--)
+					for (int packed2 = pageLength - 1; packed2 >= 0; packed2--)
 					{
-						if (indexOffset + dense2 > dataSet2.Count)
+						if (indexOffset + packed2 > dataSet2.Count)
 						{
-							dense2 = dataSet2.Count - indexOffset;
+							packed2 = dataSet2.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + dense2];
-						int dense1 = dataSet1.GetDenseOrInvalid(id);
-						int dense3 = dataSet3.GetDenseOrInvalid(id);
-						if (dense1 != Constants.InvalidId && dense3 != Constants.InvalidId)
+						int id = dataSet2.Ids[indexOffset + packed2];
+						int packed1 = dataSet1.GetIndexOrInvalid(id);
+						int packed3 = dataSet3.GetIndexOrInvalid(id);
+						if (packed1 != Constants.InvalidId && packed3 != Constants.InvalidId)
 						{
-							action.Apply(id, ref data1[dense1], ref page2[dense2], ref data3[dense3]);
+							action.Apply(id, ref data1[packed1], ref page2[packed2], ref data3[packed3]);
 						}
 					}
 				}
@@ -207,20 +207,20 @@ namespace Massive
 					}
 
 					var page3 = data3.Pages[pageIndex];
-					for (int dense3 = pageLength - 1; dense3 >= 0; dense3--)
+					for (int packed3 = pageLength - 1; packed3 >= 0; packed3--)
 					{
-						if (indexOffset + dense3 > dataSet3.Count)
+						if (indexOffset + packed3 > dataSet3.Count)
 						{
-							dense3 = dataSet3.Count - indexOffset;
+							packed3 = dataSet3.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + dense3];
-						int dense1 = dataSet1.GetDenseOrInvalid(id);
-						int dense2 = dataSet2.GetDenseOrInvalid(id);
-						if (dense1 != Constants.InvalidId && dense2 != Constants.InvalidId)
+						int id = dataSet2.Ids[indexOffset + packed3];
+						int packed1 = dataSet1.GetIndexOrInvalid(id);
+						int packed2 = dataSet2.GetIndexOrInvalid(id);
+						if (packed1 != Constants.InvalidId && packed2 != Constants.InvalidId)
 						{
-							action.Apply(id, ref data1[dense1], ref data2[dense2], ref page3[dense3]);
+							action.Apply(id, ref data1[packed1], ref data2[packed2], ref page3[packed3]);
 						}
 					}
 				}

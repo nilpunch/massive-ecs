@@ -84,7 +84,7 @@ namespace Massive
 		{
 			Base?.AddToGroup(id);
 
-			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense >= GroupLength && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
+			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed >= GroupLength && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
 			    && SetHelpers.NotAssignedInAll(id, Exclude))
 			{
 				SwapEntry(id, GroupLength);
@@ -96,7 +96,7 @@ namespace Massive
 		{
 			Extended?.RemoveFromGroup(id);
 
-			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense < GroupLength)
+			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed < GroupLength)
 			{
 				GroupLength -= 1;
 				SwapEntry(id, GroupLength);
@@ -108,7 +108,7 @@ namespace Massive
 			Base?.AddToGroupBeforeUnassignedFromExcluded(id);
 
 			// Applies only when removed from the last remaining exclude set
-			if (IsSynced && Owned[0].TryGetDense(id, out var dense) && dense >= GroupLength && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
+			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed >= GroupLength && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
 			    && SetHelpers.CountAssignedInAll(id, Exclude) == 1)
 			{
 				SwapEntry(id, GroupLength);
@@ -121,7 +121,7 @@ namespace Massive
 			for (var i = 0; i < Owned.Count; i++)
 			{
 				var set = Owned[i];
-				set.SwapDense(set.GetDense(id), swapDense);
+				set.SwapPacked(set.GetIndex(id), swapDense);
 			}
 		}
 	}

@@ -12,23 +12,23 @@ namespace Massive.PerformanceTests
 		public static SparseSet[] FixtureSets =
 		{
 			new SparseSet(EntitiesCount),
-			new SparseSet(EntitiesCount, isStable: true),
+			new SparseSet(EntitiesCount, indexingMode: IndexingMode.Direct),
 			new DataSet<TestState64>(EntitiesCount),
-			new DataSet<TestState64>(EntitiesCount, isStable: true),
+			new DataSet<TestState64Stable>(EntitiesCount, indexingMode: IndexingMode.Direct),
 		};
 
 		public static DataSet<TestState64>[] FixtureDataSets =
 		{
 			new DataSet<TestState64>(EntitiesCount),
-			new DataSet<TestState64>(EntitiesCount, isStable: true),
+			new DataSet<TestState64>(EntitiesCount, indexingMode: IndexingMode.Direct),
 		};
 
 		public static SparseSet[] FixtureMassiveSets =
 		{
 			new MassiveSparseSet(EntitiesCount),
-			new MassiveSparseSet(EntitiesCount, inPlace: true),
+			new MassiveSparseSet(EntitiesCount, indexingMode: IndexingMode.Direct),
 			new MassiveDataSet<TestState64>(EntitiesCount),
-			new MassiveDataSet<TestState64>(EntitiesCount, isStable: true),
+			new MassiveDataSet<TestState64Stable>(EntitiesCount, indexingMode: IndexingMode.Direct),
 		};
 
 		[TestCaseSource(nameof(FixtureSets)), Performance]
@@ -36,7 +36,7 @@ namespace Massive.PerformanceTests
 		{
 			set.Clear();
 			set.ResizeSparse(0);
-			set.ResizeDense(0);
+			set.ResizePacked(0);
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -61,7 +61,7 @@ namespace Massive.PerformanceTests
 		{
 			set.Clear();
 			set.ResizeSparse(0);
-			set.ResizeDense(0);
+			set.ResizePacked(0);
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -86,7 +86,7 @@ namespace Massive.PerformanceTests
 		{
 			set.Clear();
 			set.ResizeSparse(0);
-			set.ResizeDense(0);
+			set.ResizePacked(0);
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
@@ -104,7 +104,7 @@ namespace Massive.PerformanceTests
 		{
 			set.Clear();
 			set.ResizeSparse(0);
-			set.ResizeDense(0);
+			set.ResizePacked(0);
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
@@ -128,7 +128,7 @@ namespace Massive.PerformanceTests
 		{
 			set.Clear();
 			set.ResizeSparse(0);
-			set.ResizeDense(0);
+			set.ResizePacked(0);
 			IMassive massive = (IMassive)set;
 
 			for (int i = 0; i < EntitiesCount; i++)
@@ -147,7 +147,7 @@ namespace Massive.PerformanceTests
 		{
 			set.Clear();
 			set.ResizeSparse(0);
-			set.ResizeDense(0);
+			set.ResizePacked(0);
 			IMassive massive = (IMassive)set;
 
 			for (int i = 0; i < EntitiesCount * IterationsPerMeasurement; i++)

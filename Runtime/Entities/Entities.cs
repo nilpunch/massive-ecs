@@ -58,10 +58,10 @@ namespace Massive
 
 			Entity entity;
 
-			// If there are unused elements in the dense array, return last
+			// If there are unused elements in the packed array, return last
 			if (Count < MaxId)
 			{
-				entity = GetDenseEntity(Count);
+				entity = GetPackedEntity(Count);
 			}
 			else
 			{
@@ -83,9 +83,9 @@ namespace Massive
 			{
 				return;
 			}
-			var dense = Sparse[id];
-			var entity = GetDenseEntity(dense);
-			if (dense >= Count || entity.Id != id)
+			var packed = Sparse[id];
+			var entity = GetPackedEntity(packed);
+			if (packed >= Count || entity.Id != id)
 			{
 				return;
 			}
@@ -94,8 +94,8 @@ namespace Massive
 
 			Count -= 1;
 
-			// Swap dense with last element
-			AssignEntity(GetDenseEntity(Count), dense);
+			// Swap packed with last element
+			AssignEntity(GetPackedEntity(Count), packed);
 			AssignEntity(Entity.Reuse(entity), Count);
 		}
 
@@ -110,7 +110,7 @@ namespace Massive
 				int count = Count;
 				Count += 1;
 				needToCreate -= 1;
-				action?.Invoke(GetDenseEntity(count));
+				action?.Invoke(GetPackedEntity(count));
 			}
 
 			for (int i = 0; i < needToCreate; i++)
@@ -126,7 +126,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
-			return GetDenseEntity(Sparse[id]);
+			return GetPackedEntity(Sparse[id]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -137,9 +137,9 @@ namespace Massive
 				return false;
 			}
 
-			int dense = Sparse[entity.Id];
+			int packed = Sparse[entity.Id];
 
-			return dense < Count && Ids[dense] == entity.Id && Reuses[dense] == entity.ReuseCount;
+			return packed < Count && Ids[packed] == entity.Id && Reuses[packed] == entity.ReuseCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -150,9 +150,9 @@ namespace Massive
 				return false;
 			}
 
-			int dense = Sparse[id];
+			int packed = Sparse[id];
 
-			return dense < Count && Ids[dense] == id;
+			return packed < Count && Ids[packed] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -169,17 +169,17 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Entity GetDenseEntity(int dense)
+		private Entity GetPackedEntity(int packed)
 		{
-			return new Entity(Ids[dense], Reuses[dense]);
+			return new Entity(Ids[packed], Reuses[packed]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignEntity(Entity entity, int dense)
+		private void AssignEntity(Entity entity, int packed)
 		{
-			Sparse[entity.Id] = dense;
-			Ids[dense] = entity.Id;
-			Reuses[dense] = entity.ReuseCount;
+			Sparse[entity.Id] = packed;
+			Ids[packed] = entity.Id;
+			Reuses[packed] = entity.ReuseCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

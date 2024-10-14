@@ -42,9 +42,9 @@ namespace Massive
 			var include = new TInclude().SelectReadOnly(_setRegistry);
 			var exclude = new TExclude().SelectReadOnly(_setRegistry);
 
-			if (Array.Exists(owned, set => set.IsStable))
+			if (Array.Exists(owned, set => !set.IsPacked))
 			{
-				throw new Exception($"Stable sets are not supported for owning: <{typeof(TOwn).GetFullBeautifulName()}>.");
+				throw new Exception($"Sets with direct storage are not supported for owning: <{typeof(TOwn).GetFullBeautifulName()}>.");
 			}
 
 			// If non-owning, then just create new one

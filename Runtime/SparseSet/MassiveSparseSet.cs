@@ -9,22 +9,22 @@ namespace Massive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
-		private readonly int[][] _denseByFrames;
+		private readonly int[][] _packedByFrames;
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _countByFrames;
 
-		public MassiveSparseSet(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity, bool inPlace = false)
-			: base(setCapacity, inPlace)
+		public MassiveSparseSet(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity, IndexingMode indexingMode = IndexingMode.Packed)
+			: base(setCapacity, indexingMode)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
-			_denseByFrames = new int[framesCapacity][];
+			_packedByFrames = new int[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_countByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
-				_denseByFrames[i] = IsStable ? Array.Empty<int>() : new int[DenseCapacity];
+				_packedByFrames[i] = IsPacked ? new int[PackedCapacity] : Array.Empty<int>();
 				_sparseByFrames[i] = new int[SparseCapacity];
 			}
 		}
@@ -40,14 +40,14 @@ namespace Massive
 			int currentCount = Count;
 
 			// Copy everything from current state to current frame
-			if (IsStable)
+			if (IsPacked)
 			{
-				Array.Copy(Sparse, _sparseByFrames[currentFrame], currentCount);
+				Array.Copy(Packed, _packedByFrames[currentFrame], currentCount);
+				Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
 			}
 			else
 			{
-				Array.Copy(Dense, _denseByFrames[currentFrame], currentCount);
-				Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
+				Array.Copy(Sparse, _sparseByFrames[currentFrame], currentCount);
 			}
 			_countByFrames[currentFrame] = currentCount;
 		}
@@ -61,7 +61,12 @@ namespace Massive
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackCount = _countByFrames[rollbackFrame];
 
-			if (IsStable)
+			if (IsPacked)
+			{
+				Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
+				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, SparseCapacity);
+			}
+			else
 			{
 				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackCount);
 				if (rollbackCount < Count)
@@ -69,22 +74,17 @@ namespace Massive
 					Array.Fill(Sparse, Constants.InvalidId, rollbackCount, Count - rollbackCount);
 				}
 			}
-			else
-			{
-				Array.Copy(_denseByFrames[rollbackFrame], Dense, rollbackCount);
-				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, SparseCapacity);
-			}
 			Count = rollbackCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void ResizeDense(int capacity)
+		public override void ResizePacked(int capacity)
 		{
-			base.ResizeDense(capacity);
+			base.ResizePacked(capacity);
 
 			for (int i = 0; i < _cyclicFrameCounter.FramesCapacity; i++)
 			{
-				Array.Resize(ref _denseByFrames[i], capacity);
+				Array.Resize(ref _packedByFrames[i], capacity);
 			}
 		}
 
