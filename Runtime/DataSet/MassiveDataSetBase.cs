@@ -18,7 +18,7 @@ namespace Massive
 		private readonly int[] _countByFrames;
 
 		protected MassiveDataSetBase(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
-			int pageSize = Constants.DefaultPageSize) : base(setCapacity, pageSize)
+			int pageSize = Constants.DefaultPageSize, IndexingMode indexingMode = IndexingMode.Packed) : base(setCapacity, pageSize, indexingMode)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
@@ -30,7 +30,7 @@ namespace Massive
 			for (int i = 0; i < framesCapacity; i++)
 			{
 				_dataByFrames[i] = new PagedArray<T>(pageSize);
-				_packedByFrames[i] = new int[PackedCapacity];
+				_packedByFrames[i] = IsPacked ? new int[PackedCapacity] : Array.Empty<int>();
 				_sparseByFrames[i] = new int[SparseCapacity];
 			}
 		}
@@ -47,8 +47,15 @@ namespace Massive
 
 			// Copy everything from current state to current frame
 			CopyData(Data, _dataByFrames[currentFrame], currentCount);
-			Array.Copy(Packed, _packedByFrames[currentFrame], currentCount);
-			Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
+			if (IsPacked)
+			{
+				Array.Copy(Packed, _packedByFrames[currentFrame], currentCount);
+				Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
+			}
+			else
+			{
+				Array.Copy(Sparse, _sparseByFrames[currentFrame], currentCount);
+			}
 			_countByFrames[currentFrame] = currentCount;
 		}
 
@@ -62,8 +69,19 @@ namespace Massive
 			int rollbackCount = _countByFrames[rollbackFrame];
 
 			CopyData(_dataByFrames[rollbackFrame], Data, rollbackCount);
-			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
-			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, SparseCapacity);
+			if (IsPacked)
+			{
+				Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
+				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, SparseCapacity);
+			}
+			else
+			{
+				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackCount);
+				if (rollbackCount < Count)
+				{
+					Array.Fill(Sparse, Constants.InvalidId, rollbackCount, Count - rollbackCount);
+				}
+			}
 			Count = rollbackCount;
 		}
 

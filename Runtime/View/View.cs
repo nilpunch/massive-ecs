@@ -1,4 +1,6 @@
+using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -53,7 +55,10 @@ namespace Massive
 					}
 
 					var id = dataSet.Ids[indexOffset + packed];
-					action.Apply(id, ref page[packed]);
+					if (id != Constants.InvalidId)
+					{
+						action.Apply(id, ref page[packed]);
+					}
 				}
 			}
 		}

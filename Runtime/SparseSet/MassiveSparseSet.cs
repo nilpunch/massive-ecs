@@ -13,8 +13,8 @@ namespace Massive
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _countByFrames;
 
-		public MassiveSparseSet(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
-			: base(setCapacity)
+		public MassiveSparseSet(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity, IndexingMode indexingMode = IndexingMode.Packed)
+			: base(setCapacity, indexingMode)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
@@ -24,7 +24,7 @@ namespace Massive
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
-				_packedByFrames[i] = new int[PackedCapacity];
+				_packedByFrames[i] = IsPacked ? new int[PackedCapacity] : Array.Empty<int>();
 				_sparseByFrames[i] = new int[SparseCapacity];
 			}
 		}
@@ -40,8 +40,15 @@ namespace Massive
 			int currentCount = Count;
 
 			// Copy everything from current state to current frame
-			Array.Copy(Packed, _packedByFrames[currentFrame], currentCount);
-			Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
+			if (IsPacked)
+			{
+				Array.Copy(Packed, _packedByFrames[currentFrame], currentCount);
+				Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
+			}
+			else
+			{
+				Array.Copy(Sparse, _sparseByFrames[currentFrame], currentCount);
+			}
 			_countByFrames[currentFrame] = currentCount;
 		}
 
@@ -54,8 +61,19 @@ namespace Massive
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackCount = _countByFrames[rollbackFrame];
 
-			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
-			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, SparseCapacity);
+			if (IsPacked)
+			{
+				Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
+				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, SparseCapacity);
+			}
+			else
+			{
+				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackCount);
+				if (rollbackCount < Count)
+				{
+					Array.Fill(Sparse, Constants.InvalidId, rollbackCount, Count - rollbackCount);
+				}
+			}
 			Count = rollbackCount;
 		}
 

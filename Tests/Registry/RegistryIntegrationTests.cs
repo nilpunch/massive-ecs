@@ -4,6 +4,9 @@ using NUnit.Framework;
 namespace Massive.Tests
 {
 	[TestFixture(typeof(TestState64), typeof(TestState64_2))]
+	[TestFixture(typeof(TestState64Stable), typeof(TestState64))]
+	[TestFixture(typeof(TestState64), typeof(TestState64Stable))]
+	[TestFixture(typeof(TestState64Stable), typeof(TestState64Stable_2))]
 	public class RegistryIntegrationTests<TComponent1, TComponent2>
 	{
 		[Test]
@@ -13,7 +16,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 1000; i++)
 			{
-				registry.Create<TComponent1>();
+				var entity = registry.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
@@ -23,7 +26,7 @@ namespace Massive.Tests
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						registry.Create<TComponent1>();
+						var entity = registry.Create<TComponent1>();
 					}
 
 					registry.View().ForEach((int id, ref TComponent1 value) =>
@@ -45,7 +48,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 1000; i++)
 			{
-				registry.Create<TComponent1>();
+				var entity = registry.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
@@ -55,7 +58,7 @@ namespace Massive.Tests
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						registry.Create<TComponent1>();
+						var entity = registry.Create<TComponent1>();
 					}
 
 					registry.View().ForEach((int id, ref TComponent1 value) =>
@@ -65,7 +68,7 @@ namespace Massive.Tests
 					
 					for (int i = 0; i < 1000; i++)
 					{
-						registry.Create<TComponent1>();
+						var entity = registry.Create<TComponent1>();
 					}
 				}
 
@@ -82,7 +85,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 1000; i++)
 			{
-				registry.Create<TComponent1>();
+				var entity = registry.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
@@ -92,7 +95,7 @@ namespace Massive.Tests
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						registry.Create<TComponent1>();
+						var entity = registry.Create<TComponent1>();
 					}
 
 					registry.View().ForEach((int id, ref TComponent1 value) =>
@@ -114,7 +117,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 1000; i++)
 			{
-				registry.Create<TComponent1>();
+				var entity = registry.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
@@ -124,7 +127,7 @@ namespace Massive.Tests
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						registry.Create<TComponent1>();
+						var entity = registry.Create<TComponent1>();
 					}
 
 					registry.View().ForEach((int id, ref TComponent1 value) =>
@@ -296,6 +299,75 @@ namespace Massive.Tests
 			});
 
 			Assert.AreEqual(1, iterations);
+		}
+	}
+
+	[TestFixture]
+	public class RegistryIntegrationTests
+	{
+		private struct StableData : IStable
+		{
+			public int Value;
+		}
+		
+		private struct UnstableData
+		{
+			public int Value;
+		}
+		
+		[Test]
+		public void UnassignManyEntitiesFromBeginning_WithoutStable_TheDataInvalidating()
+		{
+			var registry = new Registry();
+			for (int i = 0; i <= 2000; i++)
+			{
+				int entity = registry.Create();
+				registry.Assign(entity, new UnstableData() { Value = entity });
+			}
+
+			dynamic firstIteration = true;
+			registry.View().ForEach((int entity, ref UnstableData c2) =>
+			{
+				if (firstIteration)
+				{
+					Assert.AreEqual(registry.Get<UnstableData>(entity).Value, c2.Value);
+
+					for (int i = 0; i < 1000; i++)
+					{
+						registry.Unassign<UnstableData>(i);
+					}
+
+					c2.Value = 1000000;
+
+					Assert.AreNotEqual(registry.Get<UnstableData>(entity).Value, c2.Value);
+				}
+				firstIteration = false;
+			});
+		}
+
+		[Test]
+		public void UnassignManyEntitiesFromBeginning_WithStable_TheDataDoesNotInvalidating()
+		{
+			var registry = new Registry();
+			for (int i = 0; i <= 2000; i++)
+			{
+				int entity = registry.Create();
+				registry.Assign(entity, new StableData() { Value = entity });
+			}
+
+			registry.View().ForEach((int entity, ref StableData c2) =>
+			{
+				Assert.AreEqual(registry.Get<StableData>(entity).Value, c2.Value);
+
+				for (int i = 0; i < 1000; i++)
+				{
+					registry.Unassign<StableData>(i);
+				}
+
+				c2.Value = 1000000;
+
+				Assert.AreEqual(registry.Get<StableData>(entity).Value, c2.Value);
+			});
 		}
 	}
 }
