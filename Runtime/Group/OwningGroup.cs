@@ -16,7 +16,7 @@ namespace Massive
 
 		private ArraySegment<SparseSet> Exclude { get; }
 
-		protected int GroupLength { get; set; }
+		public int Count { get; protected set; }
 
 		public bool IsSynced { get; protected set; }
 
@@ -24,7 +24,7 @@ namespace Massive
 
 		public IOwningGroup Base { get; set; }
 
-		public ReadOnlySpan<int> Ids => Owned[0].Ids.AsSpan(0, GroupLength);
+		public SparseSet Set => Owned[0];
 
 		public OwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
 		{
@@ -57,7 +57,7 @@ namespace Massive
 
 			IsSynced = true;
 
-			GroupLength = 0;
+			Count = 0;
 			var minimal = SetHelpers.GetMinimalSet(OwnedPlusIncluded);
 			for (var i = 0; i < minimal.Count; i++)
 			{
@@ -84,11 +84,11 @@ namespace Massive
 		{
 			Base?.AddToGroup(id);
 
-			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed >= GroupLength && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
+			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed >= Count && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
 			    && SetHelpers.NotAssignedInAll(id, Exclude))
 			{
-				SwapEntry(id, GroupLength);
-				GroupLength += 1;
+				SwapEntry(id, Count);
+				Count += 1;
 			}
 		}
 
@@ -96,10 +96,10 @@ namespace Massive
 		{
 			Extended?.RemoveFromGroup(id);
 
-			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed < GroupLength)
+			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed < Count)
 			{
-				GroupLength -= 1;
-				SwapEntry(id, GroupLength);
+				Count -= 1;
+				SwapEntry(id, Count);
 			}
 		}
 
@@ -108,11 +108,11 @@ namespace Massive
 			Base?.AddToGroupBeforeUnassignedFromExcluded(id);
 
 			// Applies only when removed from the last remaining exclude set
-			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed >= GroupLength && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
+			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed >= Count && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
 			    && SetHelpers.CountAssignedInAll(id, Exclude) == 1)
 			{
-				SwapEntry(id, GroupLength);
-				GroupLength += 1;
+				SwapEntry(id, Count);
+				Count += 1;
 			}
 		}
 

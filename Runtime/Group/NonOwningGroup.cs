@@ -12,9 +12,11 @@ namespace Massive
 
 		public SparseSet GroupSet { get; }
 
+		public int Count => GroupSet.Count;
+
 		public bool IsSynced { get; protected set; }
 
-		public ReadOnlySpan<int> Ids => GroupSet.Ids.AsSpan(0, GroupSet.Count);
+		public SparseSet Set => GroupSet;
 
 		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, int setCapacity = Constants.DefaultCapacity)
 			: this(new SparseSet(setCapacity), include, exclude)

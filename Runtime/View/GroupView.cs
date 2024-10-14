@@ -22,10 +22,16 @@ namespace Massive
 		{
 			Group.EnsureSynced();
 
-			var groupIds = Group.Ids;
-			for (var i = groupIds.Length - 1; i >= 0; i--)
+			var groupSet = Group.Set;
+			for (var i = Group.Count - 1; i >= 0; i--)
 			{
-				action.Apply(groupIds[i]);
+				if (i > Group.Count)
+				{
+					i = Group.Count;
+					continue;
+				}
+
+				action.Apply(groupSet.Ids[i]);
 			}
 		}
 
@@ -37,25 +43,37 @@ namespace Massive
 			var dataSet = Registry.DataSet<T>();
 
 			var data = dataSet.Data;
-			var groupIds = Group.Ids;
+			var groupSet = Group.Set;
 
 			if (Group.IsOwning(dataSet))
 			{
-				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, groupIds.Length))
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, Group.Count))
 				{
 					var page = data.Pages[pageIndex];
 					for (int packed = pageLength - 1; packed >= 0; packed--)
 					{
-						int id = groupIds[indexOffset + packed];
+						if (indexOffset + packed > Group.Count)
+						{
+							packed = Group.Count - indexOffset;
+							continue;
+						}
+
+						int id = groupSet.Ids[indexOffset + packed];
 						action.Apply(id, ref page[packed]);
 					}
 				}
 			}
 			else
 			{
-				for (int packed = groupIds.Length - 1; packed >= 0; packed--)
+				for (int packed = Group.Count - 1; packed >= 0; packed--)
 				{
-					int id = groupIds[packed];
+					if (packed > Group.Count)
+					{
+						packed = Group.Count;
+						continue;
+					}
+
+					int id = groupSet.Ids[packed];
 					action.Apply(id, ref dataSet.Get(id));
 				}
 			}
@@ -71,51 +89,75 @@ namespace Massive
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
-			var groupIds = Group.Ids;
+			var groupSet = Group.Set;
 
 			switch (Group.IsOwning(dataSet1), Group.IsOwning(dataSet2))
 			{
 				case (true, true):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page1 = data1.Pages[pageIndex];
 						var page2 = data2.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref page1[packed], ref page2[packed]);
 						}
 					}
 					break;
 
 				case (false, true):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page2 = data2.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref dataSet1.Get(id), ref page2[packed]);
 						}
 					}
 					break;
 
 				case (true, false):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page1 = data1.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref page1[packed], ref dataSet2.Get(id));
 						}
 					}
 					break;
 
 				case (false, false):
-					for (int packed = groupIds.Length - 1; packed >= 0; packed--)
+					for (int packed = Group.Count - 1; packed >= 0; packed--)
 					{
-						int id = groupIds[packed];
+						if (packed > Group.Count)
+						{
+							packed = Group.Count;
+							continue;
+						}
+
+						int id = groupSet.Ids[packed];
 						action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id));
 					}
 					break;
@@ -134,103 +176,151 @@ namespace Massive
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
-			var groupIds = Group.Ids;
+			var groupSet = Group.Set;
 
 			switch (Group.IsOwning(dataSet1), Group.IsOwning(dataSet2), Group.IsOwning(dataSet3))
 			{
 				case (true, true, true):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page1 = data1.Pages[pageIndex];
 						var page2 = data2.Pages[pageIndex];
 						var page3 = data3.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref page1[packed], ref page2[packed], ref page3[packed]);
 						}
 					}
 					break;
 
 				case (false, true, true):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page2 = data2.Pages[pageIndex];
 						var page3 = data3.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref dataSet1.Get(id), ref page2[packed], ref page3[packed]);
 						}
 					}
 					break;
 
 				case (true, false, true):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page1 = data1.Pages[pageIndex];
 						var page3 = data3.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref page1[packed], ref dataSet2.Get(id), ref page3[packed]);
 						}
 					}
 					break;
 
 				case (false, false, true):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page3 = data3.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id), ref page3[packed]);
 						}
 					}
 					break;
 
 				case (true, true, false):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page1 = data1.Pages[pageIndex];
 						var page2 = data2.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref page1[packed], ref page2[packed], ref dataSet3.Get(id));
 						}
 					}
 					break;
 
 				case (false, true, false):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page2 = data2.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref dataSet1.Get(id), ref page2[packed], ref dataSet3.Get(id));
 						}
 					}
 					break;
 
 				case (true, false, false):
-					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, groupIds.Length))
+					foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, Group.Count))
 					{
 						var page1 = data1.Pages[pageIndex];
 						for (int packed = pageLength - 1; packed >= 0; packed--)
 						{
-							int id = groupIds[indexOffset + packed];
+							if (indexOffset + packed > Group.Count)
+							{
+								packed = Group.Count - indexOffset;
+								continue;
+							}
+
+							int id = groupSet.Ids[indexOffset + packed];
 							action.Apply(id, ref page1[packed], ref dataSet2.Get(id), ref dataSet3.Get(id));
 						}
 					}
 					break;
 
 				case (false, false, false):
-					for (int packed = groupIds.Length - 1; packed >= 0; packed--)
+					for (int packed = Group.Count - 1; packed >= 0; packed--)
 					{
-						int id = groupIds[packed];
+						if (packed > Group.Count)
+						{
+							packed = Group.Count;
+							continue;
+						}
+
+						int id = groupSet.Ids[packed];
 						action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id), ref dataSet3.Get(id));
 					}
 					break;
@@ -238,9 +328,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ReadOnlySpan<int>.Enumerator GetEnumerator()
+		public View.Enumerator GetEnumerator()
 		{
-			return Group.Ids.GetEnumerator();
+			return new View.Enumerator(Group);
 		}
 	}
 }

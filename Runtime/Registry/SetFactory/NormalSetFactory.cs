@@ -26,12 +26,12 @@
 
 		private SparseSet CreateSparseSet<T>()
 		{
-			return new SparseSet(_setCapacity, IStable.IsImplementedFor<T>() ? IndexingMode.Direct : IndexingMode.Packed);
+			return new SparseSet(_setCapacity);
 		}
 
 		private SparseSet CreateDataSet<T>()
 		{
-			return new DataSet<T>(_setCapacity, _pageSize, IStable.IsImplementedFor<T>() ? IndexingMode.Direct : IndexingMode.Packed);
+			return new DataSet<T>(_setCapacity, _pageSize);
 		}
 	}
 }

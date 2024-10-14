@@ -27,7 +27,7 @@ namespace Massive
 
 			var currentFrame = _cyclicFrameCounter.CurrentFrame;
 
-			_lengthByFrames[currentFrame] = GroupLength;
+			_lengthByFrames[currentFrame] = Count;
 			_syncedByFrames[currentFrame] = IsSynced;
 		}
 
@@ -37,7 +37,7 @@ namespace Massive
 
 			var rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 
-			GroupLength = _lengthByFrames[rollbackFrame];
+			Count = _lengthByFrames[rollbackFrame];
 			IsSynced = _syncedByFrames[rollbackFrame];
 		}
 	}

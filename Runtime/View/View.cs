@@ -1,6 +1,4 @@
-using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -55,10 +53,7 @@ namespace Massive
 					}
 
 					var id = dataSet.Ids[indexOffset + packed];
-					if (id != Constants.InvalidId)
-					{
-						action.Apply(id, ref page[packed]);
-					}
+					action.Apply(id, ref page[packed]);
 				}
 			}
 		}
@@ -235,27 +230,27 @@ namespace Massive
 
 		public ref struct Enumerator
 		{
-			private readonly Entities _entities;
+			private readonly IIdsSource _idsSource;
 			private int _index;
 
-			public Enumerator(Entities entities)
+			public Enumerator(IIdsSource idsSource)
 			{
-				_entities = entities;
-				_index = entities.Count;
+				_idsSource = idsSource;
+				_index = idsSource.Count;
 			}
 
 			public int Current
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => _entities.Ids[_index];
+				get => _idsSource.Ids[_index];
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool MoveNext()
 			{
-				if (--_index > _entities.Count)
+				if (--_index > _idsSource.Count)
 				{
-					_index = _entities.Count - 1;
+					_index = _idsSource.Count - 1;
 				}
 
 				return _index >= 0;

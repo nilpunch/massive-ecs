@@ -10,22 +10,14 @@ namespace Massive
 		private int[] _packed;
 		private int[] _sparse;
 
-		public IndexingMode IndexingMode { get; }
 		public int Count { get; set; }
 
-		public SparseSet(int setCapacity = Constants.DefaultCapacity, IndexingMode indexingMode = IndexingMode.Packed)
+		public SparseSet(int setCapacity = Constants.DefaultCapacity)
 		{
-			IndexingMode = indexingMode;
-			_packed = indexingMode == IndexingMode.Packed ? new int[setCapacity] : Array.Empty<int>();
+			_packed = new int[setCapacity];
 			_sparse = new int[setCapacity];
 
 			Array.Fill(_sparse, Constants.InvalidId);
-		}
-
-		public bool IsPacked
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => IndexingMode == IndexingMode.Packed;
 		}
 
 		public int[] Packed => _packed;
@@ -35,7 +27,7 @@ namespace Massive
 		public int[] Ids
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => IsPacked ? Packed : Sparse;
+			get => Packed;
 		}
 
 		public int PackedCapacity => Packed.Length;
@@ -56,23 +48,10 @@ namespace Massive
 			}
 
 			EnsureSparseForIndex(id);
-
-			if (IsPacked)
-			{
-				EnsurePackedForIndex(Count);
-				EnsureDataForIndex(Count);
-				AssignIndex(id, Count);
-				Count += 1;
-			}
-			else
-			{
-				EnsureDataForIndex(id);
-				Sparse[id] = id;
-				if (id >= Count)
-				{
-					Count = id + 1;
-				}
-			}
+			EnsurePackedForIndex(Count);
+			EnsureDataForIndex(Count);
+			AssignIndex(id, Count);
+			Count += 1;
 
 			AfterAssigned?.Invoke(id);
 		}
@@ -88,39 +67,18 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			if (IsPacked)
-			{
-				Count -= 1;
-				CopyFromToPacked(Count, Sparse[id]);
-				Sparse[id] = Constants.InvalidId;
-			}
-			else
-			{
-				Sparse[id] = Constants.InvalidId;
-			}
+			Count -= 1;
+			CopyFromToPacked(Count, Sparse[id]);
+			Sparse[id] = Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			if (IsPacked)
+			for (int i = Count - 1; i >= 0; i--)
 			{
-				for (int i = Count - 1; i >= 0; i--)
-				{
-					BeforeUnassigned?.Invoke(Packed[i]);
-					Sparse[Packed[i]] = Constants.InvalidId;
-				}
-			}
-			else
-			{
-				for (int i = Count - 1; i >= 0; i--)
-				{
-					if (Sparse[i] != Constants.InvalidId)
-					{
-						BeforeUnassigned?.Invoke(Sparse[i]);
-						Sparse[i] = Constants.InvalidId;
-					}
-				}
+				BeforeUnassigned?.Invoke(Packed[i]);
+				Sparse[Packed[i]] = Constants.InvalidId;
 			}
 			Count = 0;
 		}
@@ -225,11 +183,5 @@ namespace Massive
 				ResizeSparse(MathHelpers.NextPowerOf2(index + 1));
 			}
 		}
-	}
-
-	public enum IndexingMode
-	{
-		Packed,
-		Direct,
 	}
 }

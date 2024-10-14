@@ -4,9 +4,6 @@ using NUnit.Framework;
 namespace Massive.Tests
 {
 	[TestFixture(typeof(TestState64), typeof(TestState64_2))]
-	[TestFixture(typeof(TestState64Stable), typeof(TestState64))]
-	[TestFixture(typeof(TestState64), typeof(TestState64Stable))]
-	[TestFixture(typeof(TestState64Stable), typeof(TestState64Stable_2))]
 	public class RegistryIntegrationTests<TComponent1, TComponent2>
 	{
 		[Test]
@@ -16,7 +13,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 1000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				registry.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
@@ -26,7 +23,7 @@ namespace Massive.Tests
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						registry.Create<TComponent1>();
 					}
 
 					registry.View().ForEach((int id, ref TComponent1 value) =>
@@ -48,7 +45,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 1000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				registry.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
@@ -58,7 +55,7 @@ namespace Massive.Tests
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						registry.Create<TComponent1>();
 					}
 
 					registry.View().ForEach((int id, ref TComponent1 value) =>
@@ -68,7 +65,7 @@ namespace Massive.Tests
 					
 					for (int i = 0; i < 1000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						registry.Create<TComponent1>();
 					}
 				}
 
@@ -85,7 +82,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 1000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				registry.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
@@ -95,7 +92,7 @@ namespace Massive.Tests
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						registry.Create<TComponent1>();
 					}
 
 					registry.View().ForEach((int id, ref TComponent1 value) =>
@@ -117,7 +114,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < 1000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				registry.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
@@ -127,7 +124,7 @@ namespace Massive.Tests
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						registry.Create<TComponent1>();
 					}
 
 					registry.View().ForEach((int id, ref TComponent1 value) =>

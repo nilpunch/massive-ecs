@@ -9,8 +9,8 @@ namespace Massive
 	public class MassiveManagedDataSet<T> : MassiveDataSetBase<T> where T : IManaged<T>
 	{
 		public MassiveManagedDataSet(int capacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
-			int pageSize = Constants.DefaultPageSize, IndexingMode indexingMode = IndexingMode.Packed)
-			: base(capacity, framesCapacity, pageSize, indexingMode)
+			int pageSize = Constants.DefaultPageSize)
+			: base(capacity, framesCapacity, pageSize)
 		{
 		}
 
