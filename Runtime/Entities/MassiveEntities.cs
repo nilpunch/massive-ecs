@@ -45,6 +45,8 @@ namespace Massive
 			int currentCount = Count;
 			int currentMaxId = MaxId;
 
+			EnsureCapacityForFrame(currentFrame);
+
 			// Copy everything from current state to current frame
 			Array.Copy(Ids, _idsByFrames[currentFrame], currentMaxId);
 			Array.Copy(Reuses, _reusesByFrames[currentFrame], currentMaxId);
@@ -71,26 +73,19 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void ResizeDense(int capacity)
+		private void EnsureCapacityForFrame(int frame)
 		{
-			base.ResizeDense(capacity);
-			for (int i = 0; i < _idsByFrames.Length; i++)
+			if (_idsByFrames[frame].Length < Ids.Length)
 			{
-				Array.Resize(ref _idsByFrames[i], capacity);
+				Array.Resize(ref _idsByFrames[frame], Ids.Length);
 			}
-			for (int i = 0; i < _reusesByFrames.Length; i++)
+			if (_reusesByFrames[frame].Length < Reuses.Length)
 			{
-				Array.Resize(ref _reusesByFrames[i], capacity);
+				Array.Resize(ref _reusesByFrames[frame], Reuses.Length);
 			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void ResizeSparse(int capacity)
-		{
-			base.ResizeSparse(capacity);
-			for (int i = 0; i < _sparseByFrames.Length; i++)
+			if (_sparseByFrames[frame].Length < Sparse.Length)
 			{
-				Array.Resize(ref _sparseByFrames[i], capacity);
+				Array.Resize(ref _sparseByFrames[frame], Sparse.Length);
 			}
 		}
 	}

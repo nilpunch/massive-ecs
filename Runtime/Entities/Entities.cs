@@ -156,14 +156,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void ResizeDense(int capacity)
+		public void ResizeDense(int capacity)
 		{
 			Array.Resize(ref _ids, capacity);
 			Array.Resize(ref _reuses, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void ResizeSparse(int capacity)
+		public void ResizeSparse(int capacity)
 		{
 			Array.Resize(ref _sparse, capacity);
 		}

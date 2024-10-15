@@ -30,8 +30,8 @@ namespace Massive
 			for (int i = 0; i < framesCapacity; i++)
 			{
 				_dataByFrames[i] = new PagedArray<T>(pageSize);
-				_packedByFrames[i] = IsPacked ? new int[PackedCapacity] : Array.Empty<int>();
-				_sparseByFrames[i] = new int[SparseCapacity];
+				_packedByFrames[i] = Array.Empty<int>();
+				_sparseByFrames[i] = Array.Empty<int>();
 			}
 		}
 

@@ -61,7 +61,7 @@ namespace Massive
 		{
 			if (page >= _pages.Length)
 			{
-				Array.Resize(ref _pages, MathHelpers.NextPowerOf2(page + 1));
+				Array.Resize(ref _pages, page + 1);
 			}
 
 			_pages[page] ??= new T[PageSize];
