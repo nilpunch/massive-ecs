@@ -178,13 +178,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void ResizePacked(int capacity)
+		public void ResizePacked(int capacity)
 		{
 			Array.Resize(ref _packed, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void ResizeSparse(int capacity)
+		public void ResizeSparse(int capacity)
 		{
 			int previousCapacity = SparseCapacity;
 			Array.Resize(ref _sparse, capacity);

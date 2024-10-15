@@ -39,6 +39,8 @@ namespace Massive
 			int currentFrame = _cyclicFrameCounter.CurrentFrame;
 			int currentCount = Count;
 
+			EnsureCapacityForFrame(currentFrame);
+
 			// Copy everything from current state to current frame
 			if (IsPacked)
 			{
@@ -63,8 +65,13 @@ namespace Massive
 
 			if (IsPacked)
 			{
+				int rollbackSparseCapacity = _sparseByFrames[rollbackFrame].Length;
 				Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
-				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, SparseCapacity);
+				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseCapacity);
+				if (rollbackSparseCapacity < SparseCapacity)
+				{
+					Array.Fill(Sparse, Constants.InvalidId, rollbackSparseCapacity, SparseCapacity - rollbackSparseCapacity);
+				}
 			}
 			else
 			{
@@ -78,29 +85,18 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void ResizePacked(int capacity)
+		private void EnsureCapacityForFrame(int frame)
 		{
-			base.ResizePacked(capacity);
-
-			for (int i = 0; i < _cyclicFrameCounter.FramesCapacity; i++)
+			if (_sparseByFrames[frame].Length < SparseCapacity)
 			{
-				Array.Resize(ref _packedByFrames[i], capacity);
+				var previousCapacity = _sparseByFrames[frame].Length;
+				Array.Resize(ref _sparseByFrames[frame], SparseCapacity);
+				Array.Fill(_sparseByFrames[frame], Constants.InvalidId, previousCapacity, SparseCapacity - previousCapacity);
 			}
-		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void ResizeSparse(int capacity)
-		{
-			int previousCapacity = SparseCapacity;
-			base.ResizeSparse(capacity);
-
-			for (int i = 0; i < _cyclicFrameCounter.FramesCapacity; i++)
+			if (_packedByFrames[frame].Length < PackedCapacity)
 			{
-				Array.Resize(ref _sparseByFrames[i], capacity);
-				if (capacity > previousCapacity)
-				{
-					Array.Fill(_sparseByFrames[i], Constants.InvalidId, previousCapacity, capacity - previousCapacity);
-				}
+				Array.Resize(ref _packedByFrames[frame], PackedCapacity);
 			}
 		}
 	}
