@@ -76,7 +76,7 @@ class Program
 			}
 
 			// NOTE:
-			// After destroying any entities, refs to the components may be invalid in the current iteration.
+			// After destroying any entities, refs to the components may be invalid for the current iteration cycle.
 			// If this behavior does not suit you, use IStable components.
 		});
 
