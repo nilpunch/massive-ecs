@@ -32,7 +32,7 @@ namespace Massive.PerformanceTests
 		{
 			_registryFilling = registryFilling;
 			_registry = PrepareTestRegistry(registryFilling);
-			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
+			_registry.View().Destroy();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -68,8 +68,8 @@ namespace Massive.PerformanceTests
 						_registry.Create();
 					}
 				})
-				.SetUp(() => _registry.View().ForEach((entity) => _registry.Destroy(entity)))
-				.CleanUp(() => _registry.View().ForEach((entity) => _registry.Destroy(entity)))
+				.SetUp(() => _registry.View().Destroy())
+				.CleanUp(() => _registry.View().Destroy())
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -89,8 +89,8 @@ namespace Massive.PerformanceTests
 						_registry.Clone(entityToClone);
 					}
 				})
-				.SetUp(() => _registry.View().ForEach((entity) => _registry.Destroy(entity)))
-				.CleanUp(() => _registry.View().ForEach((entity) => _registry.Destroy(entity)))
+				.SetUp(() => _registry.View().Destroy())
+				.CleanUp(() => _registry.View().Destroy())
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -101,10 +101,7 @@ namespace Massive.PerformanceTests
 		{
 			Measure.Method(() =>
 				{
-					foreach (var entityId in _registry.View())
-					{
-						_registry.Destroy(entityId);
-					}
+					_registry.View().Destroy();
 				})
 				.SetUp(() =>
 				{
@@ -114,7 +111,7 @@ namespace Massive.PerformanceTests
 						_registry.Assign<PositionComponent>(id);
 					}
 				})
-				.CleanUp(() => _registry.View().ForEach((entityId) => _registry.Destroy(entityId)))
+				.CleanUp(() => _registry.View().Destroy())
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -125,7 +122,7 @@ namespace Massive.PerformanceTests
 		{
 			var result = new List<Entity>();
 
-			_registry.View().ForEach((entity) => _registry.Destroy(entity));
+			_registry.View().Destroy();
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
@@ -138,7 +135,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().ForEach((entity) => _registry.Destroy(entity));
+			_registry.View().Destroy();
 		}
 
 		[Test, Performance]
@@ -163,7 +160,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
+			_registry.View().Destroy();
 		}
 
 		[Test, Performance]
@@ -190,7 +187,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
+			_registry.View().Destroy();
 		}
 
 		[Test, Performance]
@@ -208,7 +205,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().ForEach((entityId) => _registry.Destroy(entityId));
+			_registry.View().Destroy();
 		}
 
 		[Test, Performance]
@@ -231,7 +228,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().ForEach((entityId) => { _registry.Destroy(entityId); });
+			_registry.View().Destroy();
 		}
 
 		[Test, Performance]
@@ -255,7 +252,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().ForEach((entityId) => { _registry.Destroy(entityId); });
+			_registry.View().Destroy();
 		}
 
 		[Test, Performance]
