@@ -4,7 +4,7 @@ namespace Massive
 {
 	public interface IEntityAction<T1, T2>
 	{
-		void Apply(int id, ref T1 a, ref T2 b);
+		bool Apply(int id, ref T1 a, ref T2 b);
 	}
 
 	public struct EntityActionRefAdapter<T1, T2> : IEntityAction<T1, T2>
@@ -12,9 +12,10 @@ namespace Massive
 		public EntityActionRef<T1, T2> Action;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Apply(int id, ref T1 a, ref T2 b)
+		public bool Apply(int id, ref T1 a, ref T2 b)
 		{
 			Action.Invoke(id, ref a, ref b);
+			return true;
 		}
 	}
 
@@ -24,9 +25,10 @@ namespace Massive
 		public TExtra Extra;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Apply(int id, ref T1 a, ref T2 b)
+		public bool Apply(int id, ref T1 a, ref T2 b)
 		{
 			Action.Invoke(id, ref a, ref b, Extra);
+			return true;
 		}
 	}
 
@@ -35,9 +37,10 @@ namespace Massive
 		public ActionRef<T1, T2> Action;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Apply(int id, ref T1 a, ref T2 b)
+		public bool Apply(int id, ref T1 a, ref T2 b)
 		{
 			Action.Invoke(ref a, ref b);
+			return true;
 		}
 	}
 
@@ -47,9 +50,10 @@ namespace Massive
 		public TExtra Extra;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Apply(int id, ref T1 a, ref T2 b)
+		public bool Apply(int id, ref T1 a, ref T2 b)
 		{
 			Action.Invoke(ref a, ref b, Extra);
+			return true;
 		}
 	}
 }

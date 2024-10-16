@@ -16,7 +16,7 @@ namespace Massive
 			Group = group;
 		}
 
-		public void ForEach<TAction>(TAction action)
+		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
 			Group.EnsureSynced();
@@ -30,11 +30,14 @@ namespace Massive
 					continue;
 				}
 
-				action.Apply(groupSet.Ids[i]);
+				if (!action.Apply(groupSet.Ids[i]))
+				{
+					break;
+				}
 			}
 		}
 
-		public void ForEach<TAction, T>(TAction action)
+		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
 			Group.EnsureSynced();
@@ -58,7 +61,10 @@ namespace Massive
 						}
 
 						int id = groupSet.Ids[indexOffset + packed];
-						action.Apply(id, ref page[packed]);
+						if (!action.Apply(id, ref page[packed]))
+						{
+							break;
+						}
 					}
 				}
 			}
@@ -73,12 +79,15 @@ namespace Massive
 					}
 
 					int id = groupSet.Ids[packed];
-					action.Apply(id, ref dataSet.Get(id));
+					if (!action.Apply(id, ref dataSet.Get(id)))
+					{
+						break;
+					}
 				}
 			}
 		}
 
-		public void ForEach<TAction, T1, T2>(TAction action)
+		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
 			Group.EnsureSynced();
@@ -106,7 +115,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref page1[packed], ref page2[packed]);
+							if (!action.Apply(id, ref page1[packed], ref page2[packed]))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -124,7 +136,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref dataSet1.Get(id), ref page2[packed]);
+							if (!action.Apply(id, ref dataSet1.Get(id), ref page2[packed]))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -142,7 +157,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref page1[packed], ref dataSet2.Get(id));
+							if (!action.Apply(id, ref page1[packed], ref dataSet2.Get(id)))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -157,13 +175,16 @@ namespace Massive
 						}
 
 						int id = groupSet.Ids[packed];
-						action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id));
+						if (!action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id)))
+						{
+							break;
+						}
 					}
 					break;
 			}
 		}
 
-		public void ForEach<TAction, T1, T2, T3>(TAction action)
+		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
 			Group.EnsureSynced();
@@ -194,7 +215,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref page1[packed], ref page2[packed], ref page3[packed]);
+							if (!action.Apply(id, ref page1[packed], ref page2[packed], ref page3[packed]))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -213,7 +237,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref dataSet1.Get(id), ref page2[packed], ref page3[packed]);
+							if (!action.Apply(id, ref dataSet1.Get(id), ref page2[packed], ref page3[packed]))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -232,7 +259,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref page1[packed], ref dataSet2.Get(id), ref page3[packed]);
+							if (!action.Apply(id, ref page1[packed], ref dataSet2.Get(id), ref page3[packed]))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -250,7 +280,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id), ref page3[packed]);
+							if (!action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id), ref page3[packed]))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -269,7 +302,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref page1[packed], ref page2[packed], ref dataSet3.Get(id));
+							if (!action.Apply(id, ref page1[packed], ref page2[packed], ref dataSet3.Get(id)))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -287,7 +323,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref dataSet1.Get(id), ref page2[packed], ref dataSet3.Get(id));
+							if (!action.Apply(id, ref dataSet1.Get(id), ref page2[packed], ref dataSet3.Get(id)))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -305,7 +344,10 @@ namespace Massive
 							}
 
 							int id = groupSet.Ids[indexOffset + packed];
-							action.Apply(id, ref page1[packed], ref dataSet2.Get(id), ref dataSet3.Get(id));
+							if (!action.Apply(id, ref page1[packed], ref dataSet2.Get(id), ref dataSet3.Get(id)))
+							{
+								break;
+							}
 						}
 					}
 					break;
@@ -320,7 +362,10 @@ namespace Massive
 						}
 
 						int id = groupSet.Ids[packed];
-						action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id), ref dataSet3.Get(id));
+						if (!action.Apply(id, ref dataSet1.Get(id), ref dataSet2.Get(id), ref dataSet3.Get(id)))
+						{
+							break;
+						}
 					}
 					break;
 			}

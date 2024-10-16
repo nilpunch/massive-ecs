@@ -16,49 +16,39 @@ namespace Massive
 			Filter = filter ?? EmptyFilter.Instance;
 		}
 
-		public void ForEach<TAction>(TAction action)
+		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
+			IIdsSource idsSource;
 			if (Filter.Include.Count == 0)
 			{
-				var entities = Registry.Entities;
-				for (var i = entities.Count - 1; i >= 0; i--)
-				{
-					if (i > entities.Count)
-					{
-						i = entities.Count;
-						continue;
-					}
-
-					var entityId = Registry.Entities.Ids[i];
-					if (Filter.ContainsId(entityId))
-					{
-						action.Apply(entityId);
-					}
-				}
+				idsSource = Registry.Entities;
 			}
 			else
 			{
-				var set = SetHelpers.GetMinimalSet(Filter.Include);
+				idsSource = SetHelpers.GetMinimalSet(Filter.Include);
+			}
 
-				for (var i = set.Count - 1; i >= 0; i--)
+			for (var i = idsSource.Count - 1; i >= 0; i--)
+			{
+				if (i > idsSource.Count)
 				{
-					if (i > set.Count)
-					{
-						i = set.Count;
-						continue;
-					}
+					i = idsSource.Count;
+					continue;
+				}
 
-					var id = set.Ids[i];
-					if (Filter.ContainsId(id))
+				var id = idsSource.Ids[i];
+				if (Filter.ContainsId(id))
+				{
+					if (!action.Apply(id))
 					{
-						action.Apply(id);
+						break;
 					}
 				}
 			}
 		}
 
-		public void ForEach<TAction, T>(TAction action)
+		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
 			var dataSet = Registry.DataSet<T>();
@@ -78,12 +68,15 @@ namespace Massive
 				var packed = dataSet.GetIndexOrInvalid(id);
 				if (packed != Constants.InvalidId && Filter.ContainsId(id))
 				{
-					action.Apply(id, ref data[packed]);
+					if (!action.Apply(id, ref data[packed]))
+					{
+						break;
+					}
 				}
 			}
 		}
 
-		public void ForEach<TAction, T1, T2>(TAction action)
+		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
 			var dataSet1 = Registry.DataSet<T1>();
@@ -109,12 +102,15 @@ namespace Massive
 				    && packed2 != Constants.InvalidId
 				    && Filter.ContainsId(id))
 				{
-					action.Apply(id, ref data1[packed1], ref data2[packed2]);
+					if (!action.Apply(id, ref data1[packed1], ref data2[packed2]))
+					{
+						break;
+					}
 				}
 			}
 		}
 
-		public void ForEach<TAction, T1, T2, T3>(TAction action)
+		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
 			var dataSet1 = Registry.DataSet<T1>();
@@ -144,7 +140,10 @@ namespace Massive
 				    && packed3 != Constants.InvalidId
 				    && Filter.ContainsId(id))
 				{
-					action.Apply(id, ref data1[packed1], ref data2[packed2], ref data3[packed3]);
+					if (!action.Apply(id, ref data1[packed1], ref data2[packed2], ref data3[packed3]))
+					{
+						break;
+					}
 				}
 			}
 		}

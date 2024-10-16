@@ -5,7 +5,7 @@ namespace Massive
 {
 	public interface IEntityAction
 	{
-		void Apply(int id);
+		bool Apply(int id);
 	}
 
 	public struct EntityActionAdapter : IEntityAction
@@ -13,9 +13,10 @@ namespace Massive
 		public EntityAction Action;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Apply(int id)
+		public bool Apply(int id)
 		{
 			Action.Invoke(id);
+			return true;
 		}
 	}
 
@@ -25,9 +26,10 @@ namespace Massive
 		public TExtra Extra;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Apply(int id)
+		public bool Apply(int id)
 		{
 			Action.Invoke(id, Extra);
+			return true;
 		}
 	}
 
@@ -36,9 +38,10 @@ namespace Massive
 		public IList<int> Result;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Apply(int id)
+		public bool Apply(int id)
 		{
 			Result.Add(id);
+			return true;
 		}
 	}
 
@@ -48,9 +51,59 @@ namespace Massive
 		public Entities Entities;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Apply(int id)
+		public bool Apply(int id)
 		{
 			Result.Add(Entities.GetEntity(id));
+			return true;
+		}
+	}
+
+	public struct ReturnFirst : IEntityAction
+	{
+		public int Result;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Apply(int id)
+		{
+			Result = id;
+			return false;
+		}
+	}
+
+	public struct ReturnFirstEntity : IEntityAction
+	{
+		public Entity Result;
+		public Entities Entities;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Apply(int id)
+		{
+			Result = Entities.GetEntity(id);
+			return false;
+		}
+	}
+
+	public struct DestroyAll : IEntityAction
+	{
+		public Entities Entities;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Apply(int id)
+		{
+			Entities.Destroy(id);
+			return true;
+		}
+	}
+
+	public struct CountAll : IEntityAction
+	{
+		public int Result;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Apply(int id)
+		{
+			Result += 1;
+			return true;
 		}
 	}
 }

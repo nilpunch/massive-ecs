@@ -13,7 +13,7 @@ namespace Massive
 			Registry = registry;
 		}
 
-		public void ForEach<TAction>(TAction action)
+		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
 			var entities = Registry.Entities;
@@ -25,11 +25,14 @@ namespace Massive
 					continue;
 				}
 
-				action.Apply(entities.Ids[i]);
+				if (!action.Apply(entities.Ids[i]))
+				{
+					break;
+				}
 			}
 		}
 
-		public void ForEach<TAction, T>(TAction action)
+		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
 			var dataSet = Registry.DataSet<T>();
@@ -55,13 +58,16 @@ namespace Massive
 					var id = dataSet.Ids[indexOffset + packed];
 					if (id != Constants.InvalidId)
 					{
-						action.Apply(id, ref page[packed]);
+						if (!action.Apply(id, ref page[packed]))
+						{
+							break;
+						}
 					}
 				}
 			}
 		}
 
-		public void ForEach<TAction, T1, T2>(TAction action)
+		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
 			var dataSet1 = Registry.DataSet<T1>();
@@ -93,7 +99,10 @@ namespace Massive
 						int packed2 = dataSet2.GetIndexOrInvalid(id);
 						if (packed2 != Constants.InvalidId)
 						{
-							action.Apply(id, ref page1[packed1], ref data2[packed2]);
+							if (!action.Apply(id, ref page1[packed1], ref data2[packed2]))
+							{
+								break;
+							}
 						}
 					}
 				}
@@ -120,14 +129,17 @@ namespace Massive
 						int packed1 = dataSet1.GetIndexOrInvalid(id);
 						if (packed1 != Constants.InvalidId)
 						{
-							action.Apply(id, ref data1[packed1], ref page2[packed2]);
+							if (!action.Apply(id, ref data1[packed1], ref page2[packed2]))
+							{
+								break;
+							}
 						}
 					}
 				}
 			}
 		}
 
-		public void ForEach<TAction, T1, T2, T3>(TAction action)
+		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
 			var dataSet1 = Registry.DataSet<T1>();
@@ -162,7 +174,10 @@ namespace Massive
 						int packed3 = dataSet3.GetIndexOrInvalid(id);
 						if (packed2 != Constants.InvalidId && packed3 != Constants.InvalidId)
 						{
-							action.Apply(id, ref page1[packed1], ref data2[packed2], ref data3[packed3]);
+							if (!action.Apply(id, ref page1[packed1], ref data2[packed2], ref data3[packed3]))
+							{
+								break;
+							}
 						}
 					}
 				}
@@ -190,7 +205,10 @@ namespace Massive
 						int packed3 = dataSet3.GetIndexOrInvalid(id);
 						if (packed1 != Constants.InvalidId && packed3 != Constants.InvalidId)
 						{
-							action.Apply(id, ref data1[packed1], ref page2[packed2], ref data3[packed3]);
+							if (!action.Apply(id, ref data1[packed1], ref page2[packed2], ref data3[packed3]))
+							{
+								break;
+							}
 						}
 					}
 				}
@@ -218,7 +236,10 @@ namespace Massive
 						int packed2 = dataSet2.GetIndexOrInvalid(id);
 						if (packed1 != Constants.InvalidId && packed2 != Constants.InvalidId)
 						{
-							action.Apply(id, ref data1[packed1], ref data2[packed2], ref page3[packed3]);
+							if (!action.Apply(id, ref data1[packed1], ref data2[packed2], ref page3[packed3]))
+							{
+								break;
+							}
 						}
 					}
 				}

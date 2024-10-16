@@ -4,16 +4,16 @@
 	{
 		Registry Registry { get; }
 
-		void ForEach<TAction>(TAction action)
+		void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction;
 
-		void ForEach<TAction, T>(TAction action)
+		void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>;
 
-		void ForEach<TAction, T1, T2>(TAction action)
+		void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>;
 
-		void ForEach<TAction, T1, T2, T3>(TAction action)
+		void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>;
 	}
 }
