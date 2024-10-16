@@ -13,6 +13,7 @@ ECS features:
 - Fast and simple ECS without any code generation
 - Support сomponents of any type
 - No deferred commands execution
+- Stable storage for any component on demand (using `IStable` marker interface)
 - Garbage-free API. Make in-place queries, no caching required
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - Data pagination for stable resizing during iteration
