@@ -19,15 +19,9 @@ namespace Massive
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			IIdsSource idsSource;
-			if (Filter.Include.Count == 0)
-			{
-				idsSource = Registry.Entities;
-			}
-			else
-			{
-				idsSource = SetHelpers.GetMinimalSet(Filter.Include);
-			}
+			IIdsSource idsSource = Filter.Include.Count == 0
+				? Registry.Entities
+				: SetHelpers.GetMinimalSet(Filter.Include);
 
 			for (var i = idsSource.Count - 1; i >= 0; i--)
 			{
