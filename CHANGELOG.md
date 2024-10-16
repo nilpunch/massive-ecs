@@ -1,5 +1,19 @@
 # Changelog
 
+## 14.0.0 - October 16, 2024
+
+Major stability update.
+
+- Added: `IndexingMode` for sparse sets, that allows to choose between packed (indirect) and direct storaging.
+  `IndexingMode.Packed` represents the previous behavior of sets and is the default.
+  Even when `IndexingMode` is `Packed`, now you can delete and create entities much more freely during iteration.
+- Added: `IStable` marker interface for components, that must be stored with `IndexingMode.Direct`.
+- Added: `First()`, `FirstEntity()`, `Destroy()`, `Count()` extension methods for views.
+- Changed: `IEntityAction.Apply` now returns bool and can break from iteration.
+- Changed: Renamed all "Dense" stuff to "Packed".
+- Changed: Massives now sync only the current frame capacity during saving.
+  This will allow more gradual memory allocation.
+
 ## 13.0.0 - August 25, 2024
 
 - Changed: Divided `Assign<T>()` into two distinct overloads - with data initialization and without it.

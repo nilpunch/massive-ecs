@@ -31,6 +31,8 @@
 
 			// Iterate using lightweight views
 			var view = registry.View();
+
+			// Views will select only those entities that contain all the necessary components
 			view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
 			{
 				position.Y += velocity.Magnitude * deltaTime;
@@ -40,6 +42,10 @@
 					// Create and destroy any amount of entities during iteration
 					registry.Destroy(entityId);
 				}
+
+				// NOTE:
+				// After destroying any entities, refs to the components may be invalid in the current iteration.
+				// If this behavior does not suit you, use IStable components.
 			});
 
 			// Pass extra arguments to avoid boxing
