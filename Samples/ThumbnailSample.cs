@@ -45,7 +45,7 @@
 
 				// NOTE:
 				// After destroying any entities, refs to the components may be invalid for the current iteration cycle.
-				// If this behavior does not suit you, use IStable components.
+				// If this behavior does not suit you, use IStable components
 			});
 
 			// Pass extra arguments to avoid boxing
