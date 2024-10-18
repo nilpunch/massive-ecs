@@ -27,8 +27,8 @@ namespace Massive
 			PackingMode = packingMode;
 			_packed = new int[setCapacity];
 			_sparse = new int[setCapacity];
-			NextHole = MaxCount;
 
+			NextHole = MaxCount;
 			Array.Fill(_sparse, Constants.InvalidId);
 		}
 
@@ -38,7 +38,7 @@ namespace Massive
 		public bool IsContinuous
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => NextHole == MaxCount;
+			get => PackingMode == PackingMode.Continuous || NextHole == MaxCount;
 		}
 
 		/// <summary>
@@ -207,10 +207,34 @@ namespace Massive
 		{
 			int previousCapacity = SparseCapacity;
 			Array.Resize(ref _sparse, capacity);
-
 			if (capacity > previousCapacity)
 			{
 				Array.Fill(_sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
+			}
+		}
+
+		/// <summary>
+		/// Removes all holes from packed array.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Compact()
+		{
+			if (HasHoles)
+			{
+				for (; Count > 0 && Packed[Count - 1] < 0; Count--) {}
+
+				while (NextHole != MaxCount)
+				{
+					int packedHole = NextHole;
+					NextHole = ~Packed[NextHole];
+					if (packedHole < Count)
+					{
+						Count -= 1;
+						CopyFromToPacked(Count, packedHole);
+
+						for (; Count > 0 && Packed[Count - 1] < 0; Count--) {}
+					}
+				}
 			}
 		}
 
