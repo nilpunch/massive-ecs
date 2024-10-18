@@ -1,5 +1,14 @@
 # Changelog
 
+## 15.0.0 - October 18, 2024
+
+Sparse set mods rework.
+
+- Changed: Renamed `IndexingMode.Packed` to `PackingMode.Continuous`.
+- Changed: Replaced `IndexingMode.Direct` with `PackingMode.WithHoles`.
+  The new behavior creates holes in the packed array on Unassign(), which are reused during Assign().
+  Unlike the previous version, this approach naturally tends toward storage compaction over time.
+
 ## 14.0.0 - October 16, 2024
 
 Major stability update.
