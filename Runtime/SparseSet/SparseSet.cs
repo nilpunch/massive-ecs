@@ -11,7 +11,7 @@ namespace Massive
 	}
 
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class SparseSet : ISet
+	public class SparseSet : IIdsSource
 	{
 		private const int MaxCount = int.MaxValue;
 
@@ -64,8 +64,14 @@ namespace Massive
 
 		public int SparseCapacity => Sparse.Length;
 
+		/// <summary>
+		/// Shoots only after <see cref="IIdsSource.Assign"/> call, when the id was not alive and therefore was created.
+		/// </summary>
 		public event Action<int> AfterAssigned;
 
+		/// <summary>
+		/// Shoots before each <see cref="IIdsSource.Unassign"/> call, when the id was alive.
+		/// </summary>
 		public event Action<int> BeforeUnassigned;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

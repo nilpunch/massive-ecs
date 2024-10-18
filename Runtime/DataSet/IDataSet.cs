@@ -1,11 +1,7 @@
 namespace Massive
 {
-	public interface IDataSet : ISet
+	public interface IDataSet : IIdsSource
 	{
 		void CopyData(int sourceId, int targetId);
-	}
-
-	public interface IDataSet<T> : IDataSet, IReadOnlyDataSet<T>
-	{
 	}
 }
