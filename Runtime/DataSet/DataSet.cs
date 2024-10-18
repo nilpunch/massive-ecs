@@ -30,10 +30,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void SwapPacked(int packedA, int packedB)
+		public override void SwapPacked(int first, int second)
 		{
-			base.SwapPacked(packedA, packedB);
-			Data.Swap(packedA, packedB);
+			base.SwapPacked(first, second);
+			Data.Swap(first, second);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -114,9 +114,9 @@ namespace Massive
 			}
 			else
 			{
-				int packed = Sparse[id];
-				Packed[packed] = ~NextHole;
-				NextHole = packed;
+				int index = Sparse[id];
+				Packed[index] = ~NextHole;
+				NextHole = index;
 			}
 
 			Sparse[id] = Constants.InvalidId;
@@ -188,12 +188,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void SwapPacked(int packedA, int packedB)
+		public virtual void SwapPacked(int first, int second)
 		{
-			int idA = Packed[packedA];
-			int idB = Packed[packedB];
-			AssignIndex(idA, packedB);
-			AssignIndex(idB, packedA);
+			int firstId = Packed[first];
+			int secondId = Packed[second];
+			AssignIndex(firstId, second);
+			AssignIndex(secondId, first);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -251,10 +251,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignIndex(int id, int packed)
+		private void AssignIndex(int id, int index)
 		{
-			Sparse[id] = packed;
-			Packed[packed] = id;
+			Sparse[id] = index;
+			Packed[index] = id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
