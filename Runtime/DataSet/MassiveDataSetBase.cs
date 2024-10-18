@@ -16,9 +16,10 @@ namespace Massive
 		private readonly int[][] _packedByFrames;
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _countByFrames;
+		private readonly int[] _nextHoleByFrames;
 
 		protected MassiveDataSetBase(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
-			int pageSize = Constants.DefaultPageSize, IndexingMode indexingMode = IndexingMode.Packed) : base(setCapacity, pageSize, indexingMode)
+			int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous) : base(setCapacity, pageSize, packingMode)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
@@ -26,6 +27,7 @@ namespace Massive
 			_packedByFrames = new int[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_countByFrames = new int[framesCapacity];
+			_nextHoleByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
@@ -44,21 +46,16 @@ namespace Massive
 
 			int currentFrame = _cyclicFrameCounter.CurrentFrame;
 			int currentCount = Count;
+			int currentNextHole = NextHole;
 
 			EnsureCapacityForFrame(currentFrame);
 
 			// Copy everything from current state to current frame
 			CopyData(Data, _dataByFrames[currentFrame], currentCount);
-			if (IsPacked)
-			{
-				Array.Copy(Packed, _packedByFrames[currentFrame], currentCount);
-				Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
-			}
-			else
-			{
-				Array.Copy(Sparse, _sparseByFrames[currentFrame], currentCount);
-			}
+			Array.Copy(Packed, _packedByFrames[currentFrame], currentCount);
+			Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
 			_countByFrames[currentFrame] = currentCount;
+			_nextHoleByFrames[currentFrame] = currentNextHole;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -69,27 +66,18 @@ namespace Massive
 			// Copy everything from rollback frame to current state
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackCount = _countByFrames[rollbackFrame];
+			int rollbackSparseCapacity = _sparseByFrames[rollbackFrame].Length;
+			int rollbackNextHole = _nextHoleByFrames[rollbackFrame];
 
 			CopyData(_dataByFrames[rollbackFrame], Data, rollbackCount);
-			if (IsPacked)
+			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
+			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseCapacity);
+			if (rollbackSparseCapacity < SparseCapacity)
 			{
-				int rollbackSparseCapacity = _sparseByFrames[rollbackFrame].Length;
-				Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
-				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseCapacity);
-				if (rollbackSparseCapacity < SparseCapacity)
-				{
-					Array.Fill(Sparse, Constants.InvalidId, rollbackSparseCapacity, SparseCapacity - rollbackSparseCapacity);
-				}
-			}
-			else
-			{
-				Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackCount);
-				if (rollbackCount < Count)
-				{
-					Array.Fill(Sparse, Constants.InvalidId, rollbackCount, Count - rollbackCount);
-				}
+				Array.Fill(Sparse, Constants.InvalidId, rollbackSparseCapacity, SparseCapacity - rollbackSparseCapacity);
 			}
 			Count = rollbackCount;
+			NextHole = rollbackNextHole;
 		}
 
 		protected abstract void CopyData(PagedArray<T> source, PagedArray<T> destination, int count);

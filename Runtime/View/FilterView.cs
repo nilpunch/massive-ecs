@@ -60,7 +60,7 @@ namespace Massive
 
 				var id = set.Ids[i];
 				var packed = dataSet.GetIndexOrInvalid(id);
-				if (packed != Constants.InvalidId && Filter.ContainsId(id))
+				if (packed >= 0 && Filter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data[packed]))
 					{
@@ -92,8 +92,8 @@ namespace Massive
 				var id = set.Ids[i];
 				var packed1 = dataSet1.GetIndexOrInvalid(id);
 				var packed2 = dataSet2.GetIndexOrInvalid(id);
-				if (packed1 != Constants.InvalidId
-				    && packed2 != Constants.InvalidId
+				if (packed1 >= 0
+				    && packed2 >= 0
 				    && Filter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[packed1], ref data2[packed2]))
@@ -129,9 +129,9 @@ namespace Massive
 				var packed1 = dataSet1.GetIndexOrInvalid(id);
 				var packed2 = dataSet2.GetIndexOrInvalid(id);
 				var packed3 = dataSet3.GetIndexOrInvalid(id);
-				if (packed1 != Constants.InvalidId
-				    && packed2 != Constants.InvalidId
-				    && packed3 != Constants.InvalidId
+				if (packed1 >= 0
+				    && packed2 >= 0
+				    && packed3 >= 0
 				    && Filter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[packed1], ref data2[packed2], ref data3[packed3]))

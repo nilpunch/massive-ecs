@@ -12,23 +12,23 @@ namespace Massive.PerformanceTests
 		public static SparseSet[] FixtureSets =
 		{
 			new SparseSet(EntitiesCount),
-			new SparseSet(EntitiesCount, indexingMode: IndexingMode.Direct),
+			new SparseSet(EntitiesCount, packingMode: PackingMode.WithHoles),
 			new DataSet<TestState64>(EntitiesCount),
-			new DataSet<TestState64Stable>(EntitiesCount, indexingMode: IndexingMode.Direct),
+			new DataSet<TestState64Stable>(EntitiesCount, packingMode: PackingMode.WithHoles),
 		};
 
 		public static DataSet<TestState64>[] FixtureDataSets =
 		{
 			new DataSet<TestState64>(EntitiesCount),
-			new DataSet<TestState64>(EntitiesCount, indexingMode: IndexingMode.Direct),
+			new DataSet<TestState64>(EntitiesCount, packingMode: PackingMode.WithHoles),
 		};
 
 		public static SparseSet[] FixtureMassiveSets =
 		{
 			new MassiveSparseSet(EntitiesCount),
-			new MassiveSparseSet(EntitiesCount, indexingMode: IndexingMode.Direct),
+			new MassiveSparseSet(EntitiesCount, packingMode: PackingMode.WithHoles),
 			new MassiveDataSet<TestState64>(EntitiesCount),
-			new MassiveDataSet<TestState64Stable>(EntitiesCount, indexingMode: IndexingMode.Direct),
+			new MassiveDataSet<TestState64Stable>(EntitiesCount, packingMode: PackingMode.WithHoles),
 		};
 
 		[TestCaseSource(nameof(FixtureSets)), Performance]

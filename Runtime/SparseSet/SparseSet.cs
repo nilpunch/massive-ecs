@@ -4,34 +4,50 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	public enum IndexingMode
+	public enum PackingMode
 	{
-		Packed,
-		Direct,
+		Continuous,
+		WithHoles,
 	}
 
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class SparseSet : ISet
 	{
+		private const int MaxCount = int.MaxValue;
+
 		private int[] _packed;
 		private int[] _sparse;
 
-		public IndexingMode IndexingMode { get; }
+		public PackingMode PackingMode { get; }
 		public int Count { get; set; }
+		public int NextHole { get; set; }
 
-		public SparseSet(int setCapacity = Constants.DefaultCapacity, IndexingMode indexingMode = IndexingMode.Packed)
+		public SparseSet(int setCapacity = Constants.DefaultCapacity, PackingMode packingMode = PackingMode.Continuous)
 		{
-			IndexingMode = indexingMode;
-			_packed = indexingMode == IndexingMode.Packed ? new int[setCapacity] : Array.Empty<int>();
+			PackingMode = packingMode;
+			_packed = new int[setCapacity];
 			_sparse = new int[setCapacity];
+			NextHole = MaxCount;
 
 			Array.Fill(_sparse, Constants.InvalidId);
 		}
 
-		public bool IsPacked
+		/// <summary>
+		/// Checks whether a sparse set is fully packed.
+		/// </summary>
+		public bool IsContinuous
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => IndexingMode == IndexingMode.Packed;
+			get => NextHole == MaxCount;
+		}
+
+		/// <summary>
+		/// Checks whether a packed array has any holes in it.
+		/// </summary>
+		public bool HasHoles
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => !IsContinuous;
 		}
 
 		public int[] Packed => _packed;
@@ -41,7 +57,7 @@ namespace Massive
 		public int[] Ids
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => IsPacked ? Packed : Sparse;
+			get => Packed;
 		}
 
 		public int PackedCapacity => Packed.Length;
@@ -63,21 +79,18 @@ namespace Massive
 
 			EnsureSparseForIndex(id);
 
-			if (IsPacked)
+			if (HasHoles)
+			{
+				int packed = NextHole;
+				NextHole = ~Packed[packed];
+				AssignIndex(id, packed);
+			}
+			else
 			{
 				EnsurePackedForIndex(Count);
 				EnsureDataForIndex(Count);
 				AssignIndex(id, Count);
 				Count += 1;
-			}
-			else
-			{
-				EnsureDataForIndex(id);
-				Sparse[id] = id;
-				if (id >= Count)
-				{
-					Count = id + 1;
-				}
 			}
 
 			AfterAssigned?.Invoke(id);
@@ -94,41 +107,47 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			if (IsPacked)
+			if (PackingMode == PackingMode.Continuous)
 			{
 				Count -= 1;
 				CopyFromToPacked(Count, Sparse[id]);
-				Sparse[id] = Constants.InvalidId;
 			}
 			else
 			{
-				Sparse[id] = Constants.InvalidId;
+				int packed = Sparse[id];
+				Packed[packed] = ~NextHole;
+				NextHole = packed;
 			}
+
+			Sparse[id] = Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			if (IsPacked)
+			if (IsContinuous)
 			{
 				for (int i = Count - 1; i >= 0; i--)
 				{
-					BeforeUnassigned?.Invoke(Packed[i]);
-					Sparse[Packed[i]] = Constants.InvalidId;
+					int id = Packed[i];
+					BeforeUnassigned?.Invoke(id);
+					Sparse[id] = Constants.InvalidId;
 				}
 			}
 			else
 			{
 				for (int i = Count - 1; i >= 0; i--)
 				{
-					if (Sparse[i] != Constants.InvalidId)
+					int id = Packed[i];
+					if (id >= 0)
 					{
-						BeforeUnassigned?.Invoke(Sparse[i]);
-						Sparse[i] = Constants.InvalidId;
+						BeforeUnassigned?.Invoke(id);
+						Sparse[id] = Constants.InvalidId;
 					}
 				}
 			}
 			Count = 0;
+			NextHole = MaxCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

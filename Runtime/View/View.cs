@@ -56,7 +56,7 @@ namespace Massive
 					}
 
 					var id = dataSet.Ids[indexOffset + packed];
-					if (id != Constants.InvalidId)
+					if (id >= 0)
 					{
 						if (!action.Apply(id, ref page[packed]))
 						{
@@ -97,7 +97,7 @@ namespace Massive
 
 						int id = dataSet1.Ids[indexOffset + packed1];
 						int packed2 = dataSet2.GetIndexOrInvalid(id);
-						if (packed2 != Constants.InvalidId)
+						if (packed2 >= 0)
 						{
 							if (!action.Apply(id, ref page1[packed1], ref data2[packed2]))
 							{
@@ -127,7 +127,7 @@ namespace Massive
 
 						int id = dataSet2.Ids[indexOffset + packed2];
 						int packed1 = dataSet1.GetIndexOrInvalid(id);
-						if (packed1 != Constants.InvalidId)
+						if (packed1 >= 0)
 						{
 							if (!action.Apply(id, ref data1[packed1], ref page2[packed2]))
 							{
@@ -172,7 +172,7 @@ namespace Massive
 						int id = dataSet1.Ids[indexOffset + packed1];
 						int packed2 = dataSet2.GetIndexOrInvalid(id);
 						int packed3 = dataSet3.GetIndexOrInvalid(id);
-						if (packed2 != Constants.InvalidId && packed3 != Constants.InvalidId)
+						if (packed2 >= 0 && packed3 >= 0)
 						{
 							if (!action.Apply(id, ref page1[packed1], ref data2[packed2], ref data3[packed3]))
 							{
@@ -203,7 +203,7 @@ namespace Massive
 						int id = dataSet2.Ids[indexOffset + packed2];
 						int packed1 = dataSet1.GetIndexOrInvalid(id);
 						int packed3 = dataSet3.GetIndexOrInvalid(id);
-						if (packed1 != Constants.InvalidId && packed3 != Constants.InvalidId)
+						if (packed1 >= 0 && packed3 >= 0)
 						{
 							if (!action.Apply(id, ref data1[packed1], ref page2[packed2], ref data3[packed3]))
 							{
@@ -234,7 +234,7 @@ namespace Massive
 						int id = dataSet2.Ids[indexOffset + packed3];
 						int packed1 = dataSet1.GetIndexOrInvalid(id);
 						int packed2 = dataSet2.GetIndexOrInvalid(id);
-						if (packed1 != Constants.InvalidId && packed2 != Constants.InvalidId)
+						if (packed1 >= 0 && packed2 >= 0)
 						{
 							if (!action.Apply(id, ref data1[packed1], ref data2[packed2], ref page3[packed3]))
 							{
