@@ -5,15 +5,15 @@
 		private readonly int _setCapacity;
 		private readonly bool _storeEmptyTypesAsDataSets;
 		private readonly int _pageSize;
-		private readonly PackingMode _defaultPackingMode;
+		private readonly bool _fullStability;
 
-		public NormalSetFactory(int setCapacity = Constants.DefaultCapacity, bool storeEmptyTypesAsDataSets = false,
-			int pageSize = Constants.DefaultPageSize, PackingMode defaultPackingMode = PackingMode.Continuous)
+		public NormalSetFactory(int setCapacity = Constants.DefaultCapacity, bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize,
+			bool fullStability = false)
 		{
 			_setCapacity = setCapacity;
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 			_pageSize = pageSize;
-			_defaultPackingMode = defaultPackingMode;
+			_fullStability = fullStability;
 		}
 
 		public SparseSet CreateAppropriateSet<T>()
@@ -28,12 +28,17 @@
 
 		private SparseSet CreateSparseSet<T>()
 		{
-			return new SparseSet(_setCapacity, IStable.IsImplementedFor<T>() ? PackingMode.WithHoles : _defaultPackingMode);
+			return new SparseSet(_setCapacity, GetPackingModeFor<T>());
 		}
 
 		private SparseSet CreateDataSet<T>()
 		{
-			return new DataSet<T>(_setCapacity, _pageSize, IStable.IsImplementedFor<T>() ? PackingMode.WithHoles : _defaultPackingMode);
+			return new DataSet<T>(_setCapacity, _pageSize, GetPackingModeFor<T>());
+		}
+
+		private PackingMode GetPackingModeFor<T>()
+		{
+			return _fullStability || IStable.IsImplementedFor<T>() ? PackingMode.WithHoles : PackingMode.Continuous;
 		}
 	}
 }

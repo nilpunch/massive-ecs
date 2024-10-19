@@ -16,7 +16,7 @@ ECS features:
 - Garbage-free API. Make in-place queries, no caching required
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components
-  - Or set a default packing mode for the entire registry
+  - Or enable full stability for the entire registry
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - Data pagination for stable resizing during iteration
 - Full state serialization and deserialization

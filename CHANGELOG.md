@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.2.0 - October 19, 2024
+
+- Added: `FullStablity` option for RegistryConfig.
+
 ## 15.1.0 - October 19, 2024
 
 Remove some abstractions and add some minor things.
