@@ -1,6 +1,6 @@
 # Changelog
 
-## 15.1.0 - October 18, 2024
+## 15.1.0 - October 19, 2024
 
 Remove some abstractions and add some minor things.
 
