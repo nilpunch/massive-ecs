@@ -7,12 +7,12 @@ namespace Massive
 	public enum PackingMode
 	{
 		/// <summary>
-		/// When an element is removed, its spot is filled with the last element in the packed array.
+		/// When an element is removed, its position is filled with the last element in the packed array.
 		/// </summary>
 		Continuous,
 
 		/// <summary>
-		/// When an element is removed, its position is left as a hole in the array.
+		/// When an element is removed, its position is left as a hole in the packed array.
 		/// </summary>
 		WithHoles,
 	}
