@@ -2,7 +2,7 @@
 
 ## 15.2.0 - October 19, 2024
 
-- Added: `FullStablity` option for RegistryConfig.
+- Added: `FullStability` option for Registry.
 
 ## 15.1.0 - October 19, 2024
 
