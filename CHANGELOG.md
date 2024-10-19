@@ -1,5 +1,15 @@
 # Changelog
 
+## 15.1.0 - October 18, 2024
+
+Remove some abstractions and add some minor things.
+
+- Added: `Compact()` method to sparse set, which removes all holes from the packed array.
+- Added: `DefaultPackingMode` field into `RegistryConfig`.
+- Changed: Renamed `IGroup.Set` to `IGroup.MainSet`.
+- Changed: Removed `MassiveDataSetBase`, leaving only `MassiveDataSet` and `MassiveManagedDataSet`.
+- Removed: `ISet`, `IReadOnlySet`, `IDataSet<T>` and `IReadOnlyDataSet<T>` interfaces.
+
 ## 15.0.0 - October 18, 2024
 
 Sparse set mods rework.

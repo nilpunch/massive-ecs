@@ -228,7 +228,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Removes all holes from packed array.
+		/// Removes all holes from the packed array.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Compact()
