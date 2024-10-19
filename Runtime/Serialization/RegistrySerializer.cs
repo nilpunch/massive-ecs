@@ -59,6 +59,11 @@ namespace Massive.Serialization
 
 		public void Deserialize(Registry registry, Stream stream)
 		{
+			foreach (var set in registry.SetRegistry.All)
+			{
+				set.Clear();
+			}
+
 			foreach (var parser in _serializers)
 			{
 				parser.Deserialize(registry, stream);

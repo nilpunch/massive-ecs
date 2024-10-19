@@ -16,7 +16,7 @@ namespace Massive
 		}
 
 		public Registry(RegistryConfig registryConfig)
-			: this(new NormalSetFactory(registryConfig.SetCapacity, registryConfig.StoreEmptyTypesAsDataSets, registryConfig.DataPageSize),
+			: this(new NormalSetFactory(registryConfig.SetCapacity, registryConfig.StoreEmptyTypesAsDataSets, registryConfig.DataPageSize, registryConfig.DefaultPackingMode),
 				new NormalGroupFactory(registryConfig.SetCapacity), new Entities(registryConfig.SetCapacity))
 		{
 		}

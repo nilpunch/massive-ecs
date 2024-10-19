@@ -14,7 +14,7 @@ namespace Massive
 			: base(new MassiveSparseSet(setCapacity, framesCapacity), include, exclude)
 		{
 			// Fetch instance from base
-			_massiveGroup = (IMassive)GroupSet;
+			_massiveGroup = (IMassive)MainSet;
 
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 

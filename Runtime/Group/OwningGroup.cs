@@ -24,7 +24,7 @@ namespace Massive
 
 		public IOwningGroup Base { get; set; }
 
-		public SparseSet Set => Owned[0];
+		public SparseSet MainSet => Owned[0];
 
 		public OwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
 		{

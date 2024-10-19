@@ -10,13 +10,11 @@ namespace Massive
 
 		private ArraySegment<SparseSet> Exclude { get; }
 
-		public SparseSet GroupSet { get; }
-
-		public int Count => GroupSet.Count;
+		public int Count => MainSet.Count;
 
 		public bool IsSynced { get; protected set; }
 
-		public SparseSet Set => GroupSet;
+		public SparseSet MainSet { get; }
 
 		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, int setCapacity = Constants.DefaultCapacity)
 			: this(new SparseSet(setCapacity), include, exclude)
@@ -25,7 +23,7 @@ namespace Massive
 
 		protected NonOwningGroup(SparseSet groupSet, IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
 		{
-			GroupSet = groupSet;
+			MainSet = groupSet;
 			Include = (include ?? Array.Empty<SparseSet>()).ToArray();
 			Exclude = (exclude ?? Array.Empty<SparseSet>()).ToArray();
 
@@ -51,7 +49,7 @@ namespace Massive
 
 			IsSynced = true;
 
-			GroupSet.Clear();
+			MainSet.Clear();
 			var minimal = SetHelpers.GetMinimalSet(Include);
 			for (var i = 0; i < minimal.Count; i++)
 			{
@@ -68,7 +66,7 @@ namespace Massive
 		{
 			if (IsSynced && SetHelpers.AssignedInAll(id, Include) && SetHelpers.NotAssignedInAll(id, Exclude))
 			{
-				GroupSet.Assign(id);
+				MainSet.Assign(id);
 			}
 		}
 
@@ -76,7 +74,7 @@ namespace Massive
 		{
 			if (IsSynced)
 			{
-				GroupSet.Unassign(id);
+				MainSet.Unassign(id);
 			}
 		}
 
@@ -85,7 +83,7 @@ namespace Massive
 			// Applies only when removed from the last remaining exclude set
 			if (IsSynced && SetHelpers.AssignedInAll(id, Include) && SetHelpers.CountAssignedInAll(id, Exclude) == 1)
 			{
-				GroupSet.Assign(id);
+				MainSet.Assign(id);
 			}
 		}
 	}

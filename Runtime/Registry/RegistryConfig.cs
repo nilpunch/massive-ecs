@@ -6,5 +6,6 @@
 		public int DataPageSize = Constants.DefaultPageSize;
 
 		public bool StoreEmptyTypesAsDataSets = false;
+		public PackingMode DefaultPackingMode = PackingMode.Continuous;
 	}
 }

@@ -21,7 +21,7 @@ namespace Massive
 		{
 			Group.EnsureSynced();
 
-			var groupSet = Group.Set;
+			var groupSet = Group.MainSet;
 			for (var i = Group.Count - 1; i >= 0; i--)
 			{
 				if (i > Group.Count)
@@ -45,7 +45,7 @@ namespace Massive
 			var dataSet = Registry.DataSet<T>();
 
 			var data = dataSet.Data;
-			var groupSet = Group.Set;
+			var groupSet = Group.MainSet;
 
 			if (Group.IsOwning(dataSet))
 			{
@@ -97,7 +97,7 @@ namespace Massive
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
-			var groupSet = Group.Set;
+			var groupSet = Group.MainSet;
 
 			switch (Group.IsOwning(dataSet1), Group.IsOwning(dataSet2))
 			{
@@ -196,7 +196,7 @@ namespace Massive
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
-			var groupSet = Group.Set;
+			var groupSet = Group.MainSet;
 
 			switch (Group.IsOwning(dataSet1), Group.IsOwning(dataSet2), Group.IsOwning(dataSet3))
 			{

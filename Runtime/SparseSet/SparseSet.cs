@@ -6,7 +6,14 @@ namespace Massive
 {
 	public enum PackingMode
 	{
+		/// <summary>
+		/// When an element is removed, its spot is filled with the last element in the packed array.
+		/// </summary>
 		Continuous,
+
+		/// <summary>
+		/// When an element is removed, its position is left as a hole in the array.
+		/// </summary>
 		WithHoles,
 	}
 
@@ -24,16 +31,16 @@ namespace Massive
 
 		public SparseSet(int setCapacity = Constants.DefaultCapacity, PackingMode packingMode = PackingMode.Continuous)
 		{
-			PackingMode = packingMode;
 			_packed = new int[setCapacity];
 			_sparse = new int[setCapacity];
+			PackingMode = packingMode;
 
 			NextHole = MaxCount;
-			Array.Fill(_sparse, Constants.InvalidId);
+			Array.Fill(Sparse, Constants.InvalidId);
 		}
 
 		/// <summary>
-		/// Checks whether a sparse set is fully packed.
+		/// Checks whether a packed array has no holes in it.
 		/// </summary>
 		public bool IsContinuous
 		{
@@ -215,7 +222,7 @@ namespace Massive
 			Array.Resize(ref _sparse, capacity);
 			if (capacity > previousCapacity)
 			{
-				Array.Fill(_sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
+				Array.Fill(Sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
 			}
 		}
 

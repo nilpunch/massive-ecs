@@ -4,7 +4,7 @@ namespace Massive
 {
 	public interface IGroup : IIdsSource
 	{
-		SparseSet Set { get; }
+		SparseSet MainSet { get; }
 
 		bool IsSynced { get; }
 
@@ -15,7 +15,7 @@ namespace Massive
 		int[] IIdsSource.Ids
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Set.Ids;
+			get => MainSet.Ids;
 		}
 	}
 }

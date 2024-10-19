@@ -10,7 +10,7 @@ namespace Massive.Serialization
 		{
 			var nonOwningGroup = (NonOwningGroup)registry.Group<TInclude, TExclude>();
 
-			var set = nonOwningGroup.GroupSet;
+			var set = nonOwningGroup.MainSet;
 
 			SparseSetSerializer.Serialize(set, stream);
 		}
@@ -19,7 +19,7 @@ namespace Massive.Serialization
 		{
 			var nonOwningGroup = (NonOwningGroup)registry.Group<TInclude, TExclude>();
 
-			var set = nonOwningGroup.GroupSet;
+			var set = nonOwningGroup.MainSet;
 
 			SparseSetSerializer.Deserialize(set, stream);
 		}
