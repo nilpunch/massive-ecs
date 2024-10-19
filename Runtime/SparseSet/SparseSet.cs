@@ -13,6 +13,7 @@ namespace Massive
 
 		/// <summary>
 		/// When an element is removed, its position is left as a hole in the packed array.
+		/// The holes are filled when new elements are added.
 		/// </summary>
 		WithHoles,
 	}
