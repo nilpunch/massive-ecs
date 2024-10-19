@@ -42,18 +42,18 @@ namespace Massive
 			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
 			{
 				var page = data.Pages[pageIndex];
-				for (int packed = pageLength - 1; packed >= 0; packed--)
+				for (int index = pageLength - 1; index >= 0; index--)
 				{
-					if (indexOffset + packed > dataSet.Count)
+					if (indexOffset + index > dataSet.Count)
 					{
-						packed = dataSet.Count - indexOffset;
+						index = dataSet.Count - indexOffset;
 						continue;
 					}
 
-					var id = dataSet.Ids[indexOffset + packed];
+					var id = dataSet.Ids[indexOffset + index];
 					if (id >= 0)
 					{
-						if (!action.Apply(id, ref page[packed]))
+						if (!action.Apply(id, ref page[index]))
 						{
 							break;
 						}
@@ -82,19 +82,19 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					for (int packed1 = pageLength - 1; packed1 >= 0; packed1--)
+					for (int index1 = pageLength - 1; index1 >= 0; index1--)
 					{
-						if (indexOffset + packed1 > dataSet1.Count)
+						if (indexOffset + index1 > dataSet1.Count)
 						{
-							packed1 = dataSet1.Count - indexOffset;
+							index1 = dataSet1.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet1.Ids[indexOffset + packed1];
-						int packed2 = dataSet2.GetIndexOrInvalid(id);
-						if (packed2 >= 0)
+						int id = dataSet1.Ids[indexOffset + index1];
+						int index2 = dataSet2.GetIndexOrInvalid(id);
+						if (index2 >= 0)
 						{
-							if (!action.Apply(id, ref page1[packed1], ref data2[packed2]))
+							if (!action.Apply(id, ref page1[index1], ref data2[index2]))
 							{
 								break;
 							}
@@ -112,19 +112,19 @@ namespace Massive
 					}
 
 					var page2 = data2.Pages[pageIndex];
-					for (int packed2 = pageLength - 1; packed2 >= 0; packed2--)
+					for (int index2 = pageLength - 1; index2 >= 0; index2--)
 					{
-						if (indexOffset + packed2 > dataSet2.Count)
+						if (indexOffset + index2 > dataSet2.Count)
 						{
-							packed2 = dataSet2.Count - indexOffset;
+							index2 = dataSet2.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + packed2];
-						int packed1 = dataSet1.GetIndexOrInvalid(id);
-						if (packed1 >= 0)
+						int id = dataSet2.Ids[indexOffset + index2];
+						int index1 = dataSet1.GetIndexOrInvalid(id);
+						if (index1 >= 0)
 						{
-							if (!action.Apply(id, ref data1[packed1], ref page2[packed2]))
+							if (!action.Apply(id, ref data1[index1], ref page2[index2]))
 							{
 								break;
 							}
@@ -156,20 +156,20 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					for (int packed1 = pageLength - 1; packed1 >= 0; packed1--)
+					for (int index1 = pageLength - 1; index1 >= 0; index1--)
 					{
-						if (indexOffset + packed1 > dataSet1.Count)
+						if (indexOffset + index1 > dataSet1.Count)
 						{
-							packed1 = dataSet1.Count - indexOffset;
+							index1 = dataSet1.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet1.Ids[indexOffset + packed1];
-						int packed2 = dataSet2.GetIndexOrInvalid(id);
-						int packed3 = dataSet3.GetIndexOrInvalid(id);
-						if (packed2 >= 0 && packed3 >= 0)
+						int id = dataSet1.Ids[indexOffset + index1];
+						int index2 = dataSet2.GetIndexOrInvalid(id);
+						int index3 = dataSet3.GetIndexOrInvalid(id);
+						if (index2 >= 0 && index3 >= 0)
 						{
-							if (!action.Apply(id, ref page1[packed1], ref data2[packed2], ref data3[packed3]))
+							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3]))
 							{
 								break;
 							}
@@ -187,20 +187,20 @@ namespace Massive
 					}
 
 					var page2 = data2.Pages[pageIndex];
-					for (int packed2 = pageLength - 1; packed2 >= 0; packed2--)
+					for (int index2 = pageLength - 1; index2 >= 0; index2--)
 					{
-						if (indexOffset + packed2 > dataSet2.Count)
+						if (indexOffset + index2 > dataSet2.Count)
 						{
-							packed2 = dataSet2.Count - indexOffset;
+							index2 = dataSet2.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + packed2];
-						int packed1 = dataSet1.GetIndexOrInvalid(id);
-						int packed3 = dataSet3.GetIndexOrInvalid(id);
-						if (packed1 >= 0 && packed3 >= 0)
+						int id = dataSet2.Ids[indexOffset + index2];
+						int index1 = dataSet1.GetIndexOrInvalid(id);
+						int index3 = dataSet3.GetIndexOrInvalid(id);
+						if (index1 >= 0 && index3 >= 0)
 						{
-							if (!action.Apply(id, ref data1[packed1], ref page2[packed2], ref data3[packed3]))
+							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3]))
 							{
 								break;
 							}
@@ -218,20 +218,20 @@ namespace Massive
 					}
 
 					var page3 = data3.Pages[pageIndex];
-					for (int packed3 = pageLength - 1; packed3 >= 0; packed3--)
+					for (int index3 = pageLength - 1; index3 >= 0; index3--)
 					{
-						if (indexOffset + packed3 > dataSet3.Count)
+						if (indexOffset + index3 > dataSet3.Count)
 						{
-							packed3 = dataSet3.Count - indexOffset;
+							index3 = dataSet3.Count - indexOffset;
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + packed3];
-						int packed1 = dataSet1.GetIndexOrInvalid(id);
-						int packed2 = dataSet2.GetIndexOrInvalid(id);
-						if (packed1 >= 0 && packed2 >= 0)
+						int id = dataSet2.Ids[indexOffset + index3];
+						int index1 = dataSet1.GetIndexOrInvalid(id);
+						int index2 = dataSet2.GetIndexOrInvalid(id);
+						if (index1 >= 0 && index2 >= 0)
 						{
-							if (!action.Apply(id, ref data1[packed1], ref data2[packed2], ref page3[packed3]))
+							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3]))
 							{
 								break;
 							}

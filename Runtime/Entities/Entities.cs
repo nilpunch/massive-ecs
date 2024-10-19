@@ -61,7 +61,7 @@ namespace Massive
 			// If there are unused elements in the packed array, return last
 			if (Count < MaxId)
 			{
-				entity = GetPackedEntity(Count);
+				entity = GetEntityAt(Count);
 			}
 			else
 			{
@@ -83,9 +83,9 @@ namespace Massive
 			{
 				return;
 			}
-			var packed = Sparse[id];
-			var entity = GetPackedEntity(packed);
-			if (packed >= Count || entity.Id != id)
+			var index = Sparse[id];
+			var entity = GetEntityAt(index);
+			if (index >= Count || entity.Id != id)
 			{
 				return;
 			}
@@ -95,7 +95,7 @@ namespace Massive
 			Count -= 1;
 
 			// Swap packed with last element
-			AssignEntity(GetPackedEntity(Count), packed);
+			AssignEntity(GetEntityAt(Count), index);
 			AssignEntity(Entity.Reuse(entity), Count);
 		}
 
@@ -110,7 +110,7 @@ namespace Massive
 				int count = Count;
 				Count += 1;
 				needToCreate -= 1;
-				action?.Invoke(GetPackedEntity(count));
+				action?.Invoke(GetEntityAt(count));
 			}
 
 			for (int i = 0; i < needToCreate; i++)
@@ -126,7 +126,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
-			return GetPackedEntity(Sparse[id]);
+			return GetEntityAt(Sparse[id]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -137,9 +137,9 @@ namespace Massive
 				return false;
 			}
 
-			int packed = Sparse[entity.Id];
+			int index = Sparse[entity.Id];
 
-			return packed < Count && Ids[packed] == entity.Id && Reuses[packed] == entity.ReuseCount;
+			return index < Count && Ids[index] == entity.Id && Reuses[index] == entity.ReuseCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -150,9 +150,9 @@ namespace Massive
 				return false;
 			}
 
-			int packed = Sparse[id];
+			int index = Sparse[id];
 
-			return packed < Count && Ids[packed] == id;
+			return index < Count && Ids[index] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -169,17 +169,17 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Entity GetPackedEntity(int packed)
+		private Entity GetEntityAt(int index)
 		{
-			return new Entity(Ids[packed], Reuses[packed]);
+			return new Entity(Ids[index], Reuses[index]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignEntity(Entity entity, int packed)
+		private void AssignEntity(Entity entity, int index)
 		{
-			Sparse[entity.Id] = packed;
-			Ids[packed] = entity.Id;
-			Reuses[packed] = entity.ReuseCount;
+			Sparse[entity.Id] = index;
+			Ids[index] = entity.Id;
+			Reuses[index] = entity.ReuseCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -15,15 +15,15 @@ namespace Massive.Tests
 		[TestCase(Constants.DefaultPageSize * 2 - 1)]
 		public void PagedSpan_ShouldIterateOverAllElements(int length)
 		{
-			var packedArray = new PagedArray<int>(Constants.DefaultPageSize);
+			var pagedArray = new PagedArray<int>(Constants.DefaultPageSize);
 
 			for (int i = 0; i < length; i++)
 			{
-				packedArray.EnsurePageForIndex(i);
-				packedArray[i] = i;
+				pagedArray.EnsurePageForIndex(i);
+				pagedArray[i] = i;
 			}
 
-			var span = new PagedSpan<int>(packedArray, length);
+			var span = new PagedSpan<int>(pagedArray, length);
 
 			int iterationsAmount = 0;
 

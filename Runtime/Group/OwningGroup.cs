@@ -84,7 +84,7 @@ namespace Massive
 		{
 			Base?.AddToGroup(id);
 
-			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed >= Count && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
+			if (IsSynced && Owned[0].TryGetIndex(id, out var index) && index >= Count && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
 			    && SetHelpers.NotAssignedInAll(id, Exclude))
 			{
 				SwapEntry(id, Count);
@@ -96,7 +96,7 @@ namespace Massive
 		{
 			Extended?.RemoveFromGroup(id);
 
-			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed < Count)
+			if (IsSynced && Owned[0].TryGetIndex(id, out var index) && index < Count)
 			{
 				Count -= 1;
 				SwapEntry(id, Count);
@@ -108,7 +108,7 @@ namespace Massive
 			Base?.AddToGroupBeforeUnassignedFromExcluded(id);
 
 			// Applies only when removed from the last remaining exclude set
-			if (IsSynced && Owned[0].TryGetIndex(id, out var packed) && packed >= Count && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
+			if (IsSynced && Owned[0].TryGetIndex(id, out var index) && index >= Count && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
 			    && SetHelpers.CountAssignedInAll(id, Exclude) == 1)
 			{
 				SwapEntry(id, Count);

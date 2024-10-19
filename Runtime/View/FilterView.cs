@@ -59,10 +59,10 @@ namespace Massive
 				}
 
 				var id = set.Ids[i];
-				var packed = dataSet.GetIndexOrInvalid(id);
-				if (packed >= 0 && Filter.ContainsId(id))
+				var index = dataSet.GetIndexOrInvalid(id);
+				if (index >= 0 && Filter.ContainsId(id))
 				{
-					if (!action.Apply(id, ref data[packed]))
+					if (!action.Apply(id, ref data[index]))
 					{
 						break;
 					}
@@ -90,13 +90,13 @@ namespace Massive
 				}
 
 				var id = set.Ids[i];
-				var packed1 = dataSet1.GetIndexOrInvalid(id);
-				var packed2 = dataSet2.GetIndexOrInvalid(id);
-				if (packed1 >= 0
-				    && packed2 >= 0
+				var index1 = dataSet1.GetIndexOrInvalid(id);
+				var index2 = dataSet2.GetIndexOrInvalid(id);
+				if (index1 >= 0
+				    && index2 >= 0
 				    && Filter.ContainsId(id))
 				{
-					if (!action.Apply(id, ref data1[packed1], ref data2[packed2]))
+					if (!action.Apply(id, ref data1[index1], ref data2[index2]))
 					{
 						break;
 					}
@@ -126,15 +126,15 @@ namespace Massive
 				}
 
 				var id = set.Ids[i];
-				var packed1 = dataSet1.GetIndexOrInvalid(id);
-				var packed2 = dataSet2.GetIndexOrInvalid(id);
-				var packed3 = dataSet3.GetIndexOrInvalid(id);
-				if (packed1 >= 0
-				    && packed2 >= 0
-				    && packed3 >= 0
+				var index1 = dataSet1.GetIndexOrInvalid(id);
+				var index2 = dataSet2.GetIndexOrInvalid(id);
+				var index3 = dataSet3.GetIndexOrInvalid(id);
+				if (index1 >= 0
+				    && index2 >= 0
+				    && index3 >= 0
 				    && Filter.ContainsId(id))
 				{
-					if (!action.Apply(id, ref data1[packed1], ref data2[packed2], ref data3[packed3]))
+					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3]))
 					{
 						break;
 					}

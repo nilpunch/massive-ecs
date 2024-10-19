@@ -95,9 +95,9 @@ namespace Massive
 
 			if (HasHoles)
 			{
-				int packed = NextHole;
-				NextHole = ~Packed[packed];
-				AssignIndex(id, packed);
+				int index = NextHole;
+				NextHole = ~Packed[index];
+				AssignIndex(id, index);
 			}
 			else
 			{
@@ -239,12 +239,12 @@ namespace Massive
 
 				while (NextHole != MaxCount)
 				{
-					int packedHole = NextHole;
+					int holeIndex = NextHole;
 					NextHole = ~Packed[NextHole];
-					if (packedHole < Count)
+					if (holeIndex < Count)
 					{
 						Count -= 1;
-						CopyFromToPacked(Count, packedHole);
+						CopyFromToPacked(Count, holeIndex);
 
 						for (; Count > 0 && Packed[Count - 1] < 0; Count--) {}
 					}
