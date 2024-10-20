@@ -39,8 +39,8 @@ namespace Massive
 			}
 
 			var owned = new TOwn().Select(_setRegistry);
-			var include = new TInclude().SelectReadOnly(_setRegistry);
-			var exclude = new TExclude().SelectReadOnly(_setRegistry);
+			var include = new TInclude().Select(_setRegistry);
+			var exclude = new TExclude().Select(_setRegistry);
 
 			if (Array.Exists(owned, set => set.PackingMode == PackingMode.WithHoles))
 			{

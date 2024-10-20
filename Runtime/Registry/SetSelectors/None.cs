@@ -5,7 +5,5 @@ namespace Massive
 	public class None : IOwnSelector, IIncludeSelector, IExcludeSelector
 	{
 		public SparseSet[] Select(SetRegistry setRegistry) => Array.Empty<SparseSet>();
-
-		public SparseSet[] SelectReadOnly(SetRegistry setRegistry) => Array.Empty<SparseSet>();
 	}
 }

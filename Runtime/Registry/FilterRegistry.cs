@@ -24,8 +24,8 @@ namespace Massive
 
 			if (filter == null)
 			{
-				var include = new TInclude().SelectReadOnly(_setRegistry);
-				var exclude = new TExclude().SelectReadOnly(_setRegistry);
+				var include = new TInclude().Select(_setRegistry);
+				var exclude = new TExclude().Select(_setRegistry);
 
 				if (include.Length != 0 && exclude.Length != 0)
 				{
