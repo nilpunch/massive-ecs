@@ -25,12 +25,12 @@
 
 					if (IsCollided(bulletId, characterId))
 					{
-						registry.Assign<Dead>(bulletId);
+						registry.Assign(bulletId, new Dead());
 
 						character.Health -= bullet.Damage;
 						if (character.Health <= 0)
 						{
-							registry.Assign<Dead>(characterId);
+							registry.Assign(characterId, new Dead());
 							DestroyCharacterBullets(characterId);
 							break;
 						}

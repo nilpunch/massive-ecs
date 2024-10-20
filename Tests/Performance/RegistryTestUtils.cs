@@ -57,7 +57,69 @@
 
 			return registry;
 		}
-		
+
+		public static Registry FillRegistryWith50Tags(this Registry registry)
+		{
+			registry.Set<TestTag>();
+			registry.Set<TestTag<int, int, int>>();
+			registry.Set<TestTag<long, long, long>>();
+			registry.Set<TestTag<double, int, long>>();
+			registry.Set<TestTag<long, short, byte>>();
+			registry.Set<TestTag<short, ushort, int>>();
+			registry.Set<TestTag<ushort, ulong, float>>();
+			registry.Set<TestTag<ulong, double, decimal>>();
+			registry.Set<TestTag<decimal, char, byte>>();
+			registry.Set<TestTag<char, bool, int>>();
+			registry.Set<TestTag<bool, byte, sbyte>>();
+			registry.Set<TestTag<sbyte, float, ushort>>();
+			registry.Set<TestTag<int, double, bool>>();
+			registry.Set<TestTag<double, decimal, char>>();
+			registry.Set<TestTag<long, bool, float>>();
+			registry.Set<TestTag<short, int, ulong>>();
+			registry.Set<TestTag<ushort, sbyte, decimal>>();
+			registry.Set<TestTag<ulong, char, double>>();
+			registry.Set<TestTag<decimal, bool, short>>();
+			registry.Set<TestTag<char, int, byte>>();
+			registry.Set<TestTag<bool, ulong, sbyte>>();
+			registry.Set<TestTag<sbyte, short, ushort>>();
+			registry.Set<TestTag<float, ulong, int>>();
+			registry.Set<TestTag<double, sbyte, long>>();
+			registry.Set<TestTag<int, char, decimal>>();
+			registry.Set<TestTag<long, decimal, bool>>();
+			registry.Set<TestTag<short, double, byte>>();
+			registry.Set<TestTag<ushort, float, char>>();
+			registry.Set<TestTag<ulong, int, bool>>();
+			registry.Set<TestTag<decimal, short, ulong>>();
+			registry.Set<TestTag<char, ushort, float>>();
+			registry.Set<TestTag<bool, double, sbyte>>();
+			registry.Set<TestTag<sbyte, long, ushort>>();
+			registry.Set<TestTag<float, decimal, char>>();
+			registry.Set<TestTag<double, byte, int>>();
+			registry.Set<TestTag<int, sbyte, ulong>>();
+			registry.Set<TestTag<long, ushort, decimal>>();
+			registry.Set<TestTag<short, char, double>>();
+			registry.Set<TestTag<ushort, bool, float>>();
+			registry.Set<TestTag<ulong, byte, short>>();
+			registry.Set<TestTag<decimal, int, char>>();
+			registry.Set<TestTag<char, ulong, bool>>();
+			registry.Set<TestTag<bool, short, double>>();
+			registry.Set<TestTag<sbyte, decimal, ushort>>();
+			registry.Set<TestTag<float, bool, byte>>();
+			registry.Set<TestTag<double, ushort, sbyte>>();
+			registry.Set<TestTag<int, float, char>>();
+			registry.Set<TestTag<long, byte, ulong>>();
+			registry.Set<TestTag<short, decimal, bool>>();
+			registry.Set<TestTag<ushort, double, int>>();
+
+			return registry;
+		}
+
+		public static Registry FillRegistryWithSingleComponent(this Registry registry)
+		{
+			registry.Set<TestState64>();
+			return registry;
+		}
+
 		public static Registry FillRegistryWithNonOwningGroup<TInclude, TExclude>(this Registry registry)
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
@@ -72,7 +134,7 @@
 			registry.Group<TInclude>();
 			return registry;
 		}
-		
+
 		public static Registry FillRegistryWithSingleComponent(this Registry registry, int entitiesAmount)
 		{
 			while (entitiesAmount != 0)

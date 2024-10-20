@@ -6,20 +6,27 @@ using Unity.PerformanceTesting;
 
 namespace Massive.PerformanceTests
 {
-	[TestFixture(RegistryFilling.FillWithSingleComponent)]
-	[TestFixture(RegistryFilling.FillWith50Components)]
-	// [TestFixture(RegistryFilling.FillWith50ComponentsPlusNonOwningGroup)]
-	[TestFixture(RegistryFilling.FillWith50Tags)]
+	[TestFixture(RegistryFilling.x50Components, RegistryStability.FullStability)]
+	[TestFixture(RegistryFilling.x50Components, RegistryStability.DefaultStability)]
+	[TestFixture(RegistryFilling.SingleComponent, RegistryStability.DefaultStability)]
+	[TestFixture(RegistryFilling.x50Tags, RegistryStability.DefaultStability)]
 	public class RegistryPerformanceTest
 	{
 		private readonly RegistryFilling _registryFilling;
+		private readonly bool _fullStability;
 
 		public enum RegistryFilling
 		{
-			FillWithSingleComponent,
-			FillWith50Components,
-			FillWith50ComponentsPlusNonOwningGroup,
-			FillWith50Tags,
+			SingleComponent,
+			x50Components,
+			x50ComponentsPlusNonOwningGroup,
+			x50Tags,
+		}
+
+		public enum RegistryStability
+		{
+			DefaultStability,
+			FullStability,
 		}
 
 		private const int EntitiesCount = 1000;
@@ -28,22 +35,24 @@ namespace Massive.PerformanceTests
 
 		private readonly Registry _registry;
 
-		public RegistryPerformanceTest(RegistryFilling registryFilling)
+		public RegistryPerformanceTest(RegistryFilling registryFilling, RegistryStability registryStability)
 		{
 			_registryFilling = registryFilling;
-			_registry = PrepareTestRegistry(registryFilling);
+			_fullStability = registryStability == RegistryStability.FullStability;
+			_registry = PrepareTestRegistry(_registryFilling, _fullStability);
 			_registry.View().Destroy();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Registry PrepareTestRegistry(RegistryFilling registryFilling)
+		public static Registry PrepareTestRegistry(RegistryFilling registryFilling, bool fullStability)
 		{
+			var config = new RegistryConfig() { FullStability = fullStability };
 			return registryFilling switch
 			{
-				RegistryFilling.FillWithSingleComponent => new Registry().FillRegistryWithSingleComponent(1),
-				RegistryFilling.FillWith50Components => new Registry().FillRegistryWith50Components(1),
-				RegistryFilling.FillWith50ComponentsPlusNonOwningGroup => new Registry().FillRegistryWith50Components(1).FillRegistryWithNonOwningGroup<Include<PositionComponent>>(),
-				RegistryFilling.FillWith50Tags => new Registry().FillRegistryWith50Tags(1),
+				RegistryFilling.SingleComponent => new Registry(config).FillRegistryWithSingleComponent(),
+				RegistryFilling.x50Components => new Registry(config).FillRegistryWith50Components(),
+				RegistryFilling.x50ComponentsPlusNonOwningGroup => new Registry(config).FillRegistryWith50Components().FillRegistryWithNonOwningGroup<Include<PositionComponent>>(),
+				RegistryFilling.x50Tags => new Registry(config).FillRegistryWith50Tags(),
 				_ => throw new ArgumentOutOfRangeException(nameof(_registryFilling))
 			};
 		}
@@ -51,7 +60,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Registry_Initialization()
 		{
-			Measure.Method(() => { PrepareTestRegistry(_registryFilling); })
+			Measure.Method(() => { PrepareTestRegistry(_registryFilling, _fullStability); })
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(1)
 				.CleanUp(GC.Collect)

@@ -73,12 +73,12 @@ namespace Massive
 		public int SparseCapacity => Sparse.Length;
 
 		/// <summary>
-		/// Shoots only after <see cref="IIdsSource.Assign"/> call, when the id was not alive and therefore was created.
+		/// Shoots only after <see cref="Assign"/> call, when the id was not alive and therefore was created.
 		/// </summary>
 		public event Action<int> AfterAssigned;
 
 		/// <summary>
-		/// Shoots before each <see cref="IIdsSource.Unassign"/> call, when the id was alive.
+		/// Shoots before each <see cref="Unassign"/> call, when the id was alive.
 		/// </summary>
 		public event Action<int> BeforeUnassigned;
 
