@@ -11,6 +11,7 @@ namespace Massive
 		private readonly FastList<string> _itemIds = new FastList<string>();
 		private readonly FastList<TAbstract> _items = new FastList<TAbstract>();
 		private TAbstract[] _lookup = new TAbstract[Constants.DefaultCapacity];
+		private Type[] _typeLookup = new Type[Constants.DefaultCapacity];
 
 		public ReadOnlySpan<TAbstract> All
 		{
@@ -54,6 +55,12 @@ namespace Massive
 			return Array.IndexOf(_lookup, item);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Type TypeOf(TAbstract item)
+		{
+			return _typeLookup[Array.IndexOf(_lookup, item)];
+		}
+
 		public void Assign<TKey>(TAbstract item)
 		{
 			var typeIndex = TypeLookup<TKey>.Index;
@@ -62,9 +69,11 @@ namespace Massive
 			if (typeIndex >= _lookup.Length)
 			{
 				Array.Resize(ref _lookup, MathHelpers.NextPowerOf2(typeIndex + 1));
+				Array.Resize(ref _typeLookup, MathHelpers.NextPowerOf2(typeIndex + 1));
 			}
 
 			_lookup[typeIndex] = item;
+			_typeLookup[typeIndex] = typeof(TKey);
 
 			// Maintain items sorted
 			var itemId = TypeLookup<TKey>.FullName;

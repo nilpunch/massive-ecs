@@ -50,5 +50,11 @@ namespace Massive
 		{
 			return _setLookup.IndexOf(set);
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Type TypeOf(SparseSet set)
+		{
+			return _setLookup.TypeOf(set);
+		}
 	}
 }
