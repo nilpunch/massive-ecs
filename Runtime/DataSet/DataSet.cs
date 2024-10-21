@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -48,5 +49,11 @@ namespace Massive
 		{
 			Data.EnsurePageForIndex(index);
 		}
+
+		Type IDataSet.GetDataType() => typeof(T);
+
+		object IDataSet.GetRaw(int id) => Get(id);
+
+		public void SetRaw(int id, object value) => Get(id) = (T)value;
 	}
 }

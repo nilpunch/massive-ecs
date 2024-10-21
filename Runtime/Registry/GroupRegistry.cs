@@ -44,7 +44,7 @@ namespace Massive
 
 			if (Array.Exists(owned, set => set.PackingMode == PackingMode.WithHoles))
 			{
-				throw new Exception($"Sets with direct storage are not supported for owning: <{typeof(TOwn).GetFullBeautifulName()}>.");
+				throw new Exception($"Sets with direct storage are not supported for owning: <{typeof(TOwn).GetFullGenericName()}>.");
 			}
 
 			// If non-owning, then just create new one
@@ -89,8 +89,8 @@ namespace Massive
 				// Check if the next group can extend ours
 				if (baseGroupNode.Extended != null && !baseGroupNode.Extended.ExtendsGroup(owned, include, exclude))
 				{
-					throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullBeautifulName()}, " +
-					                    $"{typeof(TInclude).GetFullBeautifulName()}, {typeof(TExclude).GetFullBeautifulName()}>.");
+					throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullGenericName()}, " +
+					                    $"{typeof(TInclude).GetFullGenericName()}, {typeof(TExclude).GetFullGenericName()}>.");
 				}
 
 				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
@@ -110,8 +110,8 @@ namespace Massive
 				return RegisterAndSync<Tuple<TInclude, TExclude, TOwn>>(owningGroup);
 			}
 
-			throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullBeautifulName()}, " +
-			                    $"{typeof(TInclude).GetFullBeautifulName()}, {typeof(TExclude).GetFullBeautifulName()}>.");
+			throw new Exception($"Conflicting group: <{typeof(TOwn).GetFullGenericName()}, " +
+			                    $"{typeof(TInclude).GetFullGenericName()}, {typeof(TExclude).GetFullGenericName()}>.");
 		}
 
 		private IGroup RegisterAndSync<TGroupKey>(IGroup group)
