@@ -114,7 +114,7 @@ namespace Massive
 		public void Assign(Type keyType, TAbstract item)
 		{
 			var typeLookup = MakeTypeLookupType(keyType);
-			
+
 			var typeIndex = (int)typeLookup.GetProperty("Index", BindingFlags.Public | BindingFlags.Static).GetValue(null);
 			var typeFullName = (string)typeLookup.GetProperty("FullName", BindingFlags.Public | BindingFlags.Static).GetValue(null);
 

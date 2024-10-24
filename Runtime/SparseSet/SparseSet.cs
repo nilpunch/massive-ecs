@@ -235,7 +235,7 @@ namespace Massive
 		{
 			if (HasHoles)
 			{
-				for (; Count > 0 && Packed[Count - 1] < 0; Count--) {}
+				for (; Count > 0 && Packed[Count - 1] < 0; Count--) { }
 
 				while (NextHole != MaxCount)
 				{
@@ -246,7 +246,7 @@ namespace Massive
 						Count -= 1;
 						CopyFromToPacked(Count, holeIndex);
 
-						for (; Count > 0 && Packed[Count - 1] < 0; Count--) {}
+						for (; Count > 0 && Packed[Count - 1] < 0; Count--) { }
 					}
 				}
 			}
