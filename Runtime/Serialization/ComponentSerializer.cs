@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Runtime.InteropServices;
 
 // ReSharper disable MustUseReturnValue
 namespace Massive.Serialization
@@ -11,15 +9,11 @@ namespace Massive.Serialization
 		{
 			var set = registry.Set<T>();
 
-			SparseSetSerializer.Serialize(set, stream);
+			SerializationHelpers.WriteSparseSet(set, stream);
 
-			if (set is DataSet<T> dataSet)
+			if (set is IDataSet dataSet)
 			{
-				var pagedData = dataSet.Data;
-				foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedData.PageSize, set.Count))
-				{
-					stream.Write(MemoryMarshal.Cast<T, byte>(pagedData.Pages[pageIndex].AsSpan(0, pageLength)));
-				}
+				SerializationHelpers.WriteUnmanagedPagedArray(dataSet.Data, set.Count, stream);
 			}
 		}
 
@@ -27,16 +21,11 @@ namespace Massive.Serialization
 		{
 			var set = registry.Set<T>();
 
-			SparseSetSerializer.Deserialize(set, stream);
+			SerializationHelpers.ReadSparseSet(set, stream);
 
-			if (set is DataSet<T> dataSet)
+			if (set is IDataSet dataSet)
 			{
-				var pagedData = dataSet.Data;
-				foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedData.PageSize, set.Count))
-				{
-					pagedData.EnsurePage(pageIndex);
-					stream.Read(MemoryMarshal.Cast<T, byte>(pagedData.Pages[pageIndex].AsSpan(0, pageLength)));
-				}
+				SerializationHelpers.ReadUnmanagedPagedArray(dataSet.Data, set.Count, stream);
 			}
 		}
 	}

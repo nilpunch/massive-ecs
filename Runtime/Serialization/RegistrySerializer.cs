@@ -6,6 +6,7 @@ namespace Massive.Serialization
 {
 	public class RegistrySerializer : IRegistrySerializer
 	{
+		private readonly Dictionary<Type, IDataSetSerializer> _customSerializers = new Dictionary<Type, IDataSetSerializer>();
 		private readonly List<IRegistrySerializer> _serializers = new List<IRegistrySerializer>();
 		private readonly HashSet<Type> _serializedTypes = new HashSet<Type>();
 
@@ -14,26 +15,9 @@ namespace Massive.Serialization
 			_serializers.Add(new EntitiesSerializer());
 		}
 
-		public void AddComponent<T>() where T : unmanaged
+		public void AddCustomSerializer(Type type, IDataSetSerializer dataSetSerializer)
 		{
-			if (_serializedTypes.Contains(typeof(T)))
-			{
-				throw new Exception($"Serializer for {typeof(T).Name} component has already been added!");
-			}
-
-			_serializedTypes.Add(typeof(T));
-			_serializers.Add(new ComponentSerializer<T>());
-		}
-
-		public void AddCustomComponent<T>(IDataSetSerializer<T> dataSerializer = null)
-		{
-			if (_serializedTypes.Contains(typeof(T)))
-			{
-				throw new Exception($"Serializer for {typeof(T).Name} component has already been added!");
-			}
-
-			_serializedTypes.Add(typeof(T));
-			_serializers.Add(new CustomComponentSerializer<T>(dataSerializer ?? new DefaultDataSetSerializer<T>()));
+			_customSerializers[type] = dataSetSerializer;
 		}
 
 		public void AddNonOwningGroup<TInclude>()
@@ -51,9 +35,38 @@ namespace Massive.Serialization
 
 		public void Serialize(Registry registry, Stream stream)
 		{
-			foreach (var parser in _serializers)
+			SerializationHelpers.WriteInt(registry.SetRegistry.All.Length, stream);
+			foreach (var sparseSet in registry.SetRegistry.All)
 			{
-				parser.Serialize(registry, stream);
+				var setType = registry.SetRegistry.TypeOf(sparseSet);
+			
+				SerializationHelpers.WriteType(setType, stream);
+				SerializationHelpers.WriteSparseSet(sparseSet, stream);
+
+				if (sparseSet is not IDataSet dataSet)
+				{
+					continue;
+				}
+
+				if (_customSerializers.TryGetValue(setType, out var customSerializer))
+				{
+					customSerializer.Write(dataSet, stream);
+					continue;
+				}
+
+				if (dataSet.DataType.IsUnmanaged())
+				{
+					SerializationHelpers.WriteUnmanagedPagedArray(dataSet.Data, dataSet.Count, stream);
+				}
+				else
+				{
+					SerializationHelpers.WriteManagedPagedArray(dataSet.Data, dataSet.Count, stream);
+				}
+			}
+
+			foreach (var registrySerializer in _serializers)
+			{
+				registrySerializer.Serialize(registry, stream);
 			}
 		}
 
@@ -64,9 +77,39 @@ namespace Massive.Serialization
 				set.Clear();
 			}
 
-			foreach (var parser in _serializers)
+			var setCount = SerializationHelpers.ReadInt(stream);
+			for (var i = 0; i < setCount; i++)
 			{
-				parser.Deserialize(registry, stream);
+				var setType = SerializationHelpers.ReadType(stream);
+				
+				var sparseSet = registry.SetRegistry.Get(setType);
+
+				SerializationHelpers.ReadSparseSet(sparseSet, stream);
+
+				if (sparseSet is not IDataSet dataSet)
+				{
+					continue;
+				}
+
+				if (_customSerializers.TryGetValue(setType, out var customSerializer))
+				{
+					customSerializer.Read(dataSet, stream);
+					continue;
+				}
+
+				if (dataSet.DataType.IsUnmanaged())
+				{
+					SerializationHelpers.ReadUnmanagedPagedArray(dataSet.Data, dataSet.Count, stream);
+				}
+				else
+				{
+					SerializationHelpers.ReadManagedPagedArray(dataSet.Data, dataSet.Count, stream);
+				}
+			}
+
+			foreach (var registrySerializer in _serializers)
+			{
+				registrySerializer.Deserialize(registry, stream);
 			}
 		}
 	}

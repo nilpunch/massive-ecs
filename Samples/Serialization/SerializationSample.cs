@@ -18,15 +18,9 @@ namespace Massive.Samples.Serialization
 
 			var registrySerializer = new RegistrySerializer();
 
-			// Add each unmanaged component in this way
-			registrySerializer.AddComponent<Player>();
-			registrySerializer.AddComponent<Enemy>();
-			registrySerializer.AddComponent<Health>();
-
-			// Add each managed component in this way.
-			// By default, it uses BinaryFormatter and requires Serializable attribute on the component.
-			// But it can be customized
-			registrySerializer.AddCustomComponent<Inventory>();
+			// By default, for managed types it uses BinaryFormatter and requires Serializable attribute on the component.
+			// But it can be customized like this
+			registrySerializer.AddCustomSerializer(typeof(Inventory), new DefaultDataSetSerializer());
 
 			// Save registry to the file
 			using (FileStream stream = new FileStream(PathToSaveFile, FileMode.Create, FileAccess.Write))

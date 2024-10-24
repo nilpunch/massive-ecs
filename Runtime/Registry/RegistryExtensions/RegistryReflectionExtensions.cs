@@ -10,5 +10,11 @@ namespace Massive
 		{
 			return registry.SetRegistry.Get(type);
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void AssignSet(this Registry registry, Type type, SparseSet set)
+		{
+			registry.SetRegistry.Assign(type, set);
+		}
 	}
 }

@@ -5,9 +5,9 @@ namespace Massive.Serialization
 {
 	public class CustomComponentSerializer<T> : IRegistrySerializer
 	{
-		private readonly IDataSetSerializer<T> _dataSerializer;
+		private readonly IDataSetSerializer _dataSerializer;
 
-		public CustomComponentSerializer(IDataSetSerializer<T> dataSerializer)
+		public CustomComponentSerializer(IDataSetSerializer dataSerializer)
 		{
 			_dataSerializer = dataSerializer;
 		}
@@ -16,7 +16,7 @@ namespace Massive.Serialization
 		{
 			var set = registry.Set<T>();
 
-			SparseSetSerializer.Serialize(set, stream);
+			SerializationHelpers.WriteSparseSet(set, stream);
 
 			if (set is DataSet<T> dataSet)
 			{
@@ -28,7 +28,7 @@ namespace Massive.Serialization
 		{
 			var set = registry.Set<T>();
 
-			SparseSetSerializer.Deserialize(set, stream);
+			SerializationHelpers.ReadSparseSet(set, stream);
 
 			if (set is DataSet<T> dataSet)
 			{

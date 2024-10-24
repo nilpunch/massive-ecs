@@ -2,9 +2,9 @@
 
 namespace Massive.Serialization
 {
-	public interface IDataSetSerializer<T>
+	public interface IDataSetSerializer
 	{
-		void Write(DataSet<T> set, Stream stream);
-		void Read(DataSet<T> set, Stream stream);
+		void Write(IDataSet set, Stream stream);
+		void Read(IDataSet set, Stream stream);
 	}
 }

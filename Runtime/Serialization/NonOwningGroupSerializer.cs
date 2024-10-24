@@ -12,7 +12,7 @@ namespace Massive.Serialization
 
 			var set = nonOwningGroup.MainSet;
 
-			SparseSetSerializer.Serialize(set, stream);
+			SerializationHelpers.WriteSparseSet(set, stream);
 		}
 
 		public void Deserialize(Registry registry, Stream stream)
@@ -21,7 +21,7 @@ namespace Massive.Serialization
 
 			var set = nonOwningGroup.MainSet;
 
-			SparseSetSerializer.Deserialize(set, stream);
+			SerializationHelpers.ReadSparseSet(set, stream);
 		}
 	}
 }

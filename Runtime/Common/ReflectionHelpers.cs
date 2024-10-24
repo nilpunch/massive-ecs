@@ -38,5 +38,23 @@ namespace Massive
 			var constructedType = genericType.MakeGenericType(genericArg);
 			return Activator.CreateInstance(constructedType, args);
 		}
+
+		public static bool IsUnmanaged(this Type type)
+		{
+			try
+			{
+				// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+				typeof(ConstraintUnmanaged<>).MakeGenericType(type);
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+		}
+
+		private class ConstraintUnmanaged<T> where T : unmanaged
+		{
+		}
 	}
 }

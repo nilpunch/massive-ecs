@@ -50,7 +50,9 @@ namespace Massive
 			Data.EnsurePageForIndex(index);
 		}
 
-		Type IDataSet.GetDataType() => typeof(T);
+		IPagedArray IDataSet.Data => Data;
+
+		Type IDataSet.DataType => typeof(T);
 
 		object IDataSet.GetRaw(int id) => Get(id);
 

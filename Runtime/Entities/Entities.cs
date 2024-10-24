@@ -156,7 +156,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ResizeDense(int capacity)
+		public void ResizePacked(int capacity)
 		{
 			Array.Resize(ref _ids, capacity);
 			Array.Resize(ref _reuses, capacity);
@@ -188,7 +188,7 @@ namespace Massive
 			if (index >= Sparse.Length)
 			{
 				int newCapacity = MathHelpers.NextPowerOf2(index + 1);
-				ResizeDense(newCapacity);
+				ResizePacked(newCapacity);
 				ResizeSparse(newCapacity);
 			}
 		}

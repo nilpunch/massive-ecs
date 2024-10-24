@@ -1,36 +1,17 @@
-﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.IO;
 
 namespace Massive.Serialization
 {
-	public class DefaultDataSetSerializer<T> : IDataSetSerializer<T>
+	public class DefaultDataSetSerializer : IDataSetSerializer
 	{
-		private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
-
-		public void Write(DataSet<T> set, Stream stream)
+		public void Write(IDataSet set, Stream stream)
 		{
-			var data = new T[set.Count];
-
-			var pagedData = set.Data;
-			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(pagedData.PageSize, set.Count))
-			{
-				Array.Copy(pagedData.Pages[pageIndex], 0, data, indexOffset, pageLength);
-			}
-
-			_binaryFormatter.Serialize(stream, data);
+			SerializationHelpers.WriteManagedPagedArray(set.Data, set.Count, stream);
 		}
 
-		public void Read(DataSet<T> set, Stream stream)
+		public void Read(IDataSet set, Stream stream)
 		{
-			var data = (T[])_binaryFormatter.Deserialize(stream);
-
-			var pagedData = set.Data;
-			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(pagedData.PageSize, data.Length))
-			{
-				pagedData.EnsurePage(pageIndex);
-				Array.Copy(data, indexOffset, pagedData.Pages[pageIndex], 0, pageLength);
-			}
+			SerializationHelpers.ReadManagedPagedArray(set.Data, set.Count, stream);
 		}
 	}
 }
