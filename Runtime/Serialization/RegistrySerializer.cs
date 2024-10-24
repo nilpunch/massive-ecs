@@ -39,7 +39,7 @@ namespace Massive.Serialization
 			foreach (var sparseSet in registry.SetRegistry.All)
 			{
 				var setType = registry.SetRegistry.TypeOf(sparseSet);
-			
+
 				SerializationHelpers.WriteType(setType, stream);
 				SerializationHelpers.WriteSparseSet(sparseSet, stream);
 
@@ -81,7 +81,7 @@ namespace Massive.Serialization
 			for (var i = 0; i < setCount; i++)
 			{
 				var setType = SerializationHelpers.ReadType(stream);
-				
+
 				var sparseSet = registry.SetRegistry.Get(setType);
 
 				SerializationHelpers.ReadSparseSet(sparseSet, stream);

@@ -67,7 +67,7 @@ namespace Massive.Serialization
 
 		public static void WriteManagedPagedArray(IPagedArray pagedArray, int count, Stream stream)
 		{
-		    var binaryFormatter = new BinaryFormatter();
+			var binaryFormatter = new BinaryFormatter();
 			var buffer = Array.CreateInstance(pagedArray.DataType, count);
 
 			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(pagedArray.PageSize, count))

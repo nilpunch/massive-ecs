@@ -14,7 +14,7 @@ namespace Massive
 		Array GetPage(int page);
 		void EnsurePage(int page);
 	}
-	
+
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks | Option.DivideByZeroChecks, false)]
 	public class PagedArray<T> : IPagedArray
 	{
