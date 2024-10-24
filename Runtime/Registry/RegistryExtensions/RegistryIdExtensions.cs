@@ -16,10 +16,22 @@ namespace Massive
 
 		/// <summary>
 		/// Creates a unique entity with the assigned component and returns the entity ID.
+		/// Does not initialize component data.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int Create<T>(this Registry registry)
+		{
+			var id = registry.Create();
+			registry.Assign<T>(id);
+			return id;
+		}
+
+		/// <summary>
+		/// Creates a unique entity with the assigned component and returns the entity ID.
 		/// </summary>
 		/// <param name="data"> Initial data for the assigned component. </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Create<T>(this Registry registry, T data = default)
+		public static int Create<T>(this Registry registry, T data)
 		{
 			var id = registry.Create();
 			registry.Assign(id, data);
