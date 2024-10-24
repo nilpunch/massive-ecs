@@ -1,4 +1,6 @@
-﻿namespace Massive
+﻿using System;
+
+namespace Massive
 {
 	/// <summary>
 	/// Factory for data structures with rollbacks.
@@ -26,17 +28,32 @@
 
 		public SparseSet CreateAppropriateSet<T>()
 		{
-			if (TypeInfo<T>.HasNoFields && !_storeEmptyTypesAsDataSets)
+			if (TypeInfo.HasNoFields(typeof(T)) && !_storeEmptyTypesAsDataSets)
 			{
-				return CreateSparseSet<T>();
+				return CreateSparseSet(GetPackingModeFor(typeof(T)));
 			}
 
 			return CreateDataSet<T>();
 		}
 
-		private SparseSet CreateSparseSet<T>()
+		public SparseSet CreateAppropriateSet(Type type)
 		{
-			var massiveSparseSet = new MassiveSparseSet(_setCapacity, _framesCapacity, GetPackingModeFor<T>());
+			if (TypeInfo.HasNoFields(type) && !_storeEmptyTypesAsDataSets)
+			{
+				return CreateSparseSet(GetPackingModeFor(type));
+			}
+
+			var args = new object[] { _setCapacity, _framesCapacity, _pageSize, GetPackingModeFor(type) };
+			var massiveDataSet = ManagedUtils.IsManaged(type)
+				? ReflectionHelpers.CreateGeneric(typeof(MassiveManagedDataSet<>), type, args)
+				: ReflectionHelpers.CreateGeneric(typeof(MassiveDataSet<>), type, args);
+			((IMassive)massiveDataSet).SaveFrame();
+			return (SparseSet)massiveDataSet;
+		}
+
+		private SparseSet CreateSparseSet(PackingMode packingMode)
+		{
+			var massiveSparseSet = new MassiveSparseSet(_setCapacity, _framesCapacity, packingMode);
 			massiveSparseSet.SaveFrame();
 			return massiveSparseSet;
 		}
@@ -44,15 +61,15 @@
 		private SparseSet CreateDataSet<T>()
 		{
 			var massiveDataSet = ManagedUtils.IsManaged<T>()
-				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize, GetPackingModeFor<T>())
-				: new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize, GetPackingModeFor<T>());
+				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize, GetPackingModeFor(typeof(T)))
+				: new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize, GetPackingModeFor(typeof(T)));
 			((IMassive)massiveDataSet).SaveFrame();
 			return massiveDataSet;
 		}
 
-		private PackingMode GetPackingModeFor<T>()
+		private PackingMode GetPackingModeFor(Type type)
 		{
-			return _fullStability || IStable.IsImplementedFor<T>() ? PackingMode.WithHoles : PackingMode.Continuous;
+			return _fullStability || IStable.IsImplementedFor(type) ? PackingMode.WithHoles : PackingMode.Continuous;
 		}
 	}
 }

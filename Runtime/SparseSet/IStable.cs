@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Massive
 {
@@ -7,9 +8,9 @@ namespace Massive
 	/// </summary>
 	public interface IStable
 	{
-		static bool IsImplementedFor<T>()
+		public static bool IsImplementedFor(Type type)
 		{
-			return typeof(T).GetInterfaces().Any(@interface => @interface == typeof(IStable));
+			return type.GetInterfaces().Any(@interface => @interface == typeof(IStable));
 		}
 	}
 }

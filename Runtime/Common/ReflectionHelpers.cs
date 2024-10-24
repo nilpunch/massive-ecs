@@ -32,5 +32,11 @@ namespace Massive
 			}
 			return type.Name;
 		}
+
+		public static object CreateGeneric(Type genericType, Type genericArg, params object[] args)
+		{
+			var constructedType = genericType.MakeGenericType(genericArg);
+			return Activator.CreateInstance(constructedType, args);
+		}
 	}
 }

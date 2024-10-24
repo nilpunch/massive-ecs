@@ -7,7 +7,12 @@ namespace Massive
 	{
 		public static bool IsManaged<T>()
 		{
-			return typeof(T).GetInterfaces()
+			return IsManaged(typeof(T));
+		}
+
+		public static bool IsManaged(Type type)
+		{
+			return type.GetInterfaces()
 				.Any(@interface => @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(IManaged<>));
 		}
 
@@ -17,9 +22,7 @@ namespace Massive
 		public static DataSet<T> CreateMassiveManagedDataSet<T>(int setCapacity = Constants.DefaultCapacity,
 			int framesCapacity = Constants.DefaultFramesCapacity, int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous)
 		{
-			var constructedType = typeof(MassiveManagedDataSet<>).MakeGenericType(typeof(T));
-
-			return (DataSet<T>)Activator.CreateInstance(constructedType, setCapacity, framesCapacity, pageSize, packingMode);
+			return (DataSet<T>)ReflectionHelpers.CreateGeneric(typeof(MassiveManagedDataSet<>), typeof(T), setCapacity, framesCapacity, pageSize, packingMode);
 		}
 	}
 }

@@ -40,15 +40,18 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Find(int id)
+		public SparseSet Get(Type type)
 		{
-			return _setLookup.Find(id);
-		}
+			var set = _setLookup.Find(type);
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(SparseSet set)
-		{
-			return _setLookup.IndexOf(set);
+			if (set is null)
+			{
+				set = _setFactory.CreateAppropriateSet(type);
+				_setLookup.Assign(type, set);
+				SetCreated?.Invoke(set, _setLookup.IndexOf(type));
+			}
+
+			return set;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

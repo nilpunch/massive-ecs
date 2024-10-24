@@ -54,6 +54,6 @@ namespace Massive
 
 		object IDataSet.GetRaw(int id) => Get(id);
 
-		public void SetRaw(int id, object value) => Get(id) = (T)value;
+		void IDataSet.SetRaw(int id, object value) => Get(id) = (T)value;
 	}
 }

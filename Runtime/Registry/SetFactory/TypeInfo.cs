@@ -1,17 +1,18 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 namespace Massive
 {
-	internal static class TypeInfo<T>
+	internal static class TypeInfo
 	{
-		// ReSharper disable StaticMemberInGenericType
-		public static bool HasAnyFields { get; }
-		public static bool HasNoFields { get; }
-
-		static TypeInfo()
+		public static bool HasNoFields(Type type)
 		{
-			HasAnyFields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
-			HasNoFields = !HasAnyFields;
+			return !HasAnyFields(type);
+		}
+
+		public static bool HasAnyFields(Type type)
+		{
+			return type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
 		}
 	}
 }
