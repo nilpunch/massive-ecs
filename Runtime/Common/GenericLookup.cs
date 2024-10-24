@@ -107,13 +107,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(Type keyType)
 		{
-			var property = typeof(TypeLookup<>).MakeGenericType(keyType).GetProperty("Index", BindingFlags.Public | BindingFlags.Static);
+			var property = MakeTypeLookupType(keyType).GetProperty("Index", BindingFlags.Public | BindingFlags.Static);
 			return (int)property.GetValue(null);
 		}
 
-		public void Assign(Type typeKey, TAbstract item)
+		public void Assign(Type keyType, TAbstract item)
 		{
-			var typeLookup = typeof(TypeLookup<>).MakeGenericType(typeKey);
+			var typeLookup = MakeTypeLookupType(keyType);
 			
 			var typeIndex = (int)typeLookup.GetProperty("Index", BindingFlags.Public | BindingFlags.Static).GetValue(null);
 			var typeFullName = (string)typeLookup.GetProperty("FullName", BindingFlags.Public | BindingFlags.Static).GetValue(null);
@@ -126,7 +126,7 @@ namespace Massive
 			}
 
 			_lookup[typeIndex] = item;
-			_typeLookup[typeIndex] = typeKey;
+			_typeLookup[typeIndex] = keyType;
 
 			// Maintain items sorted
 			var itemId = typeFullName;
@@ -141,6 +141,11 @@ namespace Massive
 				_itemIds.Insert(insertionIndex, itemId);
 				_items.Insert(insertionIndex, item);
 			}
+		}
+
+		private Type MakeTypeLookupType(Type keyType)
+		{
+			return typeof(TypeLookup<>).MakeGenericType(typeof(TAbstract), keyType);
 		}
 
 		private static class TypeLookup<TKey>
