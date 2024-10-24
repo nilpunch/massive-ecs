@@ -60,7 +60,7 @@ namespace Massive
 
 		private SparseSet CreateDataSet<T>()
 		{
-			var massiveDataSet = ManagedUtils.IsManaged<T>()
+			var massiveDataSet = ManagedUtils.IsManaged(typeof(T))
 				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize, GetPackingModeFor(typeof(T)))
 				: new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize, GetPackingModeFor(typeof(T)));
 			((IMassive)massiveDataSet).SaveFrame();

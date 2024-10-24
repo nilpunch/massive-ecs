@@ -16,8 +16,6 @@ namespace Massive
 			_setFactory = setFactory;
 		}
 
-		public event Action<SparseSet, int> SetCreated;
-
 		public ReadOnlySpan<SparseSet> All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -33,25 +31,29 @@ namespace Massive
 			{
 				set = _setFactory.CreateAppropriateSet<TKey>();
 				_setLookup.Assign<TKey>(set);
-				SetCreated?.Invoke(set, _setLookup.IndexOf<TKey>());
 			}
 
 			return set;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Get(Type type)
+		public SparseSet Get(Type keyType)
 		{
-			var set = _setLookup.Find(type);
+			var set = _setLookup.Find(keyType);
 
 			if (set is null)
 			{
-				set = _setFactory.CreateAppropriateSet(type);
-				_setLookup.Assign(type, set);
-				SetCreated?.Invoke(set, _setLookup.IndexOf(type));
+				set = _setFactory.CreateAppropriateSet(keyType);
+				_setLookup.Assign(keyType, set);
 			}
 
 			return set;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Assign(Type type, SparseSet sparseSet)
+		{
+			_setLookup.Assign(type, sparseSet);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -5,11 +5,6 @@ namespace Massive
 {
 	public static class ManagedUtils
 	{
-		public static bool IsManaged<T>()
-		{
-			return IsManaged(typeof(T));
-		}
-
 		public static bool IsManaged(Type type)
 		{
 			return type.GetInterfaces()
