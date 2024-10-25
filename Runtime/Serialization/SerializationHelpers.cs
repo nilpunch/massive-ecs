@@ -11,6 +11,29 @@ namespace Massive.Serialization
 	{
 		private static readonly byte[] s_buffer4Bytes = new byte[4];
 
+		public static void WriteEntities(Entities entities, Stream stream)
+		{
+			WriteInt(entities.Count, stream);
+			WriteInt(entities.MaxId, stream);
+
+			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
+			stream.Write(MemoryMarshal.Cast<uint, byte>(entities.Reuses.AsSpan(0, entities.MaxId)));
+			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
+		}
+
+		public static void ReadEntities(Entities entities, Stream stream)
+		{
+			entities.Count = ReadInt(stream);
+			entities.MaxId = ReadInt(stream);
+
+			entities.ResizePacked(entities.MaxId);
+			entities.ResizeSparse(entities.MaxId);
+
+			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
+			stream.Read(MemoryMarshal.Cast<uint, byte>(entities.Reuses.AsSpan(0, entities.MaxId)));
+			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
+		}
+		
 		public static void WriteSparseSet(SparseSet set, Stream stream)
 		{
 			WriteInt(set.Count, stream);

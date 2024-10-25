@@ -7,34 +7,18 @@ namespace Massive.Serialization
 	public class RegistrySerializer : IRegistrySerializer
 	{
 		private readonly Dictionary<Type, IDataSetSerializer> _customSerializers = new Dictionary<Type, IDataSetSerializer>();
-		private readonly List<IRegistrySerializer> _serializers = new List<IRegistrySerializer>();
-		private readonly HashSet<Type> _serializedTypes = new HashSet<Type>();
-
-		public RegistrySerializer()
-		{
-			_serializers.Add(new EntitiesSerializer());
-		}
 
 		public void AddCustomSerializer(Type type, IDataSetSerializer dataSetSerializer)
 		{
 			_customSerializers[type] = dataSetSerializer;
 		}
 
-		public void AddNonOwningGroup<TInclude>()
-			where TInclude : IIncludeSelector, new()
-		{
-			AddNonOwningGroup<TInclude, None>();
-		}
-
-		public void AddNonOwningGroup<TInclude, TExclude>()
-			where TInclude : IIncludeSelector, new()
-			where TExclude : IExcludeSelector, new()
-		{
-			_serializers.Add(new NonOwningGroupSerializer<TInclude, TExclude>());
-		}
-
 		public void Serialize(Registry registry, Stream stream)
 		{
+			// Entities
+			SerializationHelpers.WriteEntities(registry.Entities, stream);
+
+			// Sets
 			SerializationHelpers.WriteInt(registry.SetRegistry.All.Length, stream);
 			foreach (var sparseSet in registry.SetRegistry.All)
 			{
@@ -64,9 +48,27 @@ namespace Massive.Serialization
 				}
 			}
 
-			foreach (var registrySerializer in _serializers)
+			// Groups
+			List<IGroup> syncedGroups = new List<IGroup>();
+			foreach (var group in registry.GroupRegistry.All)
 			{
-				registrySerializer.Serialize(registry, stream);
+				if (group.IsSynced)
+				{
+					syncedGroups.Add(group);
+				}
+			}
+			SerializationHelpers.WriteInt(syncedGroups.Count, stream);
+			foreach (var group in syncedGroups)
+			{
+				var (includeSelector, excludeSelector, ownSelector) = registry.GroupRegistry.GetSelectorsOfGroup(group);
+				SerializationHelpers.WriteType(includeSelector, stream);
+				SerializationHelpers.WriteType(excludeSelector, stream);
+				SerializationHelpers.WriteType(ownSelector, stream);
+
+				if (group is IOwningGroup)
+				{
+					SerializationHelpers.WriteSparseSet(group.MainSet, stream);
+				}
 			}
 		}
 
@@ -77,6 +79,10 @@ namespace Massive.Serialization
 				set.Clear();
 			}
 
+			// Entities
+			SerializationHelpers.ReadEntities(registry.Entities, stream);
+
+			// Sets
 			var setCount = SerializationHelpers.ReadInt(stream);
 			for (var i = 0; i < setCount; i++)
 			{
@@ -107,9 +113,20 @@ namespace Massive.Serialization
 				}
 			}
 
-			foreach (var registrySerializer in _serializers)
+			// Groups
+			int groupCount = SerializationHelpers.ReadInt(stream);
+			for (int i = 0; i < groupCount; i++)
 			{
-				registrySerializer.Deserialize(registry, stream);
+				var includeSelector = SerializationHelpers.ReadType(stream);
+				var excludeSelector = SerializationHelpers.ReadType(stream);
+				var ownSelector = SerializationHelpers.ReadType(stream);
+
+				var group = registry.GroupRegistry.Get(includeSelector, excludeSelector, ownSelector);
+
+				if (group is IOwningGroup)
+				{
+					SerializationHelpers.ReadSparseSet(group.MainSet, stream);
+				}
 			}
 		}
 	}
