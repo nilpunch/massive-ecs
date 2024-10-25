@@ -6,11 +6,11 @@ namespace Massive.Serialization
 {
 	public class RegistrySerializer : IRegistrySerializer
 	{
-		private readonly Dictionary<Type, IDataSetSerializer> _customSerializers = new Dictionary<Type, IDataSetSerializer>();
+		private readonly Dictionary<Type, IDataSerializer> _customSerializers = new Dictionary<Type, IDataSerializer>();
 
-		public void AddCustomSerializer(Type type, IDataSetSerializer dataSetSerializer)
+		public void AddCustomSerializer(Type type, IDataSerializer dataSerializer)
 		{
-			_customSerializers[type] = dataSetSerializer;
+			_customSerializers[type] = dataSerializer;
 		}
 
 		public void Serialize(Registry registry, Stream stream)
@@ -34,17 +34,17 @@ namespace Massive.Serialization
 
 				if (_customSerializers.TryGetValue(setType, out var customSerializer))
 				{
-					customSerializer.Write(dataSet, stream);
+					customSerializer.Write(dataSet.Data, sparseSet.Count, stream);
 					continue;
 				}
 
-				if (dataSet.DataType.IsUnmanaged())
+				if (dataSet.Data.ElementType.IsUnmanaged())
 				{
-					SerializationHelpers.WriteUnmanagedPagedArray(dataSet.Data, dataSet.Count, stream);
+					SerializationHelpers.WriteUnmanagedPagedArray(dataSet.Data, sparseSet.Count, stream);
 				}
 				else
 				{
-					SerializationHelpers.WriteManagedPagedArray(dataSet.Data, dataSet.Count, stream);
+					SerializationHelpers.WriteManagedPagedArray(dataSet.Data, sparseSet.Count, stream);
 				}
 			}
 
@@ -74,11 +74,6 @@ namespace Massive.Serialization
 
 		public void Deserialize(Registry registry, Stream stream)
 		{
-			foreach (var set in registry.SetRegistry.All)
-			{
-				set.Clear();
-			}
-
 			// Entities
 			SerializationHelpers.ReadEntities(registry.Entities, stream);
 
@@ -99,17 +94,17 @@ namespace Massive.Serialization
 
 				if (_customSerializers.TryGetValue(setType, out var customSerializer))
 				{
-					customSerializer.Read(dataSet, stream);
+					customSerializer.Read(dataSet.Data, sparseSet.Count, stream);
 					continue;
 				}
 
-				if (dataSet.DataType.IsUnmanaged())
+				if (dataSet.Data.ElementType.IsUnmanaged())
 				{
-					SerializationHelpers.ReadUnmanagedPagedArray(dataSet.Data, dataSet.Count, stream);
+					SerializationHelpers.ReadUnmanagedPagedArray(dataSet.Data, sparseSet.Count, stream);
 				}
 				else
 				{
-					SerializationHelpers.ReadManagedPagedArray(dataSet.Data, dataSet.Count, stream);
+					SerializationHelpers.ReadManagedPagedArray(dataSet.Data, sparseSet.Count, stream);
 				}
 			}
 

@@ -1,11 +1,8 @@
-using System;
-
 namespace Massive
 {
-	public interface IDataSet : IIdsSource
+	public interface IDataSet
 	{
 		IPagedArray Data { get; }
-		Type DataType { get; }
 
 		void CopyData(int sourceId, int targetId);
 

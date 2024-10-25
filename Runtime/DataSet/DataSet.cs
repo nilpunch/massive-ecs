@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -51,8 +50,6 @@ namespace Massive
 		}
 
 		IPagedArray IDataSet.Data => Data;
-
-		Type IDataSet.DataType => typeof(T);
 
 		object IDataSet.GetRaw(int id) => Get(id);
 

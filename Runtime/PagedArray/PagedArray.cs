@@ -1,20 +1,9 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	public interface IPagedArray
-	{
-		int PageSize { get; }
-
-		Type DataType { get; }
-
-		Array GetPage(int page);
-		void EnsurePage(int page);
-	}
-
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks | Option.DivideByZeroChecks, false)]
 	public class PagedArray<T> : IPagedArray
 	{
@@ -45,7 +34,7 @@ namespace Massive
 
 		public int PagesCount => Pages.Length;
 
-		public Type DataType => typeof(T);
+		public Type ElementType => typeof(T);
 
 		public ref T this[int index]
 		{

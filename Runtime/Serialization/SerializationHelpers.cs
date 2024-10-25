@@ -33,7 +33,7 @@ namespace Massive.Serialization
 			stream.Read(MemoryMarshal.Cast<uint, byte>(entities.Reuses.AsSpan(0, entities.MaxId)));
 			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
 		}
-		
+
 		public static void WriteSparseSet(SparseSet set, Stream stream)
 		{
 			WriteInt(set.Count, stream);
@@ -46,7 +46,6 @@ namespace Massive.Serialization
 		public static void ReadSparseSet(SparseSet set, Stream stream)
 		{
 			set.Count = ReadInt(stream);
-
 			var sparseCapacity = ReadInt(stream);
 
 			set.ResizePacked(set.Count);
@@ -58,13 +57,12 @@ namespace Massive.Serialization
 
 		public static unsafe void WriteUnmanagedPagedArray(IPagedArray pagedArray, int count, Stream stream)
 		{
-			var underlyingType = pagedArray.DataType.IsEnum ? Enum.GetUnderlyingType(pagedArray.DataType) : pagedArray.DataType;
+			var underlyingType = pagedArray.ElementType.IsEnum ? Enum.GetUnderlyingType(pagedArray.ElementType) : pagedArray.ElementType;
 			var sizeOfItem = Marshal.SizeOf(underlyingType);
 
 			foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedArray.PageSize, count))
 			{
-				var page = pagedArray.GetPage(pageIndex);
-				var handle = GCHandle.Alloc(page, GCHandleType.Pinned);
+				var handle = GCHandle.Alloc(pagedArray.GetPage(pageIndex), GCHandleType.Pinned);
 				var pageAsSpan = new Span<byte>(handle.AddrOfPinnedObject().ToPointer(), pageLength * sizeOfItem);
 				stream.Write(pageAsSpan);
 				handle.Free();
@@ -73,15 +71,14 @@ namespace Massive.Serialization
 
 		public static unsafe void ReadUnmanagedPagedArray(IPagedArray pagedArray, int count, Stream stream)
 		{
-			var underlyingType = pagedArray.DataType.IsEnum ? Enum.GetUnderlyingType(pagedArray.DataType) : pagedArray.DataType;
+			var underlyingType = pagedArray.ElementType.IsEnum ? Enum.GetUnderlyingType(pagedArray.ElementType) : pagedArray.ElementType;
 			var sizeOfItem = Marshal.SizeOf(underlyingType);
 
 			foreach (var (pageIndex, pageLength, _) in new PageSequence(pagedArray.PageSize, count))
 			{
 				pagedArray.EnsurePage(pageIndex);
 
-				var page = pagedArray.GetPage(pageIndex);
-				var handle = GCHandle.Alloc(page, GCHandleType.Pinned);
+				var handle = GCHandle.Alloc(pagedArray.GetPage(pageIndex), GCHandleType.Pinned);
 				var pageAsSpan = new Span<byte>(handle.AddrOfPinnedObject().ToPointer(), pageLength * sizeOfItem);
 				stream.Read(pageAsSpan);
 				handle.Free();
@@ -91,7 +88,7 @@ namespace Massive.Serialization
 		public static void WriteManagedPagedArray(IPagedArray pagedArray, int count, Stream stream)
 		{
 			var binaryFormatter = new BinaryFormatter();
-			var buffer = Array.CreateInstance(pagedArray.DataType, count);
+			var buffer = Array.CreateInstance(pagedArray.ElementType, count);
 
 			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(pagedArray.PageSize, count))
 			{
