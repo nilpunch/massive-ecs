@@ -1,5 +1,20 @@
 # Changelog
 
+## 15.3.0 - October 25, 2024
+
+Major serialization rework and addition of reflection toolset.
+
+- Changed: RegistrySerializer no longer requires manual setup and works automatically in most cases.
+  Customization remains available.
+- Changed: Renamed `IDataSetSerializer` to `IDataSerializer` with slight API modifications.
+- Added: Support for Type argument in addition to generic ones for:
+  - ISetFactory.CreateAppropirateSet(Component)
+  - SetRegistry.Get(Component)
+  - GroupRegistry.Get(Include,Exclude,Own)
+- Added: Methods to work with raw data for `IDataSet`.
+- Added: Non-generic `IPagedArray` interface for `PagedArray<T>`.
+- Fixed: `Create<T>()` and `CreateEntity<T>()` now do not initialize data, aligning with `Assign<T>()` behavior.
+
 ## 15.2.0 - October 19, 2024
 
 - Added: `FullStability` option for Registry.
