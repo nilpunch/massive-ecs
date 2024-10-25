@@ -12,7 +12,7 @@ namespace Massive
 		private readonly FastList<string> _itemIds = new FastList<string>();
 		private readonly FastList<TAbstract> _items = new FastList<TAbstract>();
 		private TAbstract[] _lookup = new TAbstract[Constants.DefaultCapacity];
-		private Type[] _typeLookup = new Type[Constants.DefaultCapacity];
+		private Type[] _keyLookup = new Type[Constants.DefaultCapacity];
 
 		public ReadOnlySpan<TAbstract> All
 		{
@@ -57,9 +57,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Type TypeOf(TAbstract item)
+		public Type GetKey(TAbstract item)
 		{
-			return _typeLookup[Array.IndexOf(_lookup, item)];
+			return _keyLookup[Array.IndexOf(_lookup, item)];
 		}
 
 		public void Assign<TKey>(TAbstract item)
@@ -70,11 +70,11 @@ namespace Massive
 			if (typeIndex >= _lookup.Length)
 			{
 				Array.Resize(ref _lookup, MathHelpers.NextPowerOf2(typeIndex + 1));
-				Array.Resize(ref _typeLookup, MathHelpers.NextPowerOf2(typeIndex + 1));
+				Array.Resize(ref _keyLookup, MathHelpers.NextPowerOf2(typeIndex + 1));
 			}
 
 			_lookup[typeIndex] = item;
-			_typeLookup[typeIndex] = typeof(TKey);
+			_keyLookup[typeIndex] = typeof(TKey);
 
 			// Maintain items sorted
 			var itemId = TypeLookup<TKey>.FullName;
@@ -92,9 +92,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public TAbstract Find(Type keyType)
+		public TAbstract Find(Type key)
 		{
-			var typeIndex = IndexOf(keyType);
+			var typeIndex = IndexOf(key);
 
 			if (typeIndex >= _lookup.Length)
 			{
@@ -105,9 +105,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(Type keyType)
+		public int IndexOf(Type key)
 		{
-			var property = MakeTypeLookupType(keyType).GetProperty("Index", BindingFlags.Public | BindingFlags.Static);
+			var property = MakeTypeLookupType(key).GetProperty("Index", BindingFlags.Public | BindingFlags.Static);
 			return (int)property.GetValue(null);
 		}
 
@@ -122,11 +122,11 @@ namespace Massive
 			if (typeIndex >= _lookup.Length)
 			{
 				Array.Resize(ref _lookup, MathHelpers.NextPowerOf2(typeIndex + 1));
-				Array.Resize(ref _typeLookup, MathHelpers.NextPowerOf2(typeIndex + 1));
+				Array.Resize(ref _keyLookup, MathHelpers.NextPowerOf2(typeIndex + 1));
 			}
 
 			_lookup[typeIndex] = item;
-			_typeLookup[typeIndex] = keyType;
+			_keyLookup[typeIndex] = keyType;
 
 			// Maintain items sorted
 			var itemId = typeFullName;

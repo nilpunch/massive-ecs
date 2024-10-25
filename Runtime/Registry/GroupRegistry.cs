@@ -204,8 +204,8 @@ namespace Massive
 
 		public (Type IncludeSelector, Type ExcludeSelector, Type OwnSelector) GetSelectorsOfGroup(IGroup group)
 		{
-			var groupType = _groupLookup.TypeOf(group);
-			var genericArguments = groupType.GetGenericArguments();
+			var groupKey = _groupLookup.GetKey(group);
+			var genericArguments = groupKey.GetGenericArguments();
 			return (genericArguments[0], genericArguments[1], genericArguments[2]);
 		}
 

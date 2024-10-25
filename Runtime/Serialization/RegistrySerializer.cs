@@ -22,7 +22,7 @@ namespace Massive.Serialization
 			SerializationHelpers.WriteInt(registry.SetRegistry.All.Length, stream);
 			foreach (var sparseSet in registry.SetRegistry.All)
 			{
-				var setType = registry.SetRegistry.TypeOf(sparseSet);
+				var setType = registry.SetRegistry.GetKey(sparseSet);
 
 				SerializationHelpers.WriteType(setType, stream);
 				SerializationHelpers.WriteSparseSet(sparseSet, stream);

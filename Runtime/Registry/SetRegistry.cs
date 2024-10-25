@@ -57,9 +57,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Type TypeOf(SparseSet set)
+		public Type GetKey(SparseSet set)
 		{
-			return _setLookup.TypeOf(set);
+			return _setLookup.GetKey(set);
 		}
 	}
 }
