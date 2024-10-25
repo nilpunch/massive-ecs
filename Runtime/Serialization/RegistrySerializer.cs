@@ -65,7 +65,7 @@ namespace Massive.Serialization
 				SerializationHelpers.WriteType(excludeSelector, stream);
 				SerializationHelpers.WriteType(ownSelector, stream);
 
-				if (group is IOwningGroup)
+				if (group is not IOwningGroup)
 				{
 					SerializationHelpers.WriteSparseSet(group.MainSet, stream);
 				}
@@ -123,7 +123,7 @@ namespace Massive.Serialization
 
 				var group = registry.GroupRegistry.Get(includeSelector, excludeSelector, ownSelector);
 
-				if (group is IOwningGroup)
+				if (group is not IOwningGroup)
 				{
 					SerializationHelpers.ReadSparseSet(group.MainSet, stream);
 				}
