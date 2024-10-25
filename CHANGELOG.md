@@ -7,7 +7,7 @@ Major serialization rework and addition of reflection toolset.
 - Changed: RegistrySerializer no longer requires manual setup and works automatically in most cases.
   Customization remains available.
 - Changed: Renamed `IDataSetSerializer` to `IDataSerializer` with slight API modifications.
-- Added: Support for Type argument in addition to generic ones for:
+- Added: Support for `Type` argument in addition to generic ones for:
   - ISetFactory.CreateAppropirateSet(Component)
   - SetRegistry.Get(Component)
   - GroupRegistry.Get(Include,Exclude,Own)
