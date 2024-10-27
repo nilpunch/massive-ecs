@@ -10,6 +10,8 @@ namespace Massive
 
 		void EnsureSynced();
 
+		void Desync();
+
 		bool IsOwning(SparseSet set);
 
 		int[] IIdsSource.Ids

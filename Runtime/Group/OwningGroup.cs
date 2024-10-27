@@ -65,6 +65,11 @@ namespace Massive
 			}
 		}
 
+		public void Desync()
+		{
+			IsSynced = false;
+		}
+
 		public bool IsOwning(SparseSet set)
 		{
 			return Owned.Contains(set);

@@ -165,6 +165,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void ClearWithoutNotify()
+		{
+			Array.Fill(Sparse, Constants.InvalidId);
+			Count = 0;
+			NextHole = MaxCount;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetIndex(int id)
 		{
 			return Sparse[id];
