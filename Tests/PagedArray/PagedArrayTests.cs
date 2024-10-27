@@ -17,9 +17,9 @@ namespace Massive.Tests
 		{
 			var sequence = new PageSequence(Constants.DefaultPageSize, length);
 
-			foreach ((int PageIndex, int PageLength, int IndexOffset) i in sequence)
+			foreach (var (_, pageLength, _) in sequence)
 			{
-				Assert.AreNotEqual(0, length);
+				Assert.AreNotEqual(0, pageLength);
 			}
 		}
 		
