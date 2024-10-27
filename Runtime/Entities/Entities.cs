@@ -183,7 +183,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureCapacityForIndex(int index)
+		public void EnsureCapacityForIndex(int index)
 		{
 			if (index >= Sparse.Length)
 			{

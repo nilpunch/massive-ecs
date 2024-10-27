@@ -272,7 +272,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsurePackedForIndex(int index)
+		public void EnsurePackedForIndex(int index)
 		{
 			if (index >= PackedCapacity)
 			{
@@ -281,7 +281,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureSparseForIndex(int index)
+		public void EnsureSparseForIndex(int index)
 		{
 			if (index >= SparseCapacity)
 			{

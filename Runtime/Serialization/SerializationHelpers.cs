@@ -26,8 +26,7 @@ namespace Massive.Serialization
 			entities.Count = ReadInt(stream);
 			entities.MaxId = ReadInt(stream);
 
-			entities.ResizePacked(entities.MaxId);
-			entities.ResizeSparse(entities.MaxId);
+			entities.EnsureCapacityForIndex(entities.MaxId);
 
 			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
 			stream.Read(MemoryMarshal.Cast<uint, byte>(entities.Reuses.AsSpan(0, entities.MaxId)));
@@ -38,6 +37,7 @@ namespace Massive.Serialization
 		{
 			WriteInt(set.Count, stream);
 			WriteInt(set.SparseCapacity, stream);
+			WriteInt(set.NextHole, stream);
 
 			stream.Write(MemoryMarshal.Cast<int, byte>(set.Packed.AsSpan(0, set.Count)));
 			stream.Write(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, set.SparseCapacity)));
@@ -46,13 +46,18 @@ namespace Massive.Serialization
 		public static void ReadSparseSet(SparseSet set, Stream stream)
 		{
 			set.Count = ReadInt(stream);
-			var sparseCapacity = ReadInt(stream);
+			var sparseCount = ReadInt(stream);
+			set.NextHole = ReadInt(stream);
 
-			set.ResizePacked(set.Count);
-			set.ResizeSparse(sparseCapacity);
+			set.EnsurePackedForIndex(set.Count - 1);
+			set.EnsureSparseForIndex(sparseCount - 1);
 
 			stream.Read(MemoryMarshal.Cast<int, byte>(set.Packed.AsSpan(0, set.Count)));
-			stream.Read(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, set.SparseCapacity)));
+			stream.Read(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, sparseCount)));
+			if (sparseCount < set.SparseCapacity)
+			{
+				Array.Fill(set.Sparse, Constants.InvalidId, sparseCount, set.SparseCapacity - sparseCount);
+			}
 		}
 
 		public static unsafe void WriteUnmanagedPagedArray(IPagedArray pagedArray, int count, Stream stream)
