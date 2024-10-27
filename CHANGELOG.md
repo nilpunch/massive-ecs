@@ -1,5 +1,10 @@
 # Changelog
 
+## 15.3.1 - October 27, 2024
+
+- Fixed: Forgot to serialize the pointer to the next hole in the sparse set.
+- Fixed: Removed unnecessary resizes during deserialization to reduce allocations.
+
 ## 15.3.0 - October 25, 2024
 
 Major serialization rework and addition of reflection toolset.
