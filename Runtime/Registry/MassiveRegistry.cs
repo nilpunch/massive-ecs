@@ -3,6 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace Massive
 {
+	/// <summary>
+	/// Rollback extension for <see cref="Massive.Registry"/>.
+	/// </summary>
 	public class MassiveRegistry : Registry, IMassive
 	{
 		private readonly MassiveEntities _massiveEntities;

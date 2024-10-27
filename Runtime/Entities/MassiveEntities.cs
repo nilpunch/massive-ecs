@@ -4,6 +4,9 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	/// <summary>
+	/// Rollback extension for <see cref="Massive.Entities"/>.
+	/// </summary>
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class MassiveEntities : Entities, IMassive
 	{

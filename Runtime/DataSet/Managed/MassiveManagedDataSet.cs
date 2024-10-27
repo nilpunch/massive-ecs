@@ -3,7 +3,7 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="Massive.MassiveSparseSet"/> with managed data support.
+	/// Rollback extension for <see cref="Massive.DataSet{T}"/> with managed data support.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class MassiveManagedDataSet<T> : MassiveDataSet<T> where T : IManaged<T>

@@ -211,6 +211,24 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsurePackedForIndex(int index)
+		{
+			if (index >= PackedCapacity)
+			{
+				ResizePacked(MathHelpers.NextPowerOf2(index + 1));
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsureSparseForIndex(int index)
+		{
+			if (index >= SparseCapacity)
+			{
+				ResizeSparse(MathHelpers.NextPowerOf2(index + 1));
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizePacked(int capacity)
 		{
 			Array.Resize(ref _packed, capacity);
@@ -269,24 +287,6 @@ namespace Massive
 		{
 			Sparse[id] = index;
 			Packed[index] = id;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsurePackedForIndex(int index)
-		{
-			if (index >= PackedCapacity)
-			{
-				ResizePacked(MathHelpers.NextPowerOf2(index + 1));
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureSparseForIndex(int index)
-		{
-			if (index >= SparseCapacity)
-			{
-				ResizeSparse(MathHelpers.NextPowerOf2(index + 1));
-			}
 		}
 	}
 }
