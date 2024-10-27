@@ -82,10 +82,11 @@ namespace Massive.Serialization
 			for (var i = 0; i < setCount; i++)
 			{
 				var setKey = SerializationHelpers.ReadType(stream);
-				var sparseSet = registry.SetRegistry.Get(setKey);
-				SerializationHelpers.ReadSparseSet(sparseSet, stream);
 
+				var sparseSet = registry.SetRegistry.Get(setKey);
 				deserializedSets.Add(sparseSet);
+
+				SerializationHelpers.ReadSparseSet(sparseSet, stream);
 
 				if (sparseSet is not IDataSet dataSet)
 				{
