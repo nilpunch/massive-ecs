@@ -13,6 +13,24 @@ namespace Massive.Tests
 		[TestCase(Constants.DefaultPageSize * 2)]
 		[TestCase(Constants.DefaultPageSize * 2 + 1)]
 		[TestCase(Constants.DefaultPageSize * 2 - 1)]
+		public void PageSequence_ShouldNotReturnZeroLengthPage(int length)
+		{
+			var sequence = new PageSequence(Constants.DefaultPageSize, length);
+
+			foreach ((int PageIndex, int PageLength, int IndexOffset) i in sequence)
+			{
+				Assert.AreNotEqual(0, length);
+			}
+		}
+		
+		[TestCase(0)]
+		[TestCase(1)]
+		[TestCase(Constants.DefaultPageSize)]
+		[TestCase(Constants.DefaultPageSize + 1)]
+		[TestCase(Constants.DefaultPageSize - 1)]
+		[TestCase(Constants.DefaultPageSize * 2)]
+		[TestCase(Constants.DefaultPageSize * 2 + 1)]
+		[TestCase(Constants.DefaultPageSize * 2 - 1)]
 		public void PagedSpan_ShouldIterateOverAllElements(int length)
 		{
 			var pagedArray = new PagedArray<int>(Constants.DefaultPageSize);
