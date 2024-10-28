@@ -106,5 +106,26 @@ namespace Massive
 
 			return set3;
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SparseSet GetMinimalSet(SparseSet set1, SparseSet set2, SparseSet set3, SparseSet set4)
+		{
+			if (set1.Count <= set2.Count && set1.Count <= set3.Count && set1.Count <= set4.Count)
+			{
+				return set1;
+			}
+
+			if (set2.Count <= set1.Count && set2.Count <= set3.Count && set2.Count <= set4.Count)
+			{
+				return set2;
+			}
+
+			if (set3.Count <= set1.Count && set3.Count <= set2.Count && set3.Count <= set4.Count)
+			{
+				return set3;
+			}
+
+			return set4;
+		}
 	}
 }

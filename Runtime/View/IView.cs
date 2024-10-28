@@ -15,5 +15,8 @@
 
 		void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>;
+
+		void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
+			where TAction : IEntityAction<T1, T2, T3, T4>;
 	}
 }

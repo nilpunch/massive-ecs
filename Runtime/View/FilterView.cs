@@ -142,6 +142,48 @@ namespace Massive
 			}
 		}
 
+		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
+			where TAction : IEntityAction<T1, T2, T3, T4>
+		{
+			var dataSet1 = Registry.DataSet<T1>();
+			var dataSet2 = Registry.DataSet<T2>();
+			var dataSet3 = Registry.DataSet<T3>();
+			var dataSet4 = Registry.DataSet<T4>();
+
+			var data1 = dataSet1.Data;
+			var data2 = dataSet2.Data;
+			var data3 = dataSet3.Data;
+			var data4 = dataSet4.Data;
+			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
+			var set = SetHelpers.GetMinimalSet(minData, Filter.Include);
+
+			for (int i = set.Count - 1; i >= 0; i--)
+			{
+				if (i > set.Count)
+				{
+					i = set.Count;
+					continue;
+				}
+
+				var id = set.Ids[i];
+				var index1 = dataSet1.GetIndexOrInvalid(id);
+				var index2 = dataSet2.GetIndexOrInvalid(id);
+				var index3 = dataSet3.GetIndexOrInvalid(id);
+				var index4 = dataSet4.GetIndexOrInvalid(id);
+				if (index1 >= 0
+				    && index2 >= 0
+				    && index3 >= 0
+				    && index4 >= 0
+				    && Filter.ContainsId(id))
+				{
+					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
+					{
+						break;
+					}
+				}
+			}
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
