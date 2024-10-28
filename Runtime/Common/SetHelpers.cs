@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -8,10 +7,10 @@ namespace Massive
 	public static class SetHelpers
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int CountAssignedInAll(int id, ArraySegment<SparseSet> sets)
+		public static int CountAssignedInAll(int id, SparseSet[] sets)
 		{
 			int counter = 0;
-			for (var i = 0; i < sets.Count; i++)
+			for (var i = 0; i < sets.Length; i++)
 			{
 				var set = sets[i];
 				if (set.IsAssigned(id))
@@ -24,10 +23,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool AssignedInAll(int id, ArraySegment<SparseSet> sets)
+		public static bool AssignedInAll(int id, SparseSet[] sets)
 		{
 			int shouldNotBecomeNegative = 0;
-			for (int i = 0; i < sets.Count; i++)
+			for (int i = 0; i < sets.Length; i++)
 			{
 				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
 			}
@@ -36,10 +35,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool NotAssignedInAll(int id, ArraySegment<SparseSet> sets)
+		public static bool NotAssignedInAll(int id, SparseSet[] sets)
 		{
 			int shouldStayNegative = ~0;
-			for (int i = 0; i < sets.Count; i++)
+			for (int i = 0; i < sets.Length; i++)
 			{
 				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
 			}
@@ -48,11 +47,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static SparseSet GetMinimalSet(ArraySegment<SparseSet> sets)
+		public static SparseSet GetMinimalSet(SparseSet[] sets)
 		{
 			SparseSet minimal = sets[0];
 
-			for (int i = 1; i < sets.Count; i++)
+			for (int i = 1; i < sets.Length; i++)
 			{
 				if (minimal.Count > sets[i].Count)
 				{
@@ -64,11 +63,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static SparseSet GetMinimalSet(SparseSet first, ArraySegment<SparseSet> sets)
+		public static SparseSet GetMinimalSet(SparseSet first, SparseSet[] sets)
 		{
 			SparseSet minimal = first;
 
-			for (int i = 0; i < sets.Count; i++)
+			for (int i = 0; i < sets.Length; i++)
 			{
 				if (minimal.Count > sets[i].Count)
 				{

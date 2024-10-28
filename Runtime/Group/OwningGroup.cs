@@ -6,15 +6,15 @@ namespace Massive
 {
 	public class OwningGroup : IOwningGroup
 	{
-		private ArraySegment<SparseSet> OwnedPlusIncluded { get; }
+		private SparseSet[] OwnedPlusIncluded { get; }
 
-		private ArraySegment<SparseSet> OwnedMinusFirstPlusIncluded { get; }
+		private SparseSet[] OwnedMinusFirstPlusIncluded { get; }
 
-		private ArraySegment<SparseSet> Owned { get; }
+		private SparseSet[] Owned { get; }
 
-		private ArraySegment<SparseSet> Include { get; }
+		private SparseSet[] Include { get; }
 
-		private ArraySegment<SparseSet> Exclude { get; }
+		private SparseSet[] Exclude { get; }
 
 		public int Count { get; protected set; }
 
@@ -123,7 +123,7 @@ namespace Massive
 
 		private void SwapEntry(int id, int swapDense)
 		{
-			for (var i = 0; i < Owned.Count; i++)
+			for (var i = 0; i < Owned.Length; i++)
 			{
 				var set = Owned[i];
 				set.SwapPacked(set.GetIndex(id), swapDense);

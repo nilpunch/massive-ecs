@@ -4,14 +4,14 @@ namespace Massive
 {
 	public class IncludeFilter : IFilter
 	{
-		private readonly ArraySegment<SparseSet> _include;
+		private readonly SparseSet[] _include;
 
-		public IncludeFilter(ArraySegment<SparseSet> include)
+		public IncludeFilter(SparseSet[] include)
 		{
 			_include = include;
 		}
 
-		public ArraySegment<SparseSet> Include => _include;
+		public SparseSet[] Include => _include;
 
 		public bool ContainsId(int id)
 		{

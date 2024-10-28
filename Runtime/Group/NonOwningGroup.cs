@@ -6,9 +6,9 @@ namespace Massive
 {
 	public class NonOwningGroup : IGroup
 	{
-		private ArraySegment<SparseSet> Include { get; }
+		private SparseSet[] Include { get; }
 
-		private ArraySegment<SparseSet> Exclude { get; }
+		private SparseSet[] Exclude { get; }
 
 		public int Count => MainSet.Count;
 

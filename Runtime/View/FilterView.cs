@@ -19,7 +19,7 @@ namespace Massive
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			IIdsSource idsSource = Filter.Include.Count == 0
+			IIdsSource idsSource = Filter.Include.Length == 0
 				? Registry.Entities
 				: SetHelpers.GetMinimalSet(Filter.Include);
 
@@ -145,7 +145,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
-			if (Filter.Include.Count == 0)
+			if (Filter.Include.Length == 0)
 			{
 				return new Enumerator(Registry.Entities, Filter);
 			}

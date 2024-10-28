@@ -4,15 +4,15 @@ namespace Massive
 {
 	public class Filter : IFilter
 	{
-		private readonly ArraySegment<SparseSet> _exclude;
-		private readonly ArraySegment<SparseSet> _include;
+		private readonly SparseSet[] _exclude;
+		private readonly SparseSet[] _include;
 
-		public Filter(ArraySegment<SparseSet> include, ArraySegment<SparseSet> exclude)
+		public Filter(SparseSet[] include, SparseSet[] exclude)
 		{
 			_include = include;
 			_exclude = exclude;
 
-			for (int i = 0; i < _exclude.Count; i++)
+			for (int i = 0; i < _exclude.Length; i++)
 			{
 				if (_include.Contains(_exclude[i]))
 				{
@@ -21,7 +21,7 @@ namespace Massive
 			}
 		}
 
-		public ArraySegment<SparseSet> Include => _include;
+		public SparseSet[] Include => _include;
 
 		public bool ContainsId(int id)
 		{
