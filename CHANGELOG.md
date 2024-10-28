@@ -1,5 +1,10 @@
 # Changelog
 
+## 15.3.2 - October 28, 2024
+
+- Fixed: `PageSequence` returned zero-length page in specific cases.
+- Changed: Replaced `ArraySegment` with direct array usage to improve performance.
+
 ## 15.3.1 - October 27, 2024
 
 - Fixed: Forgot to serialize the pointer to the next hole in the sparse set.
