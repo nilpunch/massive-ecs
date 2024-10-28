@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class OwningGroup : IOwningGroup
 	{
 		private SparseSet[] OwnedPlusIncluded { get; }

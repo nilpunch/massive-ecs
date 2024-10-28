@@ -1,7 +1,9 @@
 using System;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class ExcludeFilter : IFilter
 	{
 		private readonly SparseSet[] _exclude;

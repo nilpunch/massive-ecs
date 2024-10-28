@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class MassiveOwningGroup : OwningGroup, IMassive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;

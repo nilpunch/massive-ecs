@@ -161,18 +161,20 @@ namespace Massive
 			private readonly IIdsSource _idsSource;
 			private readonly IFilter _filter;
 			private int _index;
+			private int _current;
 
 			public Enumerator(IIdsSource idsSource, IFilter filter)
 			{
 				_idsSource = idsSource;
 				_filter = filter;
 				_index = _idsSource.Count;
+				_current = Constants.InvalidId;
 			}
 
 			public int Current
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => _idsSource.Ids[_index];
+				get => _current;
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -183,7 +185,7 @@ namespace Massive
 					_index = _idsSource.Count - 1;
 				}
 
-				while (_index >= 0 && !_filter.ContainsId(Current))
+				while (_index >= 0 && !_filter.ContainsId(_current = _idsSource.Ids[_index]))
 				{
 					--_index;
 				}
