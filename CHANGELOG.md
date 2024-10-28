@@ -3,6 +3,7 @@
 ## 15.3.2 - October 28, 2024
 
 - Fixed: `PageSequence` returned zero-length page in specific cases.
+- Fixed: Non-serialized sets and groups not being cleared after deserialization.
 - Changed: Replaced `ArraySegment` with direct array usage to improve performance.
 
 ## 15.3.1 - October 27, 2024
