@@ -80,6 +80,30 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
+		
+		[TestCaseSource(nameof(FixtureSets)), Performance]
+		public void SparseSet_IsAssigned(SparseSet set)
+		{
+			set.Clear();
+			set.ResizeSparse(0);
+			set.ResizePacked(0);
+
+			for (int i = 0; i < EntitiesCount; i++)
+			{
+				set.Assign(i);
+			}
+
+			Measure.Method(() =>
+				{
+					for (int i = 0; i < EntitiesCount; i++)
+					{
+						set.IsAssigned(i);
+					}
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
 
 		[TestCaseSource(nameof(FixtureSets)), Performance]
 		public void SparseSet_RemoveNonExisting(SparseSet set)
