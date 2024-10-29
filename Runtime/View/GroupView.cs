@@ -6,11 +6,11 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public readonly struct GroupView : IView
 	{
-		private IGroup Group { get; }
+		private Group Group { get; }
 
 		public Registry Registry { get; }
 
-		public GroupView(Registry registry, IGroup group)
+		public GroupView(Registry registry, Group group)
 		{
 			Registry = registry;
 			Group = group;
@@ -286,10 +286,10 @@ namespace Massive
 		public ref struct Enumerator
 		{
 			private readonly SparseSet _mainSet;
-			private readonly IGroup _group;
+			private readonly Group _group;
 			private int _index;
 
-			public Enumerator(IGroup group)
+			public Enumerator(Group group)
 			{
 				_group = group;
 				_mainSet = group.MainSet;

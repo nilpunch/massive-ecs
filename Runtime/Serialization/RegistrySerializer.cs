@@ -48,7 +48,7 @@ namespace Massive.Serialization
 			}
 
 			// Groups
-			List<IGroup> syncedGroups = new List<IGroup>();
+			List<Group> syncedGroups = new List<Group>();
 			foreach (var group in registry.GroupRegistry.All)
 			{
 				if (group.IsSynced)
@@ -64,7 +64,7 @@ namespace Massive.Serialization
 				SerializationHelpers.WriteType(excludeSelector, stream);
 				SerializationHelpers.WriteType(ownSelector, stream);
 
-				if (group is not IOwningGroup)
+				if (group is NonOwningGroup)
 				{
 					SerializationHelpers.WriteSparseSet(group.MainSet, stream);
 				}
@@ -118,7 +118,7 @@ namespace Massive.Serialization
 			}
 
 			// Groups
-			var deserializedGroups = new HashSet<IGroup>();
+			var deserializedGroups = new HashSet<Group>();
 			var groupCount = SerializationHelpers.ReadInt(stream);
 			for (var i = 0; i < groupCount; i++)
 			{
@@ -129,9 +129,10 @@ namespace Massive.Serialization
 				var group = registry.GroupRegistry.Get(includeSelector, excludeSelector, ownSelector);
 				deserializedGroups.Add(group);
 
-				if (group is not IOwningGroup)
+				if (group is NonOwningGroup nonOwningGroup)
 				{
 					SerializationHelpers.ReadSparseSet(group.MainSet, stream);
+					nonOwningGroup.SyncCount();
 				}
 			}
 			// Desync all remaining groups

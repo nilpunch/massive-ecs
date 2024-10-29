@@ -6,7 +6,7 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class OwningGroup : IOwningGroup
+	public class OwningGroup : Group
 	{
 		private SparseSet[] OwnedPlusIncluded { get; }
 
@@ -18,15 +18,13 @@ namespace Massive
 
 		private SparseSet[] Exclude { get; }
 
-		public int Count { get; protected set; }
+		public override bool IsSynced { get; protected set; }
 
-		public bool IsSynced { get; protected set; }
+		public OwningGroup Extended { get; set; }
 
-		public IOwningGroup Extended { get; set; }
+		public OwningGroup Base { get; set; }
 
-		public IOwningGroup Base { get; set; }
-
-		public SparseSet MainSet => Owned[0];
+		public override SparseSet MainSet => Owned[0];
 
 		public OwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
 		{
@@ -50,7 +48,7 @@ namespace Massive
 			}
 		}
 
-		public void EnsureSynced()
+		public override void EnsureSynced()
 		{
 			if (IsSynced)
 			{
@@ -67,12 +65,12 @@ namespace Massive
 			}
 		}
 
-		public void Desync()
+		public override void Desync()
 		{
 			IsSynced = false;
 		}
 
-		public bool IsOwning(SparseSet set)
+		public override bool IsOwning(SparseSet set)
 		{
 			return Owned.Contains(set);
 		}
@@ -85,6 +83,30 @@ namespace Massive
 		public bool BaseForGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude)
 		{
 			return owned.Contains(Owned) && include.Contains(Include) && exclude.Contains(Exclude);
+		}
+
+		public void AddGroupAfterThis(OwningGroup group)
+		{
+			if (Extended != null)
+			{
+				Extended.Base = group;
+				group.Extended = Extended;
+			}
+
+			group.Base = this;
+			Extended = group;
+		}
+
+		public void AddGroupBeforeThis(OwningGroup group)
+		{
+			if (Base != null)
+			{
+				Base.Extended = group;
+				group.Base = Base;
+			}
+
+			group.Extended = this;
+			Base = group;
 		}
 
 		public void AddToGroup(int id)

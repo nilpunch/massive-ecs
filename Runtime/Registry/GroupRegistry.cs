@@ -8,8 +8,8 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class GroupRegistry
 	{
-		private readonly GenericLookup<IGroup> _groupLookup = new GenericLookup<IGroup>();
-		private readonly Dictionary<SparseSet, IOwningGroup> _ownedBase = new Dictionary<SparseSet, IOwningGroup>();
+		private readonly GenericLookup<Group> _groupLookup = new GenericLookup<Group>();
+		private readonly Dictionary<SparseSet, OwningGroup> _ownedBase = new Dictionary<SparseSet, OwningGroup>();
 		private readonly SetRegistry _setRegistry;
 		private readonly IGroupFactory _groupFactory;
 
@@ -19,13 +19,13 @@ namespace Massive
 			_groupFactory = groupFactory;
 		}
 
-		public ReadOnlySpan<IGroup> All
+		public ReadOnlySpan<Group> All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _groupLookup.All;
 		}
 
-		public IGroup Get<TInclude, TExclude, TOwn>()
+		public Group Get<TInclude, TExclude, TOwn>()
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 			where TOwn : IOwnSelector, new()
@@ -55,7 +55,7 @@ namespace Massive
 			}
 
 			// Find base group for any owned set
-			IOwningGroup baseGroup = null;
+			OwningGroup baseGroup = null;
 			foreach (var ownedSet in owned)
 			{
 				if (_ownedBase.TryGetValue(ownedSet, out baseGroup))
@@ -114,7 +114,7 @@ namespace Massive
 			                    $"{typeof(TInclude).GetFullGenericName()}, {typeof(TExclude).GetFullGenericName()}>.");
 		}
 
-		public IGroup Get(Type includeSelector, Type excludeSelector, Type ownSelector)
+		public Group Get(Type includeSelector, Type excludeSelector, Type ownSelector)
 		{
 			var groupKey = typeof(Tuple<,,>).MakeGenericType(includeSelector, excludeSelector, typeof(None));
 
@@ -143,7 +143,7 @@ namespace Massive
 			}
 
 			// Find base group for any owned set
-			IOwningGroup baseGroup = null;
+			OwningGroup baseGroup = null;
 			foreach (var ownedSet in owned)
 			{
 				if (_ownedBase.TryGetValue(ownedSet, out baseGroup))
@@ -202,21 +202,21 @@ namespace Massive
 			                    $"{includeSelector.GetFullGenericName()}, {excludeSelector.GetFullGenericName()}>.");
 		}
 
-		public (Type IncludeSelector, Type ExcludeSelector, Type OwnSelector) GetSelectorsOfGroup(IGroup group)
+		public (Type IncludeSelector, Type ExcludeSelector, Type OwnSelector) GetSelectorsOfGroup(Group group)
 		{
 			var groupKey = _groupLookup.GetKey(group);
 			var genericArguments = groupKey.GetGenericArguments();
 			return (genericArguments[0], genericArguments[1], genericArguments[2]);
 		}
 
-		private IGroup RegisterAndSync<TGroupKey>(IGroup group)
+		private Group RegisterAndSync<TGroupKey>(Group group)
 		{
 			_groupLookup.Assign<TGroupKey>(group);
 			group.EnsureSynced();
 			return group;
 		}
 
-		private IGroup RegisterAndSync(Type groupKey, IGroup group)
+		private Group RegisterAndSync(Type groupKey, Group group)
 		{
 			_groupLookup.Assign(groupKey, group);
 			group.EnsureSynced();

@@ -11,14 +11,14 @@ namespace Massive
 			_framesCapacity = framesCapacity;
 		}
 
-		public IOwningGroup CreateOwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
+		public OwningGroup CreateOwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
 		{
 			var massiveOwningGroup = new MassiveOwningGroup(owned, include, exclude, _framesCapacity);
 			massiveOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
 			return massiveOwningGroup;
 		}
 
-		public IGroup CreateNonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
+		public Group CreateNonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
 		{
 			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, _framesCapacity);
 			massiveNonOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it

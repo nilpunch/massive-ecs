@@ -5,7 +5,7 @@ namespace Massive
 	public static class GroupViewExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static GroupView Group(this View view, IGroup group)
+		public static GroupView Group(this View view, Group group)
 		{
 			return new GroupView(view.Registry, group);
 		}

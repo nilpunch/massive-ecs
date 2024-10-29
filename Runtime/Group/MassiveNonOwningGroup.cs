@@ -6,7 +6,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class MassiveNonOwningGroup : NonOwningGroup, IMassive
 	{
-		private readonly IMassive _massiveGroup;
+		private readonly IMassive _massiveMainSet;
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
 		private readonly bool[] _syncedByFrames;
@@ -15,18 +15,18 @@ namespace Massive
 			: base(new MassiveSparseSet(framesCapacity), include, exclude)
 		{
 			// Fetch instance from base
-			_massiveGroup = (IMassive)MainSet;
+			_massiveMainSet = (IMassive)MainSet;
 
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
 			_syncedByFrames = new bool[framesCapacity];
 		}
 
-		public int CanRollbackFrames => _massiveGroup.CanRollbackFrames;
+		public int CanRollbackFrames => _massiveMainSet.CanRollbackFrames;
 
 		public void SaveFrame()
 		{
-			_massiveGroup.SaveFrame();
+			_massiveMainSet.SaveFrame();
 			_cyclicFrameCounter.SaveFrame();
 
 			var currentFrame = _cyclicFrameCounter.CurrentFrame;
@@ -36,12 +36,13 @@ namespace Massive
 
 		public void Rollback(int frames)
 		{
-			_massiveGroup.Rollback(frames);
+			_massiveMainSet.Rollback(frames);
 			_cyclicFrameCounter.Rollback(frames);
 
 			var rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 
 			IsSynced = _syncedByFrames[rollbackFrame];
+			SyncCount();
 		}
 	}
 }

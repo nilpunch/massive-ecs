@@ -18,7 +18,7 @@ namespace Massive.PerformanceTests
 
 		private readonly GroupSetupType _groupSetupType;
 		private readonly Registry _registry;
-		private readonly IGroup _group;
+		private readonly Group _group;
 
 		public enum GroupSetupType
 		{
@@ -36,7 +36,7 @@ namespace Massive.PerformanceTests
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static IGroup GetTestGroup(Registry registry, GroupSetupType type)
+		private static Group GetTestGroup(Registry registry, GroupSetupType type)
 		{
 			return type switch
 			{

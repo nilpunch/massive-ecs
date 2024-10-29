@@ -190,7 +190,7 @@ namespace Massive.Tests
 			Assert.AreEqual(0, owningGroup3.Count);
 		}
 
-		private IGroup SetUpGroupWithIntAndChar(Registry registry, TestGroupType testGroupType)
+		private Group SetUpGroupWithIntAndChar(Registry registry, TestGroupType testGroupType)
 		{
 			switch (testGroupType)
 			{
@@ -205,7 +205,7 @@ namespace Massive.Tests
 			}
 		}
 
-		private IGroup SetUpGroupWithIntAndWithoutChar(Registry registry, TestGroupType testGroupType)
+		private Group SetUpGroupWithIntAndWithoutChar(Registry registry, TestGroupType testGroupType)
 		{
 			switch (testGroupType)
 			{

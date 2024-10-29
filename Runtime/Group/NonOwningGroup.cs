@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class NonOwningGroup : IGroup
+	public class NonOwningGroup : Group
 	{
 		private SparseSet[] Include { get; }
 
 		private SparseSet[] Exclude { get; }
 
-		public int Count => MainSet.Count;
+		public override bool IsSynced { get; protected set; }
 
-		public bool IsSynced { get; protected set; }
-
-		public SparseSet MainSet { get; }
+		public override SparseSet MainSet { get; }
 
 		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
 			: this(new SparseSet(), include, exclude)
@@ -42,7 +41,7 @@ namespace Massive
 			}
 		}
 
-		public void EnsureSynced()
+		public override void EnsureSynced()
 		{
 			if (IsSynced)
 			{
@@ -59,12 +58,12 @@ namespace Massive
 			}
 		}
 
-		public void Desync()
+		public override void Desync()
 		{
 			IsSynced = false;
 		}
 
-		public bool IsOwning(SparseSet set)
+		public override bool IsOwning(SparseSet set)
 		{
 			return false;
 		}
@@ -74,6 +73,7 @@ namespace Massive
 			if (IsSynced && SetHelpers.AssignedInAll(id, Include) && SetHelpers.NotAssignedInAll(id, Exclude))
 			{
 				MainSet.Assign(id);
+				SyncCount();
 			}
 		}
 
@@ -82,6 +82,7 @@ namespace Massive
 			if (IsSynced)
 			{
 				MainSet.Unassign(id);
+				SyncCount();
 			}
 		}
 
@@ -91,7 +92,14 @@ namespace Massive
 			if (IsSynced && SetHelpers.AssignedInAll(id, Include) && SetHelpers.CountAssignedInAll(id, Exclude) == 1)
 			{
 				MainSet.Assign(id);
+				SyncCount();
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SyncCount()
+		{
+			Count = MainSet.Count;
 		}
 	}
 }
