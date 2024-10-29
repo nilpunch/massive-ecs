@@ -8,9 +8,12 @@ Prediction-rollback netcode has very stable nature, and is mainly used in fast p
 
 This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.
 
+[Here](https://github.com/nilpunch/bench-morpeh-leolite-massive) is a benchmark comparing Massive ECS with [Morpeh](https://github.com/scellecs/morpeh) and [LeoEcsLite](https://github.com/Leopotam/ecslite).  
+TL;DR it's totally usable.
+
 ECS features:
 
-- Fast and simple ECS without any code generation
+- No code generation
 - Support сomponents of any type
 - No deferred commands execution
 - Garbage-free API. Make in-place queries, no caching required
@@ -18,7 +21,6 @@ ECS features:
   - Use the `IStable` marker interface for components
   - Or enable full stability for the entire registry
 - Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
-- Data pagination for stable resizing during iteration
 - Full state serialization and deserialization
 - IL2CPP friendly, tested with high stripping level on PC | Android | WebGL
 - [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
@@ -29,8 +31,6 @@ Rollback features:
 - It's natively fast with Array.Copy and cyclic buffers
 - Minimalistic API - `SaveFrame()` and `Rollback(frames)`
 - Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
-
-[Here](https://github.com/nilpunch/bench-morpeh-leolite-massive) is a benchmark comparing Massive ECS with [Morpeh](https://github.com/scellecs/morpeh) and [LeoEcsLite](https://github.com/Leopotam/ecslite).
 
 Consider this list a work in progress as well as the project.
 
