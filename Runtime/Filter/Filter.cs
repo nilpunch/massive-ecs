@@ -31,22 +31,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
-			if (_include.Length == 0 && _exclude.Length == 0)
-			{
-				return id >= 0;
-			}
-			else if (_include.Length == 0)
-			{
-				return id >= 0 && SetHelpers.NotAssignedInAll(id, _exclude);
-			}
-			else if (_exclude.Length == 0)
-			{
-				return id >= 0 && SetHelpers.AssignedInAll(id, _exclude);
-			}
-			else
-			{
-				return id >= 0 && SetHelpers.AssignedInAll(id, _exclude) && SetHelpers.NotAssignedInAll(id, _exclude);
-			}
+			return id >= 0 && (_include.Length == 0 || SetHelpers.AssignedInAll(id, _include)) && (_exclude.Length == 0 || SetHelpers.NotAssignedInAll(id, _exclude));
 		}
 	}
 }
