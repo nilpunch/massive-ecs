@@ -4,12 +4,10 @@ namespace Massive
 {
 	public class MassiveGroupFactory : IGroupFactory
 	{
-		private readonly int _nonOwningSetCapacity;
 		private readonly int _framesCapacity;
 
-		public MassiveGroupFactory(int nonOwningSetCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
+		public MassiveGroupFactory(int framesCapacity = Constants.DefaultFramesCapacity)
 		{
-			_nonOwningSetCapacity = nonOwningSetCapacity;
 			_framesCapacity = framesCapacity;
 		}
 
@@ -22,7 +20,7 @@ namespace Massive
 
 		public IGroup CreateNonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
 		{
-			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, _nonOwningSetCapacity, _framesCapacity);
+			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, _framesCapacity);
 			massiveNonOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
 			return massiveNonOwningGroup;
 		}

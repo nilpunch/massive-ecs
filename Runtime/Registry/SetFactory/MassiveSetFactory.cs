@@ -10,16 +10,14 @@ namespace Massive
 	/// </remarks>
 	public class MassiveSetFactory : ISetFactory
 	{
-		private readonly int _setCapacity;
 		private readonly int _framesCapacity;
 		private readonly bool _storeEmptyTypesAsDataSets;
 		private readonly int _pageSize;
 		private readonly bool _fullStability;
 
-		public MassiveSetFactory(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity, bool storeEmptyTypesAsDataSets = false,
+		public MassiveSetFactory(int framesCapacity = Constants.DefaultFramesCapacity, bool storeEmptyTypesAsDataSets = false,
 			int pageSize = Constants.DefaultPageSize, bool fullStability = false)
 		{
-			_setCapacity = setCapacity;
 			_framesCapacity = framesCapacity;
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 			_pageSize = pageSize;
@@ -43,7 +41,7 @@ namespace Massive
 				return CreateSparseSet(GetPackingModeFor(type));
 			}
 
-			var args = new object[] { _setCapacity, _framesCapacity, _pageSize, GetPackingModeFor(type) };
+			var args = new object[] { _framesCapacity, _pageSize, GetPackingModeFor(type) };
 			var massiveDataSet = ManagedUtils.IsManaged(type)
 				? ReflectionHelpers.CreateGeneric(typeof(MassiveManagedDataSet<>), type, args)
 				: ReflectionHelpers.CreateGeneric(typeof(MassiveDataSet<>), type, args);
@@ -53,7 +51,7 @@ namespace Massive
 
 		private SparseSet CreateSparseSet(PackingMode packingMode)
 		{
-			var massiveSparseSet = new MassiveSparseSet(_setCapacity, _framesCapacity, packingMode);
+			var massiveSparseSet = new MassiveSparseSet(_framesCapacity, packingMode);
 			massiveSparseSet.SaveFrame();
 			return massiveSparseSet;
 		}
@@ -61,8 +59,8 @@ namespace Massive
 		private SparseSet CreateDataSet<T>()
 		{
 			var massiveDataSet = ManagedUtils.IsManaged(typeof(T))
-				? ManagedUtils.CreateMassiveManagedDataSet<T>(_setCapacity, _framesCapacity, _pageSize, GetPackingModeFor(typeof(T)))
-				: new MassiveDataSet<T>(_setCapacity, _framesCapacity, _pageSize, GetPackingModeFor(typeof(T)));
+				? ManagedUtils.CreateMassiveManagedDataSet<T>(_framesCapacity, _pageSize, GetPackingModeFor(typeof(T)))
+				: new MassiveDataSet<T>(_framesCapacity, _pageSize, GetPackingModeFor(typeof(T)));
 			((IMassive)massiveDataSet).SaveFrame();
 			return massiveDataSet;
 		}

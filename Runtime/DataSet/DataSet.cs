@@ -11,8 +11,8 @@ namespace Massive
 	{
 		public PagedArray<T> Data { get; }
 
-		public DataSet(int setCapacity = Constants.DefaultCapacity, int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous)
-			: base(setCapacity, packingMode)
+		public DataSet(int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous)
+			: base(packingMode)
 		{
 			Data = new PagedArray<T>(pageSize);
 		}

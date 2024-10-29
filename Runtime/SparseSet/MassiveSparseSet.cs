@@ -17,8 +17,8 @@ namespace Massive
 		private readonly int[] _countByFrames;
 		private readonly int[] _nextHoleByFrames;
 
-		public MassiveSparseSet(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity, PackingMode packingMode = PackingMode.Continuous)
-			: base(setCapacity, packingMode)
+		public MassiveSparseSet(int framesCapacity = Constants.DefaultFramesCapacity, PackingMode packingMode = PackingMode.Continuous)
+			: base(packingMode)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 

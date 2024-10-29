@@ -14,11 +14,11 @@ namespace Massive
 
 		public int MaxId { get; set; }
 
-		public Entities(int setCapacity = Constants.DefaultCapacity)
+		public Entities()
 		{
-			_ids = new int[setCapacity];
-			_reuses = new uint[setCapacity];
-			_sparse = new int[setCapacity];
+			_ids = Array.Empty<int>();
+			_reuses = Array.Empty<uint>();
+			_sparse = Array.Empty<int>();
 
 			Ids = _ids;
 		}

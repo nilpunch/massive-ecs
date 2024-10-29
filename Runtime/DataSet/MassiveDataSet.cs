@@ -18,8 +18,8 @@ namespace Massive
 		private readonly int[] _countByFrames;
 		private readonly int[] _nextHoleByFrames;
 
-		public MassiveDataSet(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity,
-			int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous) : base(setCapacity, pageSize, packingMode)
+		public MassiveDataSet(int framesCapacity = Constants.DefaultFramesCapacity,
+			int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous) : base(pageSize, packingMode)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 

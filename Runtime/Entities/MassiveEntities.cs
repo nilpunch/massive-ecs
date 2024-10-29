@@ -18,8 +18,7 @@ namespace Massive
 		private readonly int[] _maxIdByFrames;
 		private readonly int[] _countByFrames;
 
-		public MassiveEntities(int setCapacity = Constants.DefaultCapacity, int framesCapacity = Constants.DefaultFramesCapacity)
-			: base(setCapacity)
+		public MassiveEntities(int framesCapacity = Constants.DefaultFramesCapacity)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 

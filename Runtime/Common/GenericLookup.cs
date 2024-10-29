@@ -11,8 +11,8 @@ namespace Massive
 	{
 		private readonly FastList<string> _itemIds = new FastList<string>();
 		private readonly FastList<TAbstract> _items = new FastList<TAbstract>();
-		private TAbstract[] _lookup = new TAbstract[Constants.DefaultCapacity];
-		private Type[] _keyLookup = new Type[Constants.DefaultCapacity];
+		private TAbstract[] _lookup = Array.Empty<TAbstract>();
+		private Type[] _keyLookup = Array.Empty<Type>();
 
 		public ReadOnlySpan<TAbstract> All
 		{

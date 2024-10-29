@@ -29,10 +29,10 @@ namespace Massive
 		public PackingMode PackingMode { get; }
 		public int NextHole { get; set; }
 
-		public SparseSet(int setCapacity = Constants.DefaultCapacity, PackingMode packingMode = PackingMode.Continuous)
+		public SparseSet(PackingMode packingMode = PackingMode.Continuous)
 		{
-			_packed = new int[setCapacity];
-			_sparse = new int[setCapacity];
+			_packed = Array.Empty<int>();
+			_sparse = Array.Empty<int>();
 			PackingMode = packingMode;
 
 			NextHole = MaxCount;

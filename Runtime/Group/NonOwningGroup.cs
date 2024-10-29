@@ -18,8 +18,8 @@ namespace Massive
 
 		public SparseSet MainSet { get; }
 
-		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, int setCapacity = Constants.DefaultCapacity)
-			: this(new SparseSet(setCapacity), include, exclude)
+		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
+			: this(new SparseSet(), include, exclude)
 		{
 		}
 
