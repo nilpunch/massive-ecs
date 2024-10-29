@@ -36,7 +36,6 @@ namespace Massive
 			PackingMode = packingMode;
 
 			NextHole = MaxCount;
-			Array.Fill(Sparse, Constants.InvalidId);
 			Ids = _packed;
 		}
 
@@ -108,7 +107,7 @@ namespace Massive
 		public void Unassign(int id)
 		{
 			// If ID is negative or element is not alive, nothing to be done
-			if (id < 0 || id >= SparseCapacity || Sparse[id] == Constants.InvalidId)
+			if (OutOfBounds(id) || Sparse[id] == Constants.InvalidId)
 			{
 				return;
 			}
@@ -175,7 +174,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetIndexOrInvalid(int id)
 		{
-			if (id < 0 || id >= SparseCapacity)
+			if (OutOfBounds(id))
 			{
 				return Constants.InvalidId;
 			}
@@ -186,7 +185,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryGetIndex(int id, out int index)
 		{
-			if (id < 0 || id >= SparseCapacity)
+			if (OutOfBounds(id))
 			{
 				index = Constants.InvalidId;
 				return false;
@@ -200,7 +199,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAssigned(int id)
 		{
-			return id >= 0 && id < SparseCapacity && Sparse[id] != Constants.InvalidId;
+			return InsideBounds(id) && Sparse[id] != Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -290,6 +289,18 @@ namespace Massive
 		{
 			Sparse[id] = index;
 			Packed[index] = id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private bool InsideBounds(int id)
+		{
+			return id >= 0 && id < SparseCapacity;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private bool OutOfBounds(int id)
+		{
+			return id < 0 || id >= SparseCapacity;
 		}
 	}
 }
