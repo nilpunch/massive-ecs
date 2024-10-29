@@ -13,7 +13,7 @@ namespace Massive.PerformanceTests
 		private const int IterationsPerMeasurement = 120;
 
 		private readonly Registry _registry;
-		private readonly IFilter _filter;
+		private readonly Filter _filter;
 
 		public FilterView3Include3IgnorePerformanceTest()
 		{
@@ -23,7 +23,7 @@ namespace Massive.PerformanceTests
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static IFilter GetTestFilter(Registry registry)
+		private static Filter GetTestFilter(Registry registry)
 		{
 			return registry.Filter<
 				Include<TestState64, TestState64_2, TestState64_3>,

@@ -1,10 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Massive
+﻿namespace Massive
 {
-	public interface IGroup : IIdsSource
+	public interface IGroup
 	{
 		SparseSet MainSet { get; }
+
+		int Count { get; }
 
 		bool IsSynced { get; }
 
@@ -13,11 +13,5 @@ namespace Massive
 		void Desync();
 
 		bool IsOwning(SparseSet set);
-
-		int[] IIdsSource.Ids
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => MainSet.Ids;
-		}
 	}
 }

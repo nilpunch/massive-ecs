@@ -167,7 +167,7 @@ namespace Massive
 						int id = dataSet1.Ids[indexOffset + index1];
 						int index2 = dataSet2.GetIndexOrInvalid(id);
 						int index3 = dataSet3.GetIndexOrInvalid(id);
-						if (index2 >= 0 && index3 >= 0)
+						if ((index2 | index3) >= 0)
 						{
 							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3]))
 							{
@@ -198,7 +198,7 @@ namespace Massive
 						int id = dataSet2.Ids[indexOffset + index2];
 						int index1 = dataSet1.GetIndexOrInvalid(id);
 						int index3 = dataSet3.GetIndexOrInvalid(id);
-						if (index1 >= 0 && index3 >= 0)
+						if ((index1 | index3) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3]))
 							{
@@ -229,7 +229,7 @@ namespace Massive
 						int id = dataSet2.Ids[indexOffset + index3];
 						int index1 = dataSet1.GetIndexOrInvalid(id);
 						int index2 = dataSet2.GetIndexOrInvalid(id);
-						if (index1 >= 0 && index2 >= 0)
+						if ((index1 | index2) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3]))
 							{
@@ -277,7 +277,7 @@ namespace Massive
 						int index2 = dataSet2.GetIndexOrInvalid(id);
 						int index3 = dataSet3.GetIndexOrInvalid(id);
 						int index4 = dataSet4.GetIndexOrInvalid(id);
-						if (index2 >= 0 && index3 >= 0 && index4 >= 0)
+						if ((index2 | index3 | index4) >= 0)
 						{
 							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
 							{
@@ -309,7 +309,7 @@ namespace Massive
 						int index1 = dataSet1.GetIndexOrInvalid(id);
 						int index3 = dataSet3.GetIndexOrInvalid(id);
 						int index4 = dataSet4.GetIndexOrInvalid(id);
-						if (index1 >= 0 && index3 >= 0 && index4 >= 0)
+						if ((index1 | index3 | index4) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3], ref data4[index4]))
 							{
@@ -341,7 +341,7 @@ namespace Massive
 						int index1 = dataSet1.GetIndexOrInvalid(id);
 						int index2 = dataSet2.GetIndexOrInvalid(id);
 						int index4 = dataSet4.GetIndexOrInvalid(id);
-						if (index1 >= 0 && index2 >= 0 && index4 >= 0)
+						if ((index1 | index2 | index4) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3], ref data4[index4]))
 							{
@@ -373,7 +373,7 @@ namespace Massive
 						int index1 = dataSet1.GetIndexOrInvalid(id);
 						int index2 = dataSet2.GetIndexOrInvalid(id);
 						int index3 = dataSet3.GetIndexOrInvalid(id);
-						if (index1 >= 0 && index2 >= 0 && index3 >= 0)
+						if ((index1 | index2 | index3) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref page4[index4]))
 							{
@@ -393,10 +393,10 @@ namespace Massive
 
 		public ref struct Enumerator
 		{
-			private readonly IIdsSource _idsSource;
+			private readonly IdsSource _idsSource;
 			private int _index;
 
-			public Enumerator(IIdsSource idsSource)
+			public Enumerator(IdsSource idsSource)
 			{
 				_idsSource = idsSource;
 				_index = idsSource.Count;

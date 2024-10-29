@@ -6,13 +6,11 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class Entities : IIdsSource
+	public class Entities : IdsSource
 	{
 		private int[] _ids;
 		private uint[] _reuses;
 		private int[] _sparse;
-
-		public int Count { get; set; }
 
 		public int MaxId { get; set; }
 
@@ -21,12 +19,8 @@ namespace Massive
 			_ids = new int[setCapacity];
 			_reuses = new uint[setCapacity];
 			_sparse = new int[setCapacity];
-		}
 
-		public int[] Ids
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _ids;
+			Ids = _ids;
 		}
 
 		public uint[] Reuses
@@ -160,6 +154,7 @@ namespace Massive
 		{
 			Array.Resize(ref _ids, capacity);
 			Array.Resize(ref _reuses, capacity);
+			Ids = _ids;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

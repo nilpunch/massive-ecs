@@ -1,11 +1,14 @@
 using System;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class Filter : IFilter
+	public class Filter
 	{
+		public static Filter Empty { get; } = new Filter(Array.Empty<SparseSet>(), Array.Empty<SparseSet>());
+
 		private readonly SparseSet[] _exclude;
 		private readonly SparseSet[] _include;
 
@@ -25,9 +28,25 @@ namespace Massive
 
 		public SparseSet[] Include => _include;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
-			return id >= 0 && SetHelpers.AssignedInAll(id, _include) && SetHelpers.NotAssignedInAll(id, _exclude);
+			if (_include.Length == 0 && _exclude.Length == 0)
+			{
+				return id >= 0;
+			}
+			else if (_include.Length == 0)
+			{
+				return id >= 0 && SetHelpers.NotAssignedInAll(id, _exclude);
+			}
+			else if (_exclude.Length == 0)
+			{
+				return id >= 0 && SetHelpers.AssignedInAll(id, _exclude);
+			}
+			else
+			{
+				return id >= 0 && SetHelpers.AssignedInAll(id, _exclude) && SetHelpers.NotAssignedInAll(id, _exclude);
+			}
 		}
 	}
 }

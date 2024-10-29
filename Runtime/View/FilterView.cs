@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -6,20 +7,20 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public readonly struct FilterView : IView
 	{
-		private IFilter Filter { get; }
+		private Filter Filter { get; }
 
 		public Registry Registry { get; }
 
-		public FilterView(Registry registry, IFilter filter = null)
+		public FilterView(Registry registry, Filter filter = null)
 		{
 			Registry = registry;
-			Filter = filter ?? EmptyFilter.Instance;
+			Filter = filter ?? Filter.Empty;
 		}
 
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			IIdsSource idsSource = Filter.Include.Length == 0
+			IdsSource idsSource = Filter.Include.Length == 0
 				? Registry.Entities
 				: SetHelpers.GetMinimalSet(Filter.Include);
 
@@ -92,8 +93,7 @@ namespace Massive
 				var id = set.Ids[i];
 				var index1 = dataSet1.GetIndexOrInvalid(id);
 				var index2 = dataSet2.GetIndexOrInvalid(id);
-				if (index1 >= 0
-				    && index2 >= 0
+				if ((index1 | index2) >= 0
 				    && Filter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[index1], ref data2[index2]))
@@ -129,9 +129,7 @@ namespace Massive
 				var index1 = dataSet1.GetIndexOrInvalid(id);
 				var index2 = dataSet2.GetIndexOrInvalid(id);
 				var index3 = dataSet3.GetIndexOrInvalid(id);
-				if (index1 >= 0
-				    && index2 >= 0
-				    && index3 >= 0
+				if ((index1 | index2 | index3) >= 0
 				    && Filter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3]))
@@ -170,10 +168,7 @@ namespace Massive
 				var index2 = dataSet2.GetIndexOrInvalid(id);
 				var index3 = dataSet3.GetIndexOrInvalid(id);
 				var index4 = dataSet4.GetIndexOrInvalid(id);
-				if (index1 >= 0
-				    && index2 >= 0
-				    && index3 >= 0
-				    && index4 >= 0
+				if ((index1 | index2 | index3 | index4) >= 0
 				    && Filter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
@@ -200,12 +195,12 @@ namespace Massive
 
 		public ref struct Enumerator
 		{
-			private readonly IIdsSource _idsSource;
-			private readonly IFilter _filter;
+			private readonly IdsSource _idsSource;
+			private readonly Filter _filter;
 			private int _index;
 			private int _current;
 
-			public Enumerator(IIdsSource idsSource, IFilter filter)
+			public Enumerator(IdsSource idsSource, Filter filter)
 			{
 				_idsSource = idsSource;
 				_filter = filter;

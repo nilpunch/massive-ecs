@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class FilterRegistry
 	{
-		private readonly GenericLookup<IFilter> _filterLookup = new GenericLookup<IFilter>();
+		private readonly GenericLookup<Filter> _filterLookup = new GenericLookup<Filter>();
 		private readonly SetRegistry _setRegistry;
 
 		public FilterRegistry(SetRegistry setRegistry)
@@ -16,7 +16,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IFilter Get<TInclude, TExclude>()
+		public Filter Get<TInclude, TExclude>()
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
@@ -27,22 +27,9 @@ namespace Massive
 				var include = new TInclude().Select(_setRegistry);
 				var exclude = new TExclude().Select(_setRegistry);
 
-				if (include.Length != 0 && exclude.Length != 0)
-				{
-					filter = new Filter(include, exclude);
-				}
-				else if (include.Length != 0)
-				{
-					filter = new IncludeFilter(include);
-				}
-				else if (exclude.Length != 0)
-				{
-					filter = new ExcludeFilter(exclude);
-				}
-				else
-				{
-					filter = EmptyFilter.Instance;
-				}
+				filter = include.Length != 0 || exclude.Length != 0
+					? new Filter(include, exclude)
+					: Filter.Empty;
 
 				_filterLookup.Assign<Tuple<TInclude, TExclude>>(filter);
 			}

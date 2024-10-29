@@ -6,7 +6,7 @@ namespace Massive
 	{
 		public static ReadOnlySpan<int> AsIds(this IGroup group)
 		{
-			return new ReadOnlySpan<int>(group.Ids, 0, group.Count);
+			return new ReadOnlySpan<int>(group.MainSet.Ids, 0, group.Count);
 		}
 	}
 }

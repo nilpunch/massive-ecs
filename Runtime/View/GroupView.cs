@@ -278,9 +278,40 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public View.Enumerator GetEnumerator()
+		public Enumerator GetEnumerator()
 		{
-			return new View.Enumerator(Group);
+			return new Enumerator(Group);
+		}
+
+		public ref struct Enumerator
+		{
+			private readonly SparseSet _mainSet;
+			private readonly IGroup _group;
+			private int _index;
+
+			public Enumerator(IGroup group)
+			{
+				_group = group;
+				_mainSet = group.MainSet;
+				_index = group.Count;
+			}
+
+			public int Current
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => _mainSet.Ids[_index];
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool MoveNext()
+			{
+				if (--_index > _group.Count)
+				{
+					_index = _group.Count - 1;
+				}
+
+				return _index >= 0;
+			}
 		}
 	}
 }

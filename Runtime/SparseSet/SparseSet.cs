@@ -19,7 +19,7 @@ namespace Massive
 	}
 
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class SparseSet : IIdsSource
+	public class SparseSet : IdsSource
 	{
 		private const int MaxCount = int.MaxValue;
 
@@ -27,7 +27,6 @@ namespace Massive
 		private int[] _sparse;
 
 		public PackingMode PackingMode { get; }
-		public int Count { get; set; }
 		public int NextHole { get; set; }
 
 		public SparseSet(int setCapacity = Constants.DefaultCapacity, PackingMode packingMode = PackingMode.Continuous)
@@ -38,6 +37,7 @@ namespace Massive
 
 			NextHole = MaxCount;
 			Array.Fill(Sparse, Constants.InvalidId);
+			Ids = _packed;
 		}
 
 		/// <summary>
@@ -61,12 +61,6 @@ namespace Massive
 		public int[] Packed => _packed;
 
 		public int[] Sparse => _sparse;
-
-		public int[] Ids
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Packed;
-		}
 
 		public int PackedCapacity => Packed.Length;
 
@@ -240,6 +234,7 @@ namespace Massive
 		public void ResizePacked(int capacity)
 		{
 			Array.Resize(ref _packed, capacity);
+			Ids = _packed;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
