@@ -1,5 +1,18 @@
 # Changelog
 
+## 16.0.0 - October 30, 2024
+
+Major devirtualization and other optimizations.
+
+- Added: Fourth generic parameter for all Views.
+- Added: `Group` class, replacing the `IGroup` interface.
+- Added: `IdsSource` class, replacing the `IIdsSource` interface.
+- Changed: Replaced `IFilter` and other filters with `Filter`.
+- Changed: Replaced `IGroup` and `IOwningGroup` with `Group` and `OwningGroup` classes.
+- Changed: Increased default page size from 1024 to 16384 (except `MassiveRegistry`, which remains 1024).
+- Removed: `IGroup`, `IFilter`, and `IIdsSource` interfaces.
+- Removed: `SetCapacity` parameter; now defaults to 0 across the board.
+
 ## 15.3.2 - October 28, 2024
 
 - Fixed: `PageSequence` returned zero-length page in specific cases.
