@@ -7,18 +7,17 @@
 	{
 		public static void Update(Registry registry, float deltaTime)
 		{
-			registry.View().Include<Bullet>().ForEachExtra((registry, deltaTime),
-				static (int id, ref Dead dead, (Registry Registry, float DeltaTime) args) =>
+			foreach (var bulletId in registry.View().Filter<Include<Dead, Bullet>>())
+			{
+				ref var dead = ref registry.Get<Dead>(bulletId);
+				
+				dead.ElapsedTimeSinceDeath += deltaTime;
+
+				if (dead.ElapsedTimeSinceDeath > 1f)
 				{
-					var (registry, deltaTime) = args;
-
-					dead.ElapsedTimeSinceDeath += deltaTime;
-
-					if (dead.ElapsedTimeSinceDeath > 1f)
-					{
-						registry.Destroy(id);
-					}
-				});
+					registry.Destroy(bulletId);
+				}
+			}
 		}
 	}
 }

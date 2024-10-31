@@ -7,19 +7,19 @@
 	{
 		public static void Update(Registry registry, float deltaTime)
 		{
-			registry.View().ForEachExtra((registry, deltaTime),
-				static (int characterId, ref Dead dead, ref Character character, (Registry Registry, float DeltaTime) args) =>
+			foreach (var characterId in registry.View().Filter<Include<Dead, Character>>())
+			{
+				ref var dead = ref registry.Get<Dead>(characterId);
+				ref var character = ref registry.Get<Character>(characterId);
+				
+				dead.ElapsedTimeSinceDeath += deltaTime;
+				
+				if (dead.ElapsedTimeSinceDeath > 3f)
 				{
-					var (registry, deltaTime) = args;
-
-					dead.ElapsedTimeSinceDeath += deltaTime;
-
-					if (dead.ElapsedTimeSinceDeath > 3f)
-					{
-						registry.Unassign<Dead>(characterId);
-						character.Health = character.MaxHealth;
-					}
-				});
+					registry.Unassign<Dead>(characterId);
+					character.Health = character.MaxHealth;
+				}
+			}
 		}
 	}
 }

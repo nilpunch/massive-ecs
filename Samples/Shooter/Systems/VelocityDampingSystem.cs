@@ -4,11 +4,13 @@
 	{
 		public static void Update(Registry registry, float deltaTime)
 		{
-			registry.View().ForEachExtra(deltaTime,
-				static (ref Velocity velocity, ref VelocityDamper damper, float deltaTime) =>
-				{
-					damper.DampVelocity(ref velocity, deltaTime);
-				});
+			foreach (var id in registry.View().Filter<Include<Velocity, VelocityDamper>>())
+			{
+				ref var velocity = ref registry.Get<Velocity>(id);
+				ref var damper = ref registry.Get<VelocityDamper>(id);
+				
+				damper.DampVelocity(ref velocity, deltaTime);
+			}
 		}
 	}
 }

@@ -150,6 +150,17 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsureCapacityForIndex(int index)
+		{
+			if (index >= Sparse.Length)
+			{
+				int newCapacity = MathHelpers.NextPowerOf2(index + 1);
+				ResizePacked(newCapacity);
+				ResizeSparse(newCapacity);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizePacked(int capacity)
 		{
 			Array.Resize(ref _ids, capacity);
@@ -164,6 +175,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public IdsSourceEnumerator GetEnumerator()
+		{
+			return new IdsSourceEnumerator(this);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private Entity GetEntityAt(int index)
 		{
 			return new Entity(Ids[index], Reuses[index]);
@@ -175,17 +192,6 @@ namespace Massive
 			Sparse[entity.Id] = index;
 			Ids[index] = entity.Id;
 			Reuses[index] = entity.ReuseCount;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureCapacityForIndex(int index)
-		{
-			if (index >= Sparse.Length)
-			{
-				int newCapacity = MathHelpers.NextPowerOf2(index + 1);
-				ResizePacked(newCapacity);
-				ResizeSparse(newCapacity);
-			}
 		}
 	}
 }

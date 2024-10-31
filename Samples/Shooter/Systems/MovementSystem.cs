@@ -7,11 +7,13 @@
 	{
 		public static void Update(Registry registry, float deltaTime)
 		{
-			registry.View().Exclude<Dead>().ForEachExtra(deltaTime,
-				static (ref Velocity velocity, ref Position position, float deltaTime) =>
-				{
-					position.Value += velocity.Value * deltaTime;
-				});
+			foreach (var id in registry.View().Filter<Include<Velocity, Position>, Exclude<Dead>>())
+			{
+				ref var velocity = ref registry.Get<Velocity>(id);
+				ref var position = ref registry.Get<Position>(id);
+				
+				position.Value += velocity.Value * deltaTime;
+			}
 		}
 	}
 }

@@ -40,16 +40,15 @@
 
 			void DestroyCharacterBullets(int characterId)
 			{
-				registry.View().Exclude<Dead>().ForEachExtra((characterId, registry),
-					static (int bulletId, ref Bullet bullet, (int CharacterId, Registry Registry) args) =>
+				foreach (var bulletId in registry.View().Filter<Include<Bullet>, Exclude<Dead>>())
+				{
+					ref var bullet = ref registry.Get<Bullet>(bulletId);
+					
+					if (bullet.Owner == registry.GetEntity(characterId))
 					{
-						var (characterId, registry) = args;
-
-						if (bullet.Owner == registry.GetEntity(characterId))
-						{
-							registry.Assign<Dead>(bulletId);
-						}
-					});
+						registry.Assign<Dead>(bulletId);
+					}
+				}
 			}
 
 			bool IsCollided(int firstId, int secondId)

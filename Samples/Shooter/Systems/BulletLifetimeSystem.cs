@@ -4,18 +4,17 @@
 	{
 		public static void Update(Registry registry, float deltaTime)
 		{
-			registry.View().Exclude<Dead>().ForEachExtra((registry, deltaTime),
-				static (int bulletId, ref Bullet bullet, (Registry Registry, float DeltaTime) args) =>
+			foreach (var bulletId in registry.View().Filter<Include<Bullet>, Exclude<Dead>>())
+			{
+				ref var bullet = ref registry.Get<Bullet>(bulletId);
+
+				bullet.Lifetime -= deltaTime;
+
+				if (bullet.Lifetime <= 0f)
 				{
-					var (registry, deltaTime) = args;
-
-					bullet.Lifetime -= deltaTime;
-
-					if (bullet.Lifetime <= 0f)
-					{
-						registry.Assign<Dead>(bulletId);
-					}
-				});
+					registry.Assign<Dead>(bulletId);
+				}
+			}
 		}
 	}
 }

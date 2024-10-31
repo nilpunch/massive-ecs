@@ -9,29 +9,27 @@ namespace Massive
 	{
 		public static Filter Empty { get; } = new Filter(Array.Empty<SparseSet>(), Array.Empty<SparseSet>());
 
-		private readonly SparseSet[] _exclude;
-		private readonly SparseSet[] _include;
+		public SparseSet[] Include { get; }
+		public SparseSet[] Exclude { get; }
 
 		public Filter(SparseSet[] include, SparseSet[] exclude)
 		{
-			_include = include;
-			_exclude = exclude;
+			Include = include;
+			Exclude = exclude;
 
-			for (int i = 0; i < _exclude.Length; i++)
+			for (int i = 0; i < Exclude.Length; i++)
 			{
-				if (_include.Contains(_exclude[i]))
+				if (Include.Contains(Exclude[i]))
 				{
 					throw new Exception("Conflicting include and exclude filter!");
 				}
 			}
 		}
 
-		public SparseSet[] Include => _include;
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
-			return id >= 0 && (_include.Length == 0 || SetHelpers.AssignedInAll(id, _include)) && (_exclude.Length == 0 || SetHelpers.NotAssignedInAll(id, _exclude));
+			return id >= 0 && (Include.Length == 0 || SetHelpers.AssignedInAll(id, Include)) && (Exclude.Length == 0 || SetHelpers.NotAssignedInAll(id, Exclude));
 		}
 	}
 }

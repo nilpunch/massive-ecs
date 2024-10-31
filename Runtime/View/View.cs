@@ -386,38 +386,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Enumerator GetEnumerator()
+		public IdsSourceEnumerator GetEnumerator()
 		{
-			return new Enumerator(Registry.Entities);
-		}
-
-		public ref struct Enumerator
-		{
-			private readonly IdsSource _idsSource;
-			private int _index;
-
-			public Enumerator(IdsSource idsSource)
-			{
-				_idsSource = idsSource;
-				_index = idsSource.Count;
-			}
-
-			public int Current
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => _idsSource.Ids[_index];
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool MoveNext()
-			{
-				if (--_index > _idsSource.Count)
-				{
-					_index = _idsSource.Count - 1;
-				}
-
-				return _index >= 0;
-			}
+			return new IdsSourceEnumerator(Registry.Entities);
 		}
 	}
 }
