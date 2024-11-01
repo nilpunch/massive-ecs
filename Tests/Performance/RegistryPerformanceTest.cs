@@ -287,6 +287,24 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
+		
+		[Test, Performance]
+		public void Registry_FilterConstructionOverhead()
+		{
+			Measure.Method(() =>
+				{
+					for (int i = 0; i < EntitiesCount; i++)
+					{
+						foreach (var id in DynamicFilter.GetShared(_registry).Include<PositionComponent>().Include<VelocityComponent>())
+						{
+							break;
+						}
+					}
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+		}
 
 		public struct PositionComponent
 		{

@@ -1,20 +1,17 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
 	public class DynamicFilter
 	{
-		private static readonly DynamicFilter s_shared = new DynamicFilter(null);
+		private DynamicFilter Parent { get; set; }
+		private DynamicFilter Child { get; set; }
 
 		public Registry Registry { get; set; }
 
 		public FastListSparseSet Included { get; } = new FastListSparseSet();
 		public FastListSparseSet Excluded { get; } = new FastListSparseSet();
-
-		public DynamicFilter(Registry registry)
-		{
-			Registry = registry;
-		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DynamicFilter Include<T>()
@@ -38,23 +35,33 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static DynamicFilter GetShared(Registry registry)
-		{
-			s_shared.Registry = registry;
-			s_shared.Clear();
-			return s_shared;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
 			IdsSource minimal = Included.Count == 0 ? Registry.Entities : SetHelpers.GetMinimalSet(Included.Items, Included.Count);
 			return new Enumerator(minimal, this);
 		}
 
-		public ref struct Enumerator
+		private static DynamicFilter _sharedParent = new DynamicFilter();
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static DynamicFilter GetShared(Registry registry)
+		{
+			if (_sharedParent.Child == null)
+			{
+				_sharedParent.Child = new DynamicFilter();
+				_sharedParent.Child.Parent = _sharedParent;
+				_sharedParent = _sharedParent.Child;
+			}
+
+			_sharedParent.Registry = registry;
+			_sharedParent.Clear();
+			return _sharedParent;
+		}
+
+		public struct Enumerator : IDisposable
 		{
 			private readonly IdsSource _idsSource;
+			private readonly DynamicFilter _filter;
 			private readonly SparseSet[] _include;
 			private readonly SparseSet[] _exclude;
 			private readonly int _includeCount;
@@ -65,6 +72,7 @@ namespace Massive
 			public Enumerator(IdsSource idsSource, DynamicFilter filter)
 			{
 				_idsSource = idsSource;
+				_filter = filter;
 				_include = filter.Included.Items;
 				_exclude = filter.Excluded.Items;
 				_includeCount = filter.Included.Count;
@@ -99,6 +107,15 @@ namespace Massive
 			private bool ContainsId(int id)
 			{
 				return id >= 0 && (_include.Length == 0 || SetHelpers.AssignedInAll(id, _include, _includeCount)) && (_exclude.Length == 0 || SetHelpers.NotAssignedInAll(id, _exclude, _excludeCount));
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void Dispose()
+			{
+				if (_filter.Parent != null)
+				{
+					_sharedParent = _filter.Parent;
+				}
 			}
 		}
 	}
