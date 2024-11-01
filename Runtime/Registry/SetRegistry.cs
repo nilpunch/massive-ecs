@@ -16,7 +16,7 @@ namespace Massive
 			_setFactory = setFactory;
 		}
 
-		public ReadOnlySpan<SparseSet> All
+		public FastListSparseSet All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _setLookup.All;
@@ -60,6 +60,24 @@ namespace Massive
 		public Type GetKey(SparseSet set)
 		{
 			return _setLookup.GetKey(set);
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int GetIndex<TKey>()
+		{
+			if (_setLookup.Find<TKey>() is null)
+			{
+				var set = _setFactory.CreateAppropriateSet<TKey>();
+				_setLookup.Assign<TKey>(set);
+			}
+
+			return _setLookup.IndexOf<TKey>();
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public SparseSet GetByIndex(int index)
+		{
+			return _setLookup.Find(index);
 		}
 	}
 }

@@ -6,9 +6,9 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class FastList<T>
+	public class FastListSparseSet
 	{
-		private T[] _items = Array.Empty<T>();
+		private SparseSet[] _items = Array.Empty<SparseSet>();
 
 		public int Count { get; private set; }
 
@@ -20,32 +20,32 @@ namespace Massive
 			set => Array.Resize(ref _items, value);
 		}
 
-		public Span<T> Span
+		public Span<SparseSet> Span
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new Span<T>(Items, 0, Count);
+			get => new Span<SparseSet>(Items, 0, Count);
 		}
 
-		public ReadOnlySpan<T> ReadOnlySpan
+		public ReadOnlySpan<SparseSet> ReadOnlySpan
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ReadOnlySpan<T>(Items, 0, Count);
+			get => new ReadOnlySpan<SparseSet>(Items, 0, Count);
 		}
 
-		public T[] Items
+		public SparseSet[] Items
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _items;
 		}
 
-		public ref T this[int index]
+		public ref SparseSet this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => ref Items[index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add(T item)
+		public void Add(SparseSet item)
 		{
 			EnsureCapacity(Count + 1);
 
@@ -53,7 +53,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Remove(T item)
+		public bool Remove(SparseSet item)
 		{
 			int index = IndexOf(item);
 			if (index >= 0)
@@ -79,13 +79,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item)
+		public int IndexOf(SparseSet item)
 		{
 			return Array.IndexOf(Items, item, 0, Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Insert(int index, T item)
+		public void Insert(int index, SparseSet item)
 		{
 			EnsureCapacity(Count + 1);
 
@@ -109,21 +109,21 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int BinarySearch(T item)
+		public int BinarySearch(SparseSet item)
 		{
 			return BinarySearch(0, Count, item, null);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int BinarySearch(T item, IComparer<T> comparer)
+		public int BinarySearch(SparseSet item, IComparer<SparseSet> comparer)
 		{
 			return BinarySearch(0, Count, item, comparer);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int BinarySearch(int index, int count, T item, IComparer<T> comparer)
+		public int BinarySearch(int index, int count, SparseSet item, IComparer<SparseSet> comparer)
 		{
-			return Array.BinarySearch(Items, index, count, item, comparer ?? Comparer<T>.Default);
+			return Array.BinarySearch(Items, index, count, item, comparer ?? Comparer<SparseSet>.Default);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -143,19 +143,19 @@ namespace Massive
 
 		public struct Enumerator
 		{
-			private readonly T[] _items;
+			private readonly SparseSet[] _items;
 			private readonly int _count;
 			private int _index;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public Enumerator(FastList<T> fastList)
+			public Enumerator(FastListSparseSet fastList)
 			{
 				_items = fastList.Items;
 				_count = fastList.Count;
 				_index = -1;
 			}
 
-			public T Current
+			public SparseSet Current
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
 				get => _items[_index];

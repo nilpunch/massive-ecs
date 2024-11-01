@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -25,8 +26,20 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AssignedInAll(int id, SparseSet[] sets)
 		{
+			return AssignedInAll(id, sets, sets.Length);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool NotAssignedInAll(int id, SparseSet[] sets)
+		{
+			return NotAssignedInAll(id, sets, sets.Length);
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool AssignedInAll(int id, SparseSet[] sets, int count)
+		{
 			int shouldNotBecomeNegative = 0;
-			for (int i = 0; i < sets.Length; i++)
+			for (int i = 0; i < count; i++)
 			{
 				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
 			}
@@ -35,10 +48,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool NotAssignedInAll(int id, SparseSet[] sets)
+		public static bool NotAssignedInAll(int id, SparseSet[] sets, int count)
 		{
 			int shouldStayNegative = ~0;
-			for (int i = 0; i < sets.Length; i++)
+			for (int i = 0; i < count; i++)
 			{
 				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
 			}
@@ -49,9 +62,15 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SparseSet GetMinimalSet(SparseSet[] sets)
 		{
+			return GetMinimalSet(sets, sets.Length);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SparseSet GetMinimalSet(SparseSet[] sets, int count)
+		{
 			SparseSet minimal = sets[0];
 
-			for (int i = 1; i < sets.Length; i++)
+			for (int i = 1; i < count; i++)
 			{
 				if (minimal.Count > sets[i].Count)
 				{

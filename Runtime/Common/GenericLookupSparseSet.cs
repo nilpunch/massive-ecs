@@ -9,14 +9,14 @@ namespace Massive
 	public class GenericLookupSparseSet
 	{
 		private readonly FastList<string> _itemIds = new FastList<string>();
-		private readonly FastList<SparseSet> _items = new FastList<SparseSet>();
+		private readonly FastListSparseSet _items = new FastListSparseSet();
 		private SparseSet[] _lookup = Array.Empty<SparseSet>();
 		private Type[] _keyLookup = Array.Empty<Type>();
 
-		public ReadOnlySpan<SparseSet> All
+		public FastListSparseSet All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _items.ReadOnlySpan;
+			get => _items;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -54,10 +54,8 @@ namespace Massive
 
 			var cloneId = registry.Create();
 
-			var sets = registry.SetRegistry.All;
-			for (var i = 0; i < sets.Length; i++)
+			foreach (var set in registry.SetRegistry.All)
 			{
-				var set = sets[i];
 				if (set.IsAssigned(id))
 				{
 					set.Assign(cloneId);
