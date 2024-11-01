@@ -16,8 +16,8 @@ namespace Massive
 		}
 
 		public MassiveRegistry(MassiveRegistryConfig registryConfig)
-			: base(new MassiveSetFactory(registryConfig.FramesCapacity, registryConfig.StoreEmptyTypesAsDataSets, registryConfig.DataPageSize, registryConfig.FullStability),
-				new MassiveGroupFactory(registryConfig.FramesCapacity), new MassiveEntities(registryConfig.FramesCapacity))
+			: base(new MassiveSetFactory(registryConfig.FramesCapacity, registryConfig.StoreEmptyTypesAsDataSets, registryConfig.PageSize, registryConfig.FullStability),
+				new MassiveGroupFactory(registryConfig.FramesCapacity), new MassiveEntities(registryConfig.FramesCapacity), registryConfig.PageSize)
 		{
 			// Fetch instances from base
 			_massiveEntities = (MassiveEntities)Entities;

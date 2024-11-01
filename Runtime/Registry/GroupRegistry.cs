@@ -10,13 +10,15 @@ namespace Massive
 	{
 		private readonly GenericLookup<Group> _groupLookup = new GenericLookup<Group>();
 		private readonly Dictionary<SparseSet, OwningGroup> _ownedBase = new Dictionary<SparseSet, OwningGroup>();
+		private readonly Entities _entities;
 		private readonly SetRegistry _setRegistry;
 		private readonly IGroupFactory _groupFactory;
 
-		public GroupRegistry(SetRegistry setRegistry, IGroupFactory groupFactory)
+		public GroupRegistry(SetRegistry setRegistry, IGroupFactory groupFactory, Entities entities)
 		{
 			_setRegistry = setRegistry;
 			_groupFactory = groupFactory;
+			_entities = entities;
 		}
 
 		public ReadOnlySpan<Group> All
@@ -50,7 +52,8 @@ namespace Massive
 			// If non-owning, then just create new one
 			if (owned.Length == 0)
 			{
-				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude);
+				var entitiesWhenIfNoIncludes = include.Length == 0 ? _entities : null;
+				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude, entitiesWhenIfNoIncludes);
 				return RegisterAndSync<Tuple<TInclude, TExclude, TOwn>>(nonOwningGroup);
 			}
 

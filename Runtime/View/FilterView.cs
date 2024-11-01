@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -180,54 +179,16 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Enumerator GetEnumerator()
+		public IdsSourceFilterEnumerator GetEnumerator()
 		{
 			if (Filter.Include.Length == 0)
 			{
-				return new Enumerator(Registry.Entities, Filter);
+				return new IdsSourceFilterEnumerator(Registry.Entities, Filter);
 			}
 			else
 			{
 				var ids = SetHelpers.GetMinimalSet(Filter.Include);
-				return new Enumerator(ids, Filter);
-			}
-		}
-
-		public ref struct Enumerator
-		{
-			private readonly IdsSource _idsSource;
-			private readonly Filter _filter;
-			private int _index;
-			private int _current;
-
-			public Enumerator(IdsSource idsSource, Filter filter)
-			{
-				_idsSource = idsSource;
-				_filter = filter;
-				_index = _idsSource.Count;
-				_current = Constants.InvalidId;
-			}
-
-			public int Current
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => _current;
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool MoveNext()
-			{
-				if (--_index > _idsSource.Count)
-				{
-					_index = _idsSource.Count - 1;
-				}
-
-				while (_index >= 0 && !_filter.ContainsId(_current = _idsSource.Ids[_index]))
-				{
-					--_index;
-				}
-
-				return _index >= 0;
+				return new IdsSourceFilterEnumerator(ids, Filter);
 			}
 		}
 	}

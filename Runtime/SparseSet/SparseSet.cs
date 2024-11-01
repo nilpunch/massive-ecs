@@ -273,6 +273,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public IdsSourceEnumerator GetEnumerator()
+		{
+			return new IdsSourceEnumerator(this);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected virtual void CopyFromToPacked(int source, int destination)
 		{
 			int sourceId = Packed[source];
