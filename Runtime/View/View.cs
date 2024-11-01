@@ -13,19 +13,13 @@ namespace Massive
 			Registry = registry;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			var entities = Registry.Entities;
-			for (var i = entities.Count - 1; i >= 0; i--)
+			foreach (var id in this)
 			{
-				if (i > entities.Count)
-				{
-					i = entities.Count;
-					continue;
-				}
-
-				if (!action.Apply(entities.Ids[i]))
+				if (!action.Apply(id))
 				{
 					break;
 				}

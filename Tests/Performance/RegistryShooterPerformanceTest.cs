@@ -1,4 +1,3 @@
-using System;
 using System.Numerics;
 using Massive.Samples.Shooter;
 using NUnit.Framework;
