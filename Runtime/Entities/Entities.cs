@@ -41,7 +41,7 @@ namespace Massive
 			get => new ReadOnlySpan<int>(Ids, 0, Count);
 		}
 
-		public event Action<Entity> AfterCreated;
+		public event Action<int> AfterCreated;
 
 		public event Action<int> BeforeDestroyed;
 
@@ -65,7 +65,7 @@ namespace Massive
 			}
 
 			Count += 1;
-			AfterCreated?.Invoke(entity);
+			AfterCreated?.Invoke(entity.Id);
 			return entity;
 		}
 

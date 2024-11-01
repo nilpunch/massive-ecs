@@ -18,9 +18,9 @@ namespace Massive
 			return massiveOwningGroup;
 		}
 
-		public Group CreateNonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
+		public NonOwningGroup CreateNonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, Entities entities = null)
 		{
-			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, _framesCapacity);
+			var massiveNonOwningGroup = new MassiveNonOwningGroup(include, exclude, _framesCapacity, entities);
 			massiveNonOwningGroup.SaveFrame(); // Save first empty frame so we can rollback to it
 			return massiveNonOwningGroup;
 		}

@@ -24,13 +24,13 @@ namespace Massive
 
 		public OwningGroup Base { get; set; }
 
-		public override SparseSet MainSet => Owned[0];
-
 		public OwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
 		{
 			Owned = owned.ToArray();
 			Include = (include ?? Array.Empty<SparseSet>()).ToArray();
 			Exclude = (exclude ?? Array.Empty<SparseSet>()).ToArray();
+
+			MainSet = Owned[0];
 
 			OwnedPlusIncluded = Owned.Concat(Include).ToArray();
 			OwnedMinusFirstPlusIncluded = OwnedPlusIncluded.Skip(1).ToArray();

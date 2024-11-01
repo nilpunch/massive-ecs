@@ -26,7 +26,7 @@ namespace Massive
 		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities, int pageSize)
 		{
 			SetRegistry = new SetRegistry(setFactory);
-			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory);
+			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory, entities);
 			FilterRegistry = new FilterRegistry(SetRegistry);
 			Entities = entities;
 			PageSize = pageSize;

@@ -13,20 +13,21 @@ namespace Massive
 
 		private SparseSet[] Exclude { get; }
 
+		private Entities Entities { get; }
+
 		public override bool IsSynced { get; protected set; }
 
-		public override SparseSet MainSet { get; }
-
-		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
-			: this(new SparseSet(), include, exclude)
+		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, Entities entities = null)
+			: this(new SparseSet(), include, exclude, entities)
 		{
 		}
 
-		protected NonOwningGroup(SparseSet groupSet, IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
+		protected NonOwningGroup(SparseSet groupSet, IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, Entities entities = null)
 		{
 			MainSet = groupSet;
 			Include = (include ?? Array.Empty<SparseSet>()).ToArray();
 			Exclude = (exclude ?? Array.Empty<SparseSet>()).ToArray();
+			Entities = entities;
 
 			foreach (var set in Include)
 			{
@@ -38,6 +39,12 @@ namespace Massive
 			{
 				set.AfterAssigned += RemoveFromGroup;
 				set.BeforeUnassigned += AddToGroupBeforeUnassignedFromExcluded;
+			}
+
+			if (Entities != null)
+			{
+				Entities.AfterCreated += AddToGroup;
+				Entities.BeforeDestroyed += RemoveFromGroup;
 			}
 		}
 
@@ -51,7 +58,7 @@ namespace Massive
 			IsSynced = true;
 
 			MainSet.Clear();
-			var minimal = SetHelpers.GetMinimalSet(Include);
+			IdsSource minimal = (IdsSource)Entities ?? SetHelpers.GetMinimalSet(Include);
 			for (var i = 0; i < minimal.Count; i++)
 			{
 				AddToGroup(minimal.Ids[i]);
@@ -70,7 +77,9 @@ namespace Massive
 
 		private void AddToGroup(int id)
 		{
-			if (IsSynced && SetHelpers.AssignedInAll(id, Include) && SetHelpers.NotAssignedInAll(id, Exclude))
+			if (IsSynced
+			    && (Include.Length == 0 || SetHelpers.AssignedInAll(id, Include))
+				&& (Exclude.Length == 0 || SetHelpers.NotAssignedInAll(id, Exclude)))
 			{
 				MainSet.Assign(id);
 				SyncCount();
@@ -89,7 +98,9 @@ namespace Massive
 		private void AddToGroupBeforeUnassignedFromExcluded(int id)
 		{
 			// Applies only when removed from the last remaining exclude set
-			if (IsSynced && SetHelpers.AssignedInAll(id, Include) && SetHelpers.CountAssignedInAll(id, Exclude) == 1)
+			if (IsSynced
+			    && (Include.Length == 0 || SetHelpers.AssignedInAll(id, Include))
+			    && SetHelpers.CountAssignedInAll(id, Exclude) == 1)
 			{
 				MainSet.Assign(id);
 				SyncCount();

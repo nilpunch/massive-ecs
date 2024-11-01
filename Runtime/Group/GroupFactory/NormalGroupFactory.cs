@@ -9,9 +9,9 @@ namespace Massive
 			return new OwningGroup(owned, include, exclude);
 		}
 
-		public Group CreateNonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null)
+		public NonOwningGroup CreateNonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, Entities entities = null)
 		{
-			return new NonOwningGroup(include, exclude);
+			return new NonOwningGroup(include, exclude, entities);
 		}
 	}
 }
