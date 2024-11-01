@@ -15,8 +15,6 @@ namespace Massive
 
 		private Entities Entities { get; }
 
-		public override bool IsSynced { get; protected set; }
-
 		public NonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, Entities entities = null)
 			: this(new SparseSet(), include, exclude, entities)
 		{

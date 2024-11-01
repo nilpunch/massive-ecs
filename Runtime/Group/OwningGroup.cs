@@ -18,8 +18,6 @@ namespace Massive
 
 		private SparseSet[] Exclude { get; }
 
-		public override bool IsSynced { get; protected set; }
-
 		public OwningGroup Extended { get; set; }
 
 		public OwningGroup Base { get; set; }
