@@ -52,8 +52,8 @@ namespace Massive
 			// If non-owning, then just create new one
 			if (owned.Length == 0)
 			{
-				var entitiesWhenIfNoIncludes = include.Length == 0 ? _entities : null;
-				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude, entitiesWhenIfNoIncludes);
+				var entitiesIfNoIncludes = include.Length == 0 ? _entities : null;
+				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude, entitiesIfNoIncludes);
 				return RegisterAndSync<Tuple<TInclude, TExclude, TOwn>>(nonOwningGroup);
 			}
 
