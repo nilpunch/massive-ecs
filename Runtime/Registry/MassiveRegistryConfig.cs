@@ -4,6 +4,6 @@
 	{
 		public int FramesCapacity = Constants.DefaultFramesCapacity;
 
-		public MassiveRegistryConfig() { DataPageSize = 1024; }
+		public MassiveRegistryConfig() { PageSize = 1024; }
 	}
 }

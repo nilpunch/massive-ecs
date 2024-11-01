@@ -46,7 +46,7 @@
 					
 					if (bullet.Owner == registry.GetEntity(characterId))
 					{
-						registry.Assign<Dead>(bulletId);
+						registry.Assign(bulletId, new Dead());
 					}
 				}
 			}

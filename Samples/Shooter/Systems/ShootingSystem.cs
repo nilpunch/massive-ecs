@@ -13,7 +13,7 @@
 
 				if (weapon.Charge < 1f)
 				{
-					return;
+					continue;
 				}
 
 				weapon.Charge -= 1f;

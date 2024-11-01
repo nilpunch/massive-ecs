@@ -7,38 +7,41 @@ namespace Massive
 	/// Reverse page sequence.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public readonly struct PageSequence
+	public readonly struct GroupPageSequence
 	{
 		private readonly int _pageSize;
-		private readonly int _length;
+		private readonly Group _group;
 
-		public PageSequence(int pageSize, int length)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public GroupPageSequence(int pageSize, Group group)
 		{
 			_pageSize = pageSize;
-			_length = length;
+			_group = group;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
-			return new Enumerator(_pageSize, _length);
+			return new Enumerator(_pageSize, _group);
 		}
 
 		public struct Enumerator
 		{
 			private readonly int _pageSize;
-			private readonly int _length;
+			private readonly Group _group;
 			private int _page;
 			private int _nextPageLength;
 			private int _pageLength;
 
-			public Enumerator(int pageSize, int length)
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public Enumerator(int pageSize, Group group)
 			{
 				_pageSize = pageSize;
-				_length = length;
+				_group = group;
 
-				_page = _length == 0 ? 0 : (_length - 1) / _pageSize + 1;
-				_pageLength = _nextPageLength = _length == 0 ? 0 : MathHelpers.FastMod(_length - 1, _pageSize) + 1;
+				var length = group.Count;
+				_page = length == 0 ? 0 : (length - 1) / _pageSize + 1;
+				_pageLength = _nextPageLength = length == 0 ? 0 : MathHelpers.FastMod(length - 1, _pageSize) + 1;
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -55,10 +58,10 @@ namespace Massive
 				return false;
 			}
 
-			public (int PageIndex, int PageLength, int IndexOffset) Current
+			public GroupPage Current
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => (_page, _pageLength, _page * _pageSize);
+				get => new GroupPage(_page, _pageLength, _page * _pageSize, _group);
 			}
 		}
 	}

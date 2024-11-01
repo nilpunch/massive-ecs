@@ -2,7 +2,7 @@
 {
 	public class RegistryConfig
 	{
-		public int DataPageSize = Constants.DefaultPageSize;
+		public int PageSize = Constants.DefaultPageSize;
 
 		public bool StoreEmptyTypesAsDataSets = false;
 

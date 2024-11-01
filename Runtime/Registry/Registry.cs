@@ -5,6 +5,8 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class Registry
 	{
+		public int PageSize { get; }
+
 		public SetRegistry SetRegistry { get; }
 		public FilterRegistry FilterRegistry { get; }
 		public GroupRegistry GroupRegistry { get; }
@@ -16,17 +18,18 @@ namespace Massive
 		}
 
 		public Registry(RegistryConfig registryConfig)
-			: this(new NormalSetFactory(registryConfig.StoreEmptyTypesAsDataSets, registryConfig.DataPageSize, registryConfig.FullStability),
-				new NormalGroupFactory(), new Entities())
+			: this(new NormalSetFactory(registryConfig.StoreEmptyTypesAsDataSets, registryConfig.PageSize, registryConfig.FullStability),
+				new NormalGroupFactory(), new Entities(), registryConfig.PageSize)
 		{
 		}
 
-		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities)
+		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities, int pageSize)
 		{
 			SetRegistry = new SetRegistry(setFactory);
 			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory);
 			FilterRegistry = new FilterRegistry(SetRegistry);
 			Entities = entities;
+			PageSize = pageSize;
 
 			Entities.BeforeDestroyed += UnassignFromAllSets;
 		}
