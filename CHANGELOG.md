@@ -1,5 +1,18 @@
 # Changelog
 
+## 16.1.0 - November 2, 2024
+
+Non-generic API for a better IL2CPP experience.
+
+- Added: Non-generic version of the `Get` method for `GroupRegistry`, making it the primary version.
+- Added: `GroupPageSequence` and `GroupPage` types to support working with owning groups in a non-generic manner.
+- Added: `PageSize` property to `Registry`.
+- Changed: `Entities.AfterCreated` now returns an `int` instead of an `Entity`.
+- Changed: Renamed `RegistryConfig.DataPageSize` to `PageSize`.
+- Changed: Group serialization adjusted to align with the new non-generic primary storage.
+- Fixed: Non-owning groups were not functioning when no included sets were present.
+  Now they default to observing `Entities`.
+
 ## 16.0.0 - October 30, 2024
 
 Major devirtualization and other optimizations.
