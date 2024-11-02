@@ -12,11 +12,11 @@ namespace Massive
 
 		private SparseSet[] OwnedMinusFirstPlusIncluded { get; }
 
-		private SparseSet[] Owned { get; }
+		public SparseSet[] Owned { get; }
 
-		private SparseSet[] Include { get; }
+		public SparseSet[] Include { get; }
 
-		private SparseSet[] Exclude { get; }
+		public SparseSet[] Exclude { get; }
 
 		public OwningGroup Extended { get; set; }
 

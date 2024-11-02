@@ -59,10 +59,47 @@ namespace Massive.Serialization
 			SerializationHelpers.WriteInt(syncedGroups.Count, stream);
 			foreach (var group in syncedGroups)
 			{
-				var (includeSelector, excludeSelector, ownSelector) = registry.GroupRegistry.GetSelectorsOfGroup(group);
-				SerializationHelpers.WriteType(includeSelector, stream);
-				SerializationHelpers.WriteType(excludeSelector, stream);
-				SerializationHelpers.WriteType(ownSelector, stream);
+				SparseSet[] includeSets;
+				SparseSet[] excludeSets;
+				SparseSet[] ownSets;
+
+				if (group is NonOwningGroup nonOwningGroup)
+				{
+					includeSets = nonOwningGroup.Include;
+					excludeSets = nonOwningGroup.Exclude;
+					ownSets = Array.Empty<SparseSet>();
+				}
+				else
+				{
+					var owningGroup = (OwningGroup)group;
+					includeSets = owningGroup.Include;
+					excludeSets = owningGroup.Exclude;
+					ownSets = owningGroup.Owned;
+				}
+
+				// Include
+				SerializationHelpers.WriteInt(includeSets.Length, stream);
+				foreach (var set in includeSets)
+				{
+					var setKey = registry.SetRegistry.GetKey(set);
+					SerializationHelpers.WriteType(setKey, stream);
+				}
+
+				// Exclude
+				SerializationHelpers.WriteInt(excludeSets.Length, stream);
+				foreach (var set in excludeSets)
+				{
+					var setKey = registry.SetRegistry.GetKey(set);
+					SerializationHelpers.WriteType(setKey, stream);
+				}
+
+				// Own
+				SerializationHelpers.WriteInt(ownSets.Length, stream);
+				foreach (var set in ownSets)
+				{
+					var setKey = registry.SetRegistry.GetKey(set);
+					SerializationHelpers.WriteType(setKey, stream);
+				}
 
 				if (group is NonOwningGroup)
 				{
@@ -122,11 +159,28 @@ namespace Massive.Serialization
 			var groupCount = SerializationHelpers.ReadInt(stream);
 			for (var i = 0; i < groupCount; i++)
 			{
-				var includeSelector = SerializationHelpers.ReadType(stream);
-				var excludeSelector = SerializationHelpers.ReadType(stream);
-				var ownSelector = SerializationHelpers.ReadType(stream);
+				// Include
+				SparseSet[] includeSets = new SparseSet[SerializationHelpers.ReadInt(stream)];
+				for (int setIndex = 0; setIndex < includeSets.Length; setIndex++)
+				{
+					includeSets[setIndex] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
+				}
 
-				var group = registry.GroupRegistry.GetReflection(includeSelector, excludeSelector, ownSelector);
+				// Exclude
+				SparseSet[] excludeSets = new SparseSet[SerializationHelpers.ReadInt(stream)];
+				for (int setIndex = 0; setIndex < excludeSets.Length; setIndex++)
+				{
+					excludeSets[setIndex] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
+				}
+
+				// Own
+				SparseSet[] ownSets = new SparseSet[SerializationHelpers.ReadInt(stream)];
+				for (int setIndex = 0; setIndex < ownSets.Length; setIndex++)
+				{
+					ownSets[setIndex] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
+				}
+
+				var group = registry.GroupRegistry.Get(includeSets, excludeSets, ownSets);
 				deserializedGroups.Add(group);
 
 				if (group is NonOwningGroup nonOwningGroup)

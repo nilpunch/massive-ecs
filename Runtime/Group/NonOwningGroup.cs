@@ -9,9 +9,9 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class NonOwningGroup : Group
 	{
-		private SparseSet[] Include { get; }
+		public SparseSet[] Include { get; }
 
-		private SparseSet[] Exclude { get; }
+		public SparseSet[] Exclude { get; }
 
 		private Entities Entities { get; }
 
