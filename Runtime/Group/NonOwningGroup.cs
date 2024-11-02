@@ -77,7 +77,7 @@ namespace Massive
 		{
 			if (IsSynced
 			    && (Include.Length == 0 || SetHelpers.AssignedInAll(id, Include))
-				&& (Exclude.Length == 0 || SetHelpers.NotAssignedInAll(id, Exclude)))
+			    && (Exclude.Length == 0 || SetHelpers.NotAssignedInAll(id, Exclude)))
 			{
 				MainSet.Assign(id);
 				SyncCount();

@@ -168,7 +168,7 @@ namespace Massive
 		private bool ContainsDuplicates(SparseSet[] sets)
 		{
 			_duplicatesBuffer.Clear();
-			foreach(var set in sets) 
+			foreach (var set in sets)
 			{
 				if (!_duplicatesBuffer.Add(_setRegistry.IndexOf(set)))
 				{
