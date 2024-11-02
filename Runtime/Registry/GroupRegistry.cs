@@ -32,9 +32,9 @@ namespace Massive
 
 		public Group Get(SparseSet[] include = null, SparseSet[] exclude = null, SparseSet[] owned = null)
 		{
-			owned ??= Array.Empty<SparseSet>();
 			include ??= Array.Empty<SparseSet>();
 			exclude ??= Array.Empty<SparseSet>();
+			owned ??= Array.Empty<SparseSet>();
 
 			if (ContainsDuplicates(include))
 			{
@@ -49,20 +49,21 @@ namespace Massive
 				throw new ArgumentException("Owned contains duplicate sets.", nameof(owned));
 			}
 
-			int ownedCode = owned.GetUnorderedHashCode(_setRegistry);
 			int includeCode = include.GetUnorderedHashCode(_setRegistry);
 			int excludeCode = exclude.GetUnorderedHashCode(_setRegistry);
+			int ownedCode = owned.GetUnorderedHashCode(_setRegistry);
 			int groupCode = MathHelpers.CombineHashes(MathHelpers.CombineHashes(ownedCode, includeCode), excludeCode);
 
 			if (_groupCodeLookup.TryGetValue(groupCode, out var group))
 			{
+				group.EnsureSynced();
 				return group;
 			}
 
 			if (Array.Exists(owned, set => set.PackingMode == PackingMode.WithHoles))
 			{
 				var faultySet = Array.Find(owned, set => set.PackingMode == PackingMode.WithHoles);
-				throw new Exception($"Set with direct storage is not supported for owning: {_setRegistry.GetKey(faultySet).GetFullGenericName()}.");
+				throw new Exception($"Set with holes storage is not supported for owning: {_setRegistry.GetKey(faultySet).GetFullGenericName()}.");
 			}
 
 			// If non-owning, then just create new one

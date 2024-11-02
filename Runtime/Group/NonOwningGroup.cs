@@ -56,7 +56,8 @@ namespace Massive
 			IsSynced = true;
 
 			MainSet.Clear();
-			IdsSource minimal = (IdsSource)Entities ?? SetHelpers.GetMinimalSet(Include);
+			SyncCount();
+			IdsSource minimal = Include.Length == 0 ? Entities : SetHelpers.GetMinimalSet(Include);
 			for (var i = 0; i < minimal.Count; i++)
 			{
 				AddToGroup(minimal.Ids[i]);
