@@ -1,4 +1,6 @@
-﻿namespace Massive
+﻿using System.Runtime.CompilerServices;
+
+namespace Massive
 {
 	public abstract class Group
 	{
@@ -9,5 +11,11 @@
 		public abstract void EnsureSynced();
 		public abstract void Desync();
 		public abstract bool IsOwning(SparseSet set);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public GroupEnumerator GetEnumerator()
+		{
+			return new GroupEnumerator(this);
+		}
 	}
 }
