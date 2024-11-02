@@ -5,7 +5,7 @@ namespace Massive.PerformanceTests
 {
 	public class SparseSetPerformanceTest
 	{
-		private const int EntitiesCount = 1000;
+		private const int EntitiesCount = 10000;
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
 
@@ -25,10 +25,10 @@ namespace Massive.PerformanceTests
 
 		public static SparseSet[] FixtureMassiveSets =
 		{
-			new MassiveSparseSet(),
-			new MassiveSparseSet(packingMode: PackingMode.WithHoles),
-			new MassiveDataSet<TestState64>(),
-			new MassiveDataSet<TestState64Stable>(packingMode: PackingMode.WithHoles),
+			new MassiveSparseSet(2),
+			new MassiveSparseSet(2, packingMode: PackingMode.WithHoles),
+			new MassiveDataSet<TestState64>(2),
+			new MassiveDataSet<TestState64Stable>(2, packingMode: PackingMode.WithHoles),
 		};
 
 		[TestCaseSource(nameof(FixtureSets)), Performance]
