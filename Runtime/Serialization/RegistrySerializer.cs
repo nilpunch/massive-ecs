@@ -126,7 +126,7 @@ namespace Massive.Serialization
 				var excludeSelector = SerializationHelpers.ReadType(stream);
 				var ownSelector = SerializationHelpers.ReadType(stream);
 
-				var group = registry.GroupRegistry.Get(includeSelector, excludeSelector, ownSelector);
+				var group = registry.GroupRegistry.GetReflection(includeSelector, excludeSelector, ownSelector);
 				deserializedGroups.Add(group);
 
 				if (group is NonOwningGroup nonOwningGroup)

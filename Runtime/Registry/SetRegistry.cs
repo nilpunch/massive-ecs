@@ -7,12 +7,12 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class SetRegistry
 	{
-		private readonly GenericLookup<SparseSet> _setLookup;
+		private readonly GenericLookupSparseSet _setLookup;
 		private readonly ISetFactory _setFactory;
 
 		public SetRegistry(ISetFactory setFactory)
 		{
-			_setLookup = new GenericLookup<SparseSet>();
+			_setLookup = new GenericLookupSparseSet();
 			_setFactory = setFactory;
 		}
 
@@ -60,6 +60,12 @@ namespace Massive
 		public Type GetKey(SparseSet set)
 		{
 			return _setLookup.GetKey(set);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(SparseSet set)
+		{
+			return _setLookup.IndexOf(set);
 		}
 	}
 }

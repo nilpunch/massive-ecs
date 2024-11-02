@@ -8,7 +8,7 @@ namespace Massive
 		public static Group Group<TInclude>(this Registry registry)
 			where TInclude : IIncludeSelector, new()
 		{
-			return registry.Group<TInclude, None, None>();
+			return registry.GroupRegistry.Get<TInclude, None, None>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -16,7 +16,7 @@ namespace Massive
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
-			return registry.Group<TInclude, TExclude, None>();
+			return registry.GroupRegistry.Get<TInclude, TExclude, None>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -26,6 +26,12 @@ namespace Massive
 			where TOwned : IOwnSelector, new()
 		{
 			return registry.GroupRegistry.Get<TInclude, TExclude, TOwned>();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Group Group(this Registry registry, SparseSet[] include = null, SparseSet[] exclude = null, SparseSet[] owned = null)
+		{
+			return registry.GroupRegistry.Get(include, exclude, owned);
 		}
 	}
 }
