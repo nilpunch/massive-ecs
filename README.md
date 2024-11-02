@@ -16,7 +16,8 @@ ECS features:
 - No code generation
 - Support сomponents of any type
 - No deferred commands execution
-- Garbage-free API. Make in-place queries, no caching required
+- Garbage-free generic API for in-place queries
+- Non-generic API for a better IL2CPP experience
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components
   - Or enable full stability for the entire registry
