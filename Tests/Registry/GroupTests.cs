@@ -39,13 +39,15 @@ namespace Massive.Tests
 
 			Assert.AreEqual(1, group.Count);
 
-			foreach (var id in group.AsIds())
+			foreach (var id in group)
 			{
 				Assert.AreEqual(registry.Get<int>(id), 42);
 				Assert.AreEqual(registry.Get<char>(id), '2');
 			}
 
-			Assert.AreEqual(group.AsIds()[0], entity2);
+			var enumerator = group.GetEnumerator();
+			enumerator.MoveNext();
+			Assert.AreEqual(enumerator.Current, entity2);
 
 			registry.Unassign<char>(entity1);
 			registry.Unassign<char>(entity2);
@@ -71,7 +73,7 @@ namespace Massive.Tests
 			var entity4 = registry.CreateEntity(4).Id;
 			registry.Assign<char>(entity4);
 
-			foreach (var entity in group.AsIds())
+			foreach (var entity in group)
 			{
 				Assert.True(entity == entity1 || entity == entity3);
 
@@ -93,7 +95,7 @@ namespace Massive.Tests
 			registry.Unassign<char>(entity2);
 			registry.Unassign<char>(entity4);
 
-			foreach (var entity in group.AsIds())
+			foreach (var entity in group)
 			{
 				Assert.True(entity == entity2 || entity == entity4);
 
