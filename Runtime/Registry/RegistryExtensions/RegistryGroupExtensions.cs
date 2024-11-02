@@ -29,9 +29,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Group Group(this Registry registry, SparseSet[] include = null, SparseSet[] exclude = null, SparseSet[] owned = null)
+		public static Group Group(this Registry registry, SparseSet[] included = null, SparseSet[] excluded = null, SparseSet[] owned = null)
 		{
-			return registry.GroupRegistry.Get(include, exclude, owned);
+			return registry.GroupRegistry.Get(included, excluded, owned);
 		}
 	}
 }

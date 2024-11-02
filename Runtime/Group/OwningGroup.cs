@@ -14,23 +14,23 @@ namespace Massive
 
 		public SparseSet[] Owned { get; }
 
-		public SparseSet[] Include { get; }
+		public SparseSet[] Included { get; }
 
-		public SparseSet[] Exclude { get; }
+		public SparseSet[] Excluded { get; }
 
 		public OwningGroup Extended { get; set; }
 
 		public OwningGroup Base { get; set; }
 
-		public OwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include = null, IReadOnlyList<SparseSet> exclude = null)
+		public OwningGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> included = null, IReadOnlyList<SparseSet> excluded = null)
 		{
 			Owned = owned.ToArray();
-			Include = (include ?? Array.Empty<SparseSet>()).ToArray();
-			Exclude = (exclude ?? Array.Empty<SparseSet>()).ToArray();
+			Included = (included ?? Array.Empty<SparseSet>()).ToArray();
+			Excluded = (excluded ?? Array.Empty<SparseSet>()).ToArray();
 
 			MainSet = Owned[0];
 
-			OwnedPlusIncluded = Owned.Concat(Include).ToArray();
+			OwnedPlusIncluded = Owned.Concat(Included).ToArray();
 			OwnedMinusFirstPlusIncluded = OwnedPlusIncluded.Skip(1).ToArray();
 
 			foreach (var set in OwnedPlusIncluded)
@@ -39,7 +39,7 @@ namespace Massive
 				set.BeforeUnassigned += RemoveFromGroup;
 			}
 
-			foreach (var set in Exclude)
+			foreach (var set in Excluded)
 			{
 				set.AfterAssigned += RemoveFromGroup;
 				set.BeforeUnassigned += AddToGroupBeforeUnassignedFromExcluded;
@@ -75,12 +75,12 @@ namespace Massive
 
 		public bool ExtendsGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude)
 		{
-			return Owned.Contains(owned) && Include.Contains(include) && Exclude.Contains(exclude);
+			return Owned.Contains(owned) && Included.Contains(include) && Excluded.Contains(exclude);
 		}
 
 		public bool BaseForGroup(IReadOnlyList<SparseSet> owned, IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude)
 		{
-			return owned.Contains(Owned) && include.Contains(Include) && exclude.Contains(Exclude);
+			return owned.Contains(Owned) && include.Contains(Included) && exclude.Contains(Excluded);
 		}
 
 		public void AddGroupAfterThis(OwningGroup group)
@@ -112,7 +112,7 @@ namespace Massive
 			Base?.AddToGroup(id);
 
 			if (IsSynced && Owned[0].TryGetIndex(id, out var index) && index >= Count && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
-			    && SetHelpers.NotAssignedInAll(id, Exclude))
+			    && SetHelpers.NotAssignedInAll(id, Excluded))
 			{
 				SwapEntry(id, Count);
 				Count += 1;
@@ -136,7 +136,7 @@ namespace Massive
 
 			// Applies only when removed from the last remaining exclude set
 			if (IsSynced && Owned[0].TryGetIndex(id, out var index) && index >= Count && SetHelpers.AssignedInAll(id, OwnedMinusFirstPlusIncluded)
-			    && SetHelpers.CountAssignedInAll(id, Exclude) == 1)
+			    && SetHelpers.CountAssignedInAll(id, Excluded) == 1)
 			{
 				SwapEntry(id, Count);
 				Count += 1;

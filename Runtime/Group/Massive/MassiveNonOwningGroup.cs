@@ -11,8 +11,8 @@ namespace Massive
 
 		private readonly bool[] _syncedByFrames;
 
-		public MassiveNonOwningGroup(IReadOnlyList<SparseSet> include, IReadOnlyList<SparseSet> exclude = null, int framesCapacity = Constants.DefaultFramesCapacity, Entities entities = null)
-			: base(new MassiveSparseSet(framesCapacity), include, exclude, entities)
+		public MassiveNonOwningGroup(IReadOnlyList<SparseSet> included, IReadOnlyList<SparseSet> excluded = null, int framesCapacity = Constants.DefaultFramesCapacity, Entities entities = null)
+			: base(new MassiveSparseSet(framesCapacity), included, excluded, entities)
 		{
 			// Fetch instance from base
 			_massiveMainSet = (IMassive)MainSet;

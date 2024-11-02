@@ -30,27 +30,27 @@ namespace Massive
 			get => _allGroups.ReadOnlySpan;
 		}
 
-		public Group Get(SparseSet[] include = null, SparseSet[] exclude = null, SparseSet[] owned = null)
+		public Group Get(SparseSet[] included = null, SparseSet[] excluded = null, SparseSet[] owned = null)
 		{
-			include ??= Array.Empty<SparseSet>();
-			exclude ??= Array.Empty<SparseSet>();
+			included ??= Array.Empty<SparseSet>();
+			excluded ??= Array.Empty<SparseSet>();
 			owned ??= Array.Empty<SparseSet>();
 
-			if (ContainsDuplicates(include))
+			if (ContainsDuplicates(included))
 			{
-				throw new ArgumentException("Include contains duplicate sets.", nameof(include));
+				throw new ArgumentException("Include contains duplicate sets.", nameof(included));
 			}
-			if (ContainsDuplicates(exclude))
+			if (ContainsDuplicates(excluded))
 			{
-				throw new ArgumentException("Exclude contains duplicate sets.", nameof(exclude));
+				throw new ArgumentException("Exclude contains duplicate sets.", nameof(excluded));
 			}
 			if (ContainsDuplicates(owned))
 			{
 				throw new ArgumentException("Owned contains duplicate sets.", nameof(owned));
 			}
 
-			int includeCode = include.GetUnorderedHashCode(_setRegistry);
-			int excludeCode = exclude.GetUnorderedHashCode(_setRegistry);
+			int includeCode = included.GetUnorderedHashCode(_setRegistry);
+			int excludeCode = excluded.GetUnorderedHashCode(_setRegistry);
 			int ownedCode = owned.GetUnorderedHashCode(_setRegistry);
 			int groupCode = MathHelpers.CombineHashes(MathHelpers.CombineHashes(ownedCode, includeCode), excludeCode);
 
@@ -69,8 +69,8 @@ namespace Massive
 			// If non-owning, then just create new one
 			if (owned.Length == 0)
 			{
-				var entitiesIfNoIncludes = include.Length == 0 ? _entities : null;
-				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(include, exclude, entitiesIfNoIncludes);
+				var entitiesIfNoIncludes = included.Length == 0 ? _entities : null;
+				var nonOwningGroup = _groupFactory.CreateNonOwningGroup(included, excluded, entitiesIfNoIncludes);
 				return RegisterAndSync(groupCode, nonOwningGroup);
 			}
 
@@ -87,7 +87,7 @@ namespace Massive
 			// If there is no base group, just create new owning group
 			if (baseGroup == null)
 			{
-				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
+				var owningGroup = _groupFactory.CreateOwningGroup(owned, included, excluded);
 				foreach (var set in owned)
 				{
 					_ownedBase.Add(set, owningGroup);
@@ -96,31 +96,31 @@ namespace Massive
 			}
 
 			// Try to create new group as extension to the base group
-			if (baseGroup.BaseForGroup(owned, include, exclude))
+			if (baseGroup.BaseForGroup(owned, included, excluded))
 			{
 				var baseGroupNode = baseGroup;
 
 				// Find most nested group that is base for our
-				while (baseGroupNode.Extended != null && baseGroupNode.Extended.BaseForGroup(owned, include, exclude))
+				while (baseGroupNode.Extended != null && baseGroupNode.Extended.BaseForGroup(owned, included, excluded))
 				{
 					baseGroupNode = baseGroupNode.Extended;
 				}
 
 				// Check if the next group can extend ours
-				if (baseGroupNode.Extended != null && !baseGroupNode.Extended.ExtendsGroup(owned, include, exclude))
+				if (baseGroupNode.Extended != null && !baseGroupNode.Extended.ExtendsGroup(owned, included, excluded))
 				{
 					throw new Exception("Conflicting group.");
 				}
 
-				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
+				var owningGroup = _groupFactory.CreateOwningGroup(owned, included, excluded);
 				baseGroupNode.AddGroupAfterThis(owningGroup);
 				return RegisterAndSync(groupCode, owningGroup);
 			}
 
 			// Try to create group as a new base group
-			if (baseGroup.ExtendsGroup(owned, include, exclude))
+			if (baseGroup.ExtendsGroup(owned, included, excluded))
 			{
-				var owningGroup = _groupFactory.CreateOwningGroup(owned, include, exclude);
+				var owningGroup = _groupFactory.CreateOwningGroup(owned, included, excluded);
 				baseGroup.AddGroupBeforeThis(owningGroup);
 				foreach (var set in owned)
 				{
@@ -145,11 +145,11 @@ namespace Massive
 				return group;
 			}
 
-			var include = new TInclude().Select(_setRegistry);
-			var exclude = new TExclude().Select(_setRegistry);
+			var included = new TInclude().Select(_setRegistry);
+			var excluded = new TExclude().Select(_setRegistry);
 			var owned = new TOwn().Select(_setRegistry);
 
-			group = Get(include, exclude, owned);
+			group = Get(included, excluded, owned);
 
 			_groupGenericLookup.Assign<Tuple<TInclude, TExclude, TOwn>>(group);
 

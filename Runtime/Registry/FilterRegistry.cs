@@ -24,11 +24,11 @@ namespace Massive
 
 			if (filter == null)
 			{
-				var include = new TInclude().Select(_setRegistry);
-				var exclude = new TExclude().Select(_setRegistry);
+				var included = new TInclude().Select(_setRegistry);
+				var excluded = new TExclude().Select(_setRegistry);
 
-				filter = include.Length != 0 || exclude.Length != 0
-					? new Filter(include, exclude)
+				filter = included.Length != 0 || excluded.Length != 0
+					? new Filter(included, excluded)
 					: Filter.Empty;
 
 				_filterLookup.Assign<Tuple<TInclude, TExclude>>(filter);

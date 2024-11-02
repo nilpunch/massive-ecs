@@ -19,9 +19,9 @@ namespace Massive
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			IdsSource idsSource = Filter.Include.Length == 0
+			IdsSource idsSource = Filter.Included.Length == 0
 				? Registry.Entities
-				: SetHelpers.GetMinimalSet(Filter.Include);
+				: SetHelpers.GetMinimalSet(Filter.Included);
 
 			for (var i = idsSource.Count - 1; i >= 0; i--)
 			{
@@ -48,7 +48,7 @@ namespace Massive
 			var dataSet = Registry.DataSet<T>();
 
 			var data = dataSet.Data;
-			var set = SetHelpers.GetMinimalSet(dataSet, Filter.Include);
+			var set = SetHelpers.GetMinimalSet(dataSet, Filter.Included);
 
 			for (int i = set.Count - 1; i >= 0; i--)
 			{
@@ -79,7 +79,7 @@ namespace Massive
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
 			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
-			var set = SetHelpers.GetMinimalSet(minData, Filter.Include);
+			var set = SetHelpers.GetMinimalSet(minData, Filter.Included);
 
 			for (int i = set.Count - 1; i >= 0; i--)
 			{
@@ -114,7 +114,7 @@ namespace Massive
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
 			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3);
-			var set = SetHelpers.GetMinimalSet(minData, Filter.Include);
+			var set = SetHelpers.GetMinimalSet(minData, Filter.Included);
 
 			for (int i = set.Count - 1; i >= 0; i--)
 			{
@@ -152,7 +152,7 @@ namespace Massive
 			var data3 = dataSet3.Data;
 			var data4 = dataSet4.Data;
 			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
-			var set = SetHelpers.GetMinimalSet(minData, Filter.Include);
+			var set = SetHelpers.GetMinimalSet(minData, Filter.Included);
 
 			for (int i = set.Count - 1; i >= 0; i--)
 			{
@@ -181,13 +181,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IdsSourceFilterEnumerator GetEnumerator()
 		{
-			if (Filter.Include.Length == 0)
+			if (Filter.Included.Length == 0)
 			{
 				return new IdsSourceFilterEnumerator(Registry.Entities, Filter);
 			}
 			else
 			{
-				var ids = SetHelpers.GetMinimalSet(Filter.Include);
+				var ids = SetHelpers.GetMinimalSet(Filter.Included);
 				return new IdsSourceFilterEnumerator(ids, Filter);
 			}
 		}
