@@ -148,6 +148,7 @@ namespace Massive
 			return typeof(TypeLookup<>).MakeGenericType(typeof(TAbstract), keyType);
 		}
 
+		[Il2CppEagerStaticClassConstruction]
 		private static class TypeLookup<TKey>
 		{
 			public static int Index { get; }
@@ -160,6 +161,7 @@ namespace Massive
 			}
 		}
 
+		[Il2CppEagerStaticClassConstruction]
 		private static class IndexCounter
 		{
 			public static int NextIndex { get; set; }
