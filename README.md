@@ -1,6 +1,7 @@
 # Massive ECS
 
-A simple, easy to use ECS library, made for small fast paced online multiplayer games.  
+`Massive` is a simple and easy-to-use library for game programming and more.  
+Designed for use in games with deterministic prediction-rollback netcode.  
 Inspired by [EnTT](https://github.com/skypjack/entt).
 
 > [!NOTE]
