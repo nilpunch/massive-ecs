@@ -118,6 +118,18 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Clear()
+		{
+			for (int i = Count - 1; i >= 0; i--)
+			{
+				var id = Ids[i];
+				BeforeDestroyed?.Invoke(id);
+				Count -= 1;
+				unchecked { Reuses[i] += 1; }
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
 			return GetEntityAt(Sparse[id]);

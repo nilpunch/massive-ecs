@@ -136,6 +136,52 @@ namespace Massive.Tests
 			Assert.AreEqual(id, createdIdentifier.Id);
 			Assert.AreEqual(1, createdIdentifier.ReuseCount);
 		}
+		
+		[TestCase(0)]
+		[TestCase(1)]
+		[TestCase(5)]
+		public void Clear_ShouldMakeNotAlive(int id)
+		{
+			var entities = new Entities();
+			for (var i = 0; i <= id; i++)
+				entities.Create();
+
+			entities.Clear();
+			var isAlive = entities.IsAlive(id);
+
+			Assert.IsFalse(isAlive);
+		}
+		
+		[TestCase(0)]
+		[TestCase(1)]
+		[TestCase(5)]
+		public void Clear_ShouldMakeCountZero(int id)
+		{
+			var entities = new Entities();
+			for (var i = 0; i <= id; i++)
+				entities.Create();
+
+			entities.Clear();
+			var count = entities.Count;
+
+			Assert.AreEqual(0, count);
+		}
+		
+		[TestCase(0)]
+		[TestCase(1)]
+		[TestCase(5)]
+		public void ClearThenCreate_ShouldRecycleIds(int id)
+		{
+			var entities = new Entities();
+			for (var i = 0; i <= id; i++)
+				entities.Create();
+
+			entities.Clear();
+			var createdEntity = entities.Create();
+
+			Assert.LessOrEqual(createdEntity.Id, id);
+			Assert.AreEqual(1, createdEntity.ReuseCount);
+		}
 
 		[TestCase(0)]
 		[TestCase(1)]
