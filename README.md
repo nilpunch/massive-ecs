@@ -1,8 +1,18 @@
-# Massive ECS - sparse set ECS with rollbacks
+# Massive ECS
 
-Made for games with deterministic prediction-rollback netcode. Currently distributed as Unity package.
+A simple, easy to use ECS library, made for small fast paced online multiplayer games.  
+Inspired by [EnTT](https://github.com/skypjack/entt).
 
-Prediction-rollback netcode has very stable nature, and is mainly used in fast paced online multiplayer games, such as Overwatch and Rocket League.
+> [!NOTE]
+> Some APIs are subject to change, but overall the architecture is stable.
+
+## Installation
+
+Make sure you have standalone [Git](https://git-scm.com/downloads) installed first. Reboot after installation.  
+In Unity, open "Window" -> "Package Manager".  
+Click the "+" sign at the top left corner -> "Add package from git URL..."  
+Paste this: `https://github.com/nilpunch/massive-ecs.git#v16.2.0`  
+See minimum required Unity version in the `package.json` file.
 
 ## Overview
 
@@ -130,17 +140,6 @@ class Program
 	}
 }
 ```
-
-> [!NOTE]
-> Some APIs are subject to change, but overall the architecture is stable.
-
-## Installation
-
-Make sure you have standalone [Git](https://git-scm.com/downloads) installed first. Reboot after installation.  
-In Unity, open "Window" -> "Package Manager".  
-Click the "+" sign at the top left corner -> "Add package from git URL..."  
-Paste this: `https://github.com/nilpunch/massive-ecs.git#v16.1.0`  
-See minimum required Unity version in the `package.json` file.
 
 ### How it works
 
