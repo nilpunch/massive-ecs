@@ -1,11 +1,21 @@
 # Changelog
 
+## 16.2.0 - November 3, 2024
+
+- Added: `Clear` method for `Entities`.
+- Added: `Clear` and `Clear<T>` extension methods for `Registry`.
+- Added: Enumerator for `Group`.
+- Changed: Renamed `Include` and `Exclude` properties to `Included` and `Excluded`.  
+  This change affects filters, groups, and some variables.
+- Removed: `AsIds` extension method for groups. Use the new enumerator instead.
+
 ## 16.1.0 - November 2, 2024
 
 Non-generic API for a better IL2CPP experience.
 
 - Added: Non-generic version of the `Get` method for `GroupRegistry`, making it the primary version.
 - Added: `GroupPageSequence` and `GroupPage` types to support working with owning groups in a non-generic manner.
+- Added: Enumerator for `SparseSet` and `Entities`.
 - Added: `PageSize` property to `Registry`.
 - Changed: `Entities.AfterCreated` now returns an `int` instead of an `Entity`.
 - Changed: Renamed `RegistryConfig.DataPageSize` to `PageSize`.
