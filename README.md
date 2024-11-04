@@ -17,13 +17,12 @@ See minimum required Unity version in the `package.json` file.
 
 ## Overview
 
-This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.
-
-[Here](https://github.com/nilpunch/bench-morpeh-leolite-massive) is a benchmark comparing Massive ECS with [Morpeh](https://github.com/scellecs/morpeh) and [LeoEcsLite](https://github.com/Leopotam/ecslite).  
-TL;DR it's totally usable.
+This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.  
+Check out the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System).
 
 ECS features:
 
+- Fast and simple
 - No code generation
 - Support сomponents of any type
 - No deferred commands execution
@@ -45,6 +44,9 @@ Rollback features:
 - Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
 
 Consider this list a work in progress as well as the project.
+
+[Here](https://github.com/nilpunch/bench-morpeh-leolite-massive) is a benchmark comparing Massive ECS with [Morpeh](https://github.com/scellecs/morpeh) and [LeoEcsLite](https://github.com/Leopotam/ecslite).  
+TL;DR it's totally usable.
 
 ## Code Examples
 
