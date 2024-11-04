@@ -18,7 +18,7 @@ See minimum required Unity version in the `package.json` file.
 ## Overview
 
 This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.  
-Check out the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System).
+Check out the [wiki](https://github.com/nilpunch/massive-ecs/wiki).
 
 ECS features:
 
