@@ -94,26 +94,25 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CreateMany(int amount, [MaybeNull] Action<Entity> action = null)
+		public void CreateMany(int amount)
 		{
 			int needToCreate = amount;
 			EnsureCapacityForIndex(needToCreate + Count);
 
 			while (Count < MaxId && needToCreate > 0)
 			{
-				int count = Count;
-				Count += 1;
 				needToCreate -= 1;
-				action?.Invoke(GetEntityAt(count));
+				Count += 1;
+				AfterCreated?.Invoke(Ids[Count - 1]);
 			}
 
 			for (int i = 0; i < needToCreate; i++)
 			{
 				var newEntity = new Entity(MaxId, 0);
 				AssignEntity(newEntity, Count);
-				Count += 1;
 				MaxId += 1;
-				action?.Invoke(newEntity);
+				Count += 1;
+				AfterCreated?.Invoke(MaxId - 1);
 			}
 		}
 

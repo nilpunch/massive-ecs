@@ -214,9 +214,10 @@ namespace Massive.Tests
 		public void CreateMany_ShouldGenerateDistinctIds(int createAmount)
 		{
 			var entities = new Entities();
-			var created = new List<Entity>();
+			var created = new List<int>();
+			entities.AfterCreated += created.Add;
 
-			entities.CreateMany(createAmount, created.Add);
+			entities.CreateMany(createAmount);
 			var distinctIds = created.Distinct().Count();
 
 			Assert.AreEqual(createAmount, distinctIds);
