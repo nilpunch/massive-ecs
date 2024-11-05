@@ -95,7 +95,8 @@ class Program
 			}
 
 			// NOTE:
-			// Destroying entities may invalidate component references for the current cycle.
+			// After destroying any entities, cached refs to components
+			// may become invalid for the current interation cycle.
 			// If this behavior does not suit you, use IStable components
 		});
 
