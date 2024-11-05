@@ -30,12 +30,12 @@ namespace Massive.PerformanceTests
 						var page2 = pool2.Data.Pages[page.Index];
 						var page3 = pool3.Data.Pages[page.Index];
 
-						foreach (var indexInPage in page)
+						foreach (var entry in page)
 						{
-							var id = groupSet.Ids[indexInPage + page.Offset];
-							ref var data1 = ref page1[indexInPage];
-							ref var data2 = ref page2[indexInPage];
-							ref var data3 = ref page3[indexInPage];
+							// var id = groupSet.Ids[indexInPage + page.Offset];
+							ref var data1 = ref page1[entry.Index];
+							ref var data2 = ref page2[entry.Index];
+							ref var data3 = ref page3[entry.Index];
 						}
 					}
 				})

@@ -28,6 +28,7 @@ namespace Massive
 		public struct Enumerator
 		{
 			private readonly Group _group;
+			private readonly SparseSet _mainSet;
 			private readonly int _indexOffset;
 			private int _index;
 
@@ -35,13 +36,14 @@ namespace Massive
 			{
 				_indexOffset = indexOffset;
 				_group = group;
+				_mainSet = group.MainSet;
 				_index = pageLength;
 			}
 
-			public int Current
+			public Entry Current
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => _index;
+				get => Entry.Create(_index, _mainSet.Ids[_index + _indexOffset]);
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -54,6 +56,40 @@ namespace Massive
 
 				return _index >= 0;
 			}
+		}
+
+		public readonly struct Entry
+		{
+			private readonly long _indexAndId;
+
+			/// <summary>
+			/// Index in page.
+			/// </summary>
+			public int Index
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => (int)(_indexAndId & 0x00000000FFFFFFFF);
+			}
+
+			public int Id
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => (int)(_indexAndId >> 32);
+			}
+
+			public Entry(long indexAndId)
+			{
+				_indexAndId = indexAndId;
+			}
+
+#pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public static Entry Create(int indexInPage, int id)
+			{
+				long packed = indexInPage | ((long)id << 32);
+				return new Entry(packed);
+			}
+#pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand
 		}
 	}
 }
