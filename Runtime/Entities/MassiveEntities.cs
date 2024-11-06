@@ -70,6 +70,10 @@ namespace Massive
 			Array.Copy(_idsByFrames[rollbackFrame], Ids, rollbackMaxId);
 			Array.Copy(_reusesByFrames[rollbackFrame], Reuses, rollbackMaxId);
 			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackMaxId);
+			if (rollbackMaxId < MaxId)
+			{
+				Array.Fill(Sparse, Constants.InvalidId, rollbackMaxId, MaxId - rollbackMaxId);
+			}
 			Count = rollbackCount;
 			MaxId = rollbackMaxId;
 		}
@@ -87,7 +91,9 @@ namespace Massive
 			}
 			if (_sparseByFrames[frame].Length < Sparse.Length)
 			{
+				var previousCapacity = _sparseByFrames[frame].Length;
 				Array.Resize(ref _sparseByFrames[frame], Sparse.Length);
+				Array.Fill(_sparseByFrames[frame], Constants.InvalidId, previousCapacity, Sparse.Length - previousCapacity);
 			}
 		}
 	}

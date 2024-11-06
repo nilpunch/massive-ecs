@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -60,8 +59,8 @@ namespace Massive
 			else
 			{
 				entity = new Entity(MaxId, 0);
+				AssignEntity(MaxId, 0, Count);
 				MaxId += 1;
-				AssignEntity(entity, Count);
 			}
 
 			Count += 1;
@@ -73,13 +72,7 @@ namespace Massive
 		public void Destroy(int id)
 		{
 			// If ID is negative or element is not alive, nothing to be done
-			if (id < 0 || id >= MaxId)
-			{
-				return;
-			}
-			var index = Sparse[id];
-			var entity = GetEntityAt(index);
-			if (index >= Count || entity.Id != id)
+			if (id < 0 || id >= MaxId || Sparse[id] == Constants.InvalidId)
 			{
 				return;
 			}
@@ -88,9 +81,14 @@ namespace Massive
 
 			Count -= 1;
 
-			// Swap packed with last element
-			AssignEntity(GetEntityAt(Count), index);
-			AssignEntity(Entity.Reuse(entity), Count);
+			var index = Sparse[id];
+			var reuseCount = Reuses[index];
+
+			AssignEntity(Ids[Count], Reuses[Count], index);
+
+			Sparse[id] = Constants.InvalidId;
+			Ids[Count] = id;
+			Reuses[Count] = unchecked(reuseCount + 1);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -108,8 +106,7 @@ namespace Massive
 
 			for (int i = 0; i < needToCreate; i++)
 			{
-				var newEntity = new Entity(MaxId, 0);
-				AssignEntity(newEntity, Count);
+				AssignEntity(MaxId, 0, Count);
 				MaxId += 1;
 				Count += 1;
 				AfterCreated?.Invoke(MaxId - 1);
@@ -124,6 +121,7 @@ namespace Massive
 				var id = Ids[i];
 				BeforeDestroyed?.Invoke(id);
 				Count -= 1;
+				Sparse[id] = Constants.InvalidId;
 				unchecked { Reuses[i] += 1; }
 			}
 		}
@@ -144,20 +142,13 @@ namespace Massive
 
 			int index = Sparse[entity.Id];
 
-			return index < Count && Ids[index] == entity.Id && Reuses[index] == entity.ReuseCount;
+			return index != Constants.InvalidId && Reuses[index] == entity.ReuseCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			if (id < 0 || id >= MaxId)
-			{
-				return false;
-			}
-
-			int index = Sparse[id];
-
-			return index < Count && Ids[index] == id;
+			return id >= 0 && id < MaxId && Sparse[id] != Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -182,7 +173,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
+			int previousCapacity = _sparse.Length;
 			Array.Resize(ref _sparse, capacity);
+			if (capacity > previousCapacity)
+			{
+				Array.Fill(Sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -198,11 +194,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignEntity(Entity entity, int index)
+		private void AssignEntity(int id, uint reuseCount, int index)
 		{
-			Sparse[entity.Id] = index;
-			Ids[index] = entity.Id;
-			Reuses[index] = entity.ReuseCount;
+			Sparse[id] = index;
+			Ids[index] = id;
+			Reuses[index] = reuseCount;
 		}
 	}
 }
