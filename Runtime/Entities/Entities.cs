@@ -7,11 +7,15 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class Entities : IdsSource
 	{
+		private const int MaxCount = int.MaxValue;
+
 		private int[] _ids;
 		private uint[] _reuses;
 		private int[] _sparse;
 
 		public int MaxId { get; set; }
+		public PackingMode PackingMode { get; }
+		public int NextHole { get; set; }
 
 		public Entities()
 		{
@@ -20,19 +24,32 @@ namespace Massive
 			_sparse = Array.Empty<int>();
 
 			Ids = _ids;
+			NextHole = MaxCount;
 		}
-
-		public uint[] Reuses
+		
+		/// <summary>
+		/// Checks whether a packed array has no holes in it.
+		/// </summary>
+		public bool IsContinuous
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _reuses;
+			get => PackingMode == PackingMode.Continuous || NextHole == MaxCount;
 		}
 
-		public int[] Sparse
+		/// <summary>
+		/// Checks whether a packed array has any holes in it.
+		/// </summary>
+		public bool HasHoles
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _sparse;
+			get => !IsContinuous;
 		}
+
+		public uint[] Reuses => _reuses;
+
+		public int[] Sparse => _sparse;
+
+		public int SparseCapacity => MaxId;
 
 		public ReadOnlySpan<int> Alive
 		{
@@ -51,8 +68,7 @@ namespace Massive
 
 			Entity entity;
 
-			// If there are unused elements in the packed array, return last
-			if (Count < MaxId)
+			if (Count < MaxId) // If there are unused elements in the packed array, return last
 			{
 				entity = GetEntityAt(Count);
 			}
@@ -72,7 +88,7 @@ namespace Massive
 		public void Destroy(int id)
 		{
 			// If ID is negative or element is not alive, nothing to be done
-			if (id < 0 || id >= MaxId || Sparse[id] == Constants.InvalidId)
+			if (id < 0 || id >= MaxId || Sparse[id] >= Count || Ids[Sparse[id]] != id)
 			{
 				return;
 			}
@@ -85,10 +101,7 @@ namespace Massive
 			var reuseCount = Reuses[index];
 
 			AssignEntity(Ids[Count], Reuses[Count], index);
-
-			Sparse[id] = Constants.InvalidId;
-			Ids[Count] = id;
-			Reuses[Count] = unchecked(reuseCount + 1);
+			AssignEntity(id, unchecked(reuseCount + 1), Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -142,13 +155,13 @@ namespace Massive
 
 			int index = Sparse[entity.Id];
 
-			return index != Constants.InvalidId && Reuses[index] == entity.ReuseCount;
+			return index < Count && Ids[index] == entity.Id && Reuses[index] == entity.ReuseCount;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			return id >= 0 && id < MaxId && Sparse[id] != Constants.InvalidId;
+			return id >= 0 && id < MaxId && Sparse[id] < Count && Ids[Sparse[id]] == id;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
