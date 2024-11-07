@@ -7,11 +7,15 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class Entities : IdsSource
 	{
+		private const int EndHoleId = int.MaxValue;
+
 		private int[] _ids;
 		private uint[] _reuses;
 		private int[] _sparse;
 
 		public int MaxId { get; set; }
+		public PackingMode PackingMode { get; } = PackingMode.WithHoles;
+		public int NextHoleId { get; set; }
 
 		public Entities()
 		{
@@ -20,6 +24,25 @@ namespace Massive
 			_sparse = Array.Empty<int>();
 
 			Ids = _ids;
+			NextHoleId = EndHoleId;
+		}
+
+		/// <summary>
+		/// Checks whether a packed array has no holes in it.
+		/// </summary>
+		public bool IsContinuous
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => PackingMode == PackingMode.Continuous || NextHoleId == EndHoleId;
+		}
+
+		/// <summary>
+		/// Checks whether a packed array has any holes in it.
+		/// </summary>
+		public bool HasHoles
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => PackingMode == PackingMode.WithHoles && NextHoleId != EndHoleId;
 		}
 
 		public uint[] Reuses => _reuses;
@@ -37,18 +60,27 @@ namespace Massive
 
 			Entity entity;
 
-			if (Count < MaxId) // If there are unused elements in the packed array, return last
+			if (HasHoles)
+			{
+				int id = NextHoleId;
+				int index = Sparse[id];
+				NextHoleId = ~Ids[index];
+				Ids[index] = id;
+				entity = Entity.Create(id, Reuses[index]);
+			}
+			else if (Count < MaxId)
 			{
 				entity = GetEntityAt(Count);
+				Count += 1;
 			}
 			else
 			{
 				entity = Entity.Create(MaxId, 0);
 				AssignEntity(MaxId, 0, Count);
 				MaxId += 1;
+				Count += 1;
 			}
 
-			Count += 1;
 			AfterCreated?.Invoke(entity.Id);
 			return entity;
 		}
@@ -64,13 +96,23 @@ namespace Massive
 
 			BeforeDestroyed?.Invoke(id);
 
-			Count -= 1;
+			if (PackingMode == PackingMode.Continuous)
+			{
+				Count -= 1;
 
-			var index = Sparse[id];
-			var reuseCount = Reuses[index];
+				var index = Sparse[id];
+				var reuseCount = Reuses[index];
 
-			AssignEntity(Ids[Count], Reuses[Count], index);
-			AssignEntity(id, unchecked(reuseCount + 1), Count);
+				AssignEntity(Ids[Count], Reuses[Count], index);
+				AssignEntity(id, unchecked(reuseCount + 1), Count);
+			}
+			else
+			{
+				int index = Sparse[id];
+				Ids[index] = ~NextHoleId;
+				unchecked { Reuses[index] += 1; }
+				NextHoleId = id;
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -78,6 +120,16 @@ namespace Massive
 		{
 			int needToCreate = amount;
 			EnsureCapacityForIndex(needToCreate + Count);
+
+			while (HasHoles && needToCreate > 0)
+			{
+				needToCreate -= 1;
+				int id = NextHoleId;
+				int index = Sparse[id];
+				NextHoleId = ~Ids[index];
+				Ids[index] = id;
+				AfterCreated?.Invoke(id);
+			}
 
 			while (Count < MaxId && needToCreate > 0)
 			{
@@ -154,12 +206,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
-			int previousCapacity = _sparse.Length;
 			Array.Resize(ref _sparse, capacity);
-			if (capacity > previousCapacity)
-			{
-				Array.Fill(Sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
-			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

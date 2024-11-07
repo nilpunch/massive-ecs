@@ -25,7 +25,8 @@ namespace Massive
 					continue;
 				}
 
-				if (!action.Apply(entities.Ids[i]))
+				int id = entities.Ids[i];
+				if (id >= 0 && !action.Apply(entities.Ids[i]))
 				{
 					break;
 				}
