@@ -14,7 +14,6 @@ namespace Massive
 		private int[] _ids;
 		private uint[] _reuses;
 		private int[] _sparse;
-		private PackingMode _packingMode;
 
 		public int MaxId { get; set; }
 		public int NextHoleId { get; set; }
@@ -24,23 +23,10 @@ namespace Massive
 			_ids = Array.Empty<int>();
 			_reuses = Array.Empty<uint>();
 			_sparse = Array.Empty<int>();
-			_packingMode = packingMode;
+			PackingMode = packingMode;
 
 			Ids = _ids;
 			NextHoleId = EndHoleId;
-		}
-
-		public override PackingMode PackingMode
-		{
-			get => _packingMode;
-			set
-			{
-				if (value != _packingMode)
-				{
-					_packingMode = value;
-					Compact();
-				}
-			}
 		}
 
 		/// <summary>
@@ -49,7 +35,7 @@ namespace Massive
 		public bool IsContinuous
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _packingMode == PackingMode.Continuous || NextHoleId == EndHoleId;
+			get => PackingMode == PackingMode.Continuous || NextHoleId == EndHoleId;
 		}
 
 		/// <summary>
@@ -58,7 +44,7 @@ namespace Massive
 		public bool HasHoles
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _packingMode == PackingMode.WithHoles && NextHoleId != EndHoleId;
+			get => PackingMode == PackingMode.WithHoles && NextHoleId != EndHoleId;
 		}
 
 		public uint[] Reuses => _reuses;
@@ -112,7 +98,7 @@ namespace Massive
 
 			BeforeDestroyed?.Invoke(id);
 
-			if (_packingMode == PackingMode.Continuous)
+			if (PackingMode == PackingMode.Continuous)
 			{
 				Count -= 1;
 
@@ -225,6 +211,15 @@ namespace Massive
 		public void ResizeSparse(int capacity)
 		{
 			Array.Resize(ref _sparse, capacity);
+		}
+
+		public override void ChangePackingMode(PackingMode value)
+		{
+			if (value != PackingMode)
+			{
+				PackingMode = value;
+				Compact();
+			}
 		}
 
 		/// <summary>

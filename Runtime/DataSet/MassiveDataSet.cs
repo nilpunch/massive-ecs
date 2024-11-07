@@ -55,7 +55,7 @@ namespace Massive
 			// Copy everything from current state to current frame
 			CopyData(Data, _dataByFrames[currentFrame], currentCount);
 			Array.Copy(Packed, _packedByFrames[currentFrame], currentCount);
-			Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
+			Array.Copy(Sparse, _sparseByFrames[currentFrame], Sparse.Length);
 			_countByFrames[currentFrame] = currentCount;
 			_nextHoleByFrames[currentFrame] = currentNextHole;
 		}
@@ -68,15 +68,15 @@ namespace Massive
 			// Copy everything from rollback frame to current state
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackCount = _countByFrames[rollbackFrame];
-			int rollbackSparseCapacity = _sparseByFrames[rollbackFrame].Length;
+			int rollbackSparseLength = _sparseByFrames[rollbackFrame].Length;
 			int rollbackNextHole = _nextHoleByFrames[rollbackFrame];
 
 			CopyData(_dataByFrames[rollbackFrame], Data, rollbackCount);
 			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
-			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseCapacity);
-			if (rollbackSparseCapacity < SparseCapacity)
+			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseLength);
+			if (rollbackSparseLength < Sparse.Length)
 			{
-				Array.Fill(Sparse, Constants.InvalidId, rollbackSparseCapacity, SparseCapacity - rollbackSparseCapacity);
+				Array.Fill(Sparse, Constants.InvalidId, rollbackSparseLength, Sparse.Length - rollbackSparseLength);
 			}
 			Count = rollbackCount;
 			NextHole = rollbackNextHole;
@@ -103,16 +103,16 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void EnsureCapacityForFrame(int frame)
 		{
-			if (_sparseByFrames[frame].Length < SparseCapacity)
+			if (_sparseByFrames[frame].Length < Sparse.Length)
 			{
-				var previousCapacity = _sparseByFrames[frame].Length;
-				Array.Resize(ref _sparseByFrames[frame], SparseCapacity);
-				Array.Fill(_sparseByFrames[frame], Constants.InvalidId, previousCapacity, SparseCapacity - previousCapacity);
+				var previousLength = _sparseByFrames[frame].Length;
+				Array.Resize(ref _sparseByFrames[frame], Sparse.Length);
+				Array.Fill(_sparseByFrames[frame], Constants.InvalidId, previousLength, Sparse.Length - previousLength);
 			}
 
-			if (_packedByFrames[frame].Length < PackedCapacity)
+			if (_packedByFrames[frame].Length < Packed.Length)
 			{
-				Array.Resize(ref _packedByFrames[frame], PackedCapacity);
+				Array.Resize(ref _packedByFrames[frame], Packed.Length);
 			}
 		}
 	}

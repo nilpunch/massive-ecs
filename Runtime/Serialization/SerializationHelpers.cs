@@ -36,11 +36,11 @@ namespace Massive.Serialization
 		public static void WriteSparseSet(SparseSet set, Stream stream)
 		{
 			WriteInt(set.Count, stream);
-			WriteInt(set.SparseCapacity, stream);
+			WriteInt(set.Sparse.Length, stream);
 			WriteInt(set.NextHole, stream);
 
 			stream.Write(MemoryMarshal.Cast<int, byte>(set.Packed.AsSpan(0, set.Count)));
-			stream.Write(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, set.SparseCapacity)));
+			stream.Write(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, set.Sparse.Length)));
 		}
 
 		public static void ReadSparseSet(SparseSet set, Stream stream)
@@ -54,9 +54,9 @@ namespace Massive.Serialization
 
 			stream.Read(MemoryMarshal.Cast<int, byte>(set.Packed.AsSpan(0, set.Count)));
 			stream.Read(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, sparseCount)));
-			if (sparseCount < set.SparseCapacity)
+			if (sparseCount < set.Sparse.Length)
 			{
-				Array.Fill(set.Sparse, Constants.InvalidId, sparseCount, set.SparseCapacity - sparseCount);
+				Array.Fill(set.Sparse, Constants.InvalidId, sparseCount, set.Sparse.Length - sparseCount);
 			}
 		}
 

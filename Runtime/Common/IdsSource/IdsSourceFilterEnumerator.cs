@@ -20,7 +20,7 @@ namespace Massive
 			_idsSource = idsSource;
 			_filter = filter;
 			_originalPackingMode = _idsSource.PackingMode;
-			_idsSource.PackingMode = PackingMode.WithHoles;
+			_idsSource.ChangePackingMode(PackingMode.WithHoles);
 			_index = _idsSource.Count;
 			_current = Constants.InvalidId;
 		}
@@ -50,7 +50,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Dispose()
 		{
-			_idsSource.PackingMode = _originalPackingMode;
+			_idsSource.ChangePackingMode(_originalPackingMode);
 		}
 	}
 }

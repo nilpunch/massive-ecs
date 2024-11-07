@@ -26,7 +26,7 @@ namespace Massive
 				: SetHelpers.GetMinimalSet(Filter.Included);
 
 			var originalPackingMode = idsSource.PackingMode;
-			idsSource.PackingMode = PackingMode.WithHoles;
+			idsSource.ChangePackingMode(PackingMode.WithHoles);
 
 			for (var i = idsSource.Count - 1; i >= 0; i--)
 			{
@@ -46,7 +46,7 @@ namespace Massive
 				}
 			}
 
-			idsSource.PackingMode = originalPackingMode;
+			idsSource.ChangePackingMode(originalPackingMode);
 		}
 
 		public void ForEach<TAction, T>(ref TAction action)
@@ -58,7 +58,7 @@ namespace Massive
 
 			var minSet = SetHelpers.GetMinimalSet(dataSet, Filter.Included);
 			var originalPackingMode = minSet.PackingMode;
-			minSet.PackingMode = PackingMode.WithHoles;
+			minSet.ChangePackingMode(PackingMode.WithHoles);
 
 			for (int i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -79,7 +79,7 @@ namespace Massive
 				}
 			}
 
-			minSet.PackingMode = originalPackingMode;
+			minSet.ChangePackingMode(originalPackingMode);
 		}
 
 		public void ForEach<TAction, T1, T2>(ref TAction action)
@@ -94,7 +94,7 @@ namespace Massive
 
 			var minSet = SetHelpers.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPackingMode = minSet.PackingMode;
-			minSet.PackingMode = PackingMode.WithHoles;
+			minSet.ChangePackingMode(PackingMode.WithHoles);
 
 			for (int i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -117,7 +117,7 @@ namespace Massive
 				}
 			}
 
-			minSet.PackingMode = originalPackingMode;
+			minSet.ChangePackingMode(originalPackingMode);
 		}
 
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
@@ -134,7 +134,7 @@ namespace Massive
 
 			var minSet = SetHelpers.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPackingMode = minSet.PackingMode;
-			minSet.PackingMode = PackingMode.WithHoles;
+			minSet.ChangePackingMode(PackingMode.WithHoles);
 
 			for (int i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -158,7 +158,7 @@ namespace Massive
 				}
 			}
 
-			minSet.PackingMode = originalPackingMode;
+			minSet.ChangePackingMode(originalPackingMode);
 		}
 
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
@@ -177,7 +177,7 @@ namespace Massive
 
 			var minSet = SetHelpers.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPackingMode = minSet.PackingMode;
-			minSet.PackingMode = PackingMode.WithHoles;
+			minSet.ChangePackingMode(PackingMode.WithHoles);
 
 			for (int i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -202,7 +202,7 @@ namespace Massive
 				}
 			}
 
-			minSet.PackingMode = originalPackingMode;
+			minSet.ChangePackingMode(originalPackingMode);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

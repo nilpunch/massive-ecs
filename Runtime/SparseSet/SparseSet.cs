@@ -27,7 +27,6 @@ namespace Massive
 
 		private int[] _packed;
 		private int[] _sparse;
-		private PackingMode _packingMode;
 
 		public int NextHole { get; set; }
 
@@ -35,23 +34,10 @@ namespace Massive
 		{
 			_packed = Array.Empty<int>();
 			_sparse = Array.Empty<int>();
-			_packingMode = packingMode;
+			PackingMode = packingMode;
 
 			NextHole = EndHole;
 			Ids = _packed;
-		}
-
-		public override PackingMode PackingMode
-		{
-			get => _packingMode;
-			set
-			{
-				if (value != _packingMode)
-				{
-					_packingMode = value;
-					Compact();
-				}
-			}
 		}
 
 		/// <summary>
@@ -60,7 +46,7 @@ namespace Massive
 		public bool IsContinuous
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _packingMode == PackingMode.Continuous || NextHole == EndHole;
+			get => PackingMode == PackingMode.Continuous || NextHole == EndHole;
 		}
 
 		/// <summary>
@@ -69,16 +55,12 @@ namespace Massive
 		public bool HasHoles
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _packingMode == PackingMode.WithHoles && NextHole != EndHole;
+			get => PackingMode == PackingMode.WithHoles && NextHole != EndHole;
 		}
 
 		public int[] Packed => _packed;
 
 		public int[] Sparse => _sparse;
-
-		public int PackedCapacity => Packed.Length;
-
-		public int SparseCapacity => Sparse.Length;
 
 		/// <summary>
 		/// Shoots only after <see cref="Assign"/> call, when the id was not alive and therefore was created.
@@ -94,7 +76,7 @@ namespace Massive
 		public void Assign(int id)
 		{
 			// If ID is negative or element is alive, nothing to be done
-			if (id < 0 || id < SparseCapacity && Sparse[id] != Constants.InvalidId)
+			if (id < 0 || id < Sparse.Length && Sparse[id] != Constants.InvalidId)
 			{
 				return;
 			}
@@ -129,7 +111,7 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			if (_packingMode == PackingMode.Continuous)
+			if (PackingMode == PackingMode.Continuous)
 			{
 				Count -= 1;
 				CopyFromToPacked(Count, Sparse[id]);
@@ -220,7 +202,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void SwapPacked(int first, int second)
 		{
-			if (_packingMode == PackingMode.WithHoles)
+			if (PackingMode == PackingMode.WithHoles)
 			{
 				throw new Exception("Swapping is not supported for packing mode with holes.");
 			}
@@ -234,7 +216,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePackedForIndex(int index)
 		{
-			if (index >= PackedCapacity)
+			if (index >= Packed.Length)
 			{
 				ResizePacked(MathHelpers.NextPowerOf2(index + 1));
 			}
@@ -243,7 +225,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureSparseForIndex(int index)
 		{
-			if (index >= SparseCapacity)
+			if (index >= Sparse.Length)
 			{
 				ResizeSparse(MathHelpers.NextPowerOf2(index + 1));
 			}
@@ -259,11 +241,20 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
-			int previousCapacity = SparseCapacity;
+			int previousCapacity = Sparse.Length;
 			Array.Resize(ref _sparse, capacity);
 			if (capacity > previousCapacity)
 			{
 				Array.Fill(Sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
+			}
+		}
+
+		public override void ChangePackingMode(PackingMode value)
+		{
+			if (value != PackingMode)
+			{
+				PackingMode = value;
+				Compact();
 			}
 		}
 
@@ -320,13 +311,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private bool InsideBounds(int id)
 		{
-			return id >= 0 && id < SparseCapacity;
+			return id >= 0 && id < Sparse.Length;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private bool OutOfBounds(int id)
 		{
-			return id < 0 || id >= SparseCapacity;
+			return id < 0 || id >= Sparse.Length;
 		}
 	}
 }
