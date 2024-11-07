@@ -5,7 +5,7 @@
 - Added: `PackingMode` to `Entities`.
 - Added: `PackingMode` now can be changed at runtime both for `Entities` and `SparseSet`.
 - Changed: Removed delegate parameter from `Entities.CreateMany`.
-- Changed: Make `GroupPage` return `Entry`, that contain both index in page and ID.
+- Changed: `GroupPage` now returns `Entry`, containing both in-page index and ID.
 - Removed: `Alive` span property from `Entities`. Use enumerator instead.
 
 ## 16.2.0 - November 3, 2024
