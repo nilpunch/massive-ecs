@@ -75,10 +75,6 @@ namespace Massive
 			Array.Copy(_idsByFrames[rollbackFrame], Ids, rollbackMaxId);
 			Array.Copy(_reusesByFrames[rollbackFrame], Reuses, rollbackMaxId);
 			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackMaxId);
-			if (rollbackMaxId < MaxId)
-			{
-				Array.Fill(Sparse, Constants.InvalidId, rollbackMaxId, MaxId - rollbackMaxId);
-			}
 			Count = rollbackCount;
 			MaxId = rollbackMaxId;
 			NextHoleId = rollbackNextHoleId;
