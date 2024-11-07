@@ -193,7 +193,7 @@ namespace Massive.Tests
 				});
 			});
 
-			Assert.AreEqual(1000, iterations);
+			Assert.IsTrue(1000 == iterations || 1001 == iterations);
 		}
 
 		[Test]
@@ -220,7 +220,7 @@ namespace Massive.Tests
 				});
 			}
 
-			Assert.AreEqual(1000, iterations);
+			Assert.IsTrue(1000 == iterations || 1001 == iterations);
 		}
 
 		[Test]

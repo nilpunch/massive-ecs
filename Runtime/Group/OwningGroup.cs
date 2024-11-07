@@ -33,6 +33,11 @@ namespace Massive
 			OwnedPlusIncluded = Owned.Concat(Included).ToArray();
 			OwnedMinusFirstPlusIncluded = OwnedPlusIncluded.Skip(1).ToArray();
 
+			foreach (var set in Owned)
+			{
+				set.PackingModeChanged += OnPackingModeChanged;
+			}
+			
 			foreach (var set in OwnedPlusIncluded)
 			{
 				set.AfterAssigned += AddToGroup;
@@ -44,6 +49,11 @@ namespace Massive
 				set.AfterAssigned += RemoveFromGroup;
 				set.BeforeUnassigned += AddToGroupBeforeUnassignedFromExcluded;
 			}
+		}
+
+		private void OnPackingModeChanged(PackingMode packingMode)
+		{
+			throw new Exception("Set is owned by a group and does not support change of packing mode.");
 		}
 
 		public override void EnsureSynced()

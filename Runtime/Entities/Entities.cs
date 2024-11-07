@@ -12,19 +12,33 @@ namespace Massive
 		private int[] _ids;
 		private uint[] _reuses;
 		private int[] _sparse;
+		private PackingMode _packingMode;
 
 		public int MaxId { get; set; }
-		public PackingMode PackingMode { get; } = PackingMode.WithHoles;
 		public int NextHoleId { get; set; }
 
-		public Entities()
+		public Entities(PackingMode packingMode = PackingMode.Continuous)
 		{
 			_ids = Array.Empty<int>();
 			_reuses = Array.Empty<uint>();
 			_sparse = Array.Empty<int>();
+			_packingMode = packingMode;
 
 			Ids = _ids;
 			NextHoleId = EndHoleId;
+		}
+
+		public override PackingMode PackingMode
+		{
+			get => _packingMode;
+			set
+			{
+				if (value != _packingMode)
+				{
+					_packingMode = value;
+					Compact();
+				}
+			}
 		}
 
 		/// <summary>
@@ -33,7 +47,7 @@ namespace Massive
 		public bool IsContinuous
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => PackingMode == PackingMode.Continuous || NextHoleId == EndHoleId;
+			get => _packingMode == PackingMode.Continuous || NextHoleId == EndHoleId;
 		}
 
 		/// <summary>
@@ -42,7 +56,7 @@ namespace Massive
 		public bool HasHoles
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => PackingMode == PackingMode.WithHoles && NextHoleId != EndHoleId;
+			get => _packingMode == PackingMode.WithHoles && NextHoleId != EndHoleId;
 		}
 
 		public uint[] Reuses => _reuses;
@@ -96,7 +110,7 @@ namespace Massive
 
 			BeforeDestroyed?.Invoke(id);
 
-			if (PackingMode == PackingMode.Continuous)
+			if (_packingMode == PackingMode.Continuous)
 			{
 				Count -= 1;
 
@@ -150,6 +164,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
+			Compact();
+
 			for (int i = Count - 1; i >= 0; i--)
 			{
 				var id = Ids[i];
@@ -207,6 +223,35 @@ namespace Massive
 		public void ResizeSparse(int capacity)
 		{
 			Array.Resize(ref _sparse, capacity);
+		}
+
+		/// <summary>
+		/// Removes all holes from the ids.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Compact()
+		{
+			if (HasHoles)
+			{
+				for (; Count > 0 && Ids[Count - 1] < 0; Count--) { }
+
+				while (NextHoleId != EndHoleId)
+				{
+					int holeId = NextHoleId;
+					int holeIndex = Sparse[NextHoleId];
+					NextHoleId = ~Ids[NextHoleId];
+					if (holeIndex < Count)
+					{
+						Count -= 1;
+
+						var holeReuseCount = Reuses[holeIndex];
+						AssignEntity(Ids[Count], Reuses[Count], holeIndex);
+						AssignEntity(holeId, holeReuseCount, Count);
+
+						for (; Count > 0 && Ids[Count - 1] < 0; Count--) { }
+					}
+				}
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

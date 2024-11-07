@@ -25,18 +25,32 @@ namespace Massive
 
 		private int[] _packed;
 		private int[] _sparse;
+		private PackingMode _packingMode;
 
-		public PackingMode PackingMode { get; }
 		public int NextHole { get; set; }
 
 		public SparseSet(PackingMode packingMode = PackingMode.Continuous)
 		{
 			_packed = Array.Empty<int>();
 			_sparse = Array.Empty<int>();
-			PackingMode = packingMode;
+			_packingMode = packingMode;
 
 			NextHole = EndHole;
 			Ids = _packed;
+		}
+
+		public override PackingMode PackingMode
+		{
+			get => _packingMode;
+			set
+			{
+				if (value != _packingMode)
+				{
+					_packingMode = value;
+					Compact();
+					PackingModeChanged?.Invoke(_packingMode);
+				}
+			}
 		}
 
 		/// <summary>
@@ -45,7 +59,7 @@ namespace Massive
 		public bool IsContinuous
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => PackingMode == PackingMode.Continuous || NextHole == EndHole;
+			get => _packingMode == PackingMode.Continuous || NextHole == EndHole;
 		}
 
 		/// <summary>
@@ -54,7 +68,7 @@ namespace Massive
 		public bool HasHoles
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => !IsContinuous;
+			get => _packingMode == PackingMode.WithHoles && NextHole != EndHole;
 		}
 
 		public int[] Packed => _packed;
@@ -74,6 +88,8 @@ namespace Massive
 		/// Shoots before each <see cref="Unassign"/> call, when the id was alive.
 		/// </summary>
 		public event Action<int> BeforeUnassigned;
+
+		public event Action<PackingMode> PackingModeChanged;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Assign(int id)
@@ -114,7 +130,7 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			if (PackingMode == PackingMode.Continuous)
+			if (_packingMode == PackingMode.Continuous)
 			{
 				Count -= 1;
 				CopyFromToPacked(Count, Sparse[id]);
@@ -205,6 +221,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void SwapPacked(int first, int second)
 		{
+			if (_packingMode == PackingMode.WithHoles)
+			{
+				throw new Exception("Swapping is not supported for packing mode with holes.");
+			}
+
 			int firstId = Packed[first];
 			int secondId = Packed[second];
 			AssignIndex(firstId, second);

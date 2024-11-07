@@ -17,6 +17,7 @@ namespace Massive
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _maxIdByFrames;
 		private readonly int[] _countByFrames;
+		private readonly int[] _nextHoleIdByFrames;
 
 		public MassiveEntities(int framesCapacity = Constants.DefaultFramesCapacity)
 		{
@@ -27,6 +28,7 @@ namespace Massive
 			_sparseByFrames = new int[framesCapacity][];
 			_maxIdByFrames = new int[framesCapacity];
 			_countByFrames = new int[framesCapacity];
+			_nextHoleIdByFrames = new int[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
@@ -46,6 +48,7 @@ namespace Massive
 			int currentFrame = _cyclicFrameCounter.CurrentFrame;
 			int currentCount = Count;
 			int currentMaxId = MaxId;
+			int currentNextHoleId = NextHoleId;
 
 			EnsureCapacityForFrame(currentFrame);
 
@@ -55,6 +58,7 @@ namespace Massive
 			Array.Copy(Sparse, _sparseByFrames[currentFrame], currentMaxId);
 			_countByFrames[currentFrame] = currentCount;
 			_maxIdByFrames[currentFrame] = currentMaxId;
+			_nextHoleIdByFrames[currentFrame] = currentNextHoleId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -66,6 +70,7 @@ namespace Massive
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackCount = _countByFrames[rollbackFrame];
 			int rollbackMaxId = _maxIdByFrames[rollbackFrame];
+			int rollbackNextHoleId = _nextHoleIdByFrames[rollbackFrame];
 
 			Array.Copy(_idsByFrames[rollbackFrame], Ids, rollbackMaxId);
 			Array.Copy(_reusesByFrames[rollbackFrame], Reuses, rollbackMaxId);
@@ -76,6 +81,7 @@ namespace Massive
 			}
 			Count = rollbackCount;
 			MaxId = rollbackMaxId;
+			NextHoleId = rollbackNextHoleId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -91,9 +97,7 @@ namespace Massive
 			}
 			if (_sparseByFrames[frame].Length < Sparse.Length)
 			{
-				var previousCapacity = _sparseByFrames[frame].Length;
 				Array.Resize(ref _sparseByFrames[frame], Sparse.Length);
-				Array.Fill(_sparseByFrames[frame], Constants.InvalidId, previousCapacity, Sparse.Length - previousCapacity);
 			}
 		}
 	}

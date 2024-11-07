@@ -7,6 +7,31 @@ namespace Massive.Tests
 	[TestFixture]
 	public class EntitiesTests
 	{
+		public int EntitiesToCreate = 24;
+
+		public int[] IdsToDestroy =
+		{
+			0, 1, 3, 20, 21, 23
+		};
+
+		[Test]
+		public void WhenCompact_AndThereIsHoles_ThenShouldRemoveHoles()
+		{
+			// Arrange
+			var entities = new Entities(PackingMode.WithHoles);
+			for (int i = 0; i < EntitiesToCreate; i++)
+				entities.Create();
+			foreach (var id in IdsToDestroy)
+				entities.Destroy(id);
+
+			// Act
+			entities.Compact();
+
+			// Assert
+			int remainIdsCount = EntitiesToCreate - IdsToDestroy.Length;
+			Assert.AreEqual(remainIdsCount, entities.Count);
+		}
+		
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]
