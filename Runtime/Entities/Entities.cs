@@ -7,15 +7,11 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
 	public class Entities : IdsSource
 	{
-		private const int MaxCount = int.MaxValue;
-
 		private int[] _ids;
 		private uint[] _reuses;
 		private int[] _sparse;
 
 		public int MaxId { get; set; }
-		public PackingMode PackingMode { get; }
-		public int NextHole { get; set; }
 
 		public Entities()
 		{
@@ -24,38 +20,11 @@ namespace Massive
 			_sparse = Array.Empty<int>();
 
 			Ids = _ids;
-			NextHole = MaxCount;
-		}
-		
-		/// <summary>
-		/// Checks whether a packed array has no holes in it.
-		/// </summary>
-		public bool IsContinuous
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => PackingMode == PackingMode.Continuous || NextHole == MaxCount;
-		}
-
-		/// <summary>
-		/// Checks whether a packed array has any holes in it.
-		/// </summary>
-		public bool HasHoles
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => !IsContinuous;
 		}
 
 		public uint[] Reuses => _reuses;
 
 		public int[] Sparse => _sparse;
-
-		public int SparseCapacity => MaxId;
-
-		public ReadOnlySpan<int> Alive
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ReadOnlySpan<int>(Ids, 0, Count);
-		}
 
 		public event Action<int> AfterCreated;
 
