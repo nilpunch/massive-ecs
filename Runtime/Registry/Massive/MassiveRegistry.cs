@@ -17,7 +17,7 @@ namespace Massive
 
 		public MassiveRegistry(MassiveRegistryConfig registryConfig)
 			: base(new MassiveSetFactory(registryConfig.FramesCapacity, registryConfig.StoreEmptyTypesAsDataSets, registryConfig.PageSize, registryConfig.FullStability),
-				new MassiveGroupFactory(registryConfig.FramesCapacity), new MassiveEntities(registryConfig.FramesCapacity), registryConfig.PageSize)
+				new MassiveReactiveFactory(registryConfig.FramesCapacity), new MassiveEntities(registryConfig.FramesCapacity), registryConfig.PageSize)
 		{
 			// Fetch instances from base
 			_massiveEntities = (MassiveEntities)Entities;
@@ -42,7 +42,7 @@ namespace Massive
 				}
 			}
 
-			var groups = GroupRegistry.All;
+			var groups = ReactiveRegistry.All;
 			for (var i = 0; i < groups.Length; i++)
 			{
 				if (groups[i] is IMassive massive)
@@ -68,7 +68,7 @@ namespace Massive
 				}
 			}
 
-			var groups = GroupRegistry.All;
+			var groups = ReactiveRegistry.All;
 			for (var i = 0; i < groups.Length; i++)
 			{
 				if (groups[i] is IMassive massive)

@@ -47,35 +47,20 @@ namespace Massive.Serialization
 				}
 			}
 
-			// Groups
-			List<Group> syncedGroups = new List<Group>();
-			foreach (var group in registry.GroupRegistry.All)
+			// Reactive filters
+			List<ReactiveFilter> syncedFilters = new List<ReactiveFilter>();
+			foreach (var reactiveFilter in registry.ReactiveRegistry.All)
 			{
-				if (group.IsSynced)
+				if (reactiveFilter.IsSynced)
 				{
-					syncedGroups.Add(group);
+					syncedFilters.Add(reactiveFilter);
 				}
 			}
-			SerializationHelpers.WriteInt(syncedGroups.Count, stream);
-			foreach (var group in syncedGroups)
+			SerializationHelpers.WriteInt(syncedFilters.Count, stream);
+			foreach (ReactiveFilter reactiveFilter in syncedFilters)
 			{
-				SparseSet[] included;
-				SparseSet[] excluded;
-				SparseSet[] owned;
-
-				if (group is NonOwningGroup nonOwningGroup)
-				{
-					included = nonOwningGroup.Included;
-					excluded = nonOwningGroup.Excluded;
-					owned = Array.Empty<SparseSet>();
-				}
-				else
-				{
-					var owningGroup = (OwningGroup)group;
-					included = owningGroup.Included;
-					excluded = owningGroup.Excluded;
-					owned = owningGroup.Owned;
-				}
+				SparseSet[] included = reactiveFilter.Included;
+				SparseSet[] excluded = reactiveFilter.Excluded;
 
 				// Included
 				SerializationHelpers.WriteInt(included.Length, stream);
@@ -93,18 +78,7 @@ namespace Massive.Serialization
 					SerializationHelpers.WriteType(setKey, stream);
 				}
 
-				// Owned
-				SerializationHelpers.WriteInt(owned.Length, stream);
-				foreach (var set in owned)
-				{
-					var setKey = registry.SetRegistry.GetKey(set);
-					SerializationHelpers.WriteType(setKey, stream);
-				}
-
-				if (group is NonOwningGroup)
-				{
-					SerializationHelpers.WriteSparseSet(group.MainSet, stream);
-				}
+				SerializationHelpers.WriteSparseSet(reactiveFilter.Set, stream);
 			}
 		}
 
@@ -154,10 +128,10 @@ namespace Massive.Serialization
 				}
 			}
 
-			// Groups
-			var deserializedGroups = new HashSet<Group>();
-			var groupCount = SerializationHelpers.ReadInt(stream);
-			for (var groupIndex = 0; groupIndex < groupCount; groupIndex++)
+			// Reactive filters
+			var deserializedFilters = new HashSet<ReactiveFilter>();
+			var filterCount = SerializationHelpers.ReadInt(stream);
+			for (var filterIndex = 0; filterIndex < filterCount; filterIndex++)
 			{
 				// Included
 				SparseSet[] included = new SparseSet[SerializationHelpers.ReadInt(stream)];
@@ -173,28 +147,17 @@ namespace Massive.Serialization
 					excluded[i] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
 				}
 
-				// Owned
-				SparseSet[] owned = new SparseSet[SerializationHelpers.ReadInt(stream)];
-				for (int i = 0; i < owned.Length; i++)
-				{
-					owned[i] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
-				}
+				var reactiveFilter = registry.ReactiveFilter(included, excluded);
+				deserializedFilters.Add(reactiveFilter);
 
-				var group = registry.Group(included, excluded, owned);
-				deserializedGroups.Add(group);
-
-				if (group is NonOwningGroup nonOwningGroup)
-				{
-					SerializationHelpers.ReadSparseSet(group.MainSet, stream);
-					nonOwningGroup.SyncCount();
-				}
+				SerializationHelpers.ReadSparseSet(reactiveFilter.Set, stream);
 			}
-			// Desync all remaining groups
-			foreach (var group in registry.GroupRegistry.All)
+			// Desync all remaining filters
+			foreach (var reactiveFilter in registry.ReactiveRegistry.All)
 			{
-				if (!deserializedGroups.Contains(group))
+				if (!deserializedFilters.Contains(reactiveFilter))
 				{
-					group.Desync();
+					reactiveFilter.Desync();
 				}
 			}
 		}

@@ -7,7 +7,7 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
-	public class NonOwningGroup : Group
+	public class ReactiveFilter
 	{
 		public SparseSet[] Included { get; }
 
@@ -15,14 +15,20 @@ namespace Massive
 
 		private Entities Entities { get; }
 
-		public NonOwningGroup(IReadOnlyList<SparseSet> included, IReadOnlyList<SparseSet> excluded = null, Entities entities = null)
+		public int Count => Set.Count;
+
+		public SparseSet Set { get; }
+
+		public bool IsSynced { get; protected set; }
+
+		public ReactiveFilter(IReadOnlyList<SparseSet> included, IReadOnlyList<SparseSet> excluded = null, Entities entities = null)
 			: this(new SparseSet(), included, excluded, entities)
 		{
 		}
 
-		protected NonOwningGroup(SparseSet groupSet, IReadOnlyList<SparseSet> included, IReadOnlyList<SparseSet> excluded = null, Entities entities = null)
+		protected ReactiveFilter(SparseSet groupSet, IReadOnlyList<SparseSet> included, IReadOnlyList<SparseSet> excluded = null, Entities entities = null)
 		{
-			MainSet = groupSet;
+			Set = groupSet;
 			Included = (included ?? Array.Empty<SparseSet>()).ToArray();
 			Excluded = (excluded ?? Array.Empty<SparseSet>()).ToArray();
 			Entities = entities;
@@ -46,7 +52,7 @@ namespace Massive
 			}
 		}
 
-		public override void EnsureSynced()
+		public void EnsureSynced()
 		{
 			if (IsSynced)
 			{
@@ -55,23 +61,26 @@ namespace Massive
 
 			IsSynced = true;
 
-			MainSet.Clear();
-			SyncCount();
+			Set.Clear();
 			IdsSource minimal = Included.Length == 0 ? Entities : SetHelpers.GetMinimalSet(Included);
 			for (var i = 0; i < minimal.Count; i++)
 			{
-				AddToGroup(minimal.Ids[i]);
+				var id = minimal.Ids[i];
+				if (id >= 0)
+				{
+					AddToGroup(id);
+				}
 			}
 		}
 
-		public override void Desync()
+		public void Desync()
 		{
 			IsSynced = false;
 		}
 
-		public override bool IsOwning(SparseSet set)
+		public bool IsIncluding(SparseSet set)
 		{
-			return false;
+			return Included.Contains(set);
 		}
 
 		private void AddToGroup(int id)
@@ -80,8 +89,7 @@ namespace Massive
 			    && (Included.Length == 0 || SetHelpers.AssignedInAll(id, Included))
 			    && (Excluded.Length == 0 || SetHelpers.NotAssignedInAll(id, Excluded)))
 			{
-				MainSet.Assign(id);
-				SyncCount();
+				Set.Assign(id);
 			}
 		}
 
@@ -89,8 +97,7 @@ namespace Massive
 		{
 			if (IsSynced)
 			{
-				MainSet.Unassign(id);
-				SyncCount();
+				Set.Unassign(id);
 			}
 		}
 
@@ -101,15 +108,14 @@ namespace Massive
 			    && (Included.Length == 0 || SetHelpers.AssignedInAll(id, Included))
 			    && SetHelpers.CountAssignedInAll(id, Excluded) == 1)
 			{
-				MainSet.Assign(id);
-				SyncCount();
+				Set.Assign(id);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SyncCount()
+		public IdsSourceEnumerator GetEnumerator()
 		{
-			Count = MainSet.Count;
+			return new IdsSourceEnumerator(Set);
 		}
 	}
 }
