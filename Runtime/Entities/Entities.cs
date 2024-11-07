@@ -235,8 +235,8 @@ namespace Massive
 				while (NextHoleId != EndHoleId)
 				{
 					int holeId = NextHoleId;
-					int holeIndex = Sparse[NextHoleId];
-					NextHoleId = ~Ids[NextHoleId];
+					int holeIndex = Sparse[holeId];
+					NextHoleId = ~Ids[holeIndex];
 					if (holeIndex < Count)
 					{
 						Count -= 1;
@@ -246,6 +246,10 @@ namespace Massive
 						AssignEntity(holeId, holeReuseCount, Count);
 
 						for (; Count > 0 && Ids[Count - 1] < 0; Count--) { }
+					}
+					else
+					{
+						Ids[holeIndex] = holeId;
 					}
 				}
 			}
