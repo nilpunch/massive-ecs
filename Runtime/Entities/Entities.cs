@@ -74,7 +74,7 @@ namespace Massive
 			}
 			else
 			{
-				entity = new Entity(MaxId, 0);
+				entity = Entity.Create(MaxId, 0);
 				AssignEntity(MaxId, 0, Count);
 				MaxId += 1;
 			}
@@ -202,7 +202,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private Entity GetEntityAt(int index)
 		{
-			return new Entity(Ids[index], Reuses[index]);
+			return Entity.Create(Ids[index], Reuses[index]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -8,8 +8,7 @@ namespace Massive
 		private const int DefaultId = Constants.InvalidId;
 		public const int IdOffset = -DefaultId;
 
-		public readonly int IdWithOffset;
-		public readonly uint ReuseCount;
+		public readonly long IdAndReuse;
 
 		public int Id
 		{
@@ -17,23 +16,33 @@ namespace Massive
 			get => IdWithOffset - IdOffset;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity(int id, uint reuseCount)
+		public int IdWithOffset
 		{
-			IdWithOffset = id + IdOffset;
-			ReuseCount = reuseCount;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => (int)(IdAndReuse & 0x00000000FFFFFFFF);
 		}
 
-		public static Entity Dead { get; } = new Entity();
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity Reuse(Entity entity)
+		public uint ReuseCount
 		{
-			unchecked
-			{
-				return new Entity(entity.Id, entity.ReuseCount + 1);
-			}
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => (uint)(IdAndReuse >> 32);
 		}
+
+		private Entity(long idAndReuse)
+		{
+			IdAndReuse = idAndReuse;
+		}
+
+		public static Entity Dead => new Entity(0);
+
+#pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Entity Create(int id, uint reuseCount)
+		{
+			long packedIdAndReuse = (id + IdOffset) | ((long)reuseCount << 32);
+			return new Entity(packedIdAndReuse);
+		}
+#pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool operator ==(Entity a, Entity b)
@@ -50,7 +59,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Equals(Entity other)
 		{
-			return IdWithOffset == other.IdWithOffset && ReuseCount == other.ReuseCount;
+			return IdAndReuse == other.IdAndReuse;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
