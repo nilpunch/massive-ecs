@@ -309,41 +309,6 @@ namespace Massive.Tests
 		{
 			public int Value;
 		}
-		
-		private struct UnstableData
-		{
-			public int Value;
-		}
-		
-		[Test]
-		public void UnassignManyEntitiesFromBeginning_WithoutStable_TheDataInvalidating()
-		{
-			var registry = new Registry();
-			for (int i = 0; i <= 2000; i++)
-			{
-				int entity = registry.Create();
-				registry.Assign(entity, new UnstableData() { Value = entity });
-			}
-
-			dynamic firstIteration = true;
-			registry.View().ForEach((int entity, ref UnstableData c2) =>
-			{
-				if (firstIteration)
-				{
-					Assert.AreEqual(registry.Get<UnstableData>(entity).Value, c2.Value);
-
-					for (int i = 0; i < 1000; i++)
-					{
-						registry.Unassign<UnstableData>(i);
-					}
-
-					c2.Value = 1000000;
-
-					Assert.AreNotEqual(registry.Get<UnstableData>(entity).Value, c2.Value);
-				}
-				firstIteration = false;
-			});
-		}
 
 		[Test]
 		public void UnassignManyEntitiesFromBeginning_WithStable_TheDataDoesNotInvalidating()

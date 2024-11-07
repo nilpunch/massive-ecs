@@ -39,6 +39,7 @@ namespace Massive.Tests
 			var enumerator = reactiveFilter.GetEnumerator();
 			enumerator.MoveNext();
 			Assert.AreEqual(enumerator.Current, entity2);
+			enumerator.Dispose();
 
 			registry.Unassign<char>(entity1);
 			registry.Unassign<char>(entity2);

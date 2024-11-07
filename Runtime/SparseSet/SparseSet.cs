@@ -48,7 +48,6 @@ namespace Massive
 				{
 					_packingMode = value;
 					Compact();
-					PackingModeChanged?.Invoke(_packingMode);
 				}
 			}
 		}
@@ -88,8 +87,6 @@ namespace Massive
 		/// Shoots before each <see cref="Unassign"/> call, when the id was alive.
 		/// </summary>
 		public event Action<int> BeforeUnassigned;
-
-		public event Action<PackingMode> PackingModeChanged;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Assign(int id)

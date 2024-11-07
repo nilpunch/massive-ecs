@@ -23,6 +23,9 @@ namespace Massive
 				? Registry.Entities
 				: SetHelpers.GetMinimalSet(Filter.Included);
 
+			var originalPackingMode = idsSource.PackingMode;
+			idsSource.PackingMode = PackingMode.WithHoles;
+			
 			for (var i = idsSource.Count - 1; i >= 0; i--)
 			{
 				if (i > idsSource.Count)
@@ -40,6 +43,8 @@ namespace Massive
 					}
 				}
 			}
+			
+			idsSource.PackingMode = originalPackingMode;
 		}
 
 		public void ForEach<TAction, T>(ref TAction action)
@@ -48,17 +53,20 @@ namespace Massive
 			var dataSet = Registry.DataSet<T>();
 
 			var data = dataSet.Data;
-			var set = SetHelpers.GetMinimalSet(dataSet, Filter.Included);
 
-			for (int i = set.Count - 1; i >= 0; i--)
+			var minSet = SetHelpers.GetMinimalSet(dataSet, Filter.Included);
+			var originalPackingMode = minSet.PackingMode;
+			minSet.PackingMode = PackingMode.WithHoles;
+
+			for (int i = minSet.Count - 1; i >= 0; i--)
 			{
-				if (i > set.Count)
+				if (i > minSet.Count)
 				{
-					i = set.Count;
+					i = minSet.Count;
 					continue;
 				}
 
-				var id = set.Ids[i];
+				var id = minSet.Ids[i];
 				var index = dataSet.GetIndexOrInvalid(id);
 				if (index >= 0 && Filter.ContainsId(id))
 				{
@@ -68,6 +76,8 @@ namespace Massive
 					}
 				}
 			}
+			
+			minSet.PackingMode = originalPackingMode;
 		}
 
 		public void ForEach<TAction, T1, T2>(ref TAction action)
@@ -78,18 +88,21 @@ namespace Massive
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
-			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
-			var set = SetHelpers.GetMinimalSet(minData, Filter.Included);
+			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
+			
+			var minSet = SetHelpers.GetMinimalSet(minDataSet, Filter.Included);
+			var originalPackingMode = minSet.PackingMode;
+			minSet.PackingMode = PackingMode.WithHoles;
 
-			for (int i = set.Count - 1; i >= 0; i--)
+			for (int i = minSet.Count - 1; i >= 0; i--)
 			{
-				if (i > set.Count)
+				if (i > minSet.Count)
 				{
-					i = set.Count;
+					i = minSet.Count;
 					continue;
 				}
 
-				var id = set.Ids[i];
+				var id = minSet.Ids[i];
 				var index1 = dataSet1.GetIndexOrInvalid(id);
 				var index2 = dataSet2.GetIndexOrInvalid(id);
 				if ((index1 | index2) >= 0
@@ -101,6 +114,8 @@ namespace Massive
 					}
 				}
 			}
+			
+			minSet.PackingMode = originalPackingMode;
 		}
 
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
@@ -113,18 +128,21 @@ namespace Massive
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
-			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3);
-			var set = SetHelpers.GetMinimalSet(minData, Filter.Included);
+			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3);
+			
+			var minSet = SetHelpers.GetMinimalSet(minDataSet, Filter.Included);
+			var originalPackingMode = minSet.PackingMode;
+			minSet.PackingMode = PackingMode.WithHoles;
 
-			for (int i = set.Count - 1; i >= 0; i--)
+			for (int i = minSet.Count - 1; i >= 0; i--)
 			{
-				if (i > set.Count)
+				if (i > minSet.Count)
 				{
-					i = set.Count;
+					i = minSet.Count;
 					continue;
 				}
 
-				var id = set.Ids[i];
+				var id = minSet.Ids[i];
 				var index1 = dataSet1.GetIndexOrInvalid(id);
 				var index2 = dataSet2.GetIndexOrInvalid(id);
 				var index3 = dataSet3.GetIndexOrInvalid(id);
@@ -137,6 +155,8 @@ namespace Massive
 					}
 				}
 			}
+			
+			minSet.PackingMode = originalPackingMode;
 		}
 
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
@@ -151,18 +171,21 @@ namespace Massive
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
 			var data4 = dataSet4.Data;
-			var minData = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
-			var set = SetHelpers.GetMinimalSet(minData, Filter.Included);
+			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
+			
+			var minSet = SetHelpers.GetMinimalSet(minDataSet, Filter.Included);
+			var originalPackingMode = minSet.PackingMode;
+			minSet.PackingMode = PackingMode.WithHoles;
 
-			for (int i = set.Count - 1; i >= 0; i--)
+			for (int i = minSet.Count - 1; i >= 0; i--)
 			{
-				if (i > set.Count)
+				if (i > minSet.Count)
 				{
-					i = set.Count;
+					i = minSet.Count;
 					continue;
 				}
 
-				var id = set.Ids[i];
+				var id = minSet.Ids[i];
 				var index1 = dataSet1.GetIndexOrInvalid(id);
 				var index2 = dataSet2.GetIndexOrInvalid(id);
 				var index3 = dataSet3.GetIndexOrInvalid(id);
@@ -176,6 +199,8 @@ namespace Massive
 					}
 				}
 			}
+			
+			minSet.PackingMode = originalPackingMode;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
