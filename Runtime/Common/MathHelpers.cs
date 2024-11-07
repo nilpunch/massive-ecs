@@ -1,7 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public static class MathHelpers
 	{
 		/// <summary>

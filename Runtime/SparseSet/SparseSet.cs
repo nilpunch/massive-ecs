@@ -18,7 +18,9 @@ namespace Massive
 		WithHoles,
 	}
 
-	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SparseSet : IdsSource
 	{
 		private const int EndHole = int.MaxValue;

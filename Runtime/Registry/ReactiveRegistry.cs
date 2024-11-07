@@ -5,7 +5,9 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class ReactiveRegistry
 	{
 		private readonly GenericLookup<ReactiveFilter> _genericLookup = new GenericLookup<ReactiveFilter>();

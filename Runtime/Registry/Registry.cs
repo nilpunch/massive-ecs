@@ -2,7 +2,9 @@
 
 namespace Massive
 {
-	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class Registry
 	{
 		public SetRegistry SetRegistry { get; }

@@ -6,7 +6,9 @@ using Unity.IL2CPP.CompilerServices;
 // ReSharper disable StaticMemberInGenericType
 namespace Massive
 {
-	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class GenericLookup<TAbstract>
 	{
 		private readonly FastList<string> _itemIds = new FastList<string>();

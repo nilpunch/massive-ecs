@@ -7,7 +7,9 @@ namespace Massive
 	/// <summary>
 	/// Rollback extension for <see cref="Massive.DataSet{T}"/>.
 	/// </summary>
-	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveDataSet<T> : DataSet<T>, IMassive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;

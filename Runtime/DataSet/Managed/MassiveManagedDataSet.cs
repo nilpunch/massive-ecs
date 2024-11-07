@@ -5,7 +5,9 @@ namespace Massive
 	/// <summary>
 	/// Rollback extension for <see cref="Massive.DataSet{T}"/> with managed data support.
 	/// </summary>
-	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveManagedDataSet<T> : MassiveDataSet<T> where T : IManaged<T>
 	{
 		public MassiveManagedDataSet(int framesCapacity = Constants.DefaultFramesCapacity,

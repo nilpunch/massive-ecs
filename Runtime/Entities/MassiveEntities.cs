@@ -7,7 +7,9 @@ namespace Massive
 	/// <summary>
 	/// Rollback extension for <see cref="Massive.Entities"/>.
 	/// </summary>
-	[Il2CppSetOption(Option.NullChecks | Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveEntities : Entities, IMassive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
