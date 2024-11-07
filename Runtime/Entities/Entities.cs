@@ -134,7 +134,6 @@ namespace Massive
 				var id = Ids[i];
 				BeforeDestroyed?.Invoke(id);
 				Count -= 1;
-				Sparse[id] = Constants.InvalidId;
 				unchecked { Reuses[i] += 1; }
 			}
 		}
