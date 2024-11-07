@@ -17,10 +17,10 @@ namespace Massive
 			where TAction : IEntityAction
 		{
 			var entities = Registry.Entities;
-			
+
 			var originalPackingMode = entities.PackingMode;
 			entities.PackingMode = PackingMode.WithHoles;
-			
+
 			for (var i = entities.Count - 1; i >= 0; i--)
 			{
 				if (i > entities.Count)
@@ -38,7 +38,7 @@ namespace Massive
 					}
 				}
 			}
-			
+
 			entities.PackingMode = originalPackingMode;
 		}
 
@@ -48,10 +48,10 @@ namespace Massive
 			var dataSet = Registry.DataSet<T>();
 
 			var data = dataSet.Data;
-			
+
 			var originalPackingMode = dataSet.PackingMode;
 			dataSet.PackingMode = PackingMode.WithHoles;
-			
+
 			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
 			{
 				var page = data.Pages[pageIndex];
@@ -73,7 +73,7 @@ namespace Massive
 					}
 				}
 			}
-			
+
 			dataSet.PackingMode = originalPackingMode;
 		}
 
@@ -85,7 +85,7 @@ namespace Massive
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
-			
+
 			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
 			var originalPackingMode = minDataSet.PackingMode;
 			minDataSet.PackingMode = PackingMode.WithHoles;
@@ -151,7 +151,7 @@ namespace Massive
 					}
 				}
 			}
-			
+
 			minDataSet.PackingMode = originalPackingMode;
 		}
 
@@ -264,7 +264,7 @@ namespace Massive
 					}
 				}
 			}
-			
+
 			minDataSet.PackingMode = originalPackingMode;
 		}
 
@@ -414,7 +414,7 @@ namespace Massive
 					}
 				}
 			}
-			
+
 			minDataSet.PackingMode = originalPackingMode;
 		}
 
