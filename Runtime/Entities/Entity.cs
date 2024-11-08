@@ -8,7 +8,7 @@ namespace Massive
 		private const int DefaultId = Constants.InvalidId;
 		public const int IdOffset = -DefaultId;
 
-		public readonly long IdAndReuse;
+		public readonly long IdAndVersion;
 
 		public int Id
 		{
@@ -19,28 +19,28 @@ namespace Massive
 		public int IdWithOffset
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => (int)(IdAndReuse & 0x00000000FFFFFFFF);
+			get => (int)(IdAndVersion & 0x00000000FFFFFFFF);
 		}
 
-		public uint ReuseCount
+		public uint Version
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => (uint)(IdAndReuse >> 32);
+			get => (uint)(IdAndVersion >> 32);
 		}
 
-		private Entity(long idAndReuse)
+		private Entity(long idAndVersion)
 		{
-			IdAndReuse = idAndReuse;
+			IdAndVersion = idAndVersion;
 		}
 
 		public static Entity Dead => new Entity(0);
 
 #pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity Create(int id, uint reuseCount)
+		public static Entity Create(int id, uint version)
 		{
-			long packedIdAndReuse = (id + IdOffset) | ((long)reuseCount << 32);
-			return new Entity(packedIdAndReuse);
+			long idAndVersion = (id + IdOffset) | ((long)version << 32);
+			return new Entity(idAndVersion);
 		}
 #pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand
 
@@ -59,7 +59,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Equals(Entity other)
 		{
-			return IdAndReuse == other.IdAndReuse;
+			return IdAndVersion == other.IdAndVersion;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -71,7 +71,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override int GetHashCode()
 		{
-			return MathHelpers.CombineHashes(Id, unchecked((int)ReuseCount));
+			return MathHelpers.CombineHashes(Id, (int)Version);
 		}
 	}
 }

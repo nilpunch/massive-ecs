@@ -15,7 +15,7 @@ namespace Massive
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
 		private readonly int[][] _idsByFrames;
-		private readonly uint[][] _reusesByFrames;
+		private readonly uint[][] _versionsByFrames;
 		private readonly int[][] _sparseByFrames;
 		private readonly int[] _maxIdByFrames;
 		private readonly int[] _countByFrames;
@@ -26,7 +26,7 @@ namespace Massive
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
 			_idsByFrames = new int[framesCapacity][];
-			_reusesByFrames = new uint[framesCapacity][];
+			_versionsByFrames = new uint[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_maxIdByFrames = new int[framesCapacity];
 			_countByFrames = new int[framesCapacity];
@@ -35,7 +35,7 @@ namespace Massive
 			for (int i = 0; i < framesCapacity; i++)
 			{
 				_idsByFrames[i] = new int[Ids.Length];
-				_reusesByFrames[i] = new uint[Reuses.Length];
+				_versionsByFrames[i] = new uint[Versions.Length];
 				_sparseByFrames[i] = new int[Sparse.Length];
 			}
 		}
@@ -56,7 +56,7 @@ namespace Massive
 
 			// Copy everything from current state to current frame
 			Array.Copy(Ids, _idsByFrames[currentFrame], currentMaxId);
-			Array.Copy(Reuses, _reusesByFrames[currentFrame], currentMaxId);
+			Array.Copy(Versions, _versionsByFrames[currentFrame], currentMaxId);
 			Array.Copy(Sparse, _sparseByFrames[currentFrame], currentMaxId);
 			_countByFrames[currentFrame] = currentCount;
 			_maxIdByFrames[currentFrame] = currentMaxId;
@@ -75,7 +75,7 @@ namespace Massive
 			int rollbackNextHoleId = _nextHoleIdByFrames[rollbackFrame];
 
 			Array.Copy(_idsByFrames[rollbackFrame], Ids, rollbackMaxId);
-			Array.Copy(_reusesByFrames[rollbackFrame], Reuses, rollbackMaxId);
+			Array.Copy(_versionsByFrames[rollbackFrame], Versions, rollbackMaxId);
 			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackMaxId);
 			Count = rollbackCount;
 			MaxId = rollbackMaxId;
@@ -89,9 +89,9 @@ namespace Massive
 			{
 				Array.Resize(ref _idsByFrames[frame], Ids.Length);
 			}
-			if (_reusesByFrames[frame].Length < Reuses.Length)
+			if (_versionsByFrames[frame].Length < Versions.Length)
 			{
-				Array.Resize(ref _reusesByFrames[frame], Reuses.Length);
+				Array.Resize(ref _versionsByFrames[frame], Versions.Length);
 			}
 			if (_sparseByFrames[frame].Length < Sparse.Length)
 			{

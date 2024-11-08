@@ -12,7 +12,7 @@ namespace Massive
 		private const int EndHoleId = int.MaxValue;
 
 		private int[] _ids;
-		private uint[] _reuses;
+		private uint[] _versions;
 		private int[] _sparse;
 
 		public int MaxId { get; set; }
@@ -21,7 +21,7 @@ namespace Massive
 		public Entities(PackingMode packingMode = PackingMode.Continuous)
 		{
 			_ids = Array.Empty<int>();
-			_reuses = Array.Empty<uint>();
+			_versions = Array.Empty<uint>();
 			_sparse = Array.Empty<int>();
 			PackingMode = packingMode;
 
@@ -47,7 +47,7 @@ namespace Massive
 			get => PackingMode == PackingMode.WithHoles && NextHoleId != EndHoleId;
 		}
 
-		public uint[] Reuses => _reuses;
+		public uint[] Versions => _versions;
 
 		public int[] Sparse => _sparse;
 
@@ -68,7 +68,7 @@ namespace Massive
 				int index = Sparse[id];
 				NextHoleId = ~Ids[index];
 				Ids[index] = id;
-				entity = Entity.Create(id, Reuses[index]);
+				entity = Entity.Create(id, Versions[index]);
 			}
 			else if (Count < MaxId)
 			{
@@ -103,16 +103,16 @@ namespace Massive
 				Count -= 1;
 
 				var index = Sparse[id];
-				var reuseCount = Reuses[index];
+				var version = Versions[index];
 
-				AssignEntity(Ids[Count], Reuses[Count], index);
-				AssignEntity(id, unchecked(reuseCount + 1), Count);
+				AssignEntity(Ids[Count], Versions[Count], index);
+				AssignEntity(id, unchecked(version + 1), Count);
 			}
 			else
 			{
 				int index = Sparse[id];
 				Ids[index] = ~NextHoleId;
-				unchecked { Reuses[index] += 1; }
+				unchecked { Versions[index] += 1; }
 				NextHoleId = id;
 			}
 		}
@@ -159,7 +159,7 @@ namespace Massive
 				var id = Ids[i];
 				BeforeDestroyed?.Invoke(id);
 				Count -= 1;
-				unchecked { Reuses[i] += 1; }
+				unchecked { Versions[i] += 1; }
 			}
 		}
 
@@ -179,7 +179,7 @@ namespace Massive
 
 			int index = Sparse[entity.Id];
 
-			return index < Count && Ids[index] == entity.Id && Reuses[index] == entity.ReuseCount;
+			return index < Count && Ids[index] == entity.Id && Versions[index] == entity.Version;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -203,7 +203,7 @@ namespace Massive
 		public void ResizePacked(int capacity)
 		{
 			Array.Resize(ref _ids, capacity);
-			Array.Resize(ref _reuses, capacity);
+			Array.Resize(ref _versions, capacity);
 			Ids = _ids;
 		}
 
@@ -241,9 +241,9 @@ namespace Massive
 					{
 						Count -= 1;
 
-						var holeReuseCount = Reuses[holeIndex];
-						AssignEntity(Ids[Count], Reuses[Count], holeIndex);
-						AssignEntity(holeId, holeReuseCount, Count);
+						var holeVersion = Versions[holeIndex];
+						AssignEntity(Ids[Count], Versions[Count], holeIndex);
+						AssignEntity(holeId, holeVersion, Count);
 
 						for (; Count > 0 && Ids[Count - 1] < 0; Count--) { }
 					}
@@ -264,15 +264,15 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private Entity GetEntityAt(int index)
 		{
-			return Entity.Create(Ids[index], Reuses[index]);
+			return Entity.Create(Ids[index], Versions[index]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignEntity(int id, uint reuseCount, int index)
+		private void AssignEntity(int id, uint version, int index)
 		{
 			Sparse[id] = index;
 			Ids[index] = id;
-			Reuses[index] = reuseCount;
+			Versions[index] = version;
 		}
 	}
 }

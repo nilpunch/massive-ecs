@@ -159,7 +159,7 @@ namespace Massive.Tests
 			var createdIdentifier = entities.Create();
 
 			Assert.AreEqual(id, createdIdentifier.Id);
-			Assert.AreEqual(1, createdIdentifier.ReuseCount);
+			Assert.AreEqual(1, createdIdentifier.Version);
 		}
 		
 		[TestCase(0)]
@@ -205,7 +205,7 @@ namespace Massive.Tests
 			var createdEntity = entities.Create();
 
 			Assert.LessOrEqual(createdEntity.Id, id);
-			Assert.AreEqual(1, createdEntity.ReuseCount);
+			Assert.AreEqual(1, createdEntity.Version);
 		}
 
 		[TestCase(0)]
