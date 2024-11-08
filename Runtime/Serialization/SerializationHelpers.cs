@@ -15,6 +15,7 @@ namespace Massive.Serialization
 		{
 			WriteInt(entities.Count, stream);
 			WriteInt(entities.MaxId, stream);
+			WriteInt(entities.NextHoleId, stream);
 
 			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
 			stream.Write(MemoryMarshal.Cast<uint, byte>(entities.Versions.AsSpan(0, entities.MaxId)));
@@ -25,6 +26,7 @@ namespace Massive.Serialization
 		{
 			entities.Count = ReadInt(stream);
 			entities.MaxId = ReadInt(stream);
+			entities.NextHoleId = ReadInt(stream);
 
 			entities.EnsureCapacityForIndex(entities.MaxId);
 
