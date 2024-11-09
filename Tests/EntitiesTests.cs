@@ -15,7 +15,7 @@ namespace Massive.Tests
 		};
 
 		[Test]
-		public void WhenCompact_AndThereIsHoles_ThenShouldRemoveHoles()
+		public void WhenCompact_AndThereIsHoles_ThenRemoveHoles()
 		{
 			// Arrange
 			var entities = new Entities(PackingMode.WithHoles);
@@ -33,7 +33,7 @@ namespace Massive.Tests
 		}
 		
 		[Test]
-		public void WhenClear_AndThereIsHoles_ShouldRestoreTheHolesAndClear()
+		public void WhenClear_AndThereIsHoles_ThenRestoreTheIdsAndClear()
 		{
 			// Arrange
 			var entities = new Entities(PackingMode.WithHoles);
@@ -49,6 +49,7 @@ namespace Massive.Tests
 			for (int i = 0; i < EntitiesToCreate; i++)
 			{
 				Assert.IsFalse(entities.IsAlive(i));
+				Assert.IsTrue(entities.Ids[i] >= 0);
 			}
 		}
 		
