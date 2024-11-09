@@ -12,13 +12,26 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveDataSet<T> : DataSet<T>, IMassive
 	{
+		private readonly struct Info
+		{
+			public readonly int Count;
+			public readonly int NextHole;
+			public readonly PackingMode PackingMode;
+
+			public Info(int count, int nextHole, PackingMode packingMode)
+			{
+				Count = count;
+				NextHole = nextHole;
+				PackingMode = packingMode;
+			}
+		}
+
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
 		private readonly PagedArray<T>[] _dataByFrames;
 		private readonly int[][] _packedByFrames;
 		private readonly int[][] _sparseByFrames;
-		private readonly int[] _countByFrames;
-		private readonly int[] _nextHoleByFrames;
+		private readonly Info[] _infoByFrames;
 
 		public MassiveDataSet(int framesCapacity = Constants.DefaultFramesCapacity,
 			int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous) : base(pageSize, packingMode)
@@ -28,8 +41,7 @@ namespace Massive
 			_dataByFrames = new PagedArray<T>[framesCapacity];
 			_packedByFrames = new int[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
-			_countByFrames = new int[framesCapacity];
-			_nextHoleByFrames = new int[framesCapacity];
+			_infoByFrames = new Info[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
@@ -47,17 +59,15 @@ namespace Massive
 			_cyclicFrameCounter.SaveFrame();
 
 			int currentFrame = _cyclicFrameCounter.CurrentFrame;
-			int currentCount = Count;
-			int currentNextHole = NextHole;
+			Info currentInfo = new Info(Count, NextHole, PackingMode);
 
 			EnsureCapacityForFrame(currentFrame);
 
 			// Copy everything from current state to current frame
-			CopyData(Data, _dataByFrames[currentFrame], currentCount);
-			Array.Copy(Packed, _packedByFrames[currentFrame], currentCount);
+			CopyData(Data, _dataByFrames[currentFrame], currentInfo.Count);
+			Array.Copy(Packed, _packedByFrames[currentFrame], currentInfo.Count);
 			Array.Copy(Sparse, _sparseByFrames[currentFrame], Sparse.Length);
-			_countByFrames[currentFrame] = currentCount;
-			_nextHoleByFrames[currentFrame] = currentNextHole;
+			_infoByFrames[currentFrame] = currentInfo;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -67,19 +77,19 @@ namespace Massive
 
 			// Copy everything from rollback frame to current state
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
-			int rollbackCount = _countByFrames[rollbackFrame];
 			int rollbackSparseLength = _sparseByFrames[rollbackFrame].Length;
-			int rollbackNextHole = _nextHoleByFrames[rollbackFrame];
+			Info rollbackInfo = _infoByFrames[rollbackFrame];
 
-			CopyData(_dataByFrames[rollbackFrame], Data, rollbackCount);
-			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackCount);
+			CopyData(_dataByFrames[rollbackFrame], Data, rollbackInfo.Count);
+			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackInfo.Count);
 			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseLength);
 			if (rollbackSparseLength < Sparse.Length)
 			{
 				Array.Fill(Sparse, Constants.InvalidId, rollbackSparseLength, Sparse.Length - rollbackSparseLength);
 			}
-			Count = rollbackCount;
-			NextHole = rollbackNextHole;
+			Count = rollbackInfo.Count;
+			NextHole = rollbackInfo.NextHole;
+			PackingMode = rollbackInfo.PackingMode;
 		}
 
 		protected virtual void CopyData(PagedArray<T> source, PagedArray<T> destination, int count)
