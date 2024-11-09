@@ -42,10 +42,10 @@ namespace Massive
 				}
 			}
 
-			var groups = ReactiveRegistry.All;
-			for (var i = 0; i < groups.Length; i++)
+			var reactiveFilters = ReactiveRegistry.All;
+			for (var i = 0; i < reactiveFilters.Length; i++)
 			{
-				if (groups[i] is IMassive massive)
+				if (reactiveFilters[i] is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
@@ -68,10 +68,10 @@ namespace Massive
 				}
 			}
 
-			var groups = ReactiveRegistry.All;
-			for (var i = 0; i < groups.Length; i++)
+			var reactiveFilters = ReactiveRegistry.All;
+			for (var i = 0; i < reactiveFilters.Length; i++)
 			{
-				if (groups[i] is IMassive massive)
+				if (reactiveFilters[i] is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}

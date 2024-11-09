@@ -16,22 +16,24 @@ namespace Massive
 
 		public Filter(SparseSet[] included, SparseSet[] excluded)
 		{
+			ThrowIfConflicting(included, excluded, "Conflicting include and exclude filter!");
+
 			Included = included;
 			Excluded = excluded;
-
-			for (int i = 0; i < Excluded.Length; i++)
-			{
-				if (Included.Contains(Excluded[i]))
-				{
-					throw new Exception("Conflicting include and exclude filter!");
-				}
-			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
 			return id >= 0 && (Included.Length == 0 || SetHelpers.AssignedInAll(id, Included)) && (Excluded.Length == 0 || SetHelpers.NotAssignedInAll(id, Excluded));
+		}
+
+		public static void ThrowIfConflicting(SparseSet[] included, SparseSet[] excluded, string errorMessage)
+		{
+			if (included.ContainsAny(excluded))
+			{
+				throw new Exception(errorMessage);
+			}
 		}
 	}
 }

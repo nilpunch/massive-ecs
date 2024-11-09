@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -54,6 +55,8 @@ namespace Massive
 		{
 			var dataSet = Registry.DataSet<T>();
 
+			ThrowIfCantInclude(dataSet);
+
 			var data = dataSet.Data;
 
 			var minSet = SetHelpers.GetMinimalSet(dataSet, Filter.Included);
@@ -87,6 +90,9 @@ namespace Massive
 		{
 			var dataSet1 = Registry.DataSet<T1>();
 			var dataSet2 = Registry.DataSet<T2>();
+
+			ThrowIfCantInclude(dataSet1);
+			ThrowIfCantInclude(dataSet2);
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -126,6 +132,10 @@ namespace Massive
 			var dataSet1 = Registry.DataSet<T1>();
 			var dataSet2 = Registry.DataSet<T2>();
 			var dataSet3 = Registry.DataSet<T3>();
+
+			ThrowIfCantInclude(dataSet1);
+			ThrowIfCantInclude(dataSet2);
+			ThrowIfCantInclude(dataSet3);
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -169,6 +179,11 @@ namespace Massive
 			var dataSet3 = Registry.DataSet<T3>();
 			var dataSet4 = Registry.DataSet<T4>();
 
+			ThrowIfCantInclude(dataSet1);
+			ThrowIfCantInclude(dataSet2);
+			ThrowIfCantInclude(dataSet3);
+			ThrowIfCantInclude(dataSet4);
+
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
@@ -206,16 +221,24 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IdsSourceFilterEnumerator GetEnumerator()
+		public IdsFilterEnumerator GetEnumerator()
 		{
 			if (Filter.Included.Length == 0)
 			{
-				return new IdsSourceFilterEnumerator(Registry.Entities, Filter);
+				return new IdsFilterEnumerator(Registry.Entities, Filter);
 			}
 			else
 			{
 				var ids = SetHelpers.GetMinimalSet(Filter.Included);
-				return new IdsSourceFilterEnumerator(ids, Filter);
+				return new IdsFilterEnumerator(ids, Filter);
+			}
+		}
+
+		private void ThrowIfCantInclude(SparseSet sparseSet)
+		{
+			if (Filter.Excluded.Contains(sparseSet))
+			{
+				throw new Exception($"Conflicting exclude filter and {sparseSet.GetType().GetGenericName()}!");
 			}
 		}
 	}

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
@@ -23,14 +22,14 @@ namespace Massive
 
 		public bool IsSynced { get; protected set; }
 
-		public ReactiveFilter(IReadOnlyList<SparseSet> included, IReadOnlyList<SparseSet> excluded = null, Entities entities = null)
+		public ReactiveFilter(SparseSet[] included = null, SparseSet[] excluded = null, Entities entities = null)
 			: this(new SparseSet(), included, excluded, entities)
 		{
 		}
 
-		protected ReactiveFilter(SparseSet groupSet, IReadOnlyList<SparseSet> included, IReadOnlyList<SparseSet> excluded = null, Entities entities = null)
+		protected ReactiveFilter(SparseSet backingSet, SparseSet[] included = null, SparseSet[] excluded = null, Entities entities = null)
 		{
-			Set = groupSet;
+			Set = backingSet;
 			Included = (included ?? Array.Empty<SparseSet>()).ToArray();
 			Excluded = (excluded ?? Array.Empty<SparseSet>()).ToArray();
 			Entities = entities;
@@ -115,9 +114,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IdsSourceEnumerator GetEnumerator()
+		public IdsEnumerator GetEnumerator()
 		{
-			return new IdsSourceEnumerator(Set);
+			return new IdsEnumerator(Set);
 		}
 	}
 }

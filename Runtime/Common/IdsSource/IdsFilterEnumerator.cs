@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public struct IdsSourceFilterEnumerator : IDisposable
+	public struct IdsFilterEnumerator : IDisposable
 	{
 		private readonly IdsSource _idsSource;
 		private readonly Filter _filter;
@@ -15,7 +15,7 @@ namespace Massive
 		private int _index;
 		private int _current;
 
-		public IdsSourceFilterEnumerator(IdsSource idsSource, Filter filter)
+		public IdsFilterEnumerator(IdsSource idsSource, Filter filter)
 		{
 			_idsSource = idsSource;
 			_filter = filter;

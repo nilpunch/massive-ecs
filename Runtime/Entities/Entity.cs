@@ -33,7 +33,11 @@ namespace Massive
 			IdAndVersion = idAndVersion;
 		}
 
-		public static Entity Dead => new Entity(0);
+		public static Entity Dead
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new Entity(0);
+		}
 
 #pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

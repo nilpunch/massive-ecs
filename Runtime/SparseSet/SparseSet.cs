@@ -289,9 +289,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IdsSourceEnumerator GetEnumerator()
+		public IdsEnumerator GetEnumerator()
 		{
-			return new IdsSourceEnumerator(this);
+			return new IdsEnumerator(this);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

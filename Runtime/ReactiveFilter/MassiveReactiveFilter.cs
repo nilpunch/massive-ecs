@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -13,7 +12,7 @@ namespace Massive
 
 		private readonly bool[] _syncedByFrames;
 
-		public MassiveReactiveFilter(IReadOnlyList<SparseSet> included, IReadOnlyList<SparseSet> excluded = null, int framesCapacity = Constants.DefaultFramesCapacity, Entities entities = null)
+		public MassiveReactiveFilter(SparseSet[] included = null, SparseSet[] excluded = null, int framesCapacity = Constants.DefaultFramesCapacity, Entities entities = null)
 			: base(new MassiveSparseSet(framesCapacity), included, excluded, entities)
 		{
 			// Fetch instance from base

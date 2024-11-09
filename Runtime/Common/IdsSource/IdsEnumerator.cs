@@ -7,14 +7,14 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public struct IdsSourceEnumerator : IDisposable
+	public struct IdsEnumerator : IDisposable
 	{
 		private readonly IdsSource _idsSource;
 		private readonly PackingMode _originalPackingMode;
 		private int _index;
 		private int _current;
 
-		public IdsSourceEnumerator(IdsSource idsSource)
+		public IdsEnumerator(IdsSource idsSource)
 		{
 			_idsSource = idsSource;
 			_originalPackingMode = _idsSource.PackingMode;
