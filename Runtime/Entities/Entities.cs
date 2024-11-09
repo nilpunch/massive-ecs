@@ -225,33 +225,38 @@ namespace Massive
 		/// <summary>
 		/// Removes all holes from the ids.
 		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Compact()
 		{
 			if (HasHoles)
 			{
-				for (; Count > 0 && Ids[Count - 1] < 0; Count--) { }
+				int count = Count;
+				int nextHoleId = NextHoleId;
+				
+				for (; count > 0 && Ids[count - 1] < 0; count--) { }
 
-				while (NextHoleId != EndHoleId)
+				while (nextHoleId != EndHoleId)
 				{
-					int holeId = NextHoleId;
+					int holeId = nextHoleId;
 					int holeIndex = Sparse[holeId];
-					NextHoleId = ~Ids[holeIndex];
-					if (holeIndex < Count)
+					nextHoleId = ~Ids[holeIndex];
+					if (holeIndex < count)
 					{
-						Count -= 1;
+						count -= 1;
 
 						var holeVersion = Versions[holeIndex];
-						AssignEntity(Ids[Count], Versions[Count], holeIndex);
-						AssignEntity(holeId, holeVersion, Count);
+						AssignEntity(Ids[count], Versions[count], holeIndex);
+						AssignEntity(holeId, holeVersion, count);
 
-						for (; Count > 0 && Ids[Count - 1] < 0; Count--) { }
+						for (; count > 0 && Ids[count - 1] < 0; count--) { }
 					}
 					else
 					{
 						Ids[holeIndex] = holeId;
 					}
 				}
+
+				Count = count;
+				NextHoleId = EndHoleId;
 			}
 		}
 

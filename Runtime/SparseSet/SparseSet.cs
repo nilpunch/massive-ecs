@@ -261,25 +261,30 @@ namespace Massive
 		/// <summary>
 		/// Removes all holes from the packed array.
 		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Compact()
 		{
 			if (HasHoles)
 			{
-				for (; Count > 0 && Packed[Count - 1] < 0; Count--) { }
+				int count = Count;
+				int nextHole = NextHole;
 
-				while (NextHole != EndHole)
+				for (; count > 0 && Packed[count - 1] < 0; count--) { }
+
+				while (nextHole != EndHole)
 				{
-					int holeIndex = NextHole;
-					NextHole = ~Packed[NextHole];
-					if (holeIndex < Count)
+					int holeIndex = nextHole;
+					nextHole = ~Packed[nextHole];
+					if (holeIndex < count)
 					{
-						Count -= 1;
-						CopyFromToPacked(Count, holeIndex);
+						count -= 1;
+						CopyFromToPacked(count, holeIndex);
 
-						for (; Count > 0 && Packed[Count - 1] < 0; Count--) { }
+						for (; count > 0 && Packed[count - 1] < 0; count--) { }
 					}
 				}
+
+				Count = count;
+				NextHole = EndHole;
 			}
 		}
 
