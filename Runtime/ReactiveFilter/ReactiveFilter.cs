@@ -29,6 +29,11 @@ namespace Massive
 
 		protected ReactiveFilter(SparseSet backingSet, SparseSet[] included = null, SparseSet[] excluded = null, Entities entities = null)
 		{
+			if ((included == null || included.Length == 0) && entities == null)
+			{
+				throw new Exception("You must provide at least one included or entities.");
+			}
+
 			Set = backingSet;
 			Included = (included ?? Array.Empty<SparseSet>()).ToArray();
 			Excluded = (excluded ?? Array.Empty<SparseSet>()).ToArray();
@@ -46,7 +51,7 @@ namespace Massive
 				set.BeforeUnassigned += AddToGroupBeforeUnassignedFromExcluded;
 			}
 
-			if (Entities != null)
+			if (Included.Length == 0)
 			{
 				Entities.AfterCreated += AddToGroup;
 				Entities.BeforeDestroyed += RemoveFromGroup;

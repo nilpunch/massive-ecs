@@ -32,6 +32,26 @@ namespace Massive.Tests
 			Assert.AreEqual(remainIdsCount, entities.Count);
 		}
 		
+		[Test]
+		public void WhenClear_AndThereIsHoles_ShouldRestoreTheHolesAndClear()
+		{
+			// Arrange
+			var entities = new Entities(PackingMode.WithHoles);
+			for (int i = 0; i < EntitiesToCreate; i++)
+				entities.Create();
+			foreach (var id in IdsToDestroy)
+				entities.Destroy(id);
+
+			// Act
+			entities.Clear();
+
+			// Assert
+			for (int i = 0; i < EntitiesToCreate; i++)
+			{
+				Assert.IsFalse(entities.IsAlive(i));
+			}
+		}
+		
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]

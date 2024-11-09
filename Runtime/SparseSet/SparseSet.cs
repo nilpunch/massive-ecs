@@ -25,18 +25,14 @@ namespace Massive
 	{
 		private const int EndHole = int.MaxValue;
 
-		private int[] _packed;
-		private int[] _sparse;
+		private int[] _packed = Array.Empty<int>();
+		private int[] _sparse = Array.Empty<int>();
 
-		private int NextHole { get; set; }
+		private int NextHole { get; set; } = EndHole;
 
 		public SparseSet(PackingMode packingMode = PackingMode.Continuous)
 		{
-			_packed = Array.Empty<int>();
-			_sparse = Array.Empty<int>();
 			PackingMode = packingMode;
-
-			NextHole = EndHole;
 			Ids = _packed;
 		}
 

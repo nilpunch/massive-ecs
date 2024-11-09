@@ -11,22 +11,17 @@ namespace Massive
 	{
 		private const int EndHoleId = int.MaxValue;
 
-		private int[] _ids;
-		private uint[] _versions;
-		private int[] _sparse;
+		private int[] _ids = Array.Empty<int>();
+		private uint[] _versions = Array.Empty<uint>();
+		private int[] _sparse = Array.Empty<int>();
 
 		public int MaxId { get; private set; }
-		private int NextHoleId { get; set; }
+		private int NextHoleId { get; set; } = EndHoleId;
 
 		public Entities(PackingMode packingMode = PackingMode.Continuous)
 		{
-			_ids = Array.Empty<int>();
-			_versions = Array.Empty<uint>();
-			_sparse = Array.Empty<int>();
 			PackingMode = packingMode;
-
 			Ids = _ids;
-			NextHoleId = EndHoleId;
 		}
 
 		/// <summary>
@@ -169,14 +164,38 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			Compact();
-
-			for (int i = Count - 1; i >= 0; i--)
+			if (IsContinuous)
 			{
-				var id = Ids[i];
-				BeforeDestroyed?.Invoke(id);
-				Count -= 1;
-				unchecked { Versions[i] += 1; }
+				for (int i = Count - 1; i >= 0; i--)
+				{
+					var id = Ids[i];
+					BeforeDestroyed?.Invoke(id);
+					unchecked { Versions[i] += 1; }
+					Count -= 1;
+				}
+			}
+			else
+			{
+				for (int i = Count - 1; i >= 0; i--)
+				{
+					var id = Ids[i];
+					if (id >= 0)
+					{
+						BeforeDestroyed?.Invoke(id);
+						unchecked { Versions[i] += 1; }
+					}
+					Count -= 1;
+				}
+
+				int nextHoleId = NextHoleId;
+				while (nextHoleId != EndHoleId)
+				{
+					int holeId = nextHoleId;
+					int holeIndex = Sparse[holeId];
+					nextHoleId = ~Ids[holeIndex];
+					Ids[holeIndex] = holeId;
+				}
+				NextHoleId = EndHoleId;
 			}
 		}
 
@@ -248,7 +267,7 @@ namespace Massive
 			{
 				int count = Count;
 				int nextHoleId = NextHoleId;
-				
+
 				for (; count > 0 && Ids[count - 1] < 0; count--) { }
 
 				while (nextHoleId != EndHoleId)

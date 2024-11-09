@@ -56,7 +56,7 @@ namespace Massive.Serialization
 				ReadInt(stream),
 				ReadInt(stream),
 				(PackingMode)ReadByte(stream));
-			
+
 			var sparseCount = ReadInt(stream);
 
 			set.EnsurePackedForIndex(set.Count - 1);
@@ -138,7 +138,7 @@ namespace Massive.Serialization
 			stream.Read(buffer);
 			return BitConverter.ToInt32(buffer);
 		}
-		
+
 		public static void WriteByte(byte value, Stream stream)
 		{
 			Span<byte> buffer = stackalloc byte[sizeof(byte)];
