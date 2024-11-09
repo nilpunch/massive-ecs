@@ -15,8 +15,8 @@ namespace Massive
 		private uint[] _versions;
 		private int[] _sparse;
 
-		public int MaxId { get; set; }
-		public int NextHoleId { get; set; }
+		public int MaxId { get; private set; }
+		private int NextHoleId { get; set; }
 
 		public Entities(PackingMode packingMode = PackingMode.Continuous)
 		{
@@ -54,6 +54,23 @@ namespace Massive
 		public event Action<int> AfterCreated;
 
 		public event Action<int> BeforeDestroyed;
+
+		/// <summary>
+		/// For serialization and rollbacks only.
+		/// </summary>
+		public State CurrentState
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new State(Count, MaxId, NextHoleId, PackingMode);
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set
+			{
+				Count = value.Count;
+				MaxId = value.MaxId;
+				NextHoleId = value.NextHoleId;
+				PackingMode = value.PackingMode;
+			}
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Create()
@@ -278,6 +295,22 @@ namespace Massive
 			Sparse[id] = index;
 			Ids[index] = id;
 			Versions[index] = version;
+		}
+
+		public readonly struct State
+		{
+			public readonly int Count;
+			public readonly int MaxId;
+			public readonly int NextHoleId;
+			public readonly PackingMode PackingMode;
+
+			public State(int count, int maxId, int nextHoleId, PackingMode packingMode)
+			{
+				Count = count;
+				MaxId = maxId;
+				NextHoleId = nextHoleId;
+				PackingMode = packingMode;
+			}
 		}
 	}
 }

@@ -9,13 +9,13 @@ namespace Massive.Serialization
 {
 	public static class SerializationHelpers
 	{
-		private static readonly byte[] s_buffer4Bytes = new byte[4];
-
 		public static void WriteEntities(Entities entities, Stream stream)
 		{
-			WriteInt(entities.Count, stream);
-			WriteInt(entities.MaxId, stream);
-			WriteInt(entities.NextHoleId, stream);
+			Entities.State state = entities.CurrentState;
+			WriteInt(state.Count, stream);
+			WriteInt(state.MaxId, stream);
+			WriteInt(state.NextHoleId, stream);
+			WriteByte((byte)state.PackingMode, stream);
 
 			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
 			stream.Write(MemoryMarshal.Cast<uint, byte>(entities.Versions.AsSpan(0, entities.MaxId)));
@@ -24,9 +24,11 @@ namespace Massive.Serialization
 
 		public static void ReadEntities(Entities entities, Stream stream)
 		{
-			entities.Count = ReadInt(stream);
-			entities.MaxId = ReadInt(stream);
-			entities.NextHoleId = ReadInt(stream);
+			entities.CurrentState = new Entities.State(
+				ReadInt(stream),
+				ReadInt(stream),
+				ReadInt(stream),
+				(PackingMode)ReadByte(stream));
 
 			entities.EnsureCapacityForIndex(entities.MaxId);
 
@@ -37,9 +39,12 @@ namespace Massive.Serialization
 
 		public static void WriteSparseSet(SparseSet set, Stream stream)
 		{
-			WriteInt(set.Count, stream);
+			SparseSet.State state = set.CurrentState;
+			WriteInt(state.Count, stream);
+			WriteInt(state.NextHole, stream);
+			WriteByte((byte)state.PackingMode, stream);
+
 			WriteInt(set.Sparse.Length, stream);
-			WriteInt(set.NextHole, stream);
 
 			stream.Write(MemoryMarshal.Cast<int, byte>(set.Packed.AsSpan(0, set.Count)));
 			stream.Write(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, set.Sparse.Length)));
@@ -47,9 +52,12 @@ namespace Massive.Serialization
 
 		public static void ReadSparseSet(SparseSet set, Stream stream)
 		{
-			set.Count = ReadInt(stream);
+			set.CurrentState = new SparseSet.State(
+				ReadInt(stream),
+				ReadInt(stream),
+				(PackingMode)ReadByte(stream));
+			
 			var sparseCount = ReadInt(stream);
-			set.NextHole = ReadInt(stream);
 
 			set.EnsurePackedForIndex(set.Count - 1);
 			set.EnsureSparseForIndex(sparseCount - 1);
@@ -119,26 +127,44 @@ namespace Massive.Serialization
 
 		public static void WriteInt(int value, Stream stream)
 		{
-			BitConverter.TryWriteBytes(s_buffer4Bytes, value);
-			stream.Write(s_buffer4Bytes);
+			Span<byte> buffer = stackalloc byte[sizeof(int)];
+			BitConverter.TryWriteBytes(buffer, value);
+			stream.Write(buffer);
 		}
 
 		public static int ReadInt(Stream stream)
 		{
-			stream.Read(s_buffer4Bytes);
-			return BitConverter.ToInt32(s_buffer4Bytes);
+			Span<byte> buffer = stackalloc byte[sizeof(int)];
+			stream.Read(buffer);
+			return BitConverter.ToInt32(buffer);
+		}
+		
+		public static void WriteByte(byte value, Stream stream)
+		{
+			Span<byte> buffer = stackalloc byte[sizeof(byte)];
+			buffer[0] = value;
+			stream.Write(buffer);
+		}
+
+		public static byte ReadByte(Stream stream)
+		{
+			Span<byte> buffer = stackalloc byte[sizeof(byte)];
+			stream.Read(buffer);
+			return buffer[0];
 		}
 
 		public static void WriteBool(bool value, Stream stream)
 		{
-			BitConverter.TryWriteBytes(s_buffer4Bytes, value);
-			stream.Write(s_buffer4Bytes, 0, 1);
+			Span<byte> buffer = stackalloc byte[sizeof(bool)];
+			BitConverter.TryWriteBytes(buffer, value);
+			stream.Write(buffer);
 		}
 
 		public static bool ReadBool(Stream stream)
 		{
-			stream.Read(s_buffer4Bytes);
-			return BitConverter.ToBoolean(s_buffer4Bytes);
+			Span<byte> buffer = stackalloc byte[sizeof(bool)];
+			stream.Read(buffer);
+			return BitConverter.ToBoolean(buffer);
 		}
 
 		public static void WriteType(Type type, Stream stream)

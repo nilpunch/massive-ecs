@@ -4,7 +4,7 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	public enum PackingMode
+	public enum PackingMode : byte
 	{
 		/// <summary>
 		/// When an element is removed, its position is filled with the last element in the packed array.
@@ -28,7 +28,7 @@ namespace Massive
 		private int[] _packed;
 		private int[] _sparse;
 
-		public int NextHole { get; set; }
+		private int NextHole { get; set; }
 
 		public SparseSet(PackingMode packingMode = PackingMode.Continuous)
 		{
@@ -71,6 +71,22 @@ namespace Massive
 		/// Shoots before each <see cref="Unassign"/> call, when the id was alive.
 		/// </summary>
 		public event Action<int> BeforeUnassigned;
+
+		/// <summary>
+		/// For serialization and rollbacks only.
+		/// </summary>
+		public State CurrentState
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new State(Count, NextHole, PackingMode);
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set
+			{
+				Count = value.Count;
+				NextHole = value.NextHole;
+				PackingMode = value.PackingMode;
+			}
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Assign(int id)
@@ -323,6 +339,20 @@ namespace Massive
 		private bool OutOfBounds(int id)
 		{
 			return id < 0 || id >= Sparse.Length;
+		}
+
+		public readonly struct State
+		{
+			public readonly int Count;
+			public readonly int NextHole;
+			public readonly PackingMode PackingMode;
+
+			public State(int count, int nextHole, PackingMode packingMode)
+			{
+				Count = count;
+				NextHole = nextHole;
+				PackingMode = packingMode;
+			}
 		}
 	}
 }

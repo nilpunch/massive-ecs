@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public abstract class IdsSource
 	{
-		public int Count { get; set; }
+		public int Count { get; protected set; }
 
 		public int[] Ids { get; protected set; }
 

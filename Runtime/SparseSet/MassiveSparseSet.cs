@@ -12,25 +12,11 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveSparseSet : SparseSet, IMassive
 	{
-		private readonly struct Info
-		{
-			public readonly int Count;
-			public readonly int NextHole;
-			public readonly PackingMode PackingMode;
-
-			public Info(int count, int nextHole, PackingMode packingMode)
-			{
-				Count = count;
-				NextHole = nextHole;
-				PackingMode = packingMode;
-			}
-		}
-
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
 		private readonly int[][] _packedByFrames;
 		private readonly int[][] _sparseByFrames;
-		private readonly Info[] _infoByFrames;
+		private readonly State[] _stateByFrames;
 
 		public MassiveSparseSet(int framesCapacity = Constants.DefaultFramesCapacity, PackingMode packingMode = PackingMode.Continuous)
 			: base(packingMode)
@@ -39,7 +25,7 @@ namespace Massive
 
 			_packedByFrames = new int[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
-			_infoByFrames = new Info[framesCapacity];
+			_stateByFrames = new State[framesCapacity];
 
 			for (int i = 0; i < framesCapacity; i++)
 			{
@@ -56,14 +42,13 @@ namespace Massive
 			_cyclicFrameCounter.SaveFrame();
 
 			int currentFrame = _cyclicFrameCounter.CurrentFrame;
-			Info currentInfo = new Info(Count, NextHole, PackingMode);
 
 			EnsureCapacityForFrame(currentFrame);
 
 			// Copy everything from current state to current frame
-			Array.Copy(Packed, _packedByFrames[currentFrame], currentInfo.Count);
+			Array.Copy(Packed, _packedByFrames[currentFrame], Count);
 			Array.Copy(Sparse, _sparseByFrames[currentFrame], Sparse.Length);
-			_infoByFrames[currentFrame] = currentInfo;
+			_stateByFrames[currentFrame] = CurrentState;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -74,17 +59,15 @@ namespace Massive
 			// Copy everything from rollback frame to current state
 			int rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			int rollbackSparseLength = _sparseByFrames[rollbackFrame].Length;
-			Info rollbackInfo = _infoByFrames[rollbackFrame];
+			State rollbackState = _stateByFrames[rollbackFrame];
 
-			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackInfo.Count);
+			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackState.Count);
 			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseLength);
 			if (rollbackSparseLength < Sparse.Length)
 			{
 				Array.Fill(Sparse, Constants.InvalidId, rollbackSparseLength, Sparse.Length - rollbackSparseLength);
 			}
-			Count = rollbackInfo.Count;
-			NextHole = rollbackInfo.NextHole;
-			PackingMode = rollbackInfo.PackingMode;
+			CurrentState = rollbackState;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
