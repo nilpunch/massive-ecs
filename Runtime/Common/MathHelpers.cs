@@ -12,7 +12,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int NextPowerOf2(int value)
 		{
-			uint v = (uint)value;
+			var v = (uint)value;
 
 			if (v == 0)
 			{
@@ -97,7 +97,7 @@ namespace Massive
 		{
 			unchecked
 			{
-				int hash = 17;
+				var hash = 17;
 				hash = hash * 31 + a;
 				hash = hash * 31 + b;
 				return hash;

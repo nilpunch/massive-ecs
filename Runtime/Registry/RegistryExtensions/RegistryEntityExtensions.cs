@@ -58,7 +58,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity Clone(this Registry registry, Entity entity)
 		{
-			int cloneId = registry.Clone(entity.Id);
+			var cloneId = registry.Clone(entity.Id);
 			return registry.GetEntity(cloneId);
 		}
 

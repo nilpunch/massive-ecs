@@ -48,7 +48,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static int LoopNegative(int a, int b)
 		{
-			int result = a % b;
+			var result = a % b;
 
 			if (result < 0)
 			{

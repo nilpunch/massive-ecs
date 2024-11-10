@@ -11,7 +11,7 @@ namespace Massive.Serialization
 	{
 		public static void WriteEntities(Entities entities, Stream stream)
 		{
-			Entities.State state = entities.CurrentState;
+			var state = entities.CurrentState;
 			WriteInt(state.Count, stream);
 			WriteInt(state.MaxId, stream);
 			WriteInt(state.NextHoleId, stream);
@@ -39,7 +39,7 @@ namespace Massive.Serialization
 
 		public static void WriteSparseSet(SparseSet set, Stream stream)
 		{
-			SparseSet.State state = set.CurrentState;
+			var state = set.CurrentState;
 			WriteInt(state.Count, stream);
 			WriteInt(state.NextHole, stream);
 			WriteByte((byte)state.PackingMode, stream);

@@ -12,8 +12,8 @@ namespace Massive
 		{
 			if (type.IsGenericType)
 			{
-				string genericArguments = string.Join(',', type.GetGenericArguments().Select(GetFullGenericName));
-				string typeItself = type.FullName[..type.FullName.IndexOf('`', StringComparison.Ordinal)];
+				var genericArguments = string.Join(',', type.GetGenericArguments().Select(GetFullGenericName));
+				var typeItself = type.FullName[..type.FullName.IndexOf('`', StringComparison.Ordinal)];
 				return $"{typeItself}<{genericArguments}>";
 			}
 			return type.FullName;
@@ -26,8 +26,8 @@ namespace Massive
 		{
 			if (type.IsGenericType)
 			{
-				string genericArguments = string.Join(',', type.GetGenericArguments().Select(GetGenericName));
-				string typeItself = type.Name[..type.Name.IndexOf('`', StringComparison.Ordinal)];
+				var genericArguments = string.Join(',', type.GetGenericArguments().Select(GetGenericName));
+				var typeItself = type.Name[..type.Name.IndexOf('`', StringComparison.Ordinal)];
 				return $"{typeItself}<{genericArguments}>";
 			}
 			return type.Name;

@@ -43,7 +43,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity Create(int id, uint version)
 		{
-			long idAndVersion = (id + IdOffset) | ((long)version << 32);
+			var idAndVersion = (id + IdOffset) | ((long)version << 32);
 			return new Entity(idAndVersion);
 		}
 #pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand

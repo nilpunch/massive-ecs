@@ -11,7 +11,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int CountAssignedInAll(int id, SparseSet[] sets)
 		{
-			int counter = 0;
+			var counter = 0;
 			for (var i = 0; i < sets.Length; i++)
 			{
 				var set = sets[i];
@@ -27,7 +27,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AssignedInAll(int id, SparseSet[] sets)
 		{
-			int shouldNotBecomeNegative = 0;
+			var shouldNotBecomeNegative = 0;
 			for (var i = 0; i < sets.Length; i++)
 			{
 				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
@@ -39,7 +39,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool NotAssignedInAll(int id, SparseSet[] sets)
 		{
-			int shouldStayNegative = ~0;
+			var shouldStayNegative = ~0;
 			for (var i = 0; i < sets.Length; i++)
 			{
 				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
@@ -51,7 +51,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SparseSet GetMinimalSet(SparseSet[] sets)
 		{
-			SparseSet minimal = sets[0];
+			var minimal = sets[0];
 
 			for (var i = 1; i < sets.Length; i++)
 			{
@@ -67,7 +67,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SparseSet GetMinimalSet(SparseSet first, SparseSet[] sets)
 		{
-			SparseSet minimal = first;
+			var minimal = first;
 
 			for (var i = 0; i < sets.Length; i++)
 			{
@@ -133,7 +133,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int GetUnorderedHashCode(this SparseSet[] sets, SetRegistry setRegistry)
 		{
-			int hash = 0;
+			var hash = 0;
 			for (var i = 0; i < sets.Length; i++)
 			{
 				hash = setRegistry.IndexOf(sets[i]);

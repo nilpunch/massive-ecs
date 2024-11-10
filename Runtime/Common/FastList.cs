@@ -51,7 +51,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(T item)
 		{
-			int index = IndexOf(item);
+			var index = IndexOf(item);
 			if (index >= 0)
 			{
 				RemoveAt(index);

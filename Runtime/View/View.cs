@@ -31,7 +31,7 @@ namespace Massive
 					continue;
 				}
 
-				int id = entities.Ids[i];
+				var id = entities.Ids[i];
 				if (id >= 0)
 				{
 					if (!action.Apply(id))
@@ -111,8 +111,8 @@ namespace Massive
 							continue;
 						}
 
-						int id = dataSet1.Ids[indexOffset + index1];
-						int index2 = dataSet2.GetIndexOrInvalid(id);
+						var id = dataSet1.Ids[indexOffset + index1];
+						var index2 = dataSet2.GetIndexOrInvalid(id);
 						if (index2 >= 0)
 						{
 							if (!action.Apply(id, ref page1[index1], ref data2[index2]))
@@ -141,8 +141,8 @@ namespace Massive
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + index2];
-						int index1 = dataSet1.GetIndexOrInvalid(id);
+						var id = dataSet2.Ids[indexOffset + index2];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
 						if (index1 >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref page2[index2]))
@@ -191,9 +191,9 @@ namespace Massive
 							continue;
 						}
 
-						int id = dataSet1.Ids[indexOffset + index1];
-						int index2 = dataSet2.GetIndexOrInvalid(id);
-						int index3 = dataSet3.GetIndexOrInvalid(id);
+						var id = dataSet1.Ids[indexOffset + index1];
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
 						if ((index2 | index3) >= 0)
 						{
 							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3]))
@@ -222,9 +222,9 @@ namespace Massive
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + index2];
-						int index1 = dataSet1.GetIndexOrInvalid(id);
-						int index3 = dataSet3.GetIndexOrInvalid(id);
+						var id = dataSet2.Ids[indexOffset + index2];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
 						if ((index1 | index3) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3]))
@@ -253,9 +253,9 @@ namespace Massive
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + index3];
-						int index1 = dataSet1.GetIndexOrInvalid(id);
-						int index2 = dataSet2.GetIndexOrInvalid(id);
+						var id = dataSet2.Ids[indexOffset + index3];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index2 = dataSet2.GetIndexOrInvalid(id);
 						if ((index1 | index2) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3]))
@@ -306,10 +306,10 @@ namespace Massive
 							continue;
 						}
 
-						int id = dataSet1.Ids[indexOffset + index1];
-						int index2 = dataSet2.GetIndexOrInvalid(id);
-						int index3 = dataSet3.GetIndexOrInvalid(id);
-						int index4 = dataSet4.GetIndexOrInvalid(id);
+						var id = dataSet1.Ids[indexOffset + index1];
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
+						var index4 = dataSet4.GetIndexOrInvalid(id);
 						if ((index2 | index3 | index4) >= 0)
 						{
 							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
@@ -338,10 +338,10 @@ namespace Massive
 							continue;
 						}
 
-						int id = dataSet2.Ids[indexOffset + index2];
-						int index1 = dataSet1.GetIndexOrInvalid(id);
-						int index3 = dataSet3.GetIndexOrInvalid(id);
-						int index4 = dataSet4.GetIndexOrInvalid(id);
+						var id = dataSet2.Ids[indexOffset + index2];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
+						var index4 = dataSet4.GetIndexOrInvalid(id);
 						if ((index1 | index3 | index4) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3], ref data4[index4]))
@@ -370,10 +370,10 @@ namespace Massive
 							continue;
 						}
 
-						int id = dataSet3.Ids[indexOffset + index3];
-						int index1 = dataSet1.GetIndexOrInvalid(id);
-						int index2 = dataSet2.GetIndexOrInvalid(id);
-						int index4 = dataSet4.GetIndexOrInvalid(id);
+						var id = dataSet3.Ids[indexOffset + index3];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index4 = dataSet4.GetIndexOrInvalid(id);
 						if ((index1 | index2 | index4) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3], ref data4[index4]))
@@ -402,10 +402,10 @@ namespace Massive
 							continue;
 						}
 
-						int id = dataSet4.Ids[indexOffset + index4];
-						int index1 = dataSet1.GetIndexOrInvalid(id);
-						int index2 = dataSet2.GetIndexOrInvalid(id);
-						int index3 = dataSet3.GetIndexOrInvalid(id);
+						var id = dataSet4.Ids[indexOffset + index4];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
 						if ((index1 | index2 | index3) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref page4[index4]))

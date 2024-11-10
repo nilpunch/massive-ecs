@@ -40,9 +40,9 @@ namespace Massive
 			ThrowIfContainsDuplicates(included, "Included contains duplicate sets!");
 			ThrowIfContainsDuplicates(excluded, "Excluded contains duplicate sets!");
 
-			int includeCode = included.GetUnorderedHashCode(_setRegistry);
-			int excludeCode = excluded.GetUnorderedHashCode(_setRegistry);
-			int fullCode = MathHelpers.CombineHashes(includeCode, excludeCode);
+			var includeCode = included.GetUnorderedHashCode(_setRegistry);
+			var excludeCode = excluded.GetUnorderedHashCode(_setRegistry);
+			var fullCode = MathHelpers.CombineHashes(includeCode, excludeCode);
 
 			if (_codeLookup.TryGetValue(fullCode, out var reactiveFilter))
 			{

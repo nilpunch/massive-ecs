@@ -7,7 +7,7 @@ namespace Massive
 		public static bool Contains<T>(this T[] array, T value)
 		{
 			var equalityComparer = EqualityComparer<T>.Default;
-			int length = array.Length;
+			var length = array.Length;
 
 			for (var i = 0; i < length; i++)
 			{
@@ -48,7 +48,7 @@ namespace Massive
 
 		public static int GetUnorderedHashCode<T>(this T[] array)
 		{
-			int hash = 0;
+			var hash = 0;
 			for (var i = 0; i < array.Length; i++)
 			{
 				hash ^= array[i].GetHashCode();

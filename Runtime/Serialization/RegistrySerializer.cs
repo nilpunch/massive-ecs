@@ -48,7 +48,7 @@ namespace Massive.Serialization
 			}
 
 			// Reactive filters
-			List<ReactiveFilter> syncedFilters = new List<ReactiveFilter>();
+			var syncedFilters = new List<ReactiveFilter>();
 			foreach (var reactiveFilter in registry.ReactiveRegistry.All)
 			{
 				if (reactiveFilter.IsSynced)
@@ -57,10 +57,10 @@ namespace Massive.Serialization
 				}
 			}
 			SerializationHelpers.WriteInt(syncedFilters.Count, stream);
-			foreach (ReactiveFilter reactiveFilter in syncedFilters)
+			foreach (var reactiveFilter in syncedFilters)
 			{
-				SparseSet[] included = reactiveFilter.Included;
-				SparseSet[] excluded = reactiveFilter.Excluded;
+				var included = reactiveFilter.Included;
+				var excluded = reactiveFilter.Excluded;
 
 				// Included
 				SerializationHelpers.WriteInt(included.Length, stream);
@@ -134,14 +134,14 @@ namespace Massive.Serialization
 			for (var filterIndex = 0; filterIndex < filterCount; filterIndex++)
 			{
 				// Included
-				SparseSet[] included = new SparseSet[SerializationHelpers.ReadInt(stream)];
+				var included = new SparseSet[SerializationHelpers.ReadInt(stream)];
 				for (var i = 0; i < included.Length; i++)
 				{
 					included[i] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
 				}
 
 				// Excluded
-				SparseSet[] excluded = new SparseSet[SerializationHelpers.ReadInt(stream)];
+				var excluded = new SparseSet[SerializationHelpers.ReadInt(stream)];
 				for (var i = 0; i < excluded.Length; i++)
 				{
 					excluded[i] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
