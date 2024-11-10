@@ -16,13 +16,13 @@ namespace Massive
 
 		public PagedArray(int pageSize = Constants.DefaultPageSize)
 		{
-			if (!MathHelpers.IsPowerOfTwo(pageSize))
+			if (!MathUtils.IsPowerOfTwo(pageSize))
 			{
 				throw new Exception("Page capacity must be power of two!");
 			}
 
 			PageSize = pageSize;
-			_pageSizePower = MathHelpers.FastLog2(pageSize);
+			_pageSizePower = MathUtils.FastLog2(pageSize);
 			_pages = new T[DefaultPagesAmount][];
 		}
 
@@ -100,13 +100,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private int PageIndex(int index)
 		{
-			return MathHelpers.FastPowDiv(index, _pageSizePower);
+			return MathUtils.FastPowDiv(index, _pageSizePower);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private int IndexInPage(int index)
 		{
-			return MathHelpers.FastMod(index, PageSize);
+			return MathUtils.FastMod(index, PageSize);
 		}
 	}
 }

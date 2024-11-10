@@ -62,7 +62,7 @@ namespace Massive.Tests
 		[TestCase(Constants.DefaultPageSize * 2 - 1, ExpectedResult = Constants.DefaultPageSize - 1)]
 		public int FastMod_ShouldReturnCorrectResult(int value)
 		{
-			return MathHelpers.FastMod(value, Constants.DefaultPageSize);
+			return MathUtils.FastMod(value, Constants.DefaultPageSize);
 		}
 
 		[TestCase(Constants.DefaultPageSize, ExpectedResult = 1)]
@@ -73,9 +73,9 @@ namespace Massive.Tests
 		[TestCase(Constants.DefaultPageSize * 2 - 1, ExpectedResult = 1)]
 		public int FastDivPow_ShouldReturnCorrectResult(int value)
 		{
-			int pow = MathHelpers.FastLog2(Constants.DefaultPageSize);
+			int pow = MathUtils.FastLog2(Constants.DefaultPageSize);
 			
-			return MathHelpers.FastPowDiv(value, pow);
+			return MathUtils.FastPowDiv(value, pow);
 		}
 	}
 }

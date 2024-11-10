@@ -42,7 +42,7 @@ namespace Massive
 
 			var includeCode = included.GetUnorderedHashCode(_setRegistry);
 			var excludeCode = excluded.GetUnorderedHashCode(_setRegistry);
-			var fullCode = MathHelpers.CombineHashes(includeCode, excludeCode);
+			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
 
 			if (_codeLookup.TryGetValue(fullCode, out var reactiveFilter))
 			{

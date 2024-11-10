@@ -43,7 +43,7 @@ namespace Massive
 				_length = length;
 
 				_pageIndex = _length / _pageSize;
-				_indexInPage = MathHelpers.FastMod(_length, _pageSize);
+				_indexInPage = MathUtils.FastMod(_length, _pageSize);
 				_currentPage = new Span<T>(_pagedData[_pageIndex]);
 			}
 
@@ -68,7 +68,7 @@ namespace Massive
 			public void Reset()
 			{
 				_pageIndex = Math.Min(_length / _pageSize, _pagedData.Length);
-				_indexInPage = MathHelpers.FastMod(_length, _pageSize);
+				_indexInPage = MathUtils.FastMod(_length, _pageSize);
 				_currentPage = new Span<T>(_pagedData[_pageIndex]);
 			}
 

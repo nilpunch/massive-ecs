@@ -229,7 +229,7 @@ namespace Massive
 		{
 			if (index >= Sparse.Length)
 			{
-				var newCapacity = MathHelpers.NextPowerOf2(index + 1);
+				var newCapacity = MathUtils.NextPowerOf2(index + 1);
 				ResizePacked(newCapacity);
 				ResizeSparse(newCapacity);
 			}

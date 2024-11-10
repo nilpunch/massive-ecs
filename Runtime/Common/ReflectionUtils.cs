@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Massive
 {
-	public static class ReflectionHelpers
+	public static class ReflectionUtils
 	{
 		/// <summary>
 		/// Returns full type name with namespace and generic arguments.

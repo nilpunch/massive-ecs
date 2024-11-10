@@ -34,7 +34,7 @@ namespace Massive
 			}
 
 			var args = new object[] { _pageSize, GetPackingModeFor(type) };
-			return (SparseSet)ReflectionHelpers.CreateGeneric(typeof(DataSet<>), type, args);
+			return (SparseSet)ReflectionUtils.CreateGeneric(typeof(DataSet<>), type, args);
 		}
 
 		private SparseSet CreateSparseSet(PackingMode packingMode)

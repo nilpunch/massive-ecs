@@ -230,7 +230,7 @@ namespace Massive
 		{
 			if (index >= Packed.Length)
 			{
-				ResizePacked(MathHelpers.NextPowerOf2(index + 1));
+				ResizePacked(MathUtils.NextPowerOf2(index + 1));
 			}
 		}
 
@@ -239,7 +239,7 @@ namespace Massive
 		{
 			if (index >= Sparse.Length)
 			{
-				ResizeSparse(MathHelpers.NextPowerOf2(index + 1));
+				ResizeSparse(MathUtils.NextPowerOf2(index + 1));
 			}
 		}
 

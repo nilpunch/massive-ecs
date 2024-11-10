@@ -71,8 +71,8 @@ namespace Massive
 			// Resize lookup to fit
 			if (typeIndex >= _lookup.Length)
 			{
-				Array.Resize(ref _lookup, MathHelpers.NextPowerOf2(typeIndex + 1));
-				Array.Resize(ref _keyLookup, MathHelpers.NextPowerOf2(typeIndex + 1));
+				Array.Resize(ref _lookup, MathUtils.NextPowerOf2(typeIndex + 1));
+				Array.Resize(ref _keyLookup, MathUtils.NextPowerOf2(typeIndex + 1));
 			}
 
 			_lookup[typeIndex] = item;
@@ -123,8 +123,8 @@ namespace Massive
 			// Resize lookup to fit
 			if (typeIndex >= _lookup.Length)
 			{
-				Array.Resize(ref _lookup, MathHelpers.NextPowerOf2(typeIndex + 1));
-				Array.Resize(ref _keyLookup, MathHelpers.NextPowerOf2(typeIndex + 1));
+				Array.Resize(ref _lookup, MathUtils.NextPowerOf2(typeIndex + 1));
+				Array.Resize(ref _keyLookup, MathUtils.NextPowerOf2(typeIndex + 1));
 			}
 
 			_lookup[typeIndex] = item;

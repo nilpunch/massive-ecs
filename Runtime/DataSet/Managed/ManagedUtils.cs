@@ -16,7 +16,7 @@ namespace Massive
 		/// </summary>
 		public static DataSet<T> CreateMassiveManagedDataSet<T>(int framesCapacity = Constants.DefaultFramesCapacity, int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous)
 		{
-			return (DataSet<T>)ReflectionHelpers.CreateGeneric(typeof(MassiveManagedDataSet<>), typeof(T), framesCapacity, pageSize, packingMode);
+			return (DataSet<T>)ReflectionUtils.CreateGeneric(typeof(MassiveManagedDataSet<>), typeof(T), framesCapacity, pageSize, packingMode);
 		}
 	}
 }

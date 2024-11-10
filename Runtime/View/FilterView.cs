@@ -24,7 +24,7 @@ namespace Massive
 		{
 			IdsSource idsSource = Filter.Included.Length == 0
 				? Registry.Entities
-				: SetHelpers.GetMinimalSet(Filter.Included);
+				: SetUtils.GetMinimalSet(Filter.Included);
 
 			var originalPackingMode = idsSource.PackingMode;
 			idsSource.ChangePackingMode(PackingMode.WithHoles);
@@ -59,7 +59,7 @@ namespace Massive
 
 			var data = dataSet.Data;
 
-			var minSet = SetHelpers.GetMinimalSet(dataSet, Filter.Included);
+			var minSet = SetUtils.GetMinimalSet(dataSet, Filter.Included);
 			var originalPackingMode = minSet.PackingMode;
 			minSet.ChangePackingMode(PackingMode.WithHoles);
 
@@ -96,9 +96,9 @@ namespace Massive
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
-			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
+			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
 
-			var minSet = SetHelpers.GetMinimalSet(minDataSet, Filter.Included);
+			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPackingMode = minSet.PackingMode;
 			minSet.ChangePackingMode(PackingMode.WithHoles);
 
@@ -140,9 +140,9 @@ namespace Massive
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
-			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3);
+			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3);
 
-			var minSet = SetHelpers.GetMinimalSet(minDataSet, Filter.Included);
+			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPackingMode = minSet.PackingMode;
 			minSet.ChangePackingMode(PackingMode.WithHoles);
 
@@ -188,9 +188,9 @@ namespace Massive
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
 			var data4 = dataSet4.Data;
-			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
+			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
 
-			var minSet = SetHelpers.GetMinimalSet(minDataSet, Filter.Included);
+			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPackingMode = minSet.PackingMode;
 			minSet.ChangePackingMode(PackingMode.WithHoles);
 
@@ -229,7 +229,7 @@ namespace Massive
 			}
 			else
 			{
-				var ids = SetHelpers.GetMinimalSet(Filter.Included);
+				var ids = SetUtils.GetMinimalSet(Filter.Included);
 				return new IdsFilterEnumerator(ids, Filter);
 			}
 		}

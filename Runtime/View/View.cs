@@ -88,12 +88,12 @@ namespace Massive
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
 
-			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
-			var originalPackingMode = minDataSet.PackingMode;
-			minDataSet.ChangePackingMode(PackingMode.WithHoles);
+			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
+			var originalPackingMode = minSet.PackingMode;
+			minSet.ChangePackingMode(PackingMode.WithHoles);
 
 			// Iterate over smallest data set
-			if (minDataSet == dataSet1)
+			if (minSet == dataSet1)
 			{
 				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, dataSet1.Count))
 				{
@@ -154,7 +154,7 @@ namespace Massive
 				}
 			}
 
-			minDataSet.ChangePackingMode(originalPackingMode);
+			minSet.ChangePackingMode(originalPackingMode);
 		}
 
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
@@ -168,12 +168,12 @@ namespace Massive
 			var data2 = dataSet2.Data;
 			var data3 = dataSet3.Data;
 
-			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
-			var originalPackingMode = minDataSet.PackingMode;
-			minDataSet.ChangePackingMode(PackingMode.WithHoles);
+			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
+			var originalPackingMode = minSet.PackingMode;
+			minSet.ChangePackingMode(PackingMode.WithHoles);
 
 			// Iterate over smallest data set
-			if (minDataSet == dataSet1)
+			if (minSet == dataSet1)
 			{
 				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, dataSet1.Count))
 				{
@@ -204,7 +204,7 @@ namespace Massive
 					}
 				}
 			}
-			else if (minDataSet == dataSet2)
+			else if (minSet == dataSet2)
 			{
 				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data2.PageSize, dataSet2.Count))
 				{
@@ -267,7 +267,7 @@ namespace Massive
 				}
 			}
 
-			minDataSet.ChangePackingMode(originalPackingMode);
+			minSet.ChangePackingMode(originalPackingMode);
 		}
 
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
@@ -283,12 +283,12 @@ namespace Massive
 			var data3 = dataSet3.Data;
 			var data4 = dataSet4.Data;
 
-			var minDataSet = SetHelpers.GetMinimalSet(dataSet1, dataSet2);
-			var originalPackingMode = minDataSet.PackingMode;
-			minDataSet.ChangePackingMode(PackingMode.WithHoles);
+			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
+			var originalPackingMode = minSet.PackingMode;
+			minSet.ChangePackingMode(PackingMode.WithHoles);
 
 			// Iterate over the smallest data set
-			if (minDataSet == dataSet1)
+			if (minSet == dataSet1)
 			{
 				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, dataSet1.Count))
 				{
@@ -320,7 +320,7 @@ namespace Massive
 					}
 				}
 			}
-			else if (minDataSet == dataSet2)
+			else if (minSet == dataSet2)
 			{
 				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data2.PageSize, dataSet2.Count))
 				{
@@ -352,7 +352,7 @@ namespace Massive
 					}
 				}
 			}
-			else if (minDataSet == dataSet3)
+			else if (minSet == dataSet3)
 			{
 				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data3.PageSize, dataSet3.Count))
 				{
@@ -417,7 +417,7 @@ namespace Massive
 				}
 			}
 
-			minDataSet.ChangePackingMode(originalPackingMode);
+			minSet.ChangePackingMode(originalPackingMode);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -25,7 +25,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
-			return id >= 0 && (Included.Length == 0 || SetHelpers.AssignedInAll(id, Included)) && (Excluded.Length == 0 || SetHelpers.NotAssignedInAll(id, Excluded));
+			return id >= 0 && (Included.Length == 0 || SetUtils.AssignedInAll(id, Included)) && (Excluded.Length == 0 || SetUtils.NotAssignedInAll(id, Excluded));
 		}
 
 		public static void ThrowIfConflicting(SparseSet[] included, SparseSet[] excluded, string errorMessage)

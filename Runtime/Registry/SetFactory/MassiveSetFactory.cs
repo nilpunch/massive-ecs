@@ -43,8 +43,8 @@ namespace Massive
 
 			var args = new object[] { _framesCapacity, _pageSize, GetPackingModeFor(type) };
 			var massiveDataSet = ManagedUtils.IsManaged(type)
-				? ReflectionHelpers.CreateGeneric(typeof(MassiveManagedDataSet<>), type, args)
-				: ReflectionHelpers.CreateGeneric(typeof(MassiveDataSet<>), type, args);
+				? ReflectionUtils.CreateGeneric(typeof(MassiveManagedDataSet<>), type, args)
+				: ReflectionUtils.CreateGeneric(typeof(MassiveDataSet<>), type, args);
 			((IMassive)massiveDataSet).SaveFrame();
 			return (SparseSet)massiveDataSet;
 		}

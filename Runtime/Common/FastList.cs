@@ -117,7 +117,7 @@ namespace Massive
 		{
 			if (Capacity < min)
 			{
-				Capacity = MathHelpers.NextPowerOf2(min);
+				Capacity = MathUtils.NextPowerOf2(min);
 			}
 		}
 	}
