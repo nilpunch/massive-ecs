@@ -57,12 +57,6 @@ namespace Massive
 				return false;
 			}
 
-			public void Reset()
-			{
-				_page = _length == 0 ? 0 : (_length - 1) / _pageSize + 1;
-				_pageLength = _nextPageLength = _length == 0 ? 0 : MathUtils.FastMod(_length - 1, _pageSize) + 1;
-			}
-
 			public (int PageIndex, int PageLength, int IndexOffset) Current
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -4,7 +4,6 @@ namespace Massive
 	{
 		void CopyTo(ref T other);
 
-		// Hint for AOT
 		private static void ReflectionSupportForAOT()
 		{
 			_ = new MassiveManagedDataSet<T>();

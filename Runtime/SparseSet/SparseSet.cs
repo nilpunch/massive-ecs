@@ -178,12 +178,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetIndex(int id)
-		{
-			return Sparse[id];
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetIndexOrInvalid(int id)
 		{
 			if (OutOfBounds(id))

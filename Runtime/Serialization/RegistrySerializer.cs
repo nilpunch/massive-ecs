@@ -94,7 +94,7 @@ namespace Massive.Serialization
 			{
 				var setKey = SerializationHelpers.ReadType(stream);
 
-				var sparseSet = registry.SetRegistry.Get(setKey);
+				var sparseSet = registry.SetRegistry.GetReflected(setKey);
 				deserializedSets.Add(sparseSet);
 
 				SerializationHelpers.ReadSparseSet(sparseSet, stream);
@@ -137,14 +137,14 @@ namespace Massive.Serialization
 				var included = new SparseSet[SerializationHelpers.ReadInt(stream)];
 				for (var i = 0; i < included.Length; i++)
 				{
-					included[i] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
+					included[i] = registry.SetRegistry.GetReflected(SerializationHelpers.ReadType(stream));
 				}
 
 				// Excluded
 				var excluded = new SparseSet[SerializationHelpers.ReadInt(stream)];
 				for (var i = 0; i < excluded.Length; i++)
 				{
-					excluded[i] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
+					excluded[i] = registry.SetRegistry.GetReflected(SerializationHelpers.ReadType(stream));
 				}
 
 				var group = registry.Group(included, excluded);

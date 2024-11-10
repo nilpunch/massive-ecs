@@ -39,13 +39,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Get(Type keyType)
+		public SparseSet GetReflected(Type keyType)
 		{
 			var set = _setLookup.Find(keyType);
 
 			if (set is null)
 			{
-				set = _setFactory.CreateAppropriateSet(keyType);
+				set = _setFactory.CreateAppropriateSetReflected(keyType);
 				_setLookup.Assign(keyType, set);
 			}
 

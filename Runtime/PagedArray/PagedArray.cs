@@ -34,8 +34,6 @@ namespace Massive
 
 		public int PageSize { get; }
 
-		public int PagesCount => Pages.Length;
-
 		public Type ElementType => typeof(T);
 
 		public ref T this[int index]

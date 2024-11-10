@@ -6,10 +6,7 @@ namespace Massive
 	{
 		SparseSet CreateAppropriateSet<T>() => GenerateVirtualGenericsForAOT<T>();
 
-		/// <summary>
-		/// Creates set using reflection.
-		/// </summary>
-		SparseSet CreateAppropriateSet(Type type);
+		SparseSet CreateAppropriateSetReflected(Type type);
 
 		private static SparseSet GenerateVirtualGenericsForAOT<T>()
 		{

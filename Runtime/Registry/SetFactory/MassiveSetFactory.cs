@@ -34,7 +34,7 @@ namespace Massive
 			return CreateDataSet<T>();
 		}
 
-		public SparseSet CreateAppropriateSet(Type type)
+		public SparseSet CreateAppropriateSetReflected(Type type)
 		{
 			if (TypeInfo.HasNoFields(type) && !_storeEmptyTypesAsDataSets)
 			{

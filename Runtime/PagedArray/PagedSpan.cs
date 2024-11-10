@@ -65,13 +65,6 @@ namespace Massive
 				return false;
 			}
 
-			public void Reset()
-			{
-				_pageIndex = Math.Min(_length / _pageSize, _pagedData.Length);
-				_indexInPage = MathUtils.FastMod(_length, _pageSize);
-				_currentPage = new Span<T>(_pagedData[_pageIndex]);
-			}
-
 			public ref T Current
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]

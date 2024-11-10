@@ -84,11 +84,6 @@ namespace Massive
 			IsSynced = false;
 		}
 
-		public bool IsIncluding(SparseSet set)
-		{
-			return Included.Contains(set);
-		}
-
 		private void AddToGroup(int id)
 		{
 			if (IsSynced
