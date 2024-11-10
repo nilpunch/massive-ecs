@@ -76,8 +76,8 @@ namespace Massive
 
 			if (HasHoles)
 			{
-				int id = NextHoleId;
-				int index = Sparse[id];
+				var id = NextHoleId;
+				var index = Sparse[id];
 				NextHoleId = ~Ids[index];
 				Ids[index] = id;
 				entity = Entity.Create(id, Versions[index]);
@@ -122,7 +122,7 @@ namespace Massive
 			}
 			else
 			{
-				int index = Sparse[id];
+				var index = Sparse[id];
 				Ids[index] = ~NextHoleId;
 				unchecked { Versions[index] += 1; }
 				NextHoleId = id;
@@ -132,14 +132,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CreateMany(int amount)
 		{
-			int needToCreate = amount;
+			var needToCreate = amount;
 			EnsureCapacityForIndex(needToCreate + Count);
 
 			while (HasHoles && needToCreate > 0)
 			{
 				needToCreate -= 1;
-				int id = NextHoleId;
-				int index = Sparse[id];
+				var id = NextHoleId;
+				var index = Sparse[id];
 				NextHoleId = ~Ids[index];
 				Ids[index] = id;
 				AfterCreated?.Invoke(id);
@@ -152,7 +152,7 @@ namespace Massive
 				AfterCreated?.Invoke(Ids[Count - 1]);
 			}
 
-			for (int i = 0; i < needToCreate; i++)
+			for (var i = 0; i < needToCreate; i++)
 			{
 				AssignEntity(MaxId, 0, Count);
 				MaxId += 1;
@@ -166,7 +166,7 @@ namespace Massive
 		{
 			if (IsContinuous)
 			{
-				for (int i = Count - 1; i >= 0; i--)
+				for (var i = Count - 1; i >= 0; i--)
 				{
 					var id = Ids[i];
 					BeforeDestroyed?.Invoke(id);
@@ -176,7 +176,7 @@ namespace Massive
 			}
 			else
 			{
-				for (int i = Count - 1; i >= 0; i--)
+				for (var i = Count - 1; i >= 0; i--)
 				{
 					var id = Ids[i];
 					if (id >= 0)
@@ -187,11 +187,11 @@ namespace Massive
 					Count -= 1;
 				}
 
-				int nextHoleId = NextHoleId;
+				var nextHoleId = NextHoleId;
 				while (nextHoleId != EndHoleId)
 				{
-					int holeId = nextHoleId;
-					int holeIndex = Sparse[holeId];
+					var holeId = nextHoleId;
+					var holeIndex = Sparse[holeId];
 					nextHoleId = ~Ids[holeIndex];
 					Ids[holeIndex] = holeId;
 				}
@@ -213,7 +213,7 @@ namespace Massive
 				return false;
 			}
 
-			int index = Sparse[entity.Id];
+			var index = Sparse[entity.Id];
 
 			return index < Count && Ids[index] == entity.Id && Versions[index] == entity.Version;
 		}
@@ -229,7 +229,7 @@ namespace Massive
 		{
 			if (index >= Sparse.Length)
 			{
-				int newCapacity = MathHelpers.NextPowerOf2(index + 1);
+				var newCapacity = MathHelpers.NextPowerOf2(index + 1);
 				ResizePacked(newCapacity);
 				ResizeSparse(newCapacity);
 			}
@@ -265,15 +265,15 @@ namespace Massive
 		{
 			if (HasHoles)
 			{
-				int count = Count;
-				int nextHoleId = NextHoleId;
+				var count = Count;
+				var nextHoleId = NextHoleId;
 
 				for (; count > 0 && Ids[count - 1] < 0; count--) { }
 
 				while (nextHoleId != EndHoleId)
 				{
-					int holeId = nextHoleId;
-					int holeIndex = Sparse[holeId];
+					var holeId = nextHoleId;
+					var holeIndex = Sparse[holeId];
 					nextHoleId = ~Ids[holeIndex];
 					if (holeIndex < count)
 					{

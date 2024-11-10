@@ -30,7 +30,7 @@ namespace Massive
 				var sourcePage = source.Pages[pageIndex];
 				var destinationPage = destination.Pages[pageIndex];
 
-				for (int i = 0; i < pageLength; i++)
+				for (var i = 0; i < pageLength; i++)
 				{
 					sourcePage[i].CopyTo(ref destinationPage[i]);
 				}

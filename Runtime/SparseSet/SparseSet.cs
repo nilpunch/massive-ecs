@@ -97,7 +97,7 @@ namespace Massive
 
 			if (HasHoles)
 			{
-				int index = NextHole;
+				var index = NextHole;
 				NextHole = ~Packed[index];
 				AssignIndex(id, index);
 			}
@@ -130,7 +130,7 @@ namespace Massive
 			}
 			else
 			{
-				int index = Sparse[id];
+				var index = Sparse[id];
 				Packed[index] = ~NextHole;
 				NextHole = index;
 			}
@@ -143,18 +143,18 @@ namespace Massive
 		{
 			if (IsContinuous)
 			{
-				for (int i = Count - 1; i >= 0; i--)
+				for (var i = Count - 1; i >= 0; i--)
 				{
-					int id = Packed[i];
+					var id = Packed[i];
 					BeforeUnassigned?.Invoke(id);
 					Sparse[id] = Constants.InvalidId;
 				}
 			}
 			else
 			{
-				for (int i = Count - 1; i >= 0; i--)
+				for (var i = Count - 1; i >= 0; i--)
 				{
-					int id = Packed[i];
+					var id = Packed[i];
 					if (id >= 0)
 					{
 						BeforeUnassigned?.Invoke(id);
@@ -219,8 +219,8 @@ namespace Massive
 				throw new Exception("Swapping is not supported for packing mode with holes.");
 			}
 
-			int firstId = Packed[first];
-			int secondId = Packed[second];
+			var firstId = Packed[first];
+			var secondId = Packed[second];
 			AssignIndex(firstId, second);
 			AssignIndex(secondId, first);
 		}
@@ -253,7 +253,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
-			int previousCapacity = Sparse.Length;
+			var previousCapacity = Sparse.Length;
 			Array.Resize(ref _sparse, capacity);
 			if (capacity > previousCapacity)
 			{
@@ -277,14 +277,14 @@ namespace Massive
 		{
 			if (HasHoles)
 			{
-				int count = Count;
-				int nextHole = NextHole;
+				var count = Count;
+				var nextHole = NextHole;
 
 				for (; count > 0 && Packed[count - 1] < 0; count--) { }
 
 				while (nextHole != EndHole)
 				{
-					int holeIndex = nextHole;
+					var holeIndex = nextHole;
 					nextHole = ~Packed[nextHole];
 					if (holeIndex < count)
 					{
@@ -309,7 +309,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected virtual void CopyFromToPacked(int source, int destination)
 		{
-			int sourceId = Packed[source];
+			var sourceId = Packed[source];
 			AssignIndex(sourceId, destination);
 		}
 

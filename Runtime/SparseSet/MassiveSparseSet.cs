@@ -27,7 +27,7 @@ namespace Massive
 			_sparseByFrames = new int[framesCapacity][];
 			_stateByFrames = new State[framesCapacity];
 
-			for (int i = 0; i < framesCapacity; i++)
+			for (var i = 0; i < framesCapacity; i++)
 			{
 				_packedByFrames[i] = Array.Empty<int>();
 				_sparseByFrames[i] = Array.Empty<int>();

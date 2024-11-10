@@ -29,7 +29,7 @@ namespace Massive
 			_sparseByFrames = new int[framesCapacity][];
 			_stateByFrames = new State[framesCapacity];
 
-			for (int i = 0; i < framesCapacity; i++)
+			for (var i = 0; i < framesCapacity; i++)
 			{
 				_dataByFrames[i] = new PagedArray<T>(pageSize);
 				_packedByFrames[i] = Array.Empty<int>();

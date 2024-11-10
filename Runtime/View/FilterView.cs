@@ -63,7 +63,7 @@ namespace Massive
 			var originalPackingMode = minSet.PackingMode;
 			minSet.ChangePackingMode(PackingMode.WithHoles);
 
-			for (int i = minSet.Count - 1; i >= 0; i--)
+			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
 				if (i > minSet.Count)
 				{
@@ -102,7 +102,7 @@ namespace Massive
 			var originalPackingMode = minSet.PackingMode;
 			minSet.ChangePackingMode(PackingMode.WithHoles);
 
-			for (int i = minSet.Count - 1; i >= 0; i--)
+			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
 				if (i > minSet.Count)
 				{
@@ -146,7 +146,7 @@ namespace Massive
 			var originalPackingMode = minSet.PackingMode;
 			minSet.ChangePackingMode(PackingMode.WithHoles);
 
-			for (int i = minSet.Count - 1; i >= 0; i--)
+			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
 				if (i > minSet.Count)
 				{
@@ -194,7 +194,7 @@ namespace Massive
 			var originalPackingMode = minSet.PackingMode;
 			minSet.ChangePackingMode(PackingMode.WithHoles);
 
-			for (int i = minSet.Count - 1; i >= 0; i--)
+			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
 				if (i > minSet.Count)
 				{

@@ -75,7 +75,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override int GetHashCode()
 		{
-			return MathHelpers.CombineHashes(Id, (int)Version);
+			return IdAndVersion.GetHashCode();
 		}
 	}
 }

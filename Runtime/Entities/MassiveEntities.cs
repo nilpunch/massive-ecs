@@ -28,7 +28,7 @@ namespace Massive
 			_sparseByFrames = new int[framesCapacity][];
 			_stateByFrames = new State[framesCapacity];
 
-			for (int i = 0; i < framesCapacity; i++)
+			for (var i = 0; i < framesCapacity; i++)
 			{
 				_idsByFrames[i] = new int[Ids.Length];
 				_versionsByFrames[i] = new uint[Versions.Length];

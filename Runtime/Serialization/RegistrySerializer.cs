@@ -135,14 +135,14 @@ namespace Massive.Serialization
 			{
 				// Included
 				SparseSet[] included = new SparseSet[SerializationHelpers.ReadInt(stream)];
-				for (int i = 0; i < included.Length; i++)
+				for (var i = 0; i < included.Length; i++)
 				{
 					included[i] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
 				}
 
 				// Excluded
 				SparseSet[] excluded = new SparseSet[SerializationHelpers.ReadInt(stream)];
-				for (int i = 0; i < excluded.Length; i++)
+				for (var i = 0; i < excluded.Length; i++)
 				{
 					excluded[i] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
 				}

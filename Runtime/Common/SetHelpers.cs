@@ -28,7 +28,7 @@ namespace Massive
 		public static bool AssignedInAll(int id, SparseSet[] sets)
 		{
 			int shouldNotBecomeNegative = 0;
-			for (int i = 0; i < sets.Length; i++)
+			for (var i = 0; i < sets.Length; i++)
 			{
 				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
 			}
@@ -40,7 +40,7 @@ namespace Massive
 		public static bool NotAssignedInAll(int id, SparseSet[] sets)
 		{
 			int shouldStayNegative = ~0;
-			for (int i = 0; i < sets.Length; i++)
+			for (var i = 0; i < sets.Length; i++)
 			{
 				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
 			}
@@ -53,7 +53,7 @@ namespace Massive
 		{
 			SparseSet minimal = sets[0];
 
-			for (int i = 1; i < sets.Length; i++)
+			for (var i = 1; i < sets.Length; i++)
 			{
 				if (minimal.Count > sets[i].Count)
 				{
@@ -69,7 +69,7 @@ namespace Massive
 		{
 			SparseSet minimal = first;
 
-			for (int i = 0; i < sets.Length; i++)
+			for (var i = 0; i < sets.Length; i++)
 			{
 				if (minimal.Count > sets[i].Count)
 				{

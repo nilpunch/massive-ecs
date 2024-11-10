@@ -57,7 +57,7 @@ namespace Massive
 			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
 			{
 				var page = data.Pages[pageIndex];
-				for (int index = pageLength - 1; index >= 0; index--)
+				for (var index = pageLength - 1; index >= 0; index--)
 				{
 					if (indexOffset + index > dataSet.Count)
 					{
@@ -103,7 +103,7 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					for (int index1 = pageLength - 1; index1 >= 0; index1--)
+					for (var index1 = pageLength - 1; index1 >= 0; index1--)
 					{
 						if (indexOffset + index1 > dataSet1.Count)
 						{
@@ -133,7 +133,7 @@ namespace Massive
 					}
 
 					var page2 = data2.Pages[pageIndex];
-					for (int index2 = pageLength - 1; index2 >= 0; index2--)
+					for (var index2 = pageLength - 1; index2 >= 0; index2--)
 					{
 						if (indexOffset + index2 > dataSet2.Count)
 						{
@@ -183,7 +183,7 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					for (int index1 = pageLength - 1; index1 >= 0; index1--)
+					for (var index1 = pageLength - 1; index1 >= 0; index1--)
 					{
 						if (indexOffset + index1 > dataSet1.Count)
 						{
@@ -214,7 +214,7 @@ namespace Massive
 					}
 
 					var page2 = data2.Pages[pageIndex];
-					for (int index2 = pageLength - 1; index2 >= 0; index2--)
+					for (var index2 = pageLength - 1; index2 >= 0; index2--)
 					{
 						if (indexOffset + index2 > dataSet2.Count)
 						{
@@ -245,7 +245,7 @@ namespace Massive
 					}
 
 					var page3 = data3.Pages[pageIndex];
-					for (int index3 = pageLength - 1; index3 >= 0; index3--)
+					for (var index3 = pageLength - 1; index3 >= 0; index3--)
 					{
 						if (indexOffset + index3 > dataSet3.Count)
 						{
@@ -298,7 +298,7 @@ namespace Massive
 					}
 
 					var page1 = data1.Pages[pageIndex];
-					for (int index1 = pageLength - 1; index1 >= 0; index1--)
+					for (var index1 = pageLength - 1; index1 >= 0; index1--)
 					{
 						if (indexOffset + index1 > dataSet1.Count)
 						{
@@ -330,7 +330,7 @@ namespace Massive
 					}
 
 					var page2 = data2.Pages[pageIndex];
-					for (int index2 = pageLength - 1; index2 >= 0; index2--)
+					for (var index2 = pageLength - 1; index2 >= 0; index2--)
 					{
 						if (indexOffset + index2 > dataSet2.Count)
 						{
@@ -362,7 +362,7 @@ namespace Massive
 					}
 
 					var page3 = data3.Pages[pageIndex];
-					for (int index3 = pageLength - 1; index3 >= 0; index3--)
+					for (var index3 = pageLength - 1; index3 >= 0; index3--)
 					{
 						if (indexOffset + index3 > dataSet3.Count)
 						{
@@ -394,7 +394,7 @@ namespace Massive
 					}
 
 					var page4 = data4.Pages[pageIndex];
-					for (int index4 = pageLength - 1; index4 >= 0; index4--)
+					for (var index4 = pageLength - 1; index4 >= 0; index4--)
 					{
 						if (indexOffset + index4 > dataSet4.Count)
 						{

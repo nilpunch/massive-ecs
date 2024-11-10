@@ -9,7 +9,7 @@ namespace Massive
 			var equalityComparer = EqualityComparer<T>.Default;
 			int length = array.Length;
 
-			for (int i = 0; i < length; i++)
+			for (var i = 0; i < length; i++)
 			{
 				if (equalityComparer.Equals(array[i], value))
 				{
@@ -22,7 +22,7 @@ namespace Massive
 
 		public static bool ContainsAll<T>(this T[] array, T[] other)
 		{
-			for (int i = 0; i < other.Length; i++)
+			for (var i = 0; i < other.Length; i++)
 			{
 				if (!array.Contains(other[i]))
 				{
@@ -35,7 +35,7 @@ namespace Massive
 
 		public static bool ContainsAny<T>(this T[] array, T[] other)
 		{
-			for (int i = 0; i < other.Length; i++)
+			for (var i = 0; i < other.Length; i++)
 			{
 				if (array.Contains(other[i]))
 				{
