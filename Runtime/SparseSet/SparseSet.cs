@@ -166,6 +166,9 @@ namespace Massive
 			NextHole = EndHole;
 		}
 
+		/// <summary>
+		/// For deserialization only.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ClearWithoutNotify()
 		{
@@ -192,20 +195,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool TryGetIndex(int id, out int index)
-		{
-			if (OutOfBounds(id))
-			{
-				index = Constants.InvalidId;
-				return false;
-			}
-
-			index = Sparse[id];
-
-			return index != Constants.InvalidId;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAssigned(int id)
 		{
 			return InsideBounds(id) && Sparse[id] != Constants.InvalidId;
@@ -214,9 +203,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void SwapPacked(int first, int second)
 		{
-			if (PackingMode == PackingMode.WithHoles)
+			if (HasHoles)
 			{
-				throw new Exception("Swapping is not supported for packing mode with holes.");
+				throw new Exception("Swapping is not supported with holes. Use Compact() before swapping.");
 			}
 
 			var firstId = Packed[first];
@@ -307,15 +296,21 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected virtual void CopyFromToPacked(int source, int destination)
+		protected virtual void CopyDataFromToPacked(int source, int destination)
 		{
-			var sourceId = Packed[source];
-			AssignIndex(sourceId, destination);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected virtual void EnsureDataForIndex(int index)
 		{
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void CopyFromToPacked(int source, int destination)
+		{
+			var sourceId = Packed[source];
+			AssignIndex(sourceId, destination);
+			CopyDataFromToPacked(source, destination);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

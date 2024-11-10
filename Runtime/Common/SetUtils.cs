@@ -11,14 +11,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int CountAssignedInAll(int id, SparseSet[] sets)
 		{
-			var counter = 0;
+			var counter = sets.Length;
 			for (var i = 0; i < sets.Length; i++)
 			{
-				var set = sets[i];
-				if (set.IsAssigned(id))
-				{
-					counter += 1;
-				}
+				var index = sets[i].GetIndexOrInvalid(id);
+				counter -= index >> 31;
 			}
 
 			return counter;

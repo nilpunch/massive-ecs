@@ -39,9 +39,8 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override void CopyFromToPacked(int source, int destination)
+		protected override void CopyDataFromToPacked(int source, int destination)
 		{
-			base.CopyFromToPacked(source, destination);
 			Data[destination] = Data[source];
 		}
 
