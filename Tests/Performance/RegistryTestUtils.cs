@@ -124,14 +124,14 @@
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
-			registry.ReactiveFilter<TInclude, TExclude>();
+			registry.Group<TInclude, TExclude>();
 			return registry;
 		}
 
 		public static Registry FillRegistryWithNonOwningGroup<TInclude>(this Registry registry)
 			where TInclude : IIncludeSelector, new()
 		{
-			registry.ReactiveFilter<TInclude>();
+			registry.Group<TInclude>();
 			return registry;
 		}
 

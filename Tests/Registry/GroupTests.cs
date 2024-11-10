@@ -4,39 +4,39 @@ using NUnit.Framework;
 namespace Massive.Tests
 {
 	[TestFixture]
-	public class ReactiveFilterTests
+	public class GroupTests
 	{
 		[Test]
 		public void IncludeFilter()
 		{
 			var registry = new Registry();
 
-			var reactiveFilter = SetUpWithIntAndChar(registry);
+			var group = SetUpWithIntAndChar(registry);
 
-			Assert.AreEqual(0, reactiveFilter.Count);
+			Assert.AreEqual(0, group.Count);
 
 			var entity1 = registry.CreateEntity('1').Id;
 			var entity2 = registry.CreateEntity('2').Id;
 
 			registry.Assign(entity2, 42);
 
-			Assert.AreEqual(1, reactiveFilter.Count);
+			Assert.AreEqual(1, group.Count);
 
 			registry.Assign<int>(entity1);
 
-			Assert.AreEqual(2, reactiveFilter.Count);
+			Assert.AreEqual(2, group.Count);
 
 			registry.Unassign<int>(entity1);
 
-			Assert.AreEqual(1, reactiveFilter.Count);
+			Assert.AreEqual(1, group.Count);
 
-			foreach (var id in reactiveFilter)
+			foreach (var id in group)
 			{
 				Assert.AreEqual(registry.Get<int>(id), 42);
 				Assert.AreEqual(registry.Get<char>(id), '2');
 			}
 
-			var enumerator = reactiveFilter.GetEnumerator();
+			var enumerator = group.GetEnumerator();
 			enumerator.MoveNext();
 			Assert.AreEqual(enumerator.Current, entity2);
 			enumerator.Dispose();
@@ -44,7 +44,7 @@ namespace Massive.Tests
 			registry.Unassign<char>(entity1);
 			registry.Unassign<char>(entity2);
 
-			Assert.AreEqual(0, reactiveFilter.Count);
+			Assert.AreEqual(0, group.Count);
 		}
 
 		[Test]
@@ -57,14 +57,14 @@ namespace Massive.Tests
 			var entity2 = registry.CreateEntity(2).Id;
 			registry.Assign<char>(entity2);
 
-			var reactiveFilter = SetUpWithIntAndWithoutChar(registry);
+			var group = SetUpWithIntAndWithoutChar(registry);
 
 			var entity3 = registry.CreateEntity(3).Id;
 
 			var entity4 = registry.CreateEntity(4).Id;
 			registry.Assign<char>(entity4);
 
-			foreach (var entity in reactiveFilter)
+			foreach (var entity in group)
 			{
 				Assert.True(entity == entity1 || entity == entity3);
 
@@ -81,12 +81,12 @@ namespace Massive.Tests
 			registry.Assign<char>(entity1);
 			registry.Assign<char>(entity3);
 
-			Assert.AreEqual(0, reactiveFilter.Count);
+			Assert.AreEqual(0, group.Count);
 
 			registry.Unassign<char>(entity2);
 			registry.Unassign<char>(entity4);
 
-			foreach (var entity in reactiveFilter)
+			foreach (var entity in group)
 			{
 				Assert.True(entity == entity2 || entity == entity4);
 
@@ -121,19 +121,19 @@ namespace Massive.Tests
 				}
 			}
 
-			var reactiveFilter = SetUpWithIntAndWithoutChar(registry);
+			var group = SetUpWithIntAndWithoutChar(registry);
 
-			Assert.AreEqual(5, reactiveFilter.Count);
+			Assert.AreEqual(5, group.Count);
 		}
 
-		private ReactiveFilter SetUpWithIntAndChar(Registry registry)
+		private Group SetUpWithIntAndChar(Registry registry)
 		{
-			return registry.ReactiveFilter<Include<int, char>>();
+			return registry.Group<Include<int, char>>();
 		}
 
-		private ReactiveFilter SetUpWithIntAndWithoutChar(Registry registry)
+		private Group SetUpWithIntAndWithoutChar(Registry registry)
 		{
-			return registry.ReactiveFilter<Include<int>, Exclude<char>>();
+			return registry.Group<Include<int>, Exclude<char>>();
 
 		}
 	}

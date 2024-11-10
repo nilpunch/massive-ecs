@@ -8,7 +8,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class ReactiveFilter
+	public class Group
 	{
 		public SparseSet[] Included { get; }
 
@@ -22,12 +22,12 @@ namespace Massive
 
 		public bool IsSynced { get; protected set; }
 
-		public ReactiveFilter(SparseSet[] included = null, SparseSet[] excluded = null, Entities entities = null)
+		public Group(SparseSet[] included = null, SparseSet[] excluded = null, Entities entities = null)
 			: this(new SparseSet(), included, excluded, entities)
 		{
 		}
 
-		protected ReactiveFilter(SparseSet backingSet, SparseSet[] included = null, SparseSet[] excluded = null, Entities entities = null)
+		protected Group(SparseSet backingSet, SparseSet[] included = null, SparseSet[] excluded = null, Entities entities = null)
 		{
 			if ((included == null || included.Length == 0) && entities == null)
 			{

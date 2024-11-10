@@ -47,20 +47,20 @@ namespace Massive.Serialization
 				}
 			}
 
-			// Reactive filters
-			var syncedFilters = new List<ReactiveFilter>();
-			foreach (var reactiveFilter in registry.ReactiveRegistry.All)
+			// Groups
+			var syncedGroups = new List<Group>();
+			foreach (var group in registry.GroupRegistry.All)
 			{
-				if (reactiveFilter.IsSynced)
+				if (group.IsSynced)
 				{
-					syncedFilters.Add(reactiveFilter);
+					syncedGroups.Add(group);
 				}
 			}
-			SerializationHelpers.WriteInt(syncedFilters.Count, stream);
-			foreach (var reactiveFilter in syncedFilters)
+			SerializationHelpers.WriteInt(syncedGroups.Count, stream);
+			foreach (var group in syncedGroups)
 			{
-				var included = reactiveFilter.Included;
-				var excluded = reactiveFilter.Excluded;
+				var included = group.Included;
+				var excluded = group.Excluded;
 
 				// Included
 				SerializationHelpers.WriteInt(included.Length, stream);
@@ -78,7 +78,7 @@ namespace Massive.Serialization
 					SerializationHelpers.WriteType(setKey, stream);
 				}
 
-				SerializationHelpers.WriteSparseSet(reactiveFilter.Set, stream);
+				SerializationHelpers.WriteSparseSet(group.Set, stream);
 			}
 		}
 
@@ -128,10 +128,10 @@ namespace Massive.Serialization
 				}
 			}
 
-			// Reactive filters
-			var deserializedFilters = new HashSet<ReactiveFilter>();
-			var filterCount = SerializationHelpers.ReadInt(stream);
-			for (var filterIndex = 0; filterIndex < filterCount; filterIndex++)
+			// Groups
+			var deserializedGroups = new HashSet<Group>();
+			var groupCount = SerializationHelpers.ReadInt(stream);
+			for (var groupIndex = 0; groupIndex < groupCount; groupIndex++)
 			{
 				// Included
 				var included = new SparseSet[SerializationHelpers.ReadInt(stream)];
@@ -147,17 +147,17 @@ namespace Massive.Serialization
 					excluded[i] = registry.SetRegistry.Get(SerializationHelpers.ReadType(stream));
 				}
 
-				var reactiveFilter = registry.ReactiveFilter(included, excluded);
-				deserializedFilters.Add(reactiveFilter);
+				var group = registry.Group(included, excluded);
+				deserializedGroups.Add(group);
 
-				SerializationHelpers.ReadSparseSet(reactiveFilter.Set, stream);
+				SerializationHelpers.ReadSparseSet(group.Set, stream);
 			}
-			// Desync all remaining filters
-			foreach (var reactiveFilter in registry.ReactiveRegistry.All)
+			// Desync all remaining groups
+			foreach (var group in registry.GroupRegistry.All)
 			{
-				if (!deserializedFilters.Contains(reactiveFilter))
+				if (!deserializedGroups.Contains(group))
 				{
-					reactiveFilter.Desync();
+					group.Desync();
 				}
 			}
 		}

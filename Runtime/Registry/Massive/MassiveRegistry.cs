@@ -17,7 +17,7 @@ namespace Massive
 
 		public MassiveRegistry(MassiveRegistryConfig registryConfig)
 			: base(new MassiveSetFactory(registryConfig.FramesCapacity, registryConfig.StoreEmptyTypesAsDataSets, registryConfig.PageSize, registryConfig.FullStability),
-				new MassiveReactiveFactory(registryConfig.FramesCapacity), new MassiveEntities(registryConfig.FramesCapacity), registryConfig.PageSize)
+				new MassiveGroupFactory(registryConfig.FramesCapacity), new MassiveEntities(registryConfig.FramesCapacity), registryConfig.PageSize)
 		{
 			// Fetch instances from base
 			_massiveEntities = (MassiveEntities)Entities;
@@ -42,10 +42,10 @@ namespace Massive
 				}
 			}
 
-			var reactiveFilters = ReactiveRegistry.All;
-			for (var i = 0; i < reactiveFilters.Length; i++)
+			var groups = GroupRegistry.All;
+			for (var i = 0; i < groups.Length; i++)
 			{
-				if (reactiveFilters[i] is IMassive massive)
+				if (groups[i] is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
@@ -68,10 +68,10 @@ namespace Massive
 				}
 			}
 
-			var reactiveFilters = ReactiveRegistry.All;
-			for (var i = 0; i < reactiveFilters.Length; i++)
+			var groups = GroupRegistry.All;
+			for (var i = 0; i < groups.Length; i++)
 			{
-				if (reactiveFilters[i] is IMassive massive)
+				if (groups[i] is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}

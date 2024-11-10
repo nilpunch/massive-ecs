@@ -5,14 +5,14 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveReactiveFilter : ReactiveFilter, IMassive
+	public class MassiveGroup : Group, IMassive
 	{
 		private readonly IMassive _massiveMainSet;
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
 		private readonly bool[] _syncedByFrames;
 
-		public MassiveReactiveFilter(SparseSet[] included = null, SparseSet[] excluded = null, int framesCapacity = Constants.DefaultFramesCapacity, Entities entities = null)
+		public MassiveGroup(SparseSet[] included = null, SparseSet[] excluded = null, int framesCapacity = Constants.DefaultFramesCapacity, Entities entities = null)
 			: base(new MassiveSparseSet(framesCapacity), included, excluded, entities)
 		{
 			// Fetch instance from base

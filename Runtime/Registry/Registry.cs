@@ -9,7 +9,7 @@ namespace Massive
 	{
 		public SetRegistry SetRegistry { get; }
 		public FilterRegistry FilterRegistry { get; }
-		public ReactiveRegistry ReactiveRegistry { get; }
+		public GroupRegistry GroupRegistry { get; }
 		public Entities Entities { get; }
 
 		public int PageSize { get; }
@@ -21,14 +21,14 @@ namespace Massive
 
 		public Registry(RegistryConfig registryConfig)
 			: this(new NormalSetFactory(registryConfig.StoreEmptyTypesAsDataSets, registryConfig.PageSize, registryConfig.FullStability),
-				new NormalReactiveFactory(), new Entities(), registryConfig.PageSize)
+				new NormalGroupFactory(), new Entities(), registryConfig.PageSize)
 		{
 		}
 
-		protected Registry(ISetFactory setFactory, IReactiveFactory reactiveFactory, Entities entities, int pageSize)
+		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities, int pageSize)
 		{
 			SetRegistry = new SetRegistry(setFactory);
-			ReactiveRegistry = new ReactiveRegistry(SetRegistry, reactiveFactory, entities);
+			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory, entities);
 			FilterRegistry = new FilterRegistry(SetRegistry);
 			Entities = entities;
 			PageSize = pageSize;

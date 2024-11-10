@@ -8,30 +8,30 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class ReactiveRegistry
+	public class GroupRegistry
 	{
-		private readonly GenericLookup<ReactiveFilter> _genericLookup = new GenericLookup<ReactiveFilter>();
-		private readonly Dictionary<int, ReactiveFilter> _codeLookup = new Dictionary<int, ReactiveFilter>();
-		private readonly FastList<ReactiveFilter> _allReactiveFilters = new FastList<ReactiveFilter>();
+		private readonly GenericLookup<Group> _genericLookup = new GenericLookup<Group>();
+		private readonly Dictionary<int, Group> _codeLookup = new Dictionary<int, Group>();
+		private readonly FastList<Group> _allGroups = new FastList<Group>();
 
 		private readonly Entities _entities;
 		private readonly SetRegistry _setRegistry;
-		private readonly IReactiveFactory _reactiveFactory;
+		private readonly IGroupFactory _groupFactory;
 
-		public ReactiveRegistry(SetRegistry setRegistry, IReactiveFactory reactiveFactory, Entities entities)
+		public GroupRegistry(SetRegistry setRegistry, IGroupFactory groupFactory, Entities entities)
 		{
 			_setRegistry = setRegistry;
-			_reactiveFactory = reactiveFactory;
+			_groupFactory = groupFactory;
 			_entities = entities;
 		}
 
-		public ReadOnlySpan<ReactiveFilter> All
+		public ReadOnlySpan<Group> All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _allReactiveFilters.ReadOnlySpan;
+			get => _allGroups.ReadOnlySpan;
 		}
 
-		public ReactiveFilter Get(SparseSet[] included = null, SparseSet[] excluded = null)
+		public Group Get(SparseSet[] included = null, SparseSet[] excluded = null)
 		{
 			included ??= Array.Empty<SparseSet>();
 			excluded ??= Array.Empty<SparseSet>();
@@ -44,18 +44,21 @@ namespace Massive
 			var excludeCode = excluded.GetUnorderedHashCode(_setRegistry);
 			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
 
-			if (_codeLookup.TryGetValue(fullCode, out var reactiveFilter))
+			if (_codeLookup.TryGetValue(fullCode, out var group))
 			{
-				reactiveFilter.EnsureSynced();
-				return reactiveFilter;
+				group.EnsureSynced();
+				return group;
 			}
 
 			var entitiesIfNoIncludes = included.Length == 0 ? _entities : null;
-			reactiveFilter = _reactiveFactory.CreateReactiveFilter(included, excluded, entitiesIfNoIncludes);
-			return RegisterAndSync(fullCode, reactiveFilter);
+			group = _groupFactory.CreateGroup(included, excluded, entitiesIfNoIncludes);
+			_codeLookup.Add(fullCode, group);
+			_allGroups.Add(group);
+			group.EnsureSynced();
+			return group;
 		}
 
-		public ReactiveFilter Get<TInclude, TExclude>()
+		public Group Get<TInclude, TExclude>()
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
@@ -74,14 +77,6 @@ namespace Massive
 
 			_genericLookup.Assign<Tuple<TInclude, TExclude>>(group);
 
-			return group;
-		}
-
-		private ReactiveFilter RegisterAndSync(int groupCode, ReactiveFilter group)
-		{
-			_codeLookup.Add(groupCode, group);
-			_allReactiveFilters.Add(group);
-			group.EnsureSynced();
 			return group;
 		}
 
