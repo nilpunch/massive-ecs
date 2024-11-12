@@ -2,7 +2,7 @@
 
 ## 17.0.0-beta - November 12, 2024
 
-Major iteration rework and groups.
+Iteration stability improvements and groups rework.
 
 - Changed: `PackingMode` now dynamically changes for the iteration leader,  
   ensuring each unique entity appears only once during iteration in most cases.
