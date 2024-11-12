@@ -4,7 +4,7 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	public enum PackingMode : byte
+	public enum Packing : byte
 	{
 		/// <summary>
 		/// When an element is removed, its position is filled with the last element in the packed array.
@@ -30,9 +30,9 @@ namespace Massive
 
 		private int NextHole { get; set; } = EndHole;
 
-		public SparseSet(PackingMode packingMode = PackingMode.Continuous)
+		public SparseSet(Packing packing = Packing.Continuous)
 		{
-			PackingMode = packingMode;
+			Packing = packing;
 			Ids = _packed;
 		}
 
@@ -42,7 +42,7 @@ namespace Massive
 		public bool IsContinuous
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => PackingMode == PackingMode.Continuous || NextHole == EndHole;
+			get => Packing == Packing.Continuous || NextHole == EndHole;
 		}
 
 		/// <summary>
@@ -51,7 +51,7 @@ namespace Massive
 		public bool HasHoles
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => PackingMode == PackingMode.WithHoles && NextHole != EndHole;
+			get => Packing == Packing.WithHoles && NextHole != EndHole;
 		}
 
 		public int[] Packed => _packed;
@@ -74,13 +74,13 @@ namespace Massive
 		public State CurrentState
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new State(Count, NextHole, PackingMode);
+			get => new State(Count, NextHole, Packing);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
 				Count = value.Count;
 				NextHole = value.NextHole;
-				PackingMode = value.PackingMode;
+				Packing = value.Packing;
 			}
 		}
 
@@ -123,7 +123,7 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			if (PackingMode == PackingMode.Continuous)
+			if (Packing == Packing.Continuous)
 			{
 				Count -= 1;
 				CopyFromToPacked(Count, Sparse[id]);
@@ -244,13 +244,15 @@ namespace Massive
 			}
 		}
 
-		public override void ChangePackingMode(PackingMode value)
+		public override Packing ExchangePacking(Packing value)
 		{
-			if (value != PackingMode)
+			var previousPacking = Packing;
+			if (value != Packing)
 			{
-				PackingMode = value;
+				Packing = value;
 				Compact();
 			}
+			return previousPacking;
 		}
 
 		/// <summary>
@@ -330,13 +332,13 @@ namespace Massive
 		{
 			public readonly int Count;
 			public readonly int NextHole;
-			public readonly PackingMode PackingMode;
+			public readonly Packing Packing;
 
-			public State(int count, int nextHole, PackingMode packingMode)
+			public State(int count, int nextHole, Packing packing)
 			{
 				Count = count;
 				NextHole = nextHole;
-				PackingMode = packingMode;
+				Packing = packing;
 			}
 		}
 	}

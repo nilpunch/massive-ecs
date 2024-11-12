@@ -18,7 +18,7 @@ namespace Massive.Tests
 		public void WhenCompact_AndThereIsHoles_ThenRemoveHoles()
 		{
 			// Arrange
-			var entities = new Entities(PackingMode.WithHoles);
+			var entities = new Entities(Packing.WithHoles);
 			for (int i = 0; i < EntitiesToCreate; i++)
 				entities.Create();
 			foreach (var id in IdsToDestroy)
@@ -36,7 +36,7 @@ namespace Massive.Tests
 		public void WhenClear_AndThereIsHoles_ThenRestoreTheIdsAndClear()
 		{
 			// Arrange
-			var entities = new Entities(PackingMode.WithHoles);
+			var entities = new Entities(Packing.WithHoles);
 			for (int i = 0; i < EntitiesToCreate; i++)
 				entities.Create();
 			foreach (var id in IdsToDestroy)

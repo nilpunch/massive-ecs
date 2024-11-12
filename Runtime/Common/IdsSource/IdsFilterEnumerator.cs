@@ -11,7 +11,7 @@ namespace Massive
 	{
 		private readonly IdsSource _idsSource;
 		private readonly Filter _filter;
-		private readonly PackingMode _originalPackingMode;
+		private readonly Packing _originalPacking;
 		private int _index;
 		private int _current;
 
@@ -19,8 +19,7 @@ namespace Massive
 		{
 			_idsSource = idsSource;
 			_filter = filter;
-			_originalPackingMode = _idsSource.PackingMode;
-			_idsSource.ChangePackingMode(PackingMode.WithHoles);
+			_originalPacking = _idsSource.ExchangePacking(Packing.WithHoles);
 			_index = _idsSource.Count;
 			_current = Constants.InvalidId;
 		}
@@ -50,7 +49,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Dispose()
 		{
-			_idsSource.ChangePackingMode(_originalPackingMode);
+			_idsSource.ExchangePacking(_originalPacking);
 		}
 	}
 }

@@ -14,9 +14,9 @@ namespace Massive
 		/// <summary>
 		/// Create <see cref="Massive.MassiveManagedDataSet{T}"/> bypassing <see cref="Massive.IManaged{T}"/> constraint.
 		/// </summary>
-		public static DataSet<T> CreateMassiveManagedDataSet<T>(int framesCapacity = Constants.DefaultFramesCapacity, int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous)
+		public static DataSet<T> CreateMassiveManagedDataSet<T>(int framesCapacity = Constants.DefaultFramesCapacity, int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
 		{
-			return (DataSet<T>)ReflectionUtils.CreateGeneric(typeof(MassiveManagedDataSet<>), typeof(T), framesCapacity, pageSize, packingMode);
+			return (DataSet<T>)ReflectionUtils.CreateGeneric(typeof(MassiveManagedDataSet<>), typeof(T), framesCapacity, pageSize, packing);
 		}
 	}
 }

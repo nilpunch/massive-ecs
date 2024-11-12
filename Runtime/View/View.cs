@@ -20,8 +20,7 @@ namespace Massive
 		{
 			var entities = Registry.Entities;
 
-			var originalPackingMode = entities.PackingMode;
-			entities.ChangePackingMode(PackingMode.WithHoles);
+			var originalPacking = entities.ExchangePacking(Packing.WithHoles);
 
 			for (var i = entities.Count - 1; i >= 0; i--)
 			{
@@ -41,7 +40,7 @@ namespace Massive
 				}
 			}
 
-			entities.ChangePackingMode(originalPackingMode);
+			entities.ExchangePacking(originalPacking);
 		}
 
 		public void ForEach<TAction, T>(ref TAction action)
@@ -51,8 +50,8 @@ namespace Massive
 
 			var data = dataSet.Data;
 
-			var originalPackingMode = dataSet.PackingMode;
-			dataSet.ChangePackingMode(PackingMode.WithHoles);
+			var originalPacking = dataSet.Packing;
+			dataSet.ExchangePacking(Packing.WithHoles);
 
 			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
 			{
@@ -76,7 +75,7 @@ namespace Massive
 				}
 			}
 
-			dataSet.ChangePackingMode(originalPackingMode);
+			dataSet.ExchangePacking(originalPacking);
 		}
 
 		public void ForEach<TAction, T1, T2>(ref TAction action)
@@ -89,8 +88,7 @@ namespace Massive
 			var data2 = dataSet2.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPackingMode = minSet.PackingMode;
-			minSet.ChangePackingMode(PackingMode.WithHoles);
+			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
 
 			// Iterate over smallest data set
 			if (minSet == dataSet1)
@@ -154,7 +152,7 @@ namespace Massive
 				}
 			}
 
-			minSet.ChangePackingMode(originalPackingMode);
+			minSet.ExchangePacking(originalPacking);
 		}
 
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
@@ -169,8 +167,7 @@ namespace Massive
 			var data3 = dataSet3.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPackingMode = minSet.PackingMode;
-			minSet.ChangePackingMode(PackingMode.WithHoles);
+			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
 
 			// Iterate over smallest data set
 			if (minSet == dataSet1)
@@ -267,7 +264,7 @@ namespace Massive
 				}
 			}
 
-			minSet.ChangePackingMode(originalPackingMode);
+			minSet.ExchangePacking(originalPacking);
 		}
 
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
@@ -284,8 +281,7 @@ namespace Massive
 			var data4 = dataSet4.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPackingMode = minSet.PackingMode;
-			minSet.ChangePackingMode(PackingMode.WithHoles);
+			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
 
 			// Iterate over the smallest data set
 			if (minSet == dataSet1)
@@ -417,7 +413,7 @@ namespace Massive
 				}
 			}
 
-			minSet.ChangePackingMode(originalPackingMode);
+			minSet.ExchangePacking(originalPacking);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

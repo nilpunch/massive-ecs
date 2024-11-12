@@ -20,7 +20,7 @@ namespace Massive
 		{
 			if (TypeInfo.HasNoFields(typeof(T)) && !_storeEmptyTypesAsDataSets)
 			{
-				return CreateSparseSet(GetPackingModeFor(typeof(T)));
+				return CreateSparseSet(GetPackingFor(typeof(T)));
 			}
 
 			return CreateDataSet<T>();
@@ -30,26 +30,26 @@ namespace Massive
 		{
 			if (TypeInfo.HasNoFields(type) && !_storeEmptyTypesAsDataSets)
 			{
-				return CreateSparseSet(GetPackingModeFor(type));
+				return CreateSparseSet(GetPackingFor(type));
 			}
 
-			var args = new object[] { _pageSize, GetPackingModeFor(type) };
+			var args = new object[] { _pageSize, GetPackingFor(type) };
 			return (SparseSet)ReflectionUtils.CreateGeneric(typeof(DataSet<>), type, args);
 		}
 
-		private SparseSet CreateSparseSet(PackingMode packingMode)
+		private SparseSet CreateSparseSet(Packing packing)
 		{
-			return new SparseSet(packingMode);
+			return new SparseSet(packing);
 		}
 
 		private SparseSet CreateDataSet<T>()
 		{
-			return new DataSet<T>(_pageSize, GetPackingModeFor(typeof(T)));
+			return new DataSet<T>(_pageSize, GetPackingFor(typeof(T)));
 		}
 
-		private PackingMode GetPackingModeFor(Type type)
+		private Packing GetPackingFor(Type type)
 		{
-			return _fullStability || IStable.IsImplementedFor(type) ? PackingMode.WithHoles : PackingMode.Continuous;
+			return _fullStability || IStable.IsImplementedFor(type) ? Packing.WithHoles : Packing.Continuous;
 		}
 	}
 }

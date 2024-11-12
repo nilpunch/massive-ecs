@@ -15,7 +15,7 @@ namespace Massive.Serialization
 			WriteInt(state.Count, stream);
 			WriteInt(state.MaxId, stream);
 			WriteInt(state.NextHoleId, stream);
-			WriteByte((byte)state.PackingMode, stream);
+			WriteByte((byte)state.Packing, stream);
 
 			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
 			stream.Write(MemoryMarshal.Cast<uint, byte>(entities.Versions.AsSpan(0, entities.MaxId)));
@@ -28,7 +28,7 @@ namespace Massive.Serialization
 				ReadInt(stream),
 				ReadInt(stream),
 				ReadInt(stream),
-				(PackingMode)ReadByte(stream));
+				(Packing)ReadByte(stream));
 
 			entities.EnsureCapacityForIndex(entities.MaxId);
 
@@ -42,7 +42,7 @@ namespace Massive.Serialization
 			var state = set.CurrentState;
 			WriteInt(state.Count, stream);
 			WriteInt(state.NextHole, stream);
-			WriteByte((byte)state.PackingMode, stream);
+			WriteByte((byte)state.Packing, stream);
 
 			WriteInt(set.Sparse.Length, stream);
 
@@ -55,7 +55,7 @@ namespace Massive.Serialization
 			set.CurrentState = new SparseSet.State(
 				ReadInt(stream),
 				ReadInt(stream),
-				(PackingMode)ReadByte(stream));
+				(Packing)ReadByte(stream));
 
 			var sparseCount = ReadInt(stream);
 

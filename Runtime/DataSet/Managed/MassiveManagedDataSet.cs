@@ -11,8 +11,8 @@ namespace Massive
 	public class MassiveManagedDataSet<T> : MassiveDataSet<T> where T : IManaged<T>
 	{
 		public MassiveManagedDataSet(int framesCapacity = Constants.DefaultFramesCapacity,
-			int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous)
-			: base(framesCapacity, pageSize, packingMode)
+			int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
+			: base(framesCapacity, pageSize, packing)
 		{
 		}
 

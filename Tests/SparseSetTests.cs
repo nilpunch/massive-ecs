@@ -19,7 +19,7 @@ namespace Massive.Tests
 		public void WhenCompact_AndThereIsHoles_ThenShouldRemoveHoles()
 		{
 			// Arrange
-			var sparseSet = new SparseSet(packingMode: PackingMode.WithHoles);
+			var sparseSet = new SparseSet(packing: Packing.WithHoles);
 			foreach (var id in IdsToAssign)
 				sparseSet.Assign(id);
 			foreach (var id in IdsToUnassign)

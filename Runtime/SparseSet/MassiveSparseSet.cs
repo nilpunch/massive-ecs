@@ -18,8 +18,8 @@ namespace Massive
 		private readonly int[][] _sparseByFrames;
 		private readonly State[] _stateByFrames;
 
-		public MassiveSparseSet(int framesCapacity = Constants.DefaultFramesCapacity, PackingMode packingMode = PackingMode.Continuous)
-			: base(packingMode)
+		public MassiveSparseSet(int framesCapacity = Constants.DefaultFramesCapacity, Packing packing = Packing.Continuous)
+			: base(packing)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 

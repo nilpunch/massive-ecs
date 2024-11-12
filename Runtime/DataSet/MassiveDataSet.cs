@@ -20,7 +20,7 @@ namespace Massive
 		private readonly State[] _stateByFrames;
 
 		public MassiveDataSet(int framesCapacity = Constants.DefaultFramesCapacity,
-			int pageSize = Constants.DefaultPageSize, PackingMode packingMode = PackingMode.Continuous) : base(pageSize, packingMode)
+			int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous) : base(pageSize, packing)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 

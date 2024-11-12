@@ -28,7 +28,7 @@ namespace Massive
 		{
 			if (TypeInfo.HasNoFields(typeof(T)) && !_storeEmptyTypesAsDataSets)
 			{
-				return CreateSparseSet(GetPackingModeFor(typeof(T)));
+				return CreateSparseSet(GetPackingFor(typeof(T)));
 			}
 
 			return CreateDataSet<T>();
@@ -38,10 +38,10 @@ namespace Massive
 		{
 			if (TypeInfo.HasNoFields(type) && !_storeEmptyTypesAsDataSets)
 			{
-				return CreateSparseSet(GetPackingModeFor(type));
+				return CreateSparseSet(GetPackingFor(type));
 			}
 
-			var args = new object[] { _framesCapacity, _pageSize, GetPackingModeFor(type) };
+			var args = new object[] { _framesCapacity, _pageSize, GetPackingFor(type) };
 			var massiveDataSet = ManagedUtils.IsManaged(type)
 				? ReflectionUtils.CreateGeneric(typeof(MassiveManagedDataSet<>), type, args)
 				: ReflectionUtils.CreateGeneric(typeof(MassiveDataSet<>), type, args);
@@ -49,9 +49,9 @@ namespace Massive
 			return (SparseSet)massiveDataSet;
 		}
 
-		private SparseSet CreateSparseSet(PackingMode packingMode)
+		private SparseSet CreateSparseSet(Packing packing)
 		{
-			var massiveSparseSet = new MassiveSparseSet(_framesCapacity, packingMode);
+			var massiveSparseSet = new MassiveSparseSet(_framesCapacity, packing);
 			massiveSparseSet.SaveFrame();
 			return massiveSparseSet;
 		}
@@ -59,15 +59,15 @@ namespace Massive
 		private SparseSet CreateDataSet<T>()
 		{
 			var massiveDataSet = ManagedUtils.IsManaged(typeof(T))
-				? ManagedUtils.CreateMassiveManagedDataSet<T>(_framesCapacity, _pageSize, GetPackingModeFor(typeof(T)))
-				: new MassiveDataSet<T>(_framesCapacity, _pageSize, GetPackingModeFor(typeof(T)));
+				? ManagedUtils.CreateMassiveManagedDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)))
+				: new MassiveDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
 			((IMassive)massiveDataSet).SaveFrame();
 			return massiveDataSet;
 		}
 
-		private PackingMode GetPackingModeFor(Type type)
+		private Packing GetPackingFor(Type type)
 		{
-			return _fullStability || IStable.IsImplementedFor(type) ? PackingMode.WithHoles : PackingMode.Continuous;
+			return _fullStability || IStable.IsImplementedFor(type) ? Packing.WithHoles : Packing.Continuous;
 		}
 	}
 }

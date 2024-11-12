@@ -11,8 +11,11 @@ namespace Massive
 
 		public int[] Ids { get; protected set; }
 
-		public PackingMode PackingMode { get; protected set; }
+		public Packing Packing { get; protected set; }
 
-		public abstract void ChangePackingMode(PackingMode value);
+		/// <summary>
+		/// Returns previous packing.
+		/// </summary>
+		public abstract Packing ExchangePacking(Packing value);
 	}
 }

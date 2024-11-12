@@ -18,9 +18,9 @@ namespace Massive
 		public int MaxId { get; private set; }
 		private int NextHoleId { get; set; } = EndHoleId;
 
-		public Entities(PackingMode packingMode = PackingMode.Continuous)
+		public Entities(Packing packing = Packing.Continuous)
 		{
-			PackingMode = packingMode;
+			Packing = packing;
 			Ids = _ids;
 		}
 
@@ -30,7 +30,7 @@ namespace Massive
 		public bool IsContinuous
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => PackingMode == PackingMode.Continuous || NextHoleId == EndHoleId;
+			get => Packing == Packing.Continuous || NextHoleId == EndHoleId;
 		}
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace Massive
 		public bool HasHoles
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => PackingMode == PackingMode.WithHoles && NextHoleId != EndHoleId;
+			get => Packing == Packing.WithHoles && NextHoleId != EndHoleId;
 		}
 
 		public uint[] Versions => _versions;
@@ -56,14 +56,14 @@ namespace Massive
 		public State CurrentState
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new State(Count, MaxId, NextHoleId, PackingMode);
+			get => new State(Count, MaxId, NextHoleId, Packing);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
 				Count = value.Count;
 				MaxId = value.MaxId;
 				NextHoleId = value.NextHoleId;
-				PackingMode = value.PackingMode;
+				Packing = value.Packing;
 			}
 		}
 
@@ -110,7 +110,7 @@ namespace Massive
 
 			BeforeDestroyed?.Invoke(id);
 
-			if (PackingMode == PackingMode.Continuous)
+			if (Packing == Packing.Continuous)
 			{
 				Count -= 1;
 
@@ -249,13 +249,15 @@ namespace Massive
 			Array.Resize(ref _sparse, capacity);
 		}
 
-		public override void ChangePackingMode(PackingMode value)
+		public override Packing ExchangePacking(Packing value)
 		{
-			if (value != PackingMode)
+			var previousPacking = Packing;
+			if (value != previousPacking)
 			{
-				PackingMode = value;
+				Packing = value;
 				Compact();
 			}
+			return previousPacking;
 		}
 
 		/// <summary>
@@ -321,14 +323,14 @@ namespace Massive
 			public readonly int Count;
 			public readonly int MaxId;
 			public readonly int NextHoleId;
-			public readonly PackingMode PackingMode;
+			public readonly Packing Packing;
 
-			public State(int count, int maxId, int nextHoleId, PackingMode packingMode)
+			public State(int count, int maxId, int nextHoleId, Packing packing)
 			{
 				Count = count;
 				MaxId = maxId;
 				NextHoleId = nextHoleId;
-				PackingMode = packingMode;
+				Packing = packing;
 			}
 		}
 	}
