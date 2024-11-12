@@ -31,7 +31,6 @@ ECS features:
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components
   - Or enable full stability for the entire registry
-- Groups for SoA multi-component iteration (inspired by [EnTT](https://github.com/skypjack/entt))
 - Full state serialization and deserialization
 - IL2CPP friendly, tested with high stripping level on PC | Android | WebGL
 - [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)

@@ -1,5 +1,20 @@
 # Changelog
 
+## 17.0.0-beta - November 12, 2024
+
+Major iteration rework and groups.
+
+- Changed: `PackingMode` now dynamically changes for the iteration leader,  
+  ensuring each unique entity appears only once during iteration in most cases.
+- Changed: Hide setters in data structures. Added full-state assignment API.
+- Changed: Renamed `NonOwningGroup` to `Group`.
+- Removed: `OwningGroup` for SoA access. It may return in some form in the future.
+- Removed: `GroupView`. Groups are now used directly.
+- Removed: `GroupPage`, `GroupPageSequence` and `IOwnSelector`.
+- Removed: Utils folder.
+- Removed: `RegistryReflectionExtensions`. Reflection methods remain directly accessible.
+- Fixed: `Il2CppSetOption` was not applied.
+
 ## 16.3.0 - November 7, 2024
 
 - Added: `PackingMode` to `Entities`.
