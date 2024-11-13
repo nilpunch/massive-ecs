@@ -15,11 +15,12 @@ namespace Massive
 		private int _index;
 		private int _current;
 
-		public IdsFilterEnumerator(IdsSource idsSource, Filter filter)
+		public IdsFilterEnumerator(IdsSource idsSource, Filter filter,
+			Packing packingWhenIterating = Packing.WithPersistentHoles)
 		{
 			_idsSource = idsSource;
 			_filter = filter;
-			_originalPacking = _idsSource.ExchangePacking(Packing.WithHoles);
+			_originalPacking = _idsSource.ExchangePacking(packingWhenIterating);
 			_index = _idsSource.Count;
 			_current = Constants.InvalidId;
 		}

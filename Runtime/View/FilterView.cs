@@ -9,13 +9,15 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public readonly struct FilterView : IView
 	{
-		private Filter Filter { get; }
-
 		public Registry Registry { get; }
+		public Filter Filter { get; }
+		public Packing PackingWhenIterating { get; }
 
-		public FilterView(Registry registry, Filter filter = null)
+		public FilterView(Registry registry, Filter filter = null,
+			Packing packingWhenIterating = Packing.WithPersistentHoles)
 		{
 			Registry = registry;
+			PackingWhenIterating = packingWhenIterating;
 			Filter = filter ?? Filter.Empty;
 		}
 
@@ -26,7 +28,7 @@ namespace Massive
 				? Registry.Entities
 				: SetUtils.GetMinimalSet(Filter.Included);
 
-			var originalPacking = idsSource.ExchangePacking(Packing.WithHoles);
+			var originalPacking = idsSource.ExchangePacking(PackingWhenIterating);
 
 			for (var i = idsSource.Count - 1; i >= 0; i--)
 			{
@@ -59,7 +61,7 @@ namespace Massive
 			var data = dataSet.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet, Filter.Included);
-			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
+			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -97,7 +99,7 @@ namespace Massive
 			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
-			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
+			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -140,7 +142,7 @@ namespace Massive
 			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3);
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
-			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
+			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -187,7 +189,7 @@ namespace Massive
 			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
-			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
+			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -218,15 +220,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IdsFilterEnumerator GetEnumerator()
 		{
-			if (Filter.Included.Length == 0)
-			{
-				return new IdsFilterEnumerator(Registry.Entities, Filter);
-			}
-			else
-			{
-				var ids = SetUtils.GetMinimalSet(Filter.Included);
-				return new IdsFilterEnumerator(ids, Filter);
-			}
+			IdsSource idsSource = Filter.Included.Length == 0
+				? Registry.Entities
+				: SetUtils.GetMinimalSet(Filter.Included);
+
+			return new IdsFilterEnumerator(idsSource, Filter, PackingWhenIterating);
 		}
 
 		private void ThrowIfCantInclude(SparseSet sparseSet)

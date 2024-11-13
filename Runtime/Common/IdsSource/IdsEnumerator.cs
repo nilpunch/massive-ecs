@@ -14,10 +14,10 @@ namespace Massive
 		private int _index;
 		private int _current;
 
-		public IdsEnumerator(IdsSource idsSource)
+		public IdsEnumerator(IdsSource idsSource, Packing packingWhenIterating = Packing.WithPersistentHoles)
 		{
 			_idsSource = idsSource;
-			_originalPacking = _idsSource.ExchangePacking(Packing.WithHoles);
+			_originalPacking = _idsSource.ExchangePacking(packingWhenIterating);
 			_index = _idsSource.Count;
 			_current = Constants.InvalidId;
 		}

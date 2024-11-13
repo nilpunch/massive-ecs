@@ -9,10 +9,12 @@ namespace Massive
 	public readonly struct View : IView
 	{
 		public Registry Registry { get; }
+		public Packing PackingWhenIterating { get; }
 
-		public View(Registry registry)
+		public View(Registry registry, Packing packingWhenIterating = Packing.WithPersistentHoles)
 		{
 			Registry = registry;
+			PackingWhenIterating = packingWhenIterating;
 		}
 
 		public void ForEach<TAction>(ref TAction action)
@@ -20,7 +22,7 @@ namespace Massive
 		{
 			var entities = Registry.Entities;
 
-			var originalPacking = entities.ExchangePacking(Packing.WithHoles);
+			var originalPacking = entities.ExchangePacking(PackingWhenIterating);
 
 			for (var i = entities.Count - 1; i >= 0; i--)
 			{
@@ -51,7 +53,7 @@ namespace Massive
 			var data = dataSet.Data;
 
 			var originalPacking = dataSet.Packing;
-			dataSet.ExchangePacking(Packing.WithHoles);
+			dataSet.ExchangePacking(PackingWhenIterating);
 
 			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
 			{
@@ -88,7 +90,7 @@ namespace Massive
 			var data2 = dataSet2.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
+			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
 
 			// Iterate over smallest data set
 			if (minSet == dataSet1)
@@ -167,7 +169,7 @@ namespace Massive
 			var data3 = dataSet3.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
+			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
 
 			// Iterate over smallest data set
 			if (minSet == dataSet1)
@@ -281,7 +283,7 @@ namespace Massive
 			var data4 = dataSet4.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPacking = minSet.ExchangePacking(Packing.WithHoles);
+			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
 
 			// Iterate over the smallest data set
 			if (minSet == dataSet1)
@@ -419,7 +421,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IdsEnumerator GetEnumerator()
 		{
-			return new IdsEnumerator(Registry.Entities);
+			return new IdsEnumerator(Registry.Entities, PackingWhenIterating);
 		}
 	}
 }
