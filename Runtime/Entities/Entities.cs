@@ -72,27 +72,37 @@ namespace Massive
 		{
 			EnsureCapacityForIndex(Count);
 
-			Entity entity;
+			Entity entity = Entity.Dead;
 
-			if (HasHoles)
+			switch (Packing)
 			{
-				var id = NextHoleId;
-				var index = Sparse[id];
-				NextHoleId = ~Ids[index];
-				Ids[index] = id;
-				entity = Entity.Create(id, Versions[index]);
-			}
-			else if (Count < MaxId)
-			{
-				entity = GetEntityAt(Count);
-				Count += 1;
-			}
-			else
-			{
-				entity = Entity.Create(MaxId, 0);
-				AssignEntity(MaxId, 0, Count);
-				MaxId += 1;
-				Count += 1;
+				case Packing.WithHoles:
+					if (NextHoleId != EndHoleId)
+					{
+						var id = NextHoleId;
+						var index = Sparse[id];
+						NextHoleId = ~Ids[index];
+						Ids[index] = id;
+						entity = Entity.Create(id, Versions[index]);
+						break;
+					}
+					goto case Packing.Continuous;
+
+				case Packing.Continuous:
+				case Packing.WithPersistentHoles:
+					if (Count < MaxId)
+					{
+						entity = GetEntityAt(Count);
+						Count += 1;
+					}
+					else
+					{
+						entity = Entity.Create(MaxId, 0);
+						AssignEntity(MaxId, 0, Count);
+						MaxId += 1;
+						Count += 1;
+					}
+					break;
 			}
 
 			AfterCreated?.Invoke(entity.Id);
@@ -110,22 +120,23 @@ namespace Massive
 
 			BeforeDestroyed?.Invoke(id);
 
-			if (Packing == Packing.Continuous)
-			{
-				Count -= 1;
+			var index = Sparse[id];
 
-				var index = Sparse[id];
-				var version = Versions[index];
-
-				AssignEntity(Ids[Count], Versions[Count], index);
-				AssignEntity(id, unchecked(version + 1), Count);
-			}
-			else
+			switch (Packing)
 			{
-				var index = Sparse[id];
-				Ids[index] = ~NextHoleId;
-				unchecked { Versions[index] += 1; }
-				NextHoleId = id;
+				case Packing.Continuous:
+					Count -= 1;
+					var version = Versions[index];
+					AssignEntity(Ids[Count], Versions[Count], index);
+					AssignEntity(id, unchecked(version + 1), Count);
+					break;
+				
+				case Packing.WithHoles:
+				case Packing.WithPersistentHoles:
+					Ids[index] = ~NextHoleId;
+					unchecked { Versions[index] += 1; }
+					NextHoleId = id;
+					break;
 			}
 		}
 
@@ -249,13 +260,16 @@ namespace Massive
 			Array.Resize(ref _sparse, capacity);
 		}
 
-		public override Packing ExchangePacking(Packing value)
+		public override Packing ExchangePacking(Packing packing)
 		{
 			var previousPacking = Packing;
-			if (value != previousPacking)
+			if (packing != Packing)
 			{
-				Packing = value;
-				Compact();
+				Packing = packing;
+				if (packing == Packing.Continuous)
+				{
+					Compact();
+				}
 			}
 			return previousPacking;
 		}

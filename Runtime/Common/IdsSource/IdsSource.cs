@@ -16,6 +16,6 @@ namespace Massive
 		/// <summary>
 		/// Returns previous packing.
 		/// </summary>
-		public abstract Packing ExchangePacking(Packing value);
+		public abstract Packing ExchangePacking(Packing packing);
 	}
 }

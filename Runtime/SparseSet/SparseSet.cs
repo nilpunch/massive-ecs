@@ -13,9 +13,15 @@ namespace Massive
 
 		/// <summary>
 		/// When an element is removed, its position is left as a hole in the packed array.
-		/// The holes are filled when new elements are added.
+		/// Holes are filled automatically when new elements are added.
 		/// </summary>
 		WithHoles,
+
+		/// <summary>
+		/// When an element is removed, its position is left as a hole in the packed array.
+		/// Holes persist until manually compacted.
+		/// </summary>
+		WithPersistentHoles,
 	}
 
 	[Il2CppSetOption(Option.NullChecks, false)]
@@ -51,7 +57,7 @@ namespace Massive
 		public bool HasHoles
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Packing == Packing.WithHoles && NextHole != EndHole;
+			get => Packing != Packing.Continuous && NextHole != EndHole;
 		}
 
 		public int[] Packed => _packed;
@@ -95,18 +101,25 @@ namespace Massive
 
 			EnsureSparseForIndex(id);
 
-			if (HasHoles)
+			switch (Packing)
 			{
-				var index = NextHole;
-				NextHole = ~Packed[index];
-				AssignIndex(id, index);
-			}
-			else
-			{
-				EnsurePackedForIndex(Count);
-				EnsureDataForIndex(Count);
-				AssignIndex(id, Count);
-				Count += 1;
+				case Packing.WithHoles:
+					if (NextHole != EndHole)
+					{
+						var index = NextHole;
+						NextHole = ~Packed[index];
+						AssignIndex(id, index);
+						break;
+					}
+					goto case Packing.Continuous;
+
+				case Packing.Continuous:
+				case Packing.WithPersistentHoles:
+					EnsurePackedForIndex(Count);
+					EnsureDataForIndex(Count);
+					AssignIndex(id, Count);
+					Count += 1;
+					break;
 			}
 
 			AfterAssigned?.Invoke(id);
@@ -123,16 +136,19 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			if (Packing == Packing.Continuous)
+			switch (Packing)
 			{
-				Count -= 1;
-				CopyFromToPacked(Count, Sparse[id]);
-			}
-			else
-			{
-				var index = Sparse[id];
-				Packed[index] = ~NextHole;
-				NextHole = index;
+				case Packing.Continuous:
+					Count -= 1;
+					CopyFromToPacked(Count, Sparse[id]);
+					break;
+
+				case Packing.WithHoles:
+				case Packing.WithPersistentHoles:
+					var index = Sparse[id];
+					Packed[index] = ~NextHole;
+					NextHole = index;
+					break;
 			}
 
 			Sparse[id] = Constants.InvalidId;
@@ -244,13 +260,16 @@ namespace Massive
 			}
 		}
 
-		public override Packing ExchangePacking(Packing value)
+		public override Packing ExchangePacking(Packing packing)
 		{
 			var previousPacking = Packing;
-			if (value != Packing)
+			if (packing != Packing)
 			{
-				Packing = value;
-				Compact();
+				Packing = packing;
+				if (packing == Packing.Continuous)
+				{
+					Compact();
+				}
 			}
 			return previousPacking;
 		}
