@@ -4,12 +4,13 @@
 
 Iteration stability improvements and groups rework.
 
-- Changed: `PackingMode` now dynamically changes for the iteration leader,  
+- Changed: Renamed `PackingMode` to `Packing`.
+- Changed: `Packing` now dynamically changes for the iteration leader,  
   ensuring each unique entity appears only once during iteration in most cases.
 - Changed: Hide setters in data structures. Added full-state assignment API.
 - Changed: Renamed `NonOwningGroup` to `Group`.
 - Removed: `OwningGroup` for SoA access. It may return in some form in the future.
-- Removed: `GroupView`. Groups are now used directly.
+- Removed: `GroupView`. Groups are now used directly as is.
 - Removed: `GroupPage`, `GroupPageSequence` and `IOwnSelector`.
 - Removed: Utils folder.
 - Removed: `RegistryReflectionExtensions`. Reflection methods remain directly accessible.
