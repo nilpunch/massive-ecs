@@ -11,7 +11,7 @@ namespace Massive
 		public Registry Registry { get; }
 		public Packing PackingWhenIterating { get; }
 
-		public View(Registry registry, Packing packingWhenIterating = Packing.WithPersistentHoles)
+		public View(Registry registry, Packing packingWhenIterating = Packing.WithHoles)
 		{
 			Registry = registry;
 			PackingWhenIterating = packingWhenIterating;

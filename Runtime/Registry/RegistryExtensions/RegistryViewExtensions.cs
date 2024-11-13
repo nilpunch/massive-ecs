@@ -9,7 +9,7 @@ namespace Massive
 	public static class RegistryViewExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static View View(this Registry registry, Packing packingWhenIterating = Packing.WithPersistentHoles)
+		public static View View(this Registry registry, Packing packingWhenIterating = Packing.WithHoles)
 		{
 			return new View(registry);
 		}

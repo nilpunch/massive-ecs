@@ -16,7 +16,7 @@ namespace Massive
 		private int _current;
 
 		public IdsFilterEnumerator(IdsSource idsSource, Filter filter,
-			Packing packingWhenIterating = Packing.WithPersistentHoles)
+			Packing packingWhenIterating = Packing.WithHoles)
 		{
 			_idsSource = idsSource;
 			_filter = filter;

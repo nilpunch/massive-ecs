@@ -14,7 +14,7 @@ namespace Massive
 		private int _index;
 		private int _current;
 
-		public IdsEnumerator(IdsSource idsSource, Packing packingWhenIterating = Packing.WithPersistentHoles)
+		public IdsEnumerator(IdsSource idsSource, Packing packingWhenIterating = Packing.WithHoles)
 		{
 			_idsSource = idsSource;
 			_originalPacking = _idsSource.ExchangePacking(packingWhenIterating);
