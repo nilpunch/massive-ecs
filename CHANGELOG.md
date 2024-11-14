@@ -1,12 +1,14 @@
 # Changelog
 
-## 17.0.0-beta - November 12, 2024
+## 17.0.0-beta - November 14, 2024
 
 Iteration stability improvements and groups rework.
 
+- Added: New packing option `WithPersistentHoles`.
 - Changed: Renamed `PackingMode` to `Packing`.
 - Changed: `Packing` now dynamically changes for the iteration leader,  
-  ensuring each unique entity appears only once during iteration in most cases.
+  ensuring each unique entity appears only once during iteration in most cases,  
+  or in all cases when using the new packing option.
 - Changed: Hide setters in data structures. Added full-state assignment API.
 - Changed: Renamed `NonOwningGroup` to `Group`.
 - Removed: `OwningGroup` for SoA access. It may return in some form in the future.
