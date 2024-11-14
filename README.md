@@ -45,9 +45,6 @@ Rollback features:
 
 Consider this list a work in progress as well as the project.
 
-[Here](https://github.com/nilpunch/bench-morpeh-leolite-massive) is a benchmark comparing Massive ECS with [Morpeh](https://github.com/scellecs/morpeh) and [LeoEcsLite](https://github.com/Leopotam/ecslite).  
-TL;DR it's totally usable.
-
 ## Code Examples
 
 ```cs
