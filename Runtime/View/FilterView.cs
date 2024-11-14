@@ -28,7 +28,7 @@ namespace Massive
 				? Registry.Entities
 				: SetUtils.GetMinimalSet(Filter.Included);
 
-			var originalPacking = idsSource.ExchangePacking(PackingWhenIterating);
+			var originalPacking = idsSource.ExchangeToStricterPacking(PackingWhenIterating);
 
 			for (var i = idsSource.Count - 1; i >= 0; i--)
 			{
@@ -61,7 +61,7 @@ namespace Massive
 			var data = dataSet.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet, Filter.Included);
-			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
+			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -99,7 +99,7 @@ namespace Massive
 			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
-			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
+			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -142,7 +142,7 @@ namespace Massive
 			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3);
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
-			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
+			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -189,7 +189,7 @@ namespace Massive
 			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
-			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
+			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{

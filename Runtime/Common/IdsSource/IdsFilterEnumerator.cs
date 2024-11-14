@@ -20,7 +20,7 @@ namespace Massive
 		{
 			_idsSource = idsSource;
 			_filter = filter;
-			_originalPacking = _idsSource.ExchangePacking(packingWhenIterating);
+			_originalPacking = _idsSource.ExchangeToStricterPacking(packingWhenIterating);
 			_index = _idsSource.Count;
 			_current = Constants.InvalidId;
 		}

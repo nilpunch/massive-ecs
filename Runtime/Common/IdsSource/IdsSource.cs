@@ -14,8 +14,22 @@ namespace Massive
 		public Packing Packing { get; protected set; }
 
 		/// <summary>
-		/// Returns previous packing.
+		/// Changes the current packing, returns previous packing.
 		/// </summary>
 		public abstract Packing ExchangePacking(Packing packing);
+
+		/// <summary>
+		/// Changes the current packing to a stricter version if the specified packing is stricter,
+		/// returns previous packing.
+		/// </summary>
+		public Packing ExchangeToStricterPacking(Packing packing)
+		{
+			if ((byte)Packing < (byte)packing)
+			{
+				return ExchangePacking(packing);
+			}
+
+			return Packing;
+		}
 	}
 }

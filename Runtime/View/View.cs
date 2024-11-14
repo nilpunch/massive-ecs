@@ -22,7 +22,7 @@ namespace Massive
 		{
 			var entities = Registry.Entities;
 
-			var originalPacking = entities.ExchangePacking(PackingWhenIterating);
+			var originalPacking = entities.ExchangeToStricterPacking(PackingWhenIterating);
 
 			for (var i = entities.Count - 1; i >= 0; i--)
 			{
@@ -53,7 +53,7 @@ namespace Massive
 			var data = dataSet.Data;
 
 			var originalPacking = dataSet.Packing;
-			dataSet.ExchangePacking(PackingWhenIterating);
+			dataSet.ExchangeToStricterPacking(PackingWhenIterating);
 
 			foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
 			{
@@ -90,7 +90,7 @@ namespace Massive
 			var data2 = dataSet2.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
+			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
 			// Iterate over smallest data set
 			if (minSet == dataSet1)
@@ -169,7 +169,7 @@ namespace Massive
 			var data3 = dataSet3.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
+			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
 			// Iterate over smallest data set
 			if (minSet == dataSet1)
@@ -283,7 +283,7 @@ namespace Massive
 			var data4 = dataSet4.Data;
 
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPacking = minSet.ExchangePacking(PackingWhenIterating);
+			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
 			// Iterate over the smallest data set
 			if (minSet == dataSet1)
