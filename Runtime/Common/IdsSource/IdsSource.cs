@@ -1,4 +1,5 @@
-﻿using Unity.IL2CPP.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
@@ -22,6 +23,7 @@ namespace Massive
 		/// Changes the current packing to a stricter version if the specified packing is stricter,
 		/// returns previous packing.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Packing ExchangeToStricterPacking(Packing packing)
 		{
 			if ((byte)Packing < (byte)packing)
