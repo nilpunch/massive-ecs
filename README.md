@@ -22,30 +22,28 @@ Check out the [wiki](https://github.com/nilpunch/massive-ecs/wiki).
 
 ECS features:
 
-- Fast and simple
-- No code generation
-- Support сomponents of any type
-- No deferred commands execution
-- Garbage-free generic API for in-place queries
-- Non-generic API for a better IL2CPP experience
+- Fast and simple.
+- No code generation.
+- No archetypes or bitsets.
+- Supports сomponents of any type.
+- No deferred command execution or shadow copies — work directly with live entities and components.
+- Garbage-free API for in-place queries, and non-generic version to improve IL2CPP build time and size.
+- Lightweight views for [flexible](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#what-is-allowed-during-iterations) iteration over entities and components.
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components
   - Or enable full stability for the entire registry
-- Full state serialization and deserialization
-- IL2CPP friendly, tested with high stripping level on PC | Android | WebGL
-- [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP)
+- Full-state serialization and deserialization.
+- IL2CPP friendly, tested with high stripping level on PC | Android | WebGL.
+- [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP).
 
 Rollback features:
 
-- This is an extension for ECS and is completely optional to use
-- It's natively fast with Array.Copy and cyclic buffers
+- This is an extension for ECS and is completely optional to use.
+- It's natively fast with Array.Copy and cyclic buffers.
 - Minimalistic API - `SaveFrame()` and `Rollback(frames)`
-- Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components))
+- Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components)).
 
 Consider this list a work in progress as well as the project.
-
-[Here](https://github.com/nilpunch/bench-morpeh-leolite-massive) is a benchmark comparing Massive ECS with [Morpeh](https://github.com/scellecs/morpeh) and [LeoEcsLite](https://github.com/Leopotam/ecslite).  
-TL;DR it's totally usable.
 
 ## Code Examples
 
