@@ -8,9 +8,9 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class FastList<T>
+	public class FastListSparseSet
 	{
-		private T[] _items = Array.Empty<T>();
+		private SparseSet[] _items = Array.Empty<SparseSet>();
 
 		public int Count { get; private set; }
 
@@ -22,32 +22,32 @@ namespace Massive
 			set => Array.Resize(ref _items, value);
 		}
 
-		public Span<T> Span
+		public Span<SparseSet> Span
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new Span<T>(_items, 0, Count);
+			get => new Span<SparseSet>(_items, 0, Count);
 		}
 
-		public ReadOnlySpan<T> ReadOnlySpan
+		public ReadOnlySpan<SparseSet> ReadOnlySpan
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ReadOnlySpan<T>(_items, 0, Count);
+			get => new ReadOnlySpan<SparseSet>(_items, 0, Count);
 		}
 
-		public T[] Items
+		public SparseSet[] Items
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _items;
 		}
 
-		public ref T this[int index]
+		public ref SparseSet this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => ref _items[index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add(T item)
+		public void Add(SparseSet item)
 		{
 			EnsureCapacity(Count + 1);
 
@@ -55,7 +55,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Remove(T item)
+		public bool Remove(SparseSet item)
 		{
 			var index = IndexOf(item);
 			if (index >= 0)
@@ -81,13 +81,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item)
+		public int IndexOf(SparseSet item)
 		{
 			return Array.IndexOf(_items, item, 0, Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Insert(int index, T item)
+		public void Insert(int index, SparseSet item)
 		{
 			EnsureCapacity(Count + 1);
 
@@ -101,21 +101,27 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int BinarySearch(T item)
+		public int BinarySearch(SparseSet item)
 		{
 			return BinarySearch(0, Count, item, null);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int BinarySearch(T item, IComparer<T> comparer)
+		public int BinarySearch(SparseSet item, IComparer<SparseSet> comparer)
 		{
 			return BinarySearch(0, Count, item, comparer);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int BinarySearch(int index, int count, T item, IComparer<T> comparer)
+		public int BinarySearch(int index, int count, SparseSet item, IComparer<SparseSet> comparer)
 		{
-			return Array.BinarySearch(_items, index, count, item, comparer ?? Comparer<T>.Default);
+			return Array.BinarySearch(_items, index, count, item, comparer ?? Comparer<SparseSet>.Default);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Enumerator GetEnumerator()
+		{
+			return new Enumerator(_items, Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -124,6 +130,30 @@ namespace Massive
 			if (Capacity < min)
 			{
 				Capacity = MathUtils.NextPowerOf2(min);
+			}
+		}
+
+		public struct Enumerator
+		{
+			private readonly SparseSet[] _items;
+			private int _index;
+
+			public Enumerator(SparseSet[] items, int index)
+			{
+				_items = items;
+				_index = index;
+			}
+
+			public SparseSet Current
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => _items[_index];
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool MoveNext()
+			{
+				return --_index >= 0;
 			}
 		}
 	}

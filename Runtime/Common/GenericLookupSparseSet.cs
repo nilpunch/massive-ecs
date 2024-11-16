@@ -11,14 +11,14 @@ namespace Massive
 	public class GenericLookupSparseSet
 	{
 		private readonly FastList<string> _itemIds = new FastList<string>();
-		private readonly FastList<SparseSet> _items = new FastList<SparseSet>();
+		private readonly FastListSparseSet _items = new FastListSparseSet();
 		private SparseSet[] _lookup = Array.Empty<SparseSet>();
 		private Type[] _keyLookup = Array.Empty<Type>();
 
-		public ReadOnlySpan<SparseSet> All
+		public FastListSparseSet All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _items.ReadOnlySpan;
+			get => _items;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,6 +44,20 @@ namespace Massive
 
 			return _lookup[index];
 		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public SparseSet Find(string id)
+		{
+			var itemIndex = _itemIds.BinarySearch(id);
+			if (itemIndex >= 0)
+			{
+				return _items[itemIndex];
+			}
+			else
+			{
+				return null;
+			}
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf<TKey>()
@@ -63,6 +77,21 @@ namespace Massive
 			return _keyLookup[Array.IndexOf(_lookup, item)];
 		}
 
+		public void Assign(string itemId, SparseSet item)
+		{
+			var itemIndex = _itemIds.BinarySearch(itemId);
+			if (itemIndex >= 0)
+			{
+				_items[itemIndex] = item;
+			}
+			else
+			{
+				var insertionIndex = ~itemIndex;
+				_itemIds.Insert(insertionIndex, itemId);
+				_items.Insert(insertionIndex, item);
+			}
+		}
+		
 		public void Assign<TKey>(SparseSet item)
 		{
 			var typeIndex = TypeLookup<TKey>.Index;
@@ -79,17 +108,7 @@ namespace Massive
 
 			// Maintain items sorted
 			var itemId = TypeLookup<TKey>.FullName;
-			var itemIndex = _itemIds.BinarySearch(itemId);
-			if (itemIndex >= 0)
-			{
-				_items[itemIndex] = item;
-			}
-			else
-			{
-				var insertionIndex = ~itemIndex;
-				_itemIds.Insert(insertionIndex, itemId);
-				_items.Insert(insertionIndex, item);
-			}
+			Assign(itemId, item);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -129,19 +148,7 @@ namespace Massive
 			_lookup[typeIndex] = item;
 			_keyLookup[typeIndex] = keyType;
 
-			// Maintain items sorted
-			var itemId = typeFullName;
-			var itemIndex = _itemIds.BinarySearch(itemId);
-			if (itemIndex >= 0)
-			{
-				_items[itemIndex] = item;
-			}
-			else
-			{
-				var insertionIndex = ~itemIndex;
-				_itemIds.Insert(insertionIndex, itemId);
-				_items.Insert(insertionIndex, item);
-			}
+			Assign(typeFullName, item);
 		}
 
 		private Type MakeTypeLookupType(Type keyType)

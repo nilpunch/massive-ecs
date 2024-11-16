@@ -19,7 +19,7 @@ namespace Massive.Serialization
 			SerializationHelpers.WriteEntities(registry.Entities, stream);
 
 			// Sets
-			SerializationHelpers.WriteInt(registry.SetRegistry.All.Length, stream);
+			SerializationHelpers.WriteInt(registry.SetRegistry.All.Count, stream);
 			foreach (var sparseSet in registry.SetRegistry.All)
 			{
 				var setKey = registry.SetRegistry.GetKey(sparseSet);

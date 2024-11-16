@@ -38,8 +38,10 @@ namespace Massive
 
 		private void UnassignFromAllSets(int entityId)
 		{
-			var sets = SetRegistry.All;
-			for (var i = 0; i < sets.Length; i++)
+			var setList = SetRegistry.All;
+			var setCount = setList.Count;
+			var sets = setList.Items;
+			for (var i = 0; i < setCount; i++)
 			{
 				sets[i].Unassign(entityId);
 			}

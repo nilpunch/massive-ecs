@@ -33,8 +33,10 @@ namespace Massive
 		{
 			_massiveEntities.SaveFrame();
 
-			var sets = SetRegistry.All;
-			for (var i = 0; i < sets.Length; i++)
+			var setList = SetRegistry.All;
+			var setCount = setList.Count;
+			var sets = setList.Items;
+			for (var i = 0; i < setCount; i++)
 			{
 				if (sets[i] is IMassive massive)
 				{
@@ -59,8 +61,10 @@ namespace Massive
 		{
 			_massiveEntities.Rollback(Math.Min(frames, _massiveEntities.CanRollbackFrames));
 
-			var sets = SetRegistry.All;
-			for (var i = 0; i < sets.Length; i++)
+			var setList = SetRegistry.All;
+			var setCount = setList.Count;
+			var sets = setList.Items;
+			for (var i = 0; i < setCount; i++)
 			{
 				if (sets[i] is IMassive massive)
 				{

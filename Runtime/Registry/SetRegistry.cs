@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -18,7 +19,7 @@ namespace Massive
 			_setFactory = setFactory;
 		}
 
-		public ReadOnlySpan<SparseSet> All
+		public FastListSparseSet All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _setLookup.All;
@@ -59,6 +60,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Assign(string id, SparseSet sparseSet)
+		{
+			_setLookup.Assign(id, sparseSet);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Type GetKey(SparseSet set)
 		{
 			return _setLookup.GetKey(set);
@@ -68,6 +75,12 @@ namespace Massive
 		public int IndexOf(SparseSet set)
 		{
 			return _setLookup.IndexOf(set);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public SparseSet Find(string id)
+		{
+			return _setLookup.Find(id);
 		}
 	}
 }
