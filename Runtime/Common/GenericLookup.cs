@@ -47,6 +47,20 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public TAbstract Find(string id)
+		{
+			var itemIndex = _itemIds.BinarySearch(id);
+			if (itemIndex >= 0)
+			{
+				return _items[itemIndex];
+			}
+			else
+			{
+				return default;
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf<TKey>()
 		{
 			return TypeLookup<TKey>.Index;
@@ -64,6 +78,22 @@ namespace Massive
 			return _keyLookup[Array.IndexOf(_lookup, item)];
 		}
 
+		public void Assign(string itemId, TAbstract item)
+		{
+			// Maintain items sorted
+			var itemIndex = _itemIds.BinarySearch(itemId);
+			if (itemIndex >= 0)
+			{
+				_items[itemIndex] = item;
+			}
+			else
+			{
+				var insertionIndex = ~itemIndex;
+				_itemIds.Insert(insertionIndex, itemId);
+				_items.Insert(insertionIndex, item);
+			}
+		}
+
 		public void Assign<TKey>(TAbstract item)
 		{
 			var typeIndex = TypeLookup<TKey>.Index;
@@ -78,19 +108,7 @@ namespace Massive
 			_lookup[typeIndex] = item;
 			_keyLookup[typeIndex] = typeof(TKey);
 
-			// Maintain items sorted
-			var itemId = TypeLookup<TKey>.FullName;
-			var itemIndex = _itemIds.BinarySearch(itemId);
-			if (itemIndex >= 0)
-			{
-				_items[itemIndex] = item;
-			}
-			else
-			{
-				var insertionIndex = ~itemIndex;
-				_itemIds.Insert(insertionIndex, itemId);
-				_items.Insert(insertionIndex, item);
-			}
+			Assign(TypeLookup<TKey>.FullName, item);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -130,19 +148,7 @@ namespace Massive
 			_lookup[typeIndex] = item;
 			_keyLookup[typeIndex] = keyType;
 
-			// Maintain items sorted
-			var itemId = typeFullName;
-			var itemIndex = _itemIds.BinarySearch(itemId);
-			if (itemIndex >= 0)
-			{
-				_items[itemIndex] = item;
-			}
-			else
-			{
-				var insertionIndex = ~itemIndex;
-				_itemIds.Insert(insertionIndex, itemId);
-				_items.Insert(insertionIndex, item);
-			}
+			Assign(typeFullName, item);
 		}
 
 		private Type MakeTypeLookupType(Type keyType)

@@ -130,7 +130,7 @@ namespace Massive
 					AssignEntity(Ids[Count], Versions[Count], index);
 					AssignEntity(id, unchecked(version + 1), Count);
 					break;
-				
+
 				case Packing.WithHoles:
 				case Packing.WithPersistentHoles:
 					Ids[index] = ~NextHoleId;

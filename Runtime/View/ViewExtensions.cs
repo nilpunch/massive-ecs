@@ -176,8 +176,8 @@ namespace Massive
 		{
 			var returnFirstEntity = new ReturnFirst { Result = Constants.InvalidId };
 			view.ForEach(ref returnFirstEntity);
-			return returnFirstEntity.Result == Constants.InvalidId 
-				? Entity.Dead 
+			return returnFirstEntity.Result == Constants.InvalidId
+				? Entity.Dead
 				: view.Registry.Entities.GetEntity(returnFirstEntity.Result);
 		}
 

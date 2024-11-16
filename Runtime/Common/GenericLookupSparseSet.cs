@@ -44,7 +44,7 @@ namespace Massive
 
 			return _lookup[index];
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet Find(string id)
 		{
@@ -79,6 +79,7 @@ namespace Massive
 
 		public void Assign(string itemId, SparseSet item)
 		{
+			// Maintain items sorted
 			var itemIndex = _itemIds.BinarySearch(itemId);
 			if (itemIndex >= 0)
 			{
@@ -91,7 +92,7 @@ namespace Massive
 				_items.Insert(insertionIndex, item);
 			}
 		}
-		
+
 		public void Assign<TKey>(SparseSet item)
 		{
 			var typeIndex = TypeLookup<TKey>.Index;

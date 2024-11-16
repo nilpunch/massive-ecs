@@ -352,7 +352,7 @@ namespace Massive
 				throw new Exception(errorMessage);
 			}
 		}
-		
+
 		public readonly struct State
 		{
 			public readonly int Count;
