@@ -265,11 +265,11 @@ namespace Massive
 			var previousPacking = Packing;
 			if (packing != Packing)
 			{
-				Packing = packing;
 				if (packing == Packing.Continuous)
 				{
 					Compact();
 				}
+				Packing = packing;
 			}
 			return previousPacking;
 		}

@@ -213,10 +213,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void SwapPacked(int first, int second)
 		{
-			if (HasHoles)
-			{
-				throw new Exception("Swapping is not supported with holes. Use Compact() before swapping.");
-			}
+			ThrowIfNegative(first, $"Can't swap negative id.");
+			ThrowIfNegative(second, $"Can't swap negative id.");
 
 			var firstId = Packed[first];
 			var secondId = Packed[second];
@@ -265,11 +263,11 @@ namespace Massive
 			var previousPacking = Packing;
 			if (packing != Packing)
 			{
-				Packing = packing;
 				if (packing == Packing.Continuous)
 				{
 					Compact();
 				}
+				Packing = packing;
 			}
 			return previousPacking;
 		}
@@ -311,7 +309,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected virtual void CopyDataFromToPacked(int source, int destination)
+		public virtual void CopyDataFromToPacked(int source, int destination)
 		{
 		}
 
@@ -347,6 +345,14 @@ namespace Massive
 			return id < 0 || id >= Sparse.Length;
 		}
 
+		private void ThrowIfNegative(int id, string errorMessage)
+		{
+			if (id < 0)
+			{
+				throw new Exception(errorMessage);
+			}
+		}
+		
 		public readonly struct State
 		{
 			public readonly int Count;

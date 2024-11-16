@@ -40,7 +40,7 @@ namespace Massive.PerformanceTests
 			_registryFilling = registryFilling;
 			_fullStability = registryStability == RegistryStability.FullStability;
 			_registry = PrepareTestRegistry(_registryFilling, _fullStability);
-			_registry.View().Destroy();
+			_registry.Clear();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,8 +77,8 @@ namespace Massive.PerformanceTests
 						_registry.Create();
 					}
 				})
-				.SetUp(() => _registry.View().Destroy())
-				.CleanUp(() => _registry.View().Destroy())
+				.SetUp(() => _registry.Clear())
+				.CleanUp(() => _registry.Clear())
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -98,8 +98,8 @@ namespace Massive.PerformanceTests
 						_registry.Clone(entityToClone);
 					}
 				})
-				.SetUp(() => _registry.View().Destroy())
-				.CleanUp(() => _registry.View().Destroy())
+				.SetUp(() => _registry.Clear())
+				.CleanUp(() => _registry.Clear())
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -110,7 +110,7 @@ namespace Massive.PerformanceTests
 		{
 			Measure.Method(() =>
 				{
-					_registry.View().Destroy();
+					_registry.Clear();
 				})
 				.SetUp(() =>
 				{
@@ -120,7 +120,7 @@ namespace Massive.PerformanceTests
 						_registry.Assign<PositionComponent>(id);
 					}
 				})
-				.CleanUp(() => _registry.View().Destroy())
+				.CleanUp(() => _registry.Clear())
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -131,7 +131,7 @@ namespace Massive.PerformanceTests
 		{
 			var result = new List<Entity>();
 
-			_registry.View().Destroy();
+			_registry.Clear();
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
@@ -144,7 +144,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().Destroy();
+			_registry.Clear();
 		}
 
 		[Test, Performance]
@@ -169,7 +169,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().Destroy();
+			_registry.Clear();
 		}
 
 		[Test, Performance]
@@ -196,7 +196,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().Destroy();
+			_registry.Clear();
 		}
 
 		[Test, Performance]
@@ -214,7 +214,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().Destroy();
+			_registry.Clear();
 		}
 
 		[Test, Performance]
@@ -237,7 +237,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().Destroy();
+			_registry.Clear();
 		}
 
 		[Test, Performance]
@@ -261,7 +261,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.View().Destroy();
+			_registry.Clear();
 		}
 
 		[Test, Performance]

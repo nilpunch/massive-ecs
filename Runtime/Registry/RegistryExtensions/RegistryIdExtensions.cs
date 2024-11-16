@@ -62,13 +62,12 @@ namespace Massive
 			for (var i = 0; i < sets.Length; i++)
 			{
 				var set = sets[i];
-				if (set.IsAssigned(id))
+				var index = set.GetIndexOrInvalid(id);
+				if (index >= 0)
 				{
 					set.Assign(cloneId);
-					if (set is IDataSet dataSet)
-					{
-						dataSet.CopyData(id, cloneId);
-					}
+					var cloneIndex = set.Sparse[cloneId];
+					set.CopyDataFromToPacked(index, cloneIndex);
 				}
 			}
 

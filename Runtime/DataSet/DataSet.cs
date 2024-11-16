@@ -20,12 +20,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyData(int sourceId, int targetId)
-		{
-			Get(targetId) = Get(sourceId);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
 			return ref Data[Sparse[id]];
@@ -39,7 +33,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override void CopyDataFromToPacked(int source, int destination)
+		public override void CopyDataFromToPacked(int source, int destination)
 		{
 			Data[destination] = Data[source];
 		}

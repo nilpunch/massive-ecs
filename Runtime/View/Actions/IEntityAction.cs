@@ -70,19 +70,6 @@ namespace Massive
 		}
 	}
 
-	public struct ReturnFirstEntity : IEntityAction
-	{
-		public Entity Result;
-		public Entities Entities;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
-		{
-			Result = Entities.GetEntity(id);
-			return false;
-		}
-	}
-
 	public struct DestroyAll : IEntityAction
 	{
 		public Entities Entities;

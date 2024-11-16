@@ -174,9 +174,11 @@ namespace Massive
 		public static Entity FirstEntity<TView>(this TView view)
 			where TView : IView
 		{
-			var returnFirstEntity = new ReturnFirstEntity { Result = Entity.Dead, Entities = view.Registry.Entities };
+			var returnFirstEntity = new ReturnFirst { Result = Constants.InvalidId };
 			view.ForEach(ref returnFirstEntity);
-			return returnFirstEntity.Result;
+			return returnFirstEntity.Result == Constants.InvalidId 
+				? Entity.Dead 
+				: view.Registry.Entities.GetEntity(returnFirstEntity.Result);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
