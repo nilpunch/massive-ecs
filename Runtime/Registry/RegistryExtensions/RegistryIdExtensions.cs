@@ -46,16 +46,11 @@ namespace Massive
 		/// Creates a unique entity with components of another entity and returns the entity ID.
 		/// </summary>
 		/// <remarks>
-		/// Cloning entity that is not alive will throw an exception.
+		/// Cloning entity that is not alive will fall back to the <see cref="Create"/> method.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this Registry registry, int id)
 		{
-			if (!registry.IsAlive(id))
-			{
-				throw new Exception("The entity you want to clone is not alive!");
-			}
-
 			var cloneId = registry.Create();
 
 			var setList = registry.SetRegistry.All;
