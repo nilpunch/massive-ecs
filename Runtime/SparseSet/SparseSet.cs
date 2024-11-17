@@ -101,25 +101,18 @@ namespace Massive
 
 			EnsureSparseForIndex(id);
 
-			switch (Packing)
+			if (Packing == Packing.WithHoles && NextHole != EndHole)
 			{
-				case Packing.WithHoles:
-					if (NextHole != EndHole)
-					{
-						var index = NextHole;
-						NextHole = ~Packed[index];
-						AssignIndex(id, index);
-						break;
-					}
-					goto case Packing.Continuous;
-
-				case Packing.Continuous:
-				case Packing.WithPersistentHoles:
-					EnsurePackedForIndex(Count);
-					EnsureDataForIndex(Count);
-					AssignIndex(id, Count);
-					Count += 1;
-					break;
+				var index = NextHole;
+				NextHole = ~Packed[index];
+				AssignIndex(id, index);
+			}
+			else
+			{
+				EnsurePackedForIndex(Count);
+				EnsureDataForIndex(Count);
+				AssignIndex(id, Count);
+				Count += 1;
 			}
 
 			AfterAssigned?.Invoke(id);
@@ -136,19 +129,16 @@ namespace Massive
 
 			BeforeUnassigned?.Invoke(id);
 
-			switch (Packing)
+			if (Packing == Packing.Continuous)
 			{
-				case Packing.Continuous:
-					Count -= 1;
-					CopyFromToPacked(Count, Sparse[id]);
-					break;
-
-				case Packing.WithHoles:
-				case Packing.WithPersistentHoles:
-					var index = Sparse[id];
-					Packed[index] = ~NextHole;
-					NextHole = index;
-					break;
+				Count -= 1;
+				CopyFromToPacked(Count, Sparse[id]);
+			}
+			else
+			{
+				var index = Sparse[id];
+				Packed[index] = ~NextHole;
+				NextHole = index;
 			}
 
 			Sparse[id] = Constants.InvalidId;

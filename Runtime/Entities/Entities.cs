@@ -72,37 +72,27 @@ namespace Massive
 		{
 			EnsureCapacityForIndex(Count);
 
-			Entity entity = Entity.Dead;
+			Entity entity;
 
-			switch (Packing)
+			if (Packing == Packing.WithHoles && NextHoleId != EndHoleId)
 			{
-				case Packing.WithHoles:
-					if (NextHoleId != EndHoleId)
-					{
-						var id = NextHoleId;
-						var index = Sparse[id];
-						NextHoleId = ~Ids[index];
-						Ids[index] = id;
-						entity = Entity.Create(id, Versions[index]);
-						break;
-					}
-					goto case Packing.Continuous;
-
-				case Packing.Continuous:
-				case Packing.WithPersistentHoles:
-					if (Count < MaxId)
-					{
-						entity = GetEntityAt(Count);
-						Count += 1;
-					}
-					else
-					{
-						entity = Entity.Create(MaxId, 0);
-						AssignEntity(MaxId, 0, Count);
-						MaxId += 1;
-						Count += 1;
-					}
-					break;
+				var id = NextHoleId;
+				var index = Sparse[id];
+				NextHoleId = ~Ids[index];
+				Ids[index] = id;
+				entity = Entity.Create(id, Versions[index]);
+			}
+			else if (Count < MaxId)
+			{
+				entity = GetEntityAt(Count);
+				Count += 1;
+			}
+			else
+			{
+				entity = Entity.Create(MaxId, 0);
+				AssignEntity(MaxId, 0, Count);
+				MaxId += 1;
+				Count += 1;
 			}
 
 			AfterCreated?.Invoke(entity.Id);
@@ -122,21 +112,18 @@ namespace Massive
 
 			var index = Sparse[id];
 
-			switch (Packing)
+			if (Packing == Packing.Continuous)
 			{
-				case Packing.Continuous:
-					Count -= 1;
-					var version = Versions[index];
-					AssignEntity(Ids[Count], Versions[Count], index);
-					AssignEntity(id, unchecked(version + 1), Count);
-					break;
-
-				case Packing.WithHoles:
-				case Packing.WithPersistentHoles:
-					Ids[index] = ~NextHoleId;
-					unchecked { Versions[index] += 1; }
-					NextHoleId = id;
-					break;
+				Count -= 1;
+				var version = Versions[index];
+				AssignEntity(Ids[Count], Versions[Count], index);
+				AssignEntity(id, unchecked(version + 1), Count);
+			}
+			else
+			{
+				Ids[index] = ~NextHoleId;
+				unchecked { Versions[index] += 1; }
+				NextHoleId = id;
 			}
 		}
 
@@ -146,7 +133,7 @@ namespace Massive
 			var needToCreate = amount;
 			EnsureCapacityForIndex(needToCreate + Count);
 
-			while (HasHoles && needToCreate > 0)
+			while (Packing == Packing.WithHoles && NextHoleId != EndHoleId && needToCreate > 0)
 			{
 				needToCreate -= 1;
 				var id = NextHoleId;
