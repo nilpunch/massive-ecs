@@ -41,7 +41,7 @@ Rollback features:
 - This is an extension for ECS and is completely optional to use.
 - It's natively fast with Array.Copy and cyclic buffers.
 - Minimalistic API - `SaveFrame()` and `Rollback(frames)`
-- Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Managed-components)).
+- Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks#managed-components)).
 
 Consider this list a work in progress as well as the project.
 
@@ -141,7 +141,3 @@ class Program
 	}
 }
 ```
-
-### How It Works
-
-Each `Massive` data structure contains a cyclic buffer in linear memory. This enables fast saving and rollback by allowing the entire data arrays to be copied at once. The `MassiveRegistry` utilizes these data structures internally, providing the same ECS implementation but with rollback capabilities.
