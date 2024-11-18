@@ -64,7 +64,7 @@ namespace Massive
 				{
 					set.Assign(cloneId);
 					var cloneIndex = set.Sparse[cloneId];
-					set.CopyDataFromToPacked(index, cloneIndex);
+					set.CopyDataAt(index, cloneIndex);
 				}
 			}
 

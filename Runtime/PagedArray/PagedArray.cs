@@ -55,7 +55,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsurePageForIndex(int index)
+		public void EnsurePageAt(int index)
 		{
 			EnsurePage(PageIndex(index));
 		}
@@ -72,7 +72,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool HasPageForIndex(int index)
+		public bool HasPageAt(int index)
 		{
 			return HasPage(PageIndex(index));
 		}

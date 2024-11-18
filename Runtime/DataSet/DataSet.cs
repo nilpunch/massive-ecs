@@ -26,22 +26,21 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void SwapPacked(int first, int second)
+		public override void SwapDataAt(int first, int second)
 		{
-			base.SwapPacked(first, second);
 			Data.Swap(first, second);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override void CopyDataFromToPacked(int source, int destination)
+		public override void CopyDataAt(int source, int destination)
 		{
 			Data[destination] = Data[source];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override void EnsureDataForIndex(int index)
+		public override void EnsureDataAt(int index)
 		{
-			Data.EnsurePageForIndex(index);
+			Data.EnsurePageAt(index);
 		}
 
 		IPagedArray IDataSet.Data => Data;

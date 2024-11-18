@@ -37,7 +37,7 @@ namespace Massive.Tests
 
 			for (int i = 0; i < length; i++)
 			{
-				pagedArray.EnsurePageForIndex(i);
+				pagedArray.EnsurePageAt(i);
 				pagedArray[i] = i;
 			}
 

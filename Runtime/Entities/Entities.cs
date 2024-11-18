@@ -70,7 +70,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Create()
 		{
-			EnsureCapacityForIndex(Count);
+			EnsureCapacityAt(Count);
 
 			Entity entity;
 
@@ -131,7 +131,7 @@ namespace Massive
 		public void CreateMany(int amount)
 		{
 			var needToCreate = amount;
-			EnsureCapacityForIndex(needToCreate + Count);
+			EnsureCapacityAt(needToCreate + Count);
 
 			while (Packing == Packing.WithHoles && NextHoleId != EndHoleId && needToCreate > 0)
 			{
@@ -223,7 +223,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureCapacityForIndex(int index)
+		public void EnsureCapacityAt(int index)
 		{
 			if (index >= Sparse.Length)
 			{

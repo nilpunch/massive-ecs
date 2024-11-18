@@ -99,7 +99,7 @@ namespace Massive
 				return;
 			}
 
-			EnsureSparseForIndex(id);
+			EnsureSparseAt(id);
 
 			if (Packing == Packing.WithHoles && NextHole != EndHole)
 			{
@@ -109,8 +109,8 @@ namespace Massive
 			}
 			else
 			{
-				EnsurePackedForIndex(Count);
-				EnsureDataForIndex(Count);
+				EnsurePackedAt(Count);
+				EnsureDataAt(Count);
 				AssignIndex(id, Count);
 				Count += 1;
 			}
@@ -132,7 +132,7 @@ namespace Massive
 			if (Packing == Packing.Continuous)
 			{
 				Count -= 1;
-				CopyFromToPacked(Count, Sparse[id]);
+				CopyAt(Count, Sparse[id]);
 			}
 			else
 			{
@@ -201,19 +201,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void SwapPacked(int first, int second)
-		{
-			ThrowIfNegative(first, $"Can't swap negative id.");
-			ThrowIfNegative(second, $"Can't swap negative id.");
-
-			var firstId = Packed[first];
-			var secondId = Packed[second];
-			AssignIndex(firstId, second);
-			AssignIndex(secondId, first);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsurePackedForIndex(int index)
+		public void EnsurePackedAt(int index)
 		{
 			if (index >= Packed.Length)
 			{
@@ -222,7 +210,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureSparseForIndex(int index)
+		public void EnsureSparseAt(int index)
 		{
 			if (index >= Sparse.Length)
 			{
@@ -281,7 +269,7 @@ namespace Massive
 					if (holeIndex < count)
 					{
 						count -= 1;
-						CopyFromToPacked(count, holeIndex);
+						CopyAt(count, holeIndex);
 
 						for (; count > 0 && Packed[count - 1] < 0; count--) { }
 					}
@@ -299,21 +287,41 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public virtual void CopyDataFromToPacked(int source, int destination)
+		public void SwapAt(int first, int second)
+		{
+			var firstId = Packed[first];
+			var secondId = Packed[second];
+
+			ThrowIfNegative(firstId, $"Can't swap negative id.");
+			ThrowIfNegative(secondId, $"Can't swap negative id.");
+
+			AssignIndex(firstId, second);
+			AssignIndex(secondId, first);
+
+			SwapDataAt(first, second);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public virtual void SwapDataAt(int first, int second)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected virtual void EnsureDataForIndex(int index)
+		public virtual void CopyDataAt(int source, int destination)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void CopyFromToPacked(int source, int destination)
+		public virtual void EnsureDataAt(int index)
+		{
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void CopyAt(int source, int destination)
 		{
 			var sourceId = Packed[source];
 			AssignIndex(sourceId, destination);
-			CopyDataFromToPacked(source, destination);
+			SwapDataAt(source, destination);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -30,7 +30,7 @@ namespace Massive.Serialization
 				ReadInt(stream),
 				(Packing)ReadByte(stream));
 
-			entities.EnsureCapacityForIndex(entities.MaxId);
+			entities.EnsureCapacityAt(entities.MaxId);
 
 			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
 			stream.Read(MemoryMarshal.Cast<uint, byte>(entities.Versions.AsSpan(0, entities.MaxId)));
@@ -59,8 +59,8 @@ namespace Massive.Serialization
 
 			var sparseCount = ReadInt(stream);
 
-			set.EnsurePackedForIndex(set.Count - 1);
-			set.EnsureSparseForIndex(sparseCount - 1);
+			set.EnsurePackedAt(set.Count - 1);
+			set.EnsureSparseAt(sparseCount - 1);
 
 			stream.Read(MemoryMarshal.Cast<int, byte>(set.Packed.AsSpan(0, set.Count)));
 			stream.Read(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, sparseCount)));
