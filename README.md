@@ -141,7 +141,3 @@ class Program
 	}
 }
 ```
-
-### How It Works
-
-Each `Massive` data structure contains a cyclic buffer in linear memory. This enables fast saving and rollback by allowing the entire data arrays to be copied at once. The `MassiveRegistry` utilizes these data structures internally, providing the same ECS implementation but with rollback capabilities.
