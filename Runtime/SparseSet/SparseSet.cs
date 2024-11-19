@@ -32,7 +32,7 @@ namespace Massive
 		private const int EndHole = int.MaxValue;
 
 		private int[] _packed = Array.Empty<int>();
-		private int[] _sparse = Array.Empty<int>();
+		private int[] _sparse = new int[] { Constants.InvalidId };
 
 		private int NextHole { get; set; } = EndHole;
 
@@ -122,7 +122,7 @@ namespace Massive
 		public void Unassign(int id)
 		{
 			// If ID is negative or element is not alive, nothing to be done
-			if (OutOfBounds(id) || Sparse[id] == Constants.InvalidId)
+			if (!IsAssigned(id))
 			{
 				return;
 			}
@@ -186,18 +186,17 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetIndexOrInvalid(int id)
 		{
-			if (OutOfBounds(id))
-			{
-				return Constants.InvalidId;
-			}
-
-			return Sparse[id];
+			int negativeIfIdOk = ~id;
+			int negativeIfBoundsOk = (id - Sparse.Length);
+			int oneIfOkElseZero = (int)(((uint)negativeIfBoundsOk >> 31) & ((uint)negativeIfIdOk >> 31));
+			int negativeOneIfOkElseZero = -oneIfOkElseZero;
+			return ~negativeOneIfOkElseZero | Sparse[id & negativeOneIfOkElseZero];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAssigned(int id)
 		{
-			return InsideBounds(id) && Sparse[id] != Constants.InvalidId;
+			return GetIndexOrInvalid(id) >= 0;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -329,18 +328,6 @@ namespace Massive
 		{
 			Sparse[id] = index;
 			Packed[index] = id;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private bool InsideBounds(int id)
-		{
-			return id >= 0 && id < Sparse.Length;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private bool OutOfBounds(int id)
-		{
-			return id < 0 || id >= Sparse.Length;
 		}
 
 		private void ThrowIfNegative(int id, string errorMessage)

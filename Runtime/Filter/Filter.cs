@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class Filter
+	public readonly struct Filter
 	{
 		public static Filter Empty { get; } = new Filter(Array.Empty<SparseSet>(), Array.Empty<SparseSet>());
 
@@ -23,9 +23,18 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsValid()
+		{
+			return Included != null && Excluded != null;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
-			return id >= 0 && (Included.Length == 0 || SetUtils.AssignedInAll(id, Included)) && (Excluded.Length == 0 || SetUtils.NotAssignedInAll(id, Excluded));
+			int combinedSign = id
+				| SetUtils.ReturnNonNegativeIfAssignedInAll(id, Included)
+				| ~SetUtils.ReturnNegativeIfNotAssignedInAll(id, Excluded);
+			return combinedSign >= 0;
 		}
 
 		public static void ThrowIfConflicting(SparseSet[] included, SparseSet[] excluded, string errorMessage)

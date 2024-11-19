@@ -24,25 +24,45 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AssignedInAll(int id, SparseSet[] sets)
 		{
+			return ReturnNonNegativeIfAssignedInAll(id, sets) >= 0;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int ReturnNonNegativeIfAssignedInAll(int id, SparseSet[] sets)
+		{
 			var shouldNotBecomeNegative = 0;
 			for (var i = 0; i < sets.Length; i++)
 			{
-				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
+				var sparse = sets[i].Sparse;
+				int negativeIfOk = (id - sparse.Length);
+				int oneIfOkElseZero = (int)((uint)negativeIfOk >> 31);
+				int negativeOneIfOkElseZero = -oneIfOkElseZero;
+				shouldNotBecomeNegative |= ~negativeOneIfOkElseZero | sparse[id & negativeOneIfOkElseZero];
 			}
 
-			return shouldNotBecomeNegative >= 0;
+			return shouldNotBecomeNegative;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool NotAssignedInAll(int id, SparseSet[] sets)
 		{
+			return ReturnNegativeIfNotAssignedInAll(id, sets) < 0;
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int ReturnNegativeIfNotAssignedInAll(int id, SparseSet[] sets)
+		{
 			var shouldStayNegative = ~0;
 			for (var i = 0; i < sets.Length; i++)
 			{
-				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
+				var sparse = sets[i].Sparse;
+				int negativeIfOk = (id - sparse.Length);
+				int oneIfOkElseZero = (int)((uint)negativeIfOk >> 31);
+				int negativeOneIfOkElseZero = -oneIfOkElseZero;
+				shouldStayNegative &= negativeOneIfOkElseZero & sparse[id & negativeOneIfOkElseZero];
 			}
 
-			return shouldStayNegative < 0;
+			return shouldStayNegative;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
