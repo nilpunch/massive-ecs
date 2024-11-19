@@ -187,8 +187,8 @@ namespace Massive
 		public int GetIndexOrInvalid(int id)
 		{
 			int negativeIfIdOk = ~id;
-			int negativeIfBoundsOk = (id - Sparse.Length);
-			int oneIfOkElseZero = (int)(((uint)negativeIfBoundsOk >> 31) & ((uint)negativeIfIdOk >> 31));
+			int negativeIfBoundsOk = id - Sparse.Length;
+			int oneIfOkElseZero = (int)((uint)negativeIfBoundsOk >> 31) & (int)((uint)negativeIfIdOk >> 31);
 			int negativeOneIfOkElseZero = -oneIfOkElseZero;
 			return ~negativeOneIfOkElseZero | Sparse[id & negativeOneIfOkElseZero];
 		}

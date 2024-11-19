@@ -15,7 +15,7 @@ namespace Massive
 			for (var i = 0; i < sets.Length; i++)
 			{
 				var index = sets[i].GetIndexOrInvalid(id);
-				counter -= index >> 31;
+				counter -= (int)((uint)index >> 31);
 			}
 
 			return counter;
