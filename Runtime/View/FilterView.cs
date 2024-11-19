@@ -13,12 +13,12 @@ namespace Massive
 		public Filter Filter { get; }
 		public Packing PackingWhenIterating { get; }
 
-		public FilterView(Registry registry, Filter filter = default,
+		public FilterView(Registry registry, Filter filter = null,
 			Packing packingWhenIterating = Packing.WithHoles)
 		{
 			Registry = registry;
 			PackingWhenIterating = packingWhenIterating;
-			Filter = filter.IsValid() ? filter : Filter.Empty;
+			Filter = filter ?? Filter.Empty;
 		}
 
 		public void ForEach<TAction>(ref TAction action)

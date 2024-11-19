@@ -59,7 +59,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Filter(this View view, Filter filter = default)
+		public static FilterView Filter(this View view, Filter filter = null)
 		{
 			return new FilterView(view.Registry, filter, view.PackingWhenIterating);
 		}

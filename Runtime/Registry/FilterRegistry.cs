@@ -24,7 +24,7 @@ namespace Massive
 		{
 			var filter = _filterLookup.Find<Tuple<TInclude, TExclude>>();
 
-			if (filter.IsValid())
+			if (filter == null)
 			{
 				var included = new TInclude().Select(_setRegistry);
 				var excluded = new TExclude().Select(_setRegistry);

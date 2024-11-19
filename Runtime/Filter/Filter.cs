@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public readonly struct Filter
+	public class Filter
 	{
 		public static Filter Empty { get; } = new Filter(Array.Empty<SparseSet>(), Array.Empty<SparseSet>());
 
@@ -20,12 +20,6 @@ namespace Massive
 
 			Included = included;
 			Excluded = excluded;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsValid()
-		{
-			return Included != null && Excluded != null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
