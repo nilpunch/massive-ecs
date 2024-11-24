@@ -30,9 +30,9 @@ namespace Massive
 
 			for (var i = 0; i < framesCapacity; i++)
 			{
-				_idsByFrames[i] = new int[Ids.Length];
-				_versionsByFrames[i] = new uint[Versions.Length];
-				_sparseByFrames[i] = new int[Sparse.Length];
+				_idsByFrames[i] = Array.Empty<int>();
+				_versionsByFrames[i] = Array.Empty<uint>();
+				_sparseByFrames[i] = Array.Empty<int>();
 			}
 		}
 
@@ -72,17 +72,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void EnsureCapacityForFrame(int frame)
 		{
-			if (_idsByFrames[frame].Length < Ids.Length)
+			if (_idsByFrames[frame].Length < PackedCapacity)
 			{
-				Array.Resize(ref _idsByFrames[frame], Ids.Length);
+				Array.Resize(ref _idsByFrames[frame], PackedCapacity);
+				Array.Resize(ref _versionsByFrames[frame], PackedCapacity);
 			}
-			if (_versionsByFrames[frame].Length < Versions.Length)
+			if (_sparseByFrames[frame].Length < SparseCapacity)
 			{
-				Array.Resize(ref _versionsByFrames[frame], Versions.Length);
-			}
-			if (_sparseByFrames[frame].Length < Sparse.Length)
-			{
-				Array.Resize(ref _sparseByFrames[frame], Sparse.Length);
+				Array.Resize(ref _sparseByFrames[frame], SparseCapacity);
 			}
 		}
 	}

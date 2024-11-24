@@ -34,7 +34,8 @@ namespace Massive
 		private int[] _packed = Array.Empty<int>();
 		private int[] _sparse = Array.Empty<int>();
 
-		private int SparseCapacity { get; set; }
+		public int PackedCapacity { get; private set; }
+		public int SparseCapacity { get; private set; }
 		private int NextHole { get; set; } = EndHole;
 
 		public SparseSet(Packing packing = Packing.Continuous)
@@ -204,7 +205,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePackedAt(int index)
 		{
-			if (index >= Packed.Length)
+			if (index >= PackedCapacity)
 			{
 				ResizePacked(MathUtils.NextPowerOf2(index + 1));
 			}
@@ -224,6 +225,7 @@ namespace Massive
 		{
 			Array.Resize(ref _packed, capacity);
 			Ids = _packed;
+			PackedCapacity = capacity;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

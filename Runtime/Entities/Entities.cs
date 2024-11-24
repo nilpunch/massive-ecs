@@ -15,6 +15,8 @@ namespace Massive
 		private uint[] _versions = Array.Empty<uint>();
 		private int[] _sparse = Array.Empty<int>();
 
+		public int PackedCapacity { get; private set; }
+		public int SparseCapacity { get; private set; }
 		public int MaxId { get; private set; }
 		private int NextHoleId { get; set; } = EndHoleId;
 
@@ -225,7 +227,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureCapacityAt(int index)
 		{
-			if (index >= Sparse.Length)
+			if (index >= SparseCapacity)
 			{
 				var newCapacity = MathUtils.NextPowerOf2(index + 1);
 				ResizePacked(newCapacity);
@@ -239,12 +241,14 @@ namespace Massive
 			Array.Resize(ref _ids, capacity);
 			Array.Resize(ref _versions, capacity);
 			Ids = _ids;
+			PackedCapacity = capacity;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
 			Array.Resize(ref _sparse, capacity);
+			SparseCapacity = capacity;
 		}
 
 		public override Packing ExchangePacking(Packing packing)
