@@ -26,7 +26,7 @@ namespace Massive
 			}
 		}
 
-		public static TrimmedFilter ToTrimmed(this Filter filter)
+		public static TrimmedFilter AsTrimmed(this Filter filter)
 		{
 			return new TrimmedFilter(filter.Included, filter.Included.Length, false, filter.Excluded);
 		}

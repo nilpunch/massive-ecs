@@ -29,7 +29,7 @@ namespace Massive
 			if (Filter.Included.Length == 0)
 			{
 				idsSource = Registry.Entities;
-				trimmedFilter = Filter.ToTrimmed();
+				trimmedFilter = Filter.AsTrimmed();
 			}
 			else
 			{
@@ -241,7 +241,7 @@ namespace Massive
 		{
 			if (Filter.Included.Length == 0)
 			{
-				return new IdsFilterEnumerator(Registry.Entities, Filter.ToTrimmed(), PackingWhenIterating);
+				return new IdsFilterEnumerator(Registry.Entities, Filter.AsTrimmed(), PackingWhenIterating);
 			}
 			else
 			{
