@@ -10,17 +10,18 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public readonly struct TrimmedFilter : IDisposable
 	{
-		public bool IsRented { get; }
-		public int IncludedLength { get; }
-		public int ExcludedLength { get; }
 		public SparseSet[] Included { get; }
-		public SparseSet[] Excluded { get; }
+		public int IncludedLength { get; }
+		public bool IncludedRented { get; }
 
-		public TrimmedFilter(SparseSet[] included, int includedLength, bool isRented, SparseSet[] excluded)
+		public SparseSet[] Excluded { get; }
+		public int ExcludedLength { get; }
+
+		public TrimmedFilter(SparseSet[] included, int includedLength, bool includedRented, SparseSet[] excluded)
 		{
 			Included = included;
 			IncludedLength = includedLength;
-			IsRented = isRented;
+			IncludedRented = includedRented;
 			Excluded = excluded;
 			ExcludedLength = excluded.Length;
 		}
@@ -36,7 +37,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Dispose()
 		{
-			if (IsRented)
+			if (IncludedRented)
 			{
 				ArrayPool<SparseSet>.Shared.Return(Included);
 			}
