@@ -7,7 +7,7 @@ using System.Text;
 // ReSharper disable MustUseReturnValue
 namespace Massive.Serialization
 {
-	public static class SerializationHelpers
+	public static class SerializationUtils
 	{
 		public static void WriteEntities(Entities entities, Stream stream)
 		{
@@ -44,10 +44,10 @@ namespace Massive.Serialization
 			WriteInt(state.NextHole, stream);
 			WriteByte((byte)state.Packing, stream);
 
-			WriteInt(set.PackedCapacity, stream);
+			WriteInt(set.SparseCapacity, stream);
 
 			stream.Write(MemoryMarshal.Cast<int, byte>(set.Packed.AsSpan(0, set.Count)));
-			stream.Write(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, set.PackedCapacity)));
+			stream.Write(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, set.SparseCapacity)));
 		}
 
 		public static void ReadSparseSet(SparseSet set, Stream stream)
@@ -57,16 +57,16 @@ namespace Massive.Serialization
 				ReadInt(stream),
 				(Packing)ReadByte(stream));
 
-			var sparseCount = ReadInt(stream);
+			var sparseCapacity = ReadInt(stream);
 
 			set.EnsurePackedAt(set.Count - 1);
-			set.EnsureSparseAt(sparseCount - 1);
+			set.EnsureSparseAt(sparseCapacity - 1);
 
 			stream.Read(MemoryMarshal.Cast<int, byte>(set.Packed.AsSpan(0, set.Count)));
-			stream.Read(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, sparseCount)));
-			if (sparseCount < set.PackedCapacity)
+			stream.Read(MemoryMarshal.Cast<int, byte>(set.Sparse.AsSpan(0, sparseCapacity)));
+			if (sparseCapacity < set.SparseCapacity)
 			{
-				Array.Fill(set.Sparse, Constants.InvalidId, sparseCount, set.PackedCapacity - sparseCount);
+				Array.Fill(set.Sparse, Constants.InvalidId, sparseCapacity, set.SparseCapacity - sparseCapacity);
 			}
 		}
 

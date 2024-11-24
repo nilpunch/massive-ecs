@@ -47,7 +47,7 @@ namespace Massive
 
 			// Copy everything from current state to current frame
 			Array.Copy(Packed, _packedByFrames[currentFrame], Count);
-			Array.Copy(Sparse, _sparseByFrames[currentFrame], PackedCapacity);
+			Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
 			_stateByFrames[currentFrame] = CurrentState;
 		}
 
@@ -58,14 +58,14 @@ namespace Massive
 
 			// Copy everything from rollback frame to current state
 			var rollbackFrame = _cyclicFrameCounter.CurrentFrame;
-			var rollbackSparseLength = _sparseByFrames[rollbackFrame].Length;
+			var rollbackSparseCapacity = _sparseByFrames[rollbackFrame].Length;
 			var rollbackState = _stateByFrames[rollbackFrame];
 
 			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackState.Count);
-			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseLength);
-			if (rollbackSparseLength < PackedCapacity)
+			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseCapacity);
+			if (rollbackSparseCapacity < SparseCapacity)
 			{
-				Array.Fill(Sparse, Constants.InvalidId, rollbackSparseLength, PackedCapacity - rollbackSparseLength);
+				Array.Fill(Sparse, Constants.InvalidId, rollbackSparseCapacity, SparseCapacity - rollbackSparseCapacity);
 			}
 			CurrentState = rollbackState;
 		}
@@ -73,11 +73,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void EnsureCapacityForFrame(int frame)
 		{
-			if (_sparseByFrames[frame].Length < PackedCapacity)
+			if (_sparseByFrames[frame].Length < SparseCapacity)
 			{
-				var previousLength = _sparseByFrames[frame].Length;
-				Array.Resize(ref _sparseByFrames[frame], PackedCapacity);
-				Array.Fill(_sparseByFrames[frame], Constants.InvalidId, previousLength, PackedCapacity - previousLength);
+				var previousCapacity = _sparseByFrames[frame].Length;
+				Array.Resize(ref _sparseByFrames[frame], SparseCapacity);
+				Array.Fill(_sparseByFrames[frame], Constants.InvalidId, previousCapacity, SparseCapacity - previousCapacity);
 			}
 
 			if (_packedByFrames[frame].Length < PackedCapacity)

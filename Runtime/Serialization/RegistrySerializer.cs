@@ -16,15 +16,15 @@ namespace Massive.Serialization
 		public void Serialize(Registry registry, Stream stream)
 		{
 			// Entities
-			SerializationHelpers.WriteEntities(registry.Entities, stream);
+			SerializationUtils.WriteEntities(registry.Entities, stream);
 
 			// Sets
-			SerializationHelpers.WriteInt(registry.SetRegistry.All.Count, stream);
+			SerializationUtils.WriteInt(registry.SetRegistry.All.Count, stream);
 			foreach (var sparseSet in registry.SetRegistry.All)
 			{
 				var setKey = registry.SetRegistry.GetKey(sparseSet);
-				SerializationHelpers.WriteType(setKey, stream);
-				SerializationHelpers.WriteSparseSet(sparseSet, stream);
+				SerializationUtils.WriteType(setKey, stream);
+				SerializationUtils.WriteSparseSet(sparseSet, stream);
 
 				if (sparseSet is not IDataSet dataSet)
 				{
@@ -39,11 +39,11 @@ namespace Massive.Serialization
 
 				if (dataSet.Data.ElementType.IsUnmanaged())
 				{
-					SerializationHelpers.WriteUnmanagedPagedArray(dataSet.Data, sparseSet.Count, stream);
+					SerializationUtils.WriteUnmanagedPagedArray(dataSet.Data, sparseSet.Count, stream);
 				}
 				else
 				{
-					SerializationHelpers.WriteManagedPagedArray(dataSet.Data, sparseSet.Count, stream);
+					SerializationUtils.WriteManagedPagedArray(dataSet.Data, sparseSet.Count, stream);
 				}
 			}
 
@@ -56,48 +56,48 @@ namespace Massive.Serialization
 					syncedGroups.Add(group);
 				}
 			}
-			SerializationHelpers.WriteInt(syncedGroups.Count, stream);
+			SerializationUtils.WriteInt(syncedGroups.Count, stream);
 			foreach (var group in syncedGroups)
 			{
 				var included = group.Included;
 				var excluded = group.Excluded;
 
 				// Included
-				SerializationHelpers.WriteInt(included.Length, stream);
+				SerializationUtils.WriteInt(included.Length, stream);
 				foreach (var set in included)
 				{
 					var setKey = registry.SetRegistry.GetKey(set);
-					SerializationHelpers.WriteType(setKey, stream);
+					SerializationUtils.WriteType(setKey, stream);
 				}
 
 				// Excluded
-				SerializationHelpers.WriteInt(excluded.Length, stream);
+				SerializationUtils.WriteInt(excluded.Length, stream);
 				foreach (var set in excluded)
 				{
 					var setKey = registry.SetRegistry.GetKey(set);
-					SerializationHelpers.WriteType(setKey, stream);
+					SerializationUtils.WriteType(setKey, stream);
 				}
 
-				SerializationHelpers.WriteSparseSet(group.Set, stream);
+				SerializationUtils.WriteSparseSet(group.Set, stream);
 			}
 		}
 
 		public void Deserialize(Registry registry, Stream stream)
 		{
 			// Entities
-			SerializationHelpers.ReadEntities(registry.Entities, stream);
+			SerializationUtils.ReadEntities(registry.Entities, stream);
 
 			// Sets
 			var deserializedSets = new HashSet<SparseSet>();
-			var setCount = SerializationHelpers.ReadInt(stream);
+			var setCount = SerializationUtils.ReadInt(stream);
 			for (var i = 0; i < setCount; i++)
 			{
-				var setKey = SerializationHelpers.ReadType(stream);
+				var setKey = SerializationUtils.ReadType(stream);
 
 				var sparseSet = registry.SetRegistry.GetReflected(setKey);
 				deserializedSets.Add(sparseSet);
 
-				SerializationHelpers.ReadSparseSet(sparseSet, stream);
+				SerializationUtils.ReadSparseSet(sparseSet, stream);
 
 				if (sparseSet is not IDataSet dataSet)
 				{
@@ -112,11 +112,11 @@ namespace Massive.Serialization
 
 				if (dataSet.Data.ElementType.IsUnmanaged())
 				{
-					SerializationHelpers.ReadUnmanagedPagedArray(dataSet.Data, sparseSet.Count, stream);
+					SerializationUtils.ReadUnmanagedPagedArray(dataSet.Data, sparseSet.Count, stream);
 				}
 				else
 				{
-					SerializationHelpers.ReadManagedPagedArray(dataSet.Data, sparseSet.Count, stream);
+					SerializationUtils.ReadManagedPagedArray(dataSet.Data, sparseSet.Count, stream);
 				}
 			}
 			// Clear all remaining sets
@@ -130,27 +130,27 @@ namespace Massive.Serialization
 
 			// Groups
 			var deserializedGroups = new HashSet<Group>();
-			var groupCount = SerializationHelpers.ReadInt(stream);
+			var groupCount = SerializationUtils.ReadInt(stream);
 			for (var groupIndex = 0; groupIndex < groupCount; groupIndex++)
 			{
 				// Included
-				var included = new SparseSet[SerializationHelpers.ReadInt(stream)];
+				var included = new SparseSet[SerializationUtils.ReadInt(stream)];
 				for (var i = 0; i < included.Length; i++)
 				{
-					included[i] = registry.SetRegistry.GetReflected(SerializationHelpers.ReadType(stream));
+					included[i] = registry.SetRegistry.GetReflected(SerializationUtils.ReadType(stream));
 				}
 
 				// Excluded
-				var excluded = new SparseSet[SerializationHelpers.ReadInt(stream)];
+				var excluded = new SparseSet[SerializationUtils.ReadInt(stream)];
 				for (var i = 0; i < excluded.Length; i++)
 				{
-					excluded[i] = registry.SetRegistry.GetReflected(SerializationHelpers.ReadType(stream));
+					excluded[i] = registry.SetRegistry.GetReflected(SerializationUtils.ReadType(stream));
 				}
 
 				var group = registry.Group(included, excluded);
 				deserializedGroups.Add(group);
 
-				SerializationHelpers.ReadSparseSet(group.Set, stream);
+				SerializationUtils.ReadSparseSet(group.Set, stream);
 			}
 			// Desync all remaining groups
 			foreach (var group in registry.GroupRegistry.All)

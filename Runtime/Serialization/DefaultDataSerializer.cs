@@ -6,12 +6,12 @@ namespace Massive.Serialization
 	{
 		public void Write(IPagedArray pagedArray, int count, Stream stream)
 		{
-			SerializationHelpers.WriteManagedPagedArray(pagedArray, count, stream);
+			SerializationUtils.WriteManagedPagedArray(pagedArray, count, stream);
 		}
 
 		public void Read(IPagedArray pagedArray, int count, Stream stream)
 		{
-			SerializationHelpers.ReadManagedPagedArray(pagedArray, count, stream);
+			SerializationUtils.ReadManagedPagedArray(pagedArray, count, stream);
 		}
 	}
 }
