@@ -10,15 +10,15 @@ namespace Massive
 	public struct IdsFilterEnumerator : IDisposable
 	{
 		private readonly IdsSource _idsSource;
-		private readonly Filter _filter;
+		private readonly TrimmedFilter _trimmedFilter;
 		private readonly Packing _originalPacking;
 		private int _index;
 
-		public IdsFilterEnumerator(IdsSource idsSource, Filter filter,
+		public IdsFilterEnumerator(IdsSource idsSource, TrimmedFilter trimmedFilter,
 			Packing packingWhenIterating = Packing.WithHoles)
 		{
 			_idsSource = idsSource;
-			_filter = filter;
+			_trimmedFilter = trimmedFilter;
 			_originalPacking = _idsSource.ExchangeToStricterPacking(packingWhenIterating);
 			_index = _idsSource.Count;
 		}
@@ -32,7 +32,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			while (--_index >= 0 && (_index >= _idsSource.Count || !_filter.ContainsId(_idsSource.Ids[_index])))
+			while (--_index >= 0 && (_index >= _idsSource.Count || !_trimmedFilter.ContainsId(_idsSource.Ids[_index])))
 			{
 			}
 
@@ -42,6 +42,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Dispose()
 		{
+			_trimmedFilter.Dispose();
 			_idsSource.ExchangePacking(_originalPacking);
 		}
 	}

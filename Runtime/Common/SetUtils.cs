@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -21,27 +22,18 @@ namespace Massive
 			return counter;
 		}
 
-		/// <summary>
-		/// Works only if provided ID is non-negative.
-		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AssignedInAll(int id, SparseSet[] sets)
 		{
 			return NonNegativeIfAssignedInAll(id, sets) >= 0;
 		}
 
-		/// <summary>
-		/// Works only if provided ID is non-negative.
-		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool NotAssignedInAll(int id, SparseSet[] sets)
 		{
 			return NegativeIfNotAssignedInAll(id, sets) < 0;
 		}
 
-		/// <summary>
-		/// Works only if provided ID is non-negative.
-		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int NonNegativeIfAssignedInAll(int id, SparseSet[] sets)
 		{
@@ -53,9 +45,6 @@ namespace Massive
 			return shouldNotBecomeNegative;
 		}
 
-		/// <summary>
-		/// Works only if provided ID is non-negative.
-		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int NegativeIfNotAssignedInAll(int id, SparseSet[] sets)
 		{
@@ -65,6 +54,17 @@ namespace Massive
 				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
 			}
 			return shouldStayNegative;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int NonNegativeIfAssignedInAll(int id, SparseSet[] sets, int setsLength)
+		{
+			var shouldNotBecomeNegative = 0;
+			for (var i = 0; i < setsLength; i++)
+			{
+				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
+			}
+			return shouldNotBecomeNegative;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

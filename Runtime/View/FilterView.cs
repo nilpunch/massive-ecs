@@ -24,9 +24,19 @@ namespace Massive
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			IdsSource idsSource = Filter.Included.Length == 0
-				? Registry.Entities
-				: SetUtils.GetMinimalSet(Filter.Included);
+			IdsSource idsSource;
+			TrimmedFilter trimmedFilter;
+			if (Filter.Included.Length == 0)
+			{
+				idsSource = Registry.Entities;
+				trimmedFilter = Filter.ToTrimmed();
+			}
+			else
+			{
+				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
+				idsSource = minimalSet;
+				trimmedFilter = Filter.Trim(minimalSet);
+			}
 
 			var originalPacking = idsSource.ExchangeToStricterPacking(PackingWhenIterating);
 
@@ -39,7 +49,7 @@ namespace Massive
 				}
 
 				var id = idsSource.Ids[i];
-				if (Filter.ContainsId(id))
+				if (trimmedFilter.ContainsId(id))
 				{
 					if (!action.Apply(id))
 					{
@@ -49,6 +59,7 @@ namespace Massive
 			}
 
 			idsSource.ExchangePacking(originalPacking);
+			trimmedFilter.Dispose();
 		}
 
 		public void ForEach<TAction, T>(ref TAction action)
@@ -62,6 +73,7 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(dataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
+			var trimmedFilter = Filter.Trim(minSet);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -73,7 +85,7 @@ namespace Massive
 
 				var id = minSet.Ids[i];
 				var index = dataSet.GetIndexOrInvalid(id);
-				if (index >= 0 && Filter.ContainsId(id))
+				if (index >= 0 && trimmedFilter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data[index]))
 					{
@@ -83,6 +95,7 @@ namespace Massive
 			}
 
 			minSet.ExchangePacking(originalPacking);
+			trimmedFilter.Dispose();
 		}
 
 		public void ForEach<TAction, T1, T2>(ref TAction action)
@@ -100,6 +113,7 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
+			var trimmedFilter = Filter.Trim(minSet);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -113,7 +127,7 @@ namespace Massive
 				var index1 = dataSet1.GetIndexOrInvalid(id);
 				var index2 = dataSet2.GetIndexOrInvalid(id);
 				if ((index1 | index2) >= 0
-				    && Filter.ContainsId(id))
+				    && trimmedFilter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[index1], ref data2[index2]))
 					{
@@ -123,6 +137,7 @@ namespace Massive
 			}
 
 			minSet.ExchangePacking(originalPacking);
+			trimmedFilter.Dispose();
 		}
 
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
@@ -143,6 +158,7 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
+			var trimmedFilter = Filter.Trim(minSet);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -157,7 +173,7 @@ namespace Massive
 				var index2 = dataSet2.GetIndexOrInvalid(id);
 				var index3 = dataSet3.GetIndexOrInvalid(id);
 				if ((index1 | index2 | index3) >= 0
-				    && Filter.ContainsId(id))
+				    && trimmedFilter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3]))
 					{
@@ -167,6 +183,7 @@ namespace Massive
 			}
 
 			minSet.ExchangePacking(originalPacking);
+			trimmedFilter.Dispose();
 		}
 
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
@@ -190,6 +207,7 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
+			var trimmedFilter = Filter.Trim(minSet);
 
 			for (var i = minSet.Count - 1; i >= 0; i--)
 			{
@@ -205,7 +223,7 @@ namespace Massive
 				var index3 = dataSet3.GetIndexOrInvalid(id);
 				var index4 = dataSet4.GetIndexOrInvalid(id);
 				if ((index1 | index2 | index3 | index4) >= 0
-				    && Filter.ContainsId(id))
+				    && trimmedFilter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
 					{
@@ -215,16 +233,21 @@ namespace Massive
 			}
 
 			minSet.ExchangePacking(originalPacking);
+			trimmedFilter.Dispose();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IdsFilterEnumerator GetEnumerator()
 		{
-			IdsSource idsSource = Filter.Included.Length == 0
-				? Registry.Entities
-				: SetUtils.GetMinimalSet(Filter.Included);
-
-			return new IdsFilterEnumerator(idsSource, Filter, PackingWhenIterating);
+			if (Filter.Included.Length == 0)
+			{
+				return new IdsFilterEnumerator(Registry.Entities, Filter.ToTrimmed(), PackingWhenIterating);
+			}
+			else
+			{
+				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
+				return new IdsFilterEnumerator(minimalSet, Filter.Trim(minimalSet), PackingWhenIterating);
+			}
 		}
 
 		private void ThrowIfCantInclude(SparseSet sparseSet)
