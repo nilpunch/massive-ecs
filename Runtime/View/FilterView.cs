@@ -127,7 +127,7 @@ namespace Massive
 				var index1 = dataSet1.GetIndexOrInvalid(id);
 				var index2 = dataSet2.GetIndexOrInvalid(id);
 				if ((index1 | index2) >= 0
-				    && trimmedFilter.ContainsId(id))
+					&& trimmedFilter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[index1], ref data2[index2]))
 					{
@@ -173,7 +173,7 @@ namespace Massive
 				var index2 = dataSet2.GetIndexOrInvalid(id);
 				var index3 = dataSet3.GetIndexOrInvalid(id);
 				if ((index1 | index2 | index3) >= 0
-				    && trimmedFilter.ContainsId(id))
+					&& trimmedFilter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3]))
 					{
@@ -223,7 +223,7 @@ namespace Massive
 				var index3 = dataSet3.GetIndexOrInvalid(id);
 				var index4 = dataSet4.GetIndexOrInvalid(id);
 				if ((index1 | index2 | index3 | index4) >= 0
-				    && trimmedFilter.ContainsId(id))
+					&& trimmedFilter.ContainsId(id))
 				{
 					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
 					{

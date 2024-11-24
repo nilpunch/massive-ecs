@@ -3,17 +3,28 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Rollback extension for <see cref="Massive.DataSet{T}"/> with managed data support.
+	/// Rollback extension for <see cref="Massive.DataSet{T}"/> with custom copying.
+	/// Swaps data when elements are moved.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveManagedDataSet<T> : MassiveDataSet<T> where T : IManaged<T>
+	public class MassiveCopyingDataSet<T> : MassiveDataSet<T> where T : ICopyable<T>
 	{
-		public MassiveManagedDataSet(int framesCapacity = Constants.DefaultFramesCapacity,
+		public MassiveCopyingDataSet(int framesCapacity = Constants.DefaultFramesCapacity,
 			int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
 			: base(framesCapacity, pageSize, packing)
 		{
+		}
+
+		public override void MoveDataAt(int source, int destination)
+		{
+			Data.Swap(source, destination);
+		}
+
+		public override void CopyDataAt(int source, int destination)
+		{
+			Data[source].CopyTo(ref Data[destination]);
 		}
 
 		protected override void CopyData(PagedArray<T> source, PagedArray<T> destination, int count)

@@ -305,17 +305,18 @@ namespace Massive
 			SwapDataAt(first, second);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public virtual void MoveDataAt(int source, int destination)
+		{
+		}
+
 		public virtual void SwapDataAt(int first, int second)
 		{
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void CopyDataAt(int source, int destination)
 		{
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void EnsureDataAt(int index)
 		{
 		}
@@ -325,7 +326,7 @@ namespace Massive
 		{
 			var sourceId = Packed[source];
 			AssignIndex(sourceId, destination);
-			SwapDataAt(source, destination);
+			MoveDataAt(source, destination);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

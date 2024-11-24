@@ -25,19 +25,21 @@ namespace Massive
 			return ref Data[Sparse[id]];
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override void MoveDataAt(int source, int destination)
+		{
+			Data[destination] = Data[source];
+		}
+
 		public override void SwapDataAt(int first, int second)
 		{
 			Data.Swap(first, second);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void CopyDataAt(int source, int destination)
 		{
 			Data[destination] = Data[source];
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void EnsureDataAt(int index)
 		{
 			Data.EnsurePageAt(index);
