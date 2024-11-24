@@ -13,7 +13,6 @@ namespace Massive
 		private readonly Filter _filter;
 		private readonly Packing _originalPacking;
 		private int _index;
-		private int _current;
 
 		public IdsFilterEnumerator(IdsSource idsSource, Filter filter,
 			Packing packingWhenIterating = Packing.WithHoles)
@@ -22,26 +21,19 @@ namespace Massive
 			_filter = filter;
 			_originalPacking = _idsSource.ExchangeToStricterPacking(packingWhenIterating);
 			_index = _idsSource.Count;
-			_current = Constants.InvalidId;
 		}
 
 		public int Current
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _current;
+			get => _idsSource.Ids[_index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			if (--_index > _idsSource.Count)
+			while (--_index >= 0 && (_index >= _idsSource.Count || !_filter.ContainsId(_idsSource.Ids[_index])))
 			{
-				_index = _idsSource.Count - 1;
-			}
-
-			while (_index >= 0 && !_filter.ContainsId(_current = _idsSource.Ids[_index]))
-			{
-				--_index;
 			}
 
 			return _index >= 0;

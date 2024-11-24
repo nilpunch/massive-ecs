@@ -32,8 +32,9 @@ namespace Massive
 		private const int EndHole = int.MaxValue;
 
 		private int[] _packed = Array.Empty<int>();
-		private int[] _sparse = new int[] { Constants.InvalidId };
+		private int[] _sparse = Array.Empty<int>();
 
+		private int SparseCapacity { get; set; }
 		private int NextHole { get; set; } = EndHole;
 
 		public SparseSet(Packing packing = Packing.Continuous)
@@ -94,7 +95,7 @@ namespace Massive
 		public void Assign(int id)
 		{
 			// If ID is negative or element is alive, nothing to be done
-			if (id < 0 || id < Sparse.Length && Sparse[id] != Constants.InvalidId)
+			if (id < 0 || id < SparseCapacity && Sparse[id] != Constants.InvalidId)
 			{
 				return;
 			}
@@ -122,7 +123,7 @@ namespace Massive
 		public void Unassign(int id)
 		{
 			// If ID is negative or element is not alive, nothing to be done
-			if (!IsAssigned(id))
+			if (id < 0 || id >= SparseCapacity || Sparse[id] == Constants.InvalidId)
 			{
 				return;
 			}
@@ -186,17 +187,18 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetIndexOrInvalid(int id)
 		{
-			int negativeIfIdOk = ~id;
-			int negativeIfBoundsOk = id - Sparse.Length;
-			int oneIfOkElseZero = (int)((uint)negativeIfBoundsOk >> 31) & (int)((uint)negativeIfIdOk >> 31);
-			int negativeOneIfOkElseZero = -oneIfOkElseZero;
-			return ~negativeOneIfOkElseZero | Sparse[id & negativeOneIfOkElseZero];
+			if (id < 0 || id >= SparseCapacity)
+			{
+				return Constants.InvalidId;
+			}
+
+			return Sparse[id];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAssigned(int id)
 		{
-			return GetIndexOrInvalid(id) >= 0;
+			return id >= 0 && id < SparseCapacity && Sparse[id] != Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -211,7 +213,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureSparseAt(int index)
 		{
-			if (index >= Sparse.Length)
+			if (index >= SparseCapacity)
 			{
 				ResizeSparse(MathUtils.NextPowerOf2(index + 1));
 			}
@@ -227,12 +229,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
-			var previousCapacity = Sparse.Length;
+			var previousCapacity = SparseCapacity;
 			Array.Resize(ref _sparse, capacity);
 			if (capacity > previousCapacity)
 			{
 				Array.Fill(Sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
 			}
+			SparseCapacity = capacity;
 		}
 
 		public override Packing ExchangePacking(Packing packing)

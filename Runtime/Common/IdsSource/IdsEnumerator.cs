@@ -12,33 +12,25 @@ namespace Massive
 		private readonly IdsSource _idsSource;
 		private readonly Packing _originalPacking;
 		private int _index;
-		private int _current;
 
 		public IdsEnumerator(IdsSource idsSource, Packing packingWhenIterating = Packing.WithHoles)
 		{
 			_idsSource = idsSource;
 			_originalPacking = _idsSource.ExchangeToStricterPacking(packingWhenIterating);
 			_index = _idsSource.Count;
-			_current = Constants.InvalidId;
 		}
 
 		public int Current
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _current;
+			get => _idsSource.Ids[_index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			if (--_index > _idsSource.Count)
+			while (--_index >= 0 && (_index >= _idsSource.Count || _idsSource.Ids[_index] < 0))
 			{
-				_index = _idsSource.Count - 1;
-			}
-
-			while (_index >= 0 && (_current = _idsSource.Ids[_index]) < 0)
-			{
-				--_index;
 			}
 
 			return _index >= 0;

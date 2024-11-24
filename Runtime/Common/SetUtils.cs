@@ -27,26 +27,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AssignedInAll(int id, SparseSet[] sets)
 		{
-			return ReturnNonNegativeIfAssignedInAll(id, sets) >= 0;
-		}
-
-		/// <summary>
-		/// Works only if provided ID is non-negative.
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int ReturnNonNegativeIfAssignedInAll(int id, SparseSet[] sets)
-		{
-			var shouldNotBecomeNegative = 0;
-			for (var i = 0; i < sets.Length; i++)
-			{
-				var sparse = sets[i].Sparse;
-				int negativeIfOk = id - sparse.Length;
-				int oneIfOkElseZero = (int)((uint)negativeIfOk >> 31);
-				int negativeOneIfOkElseZero = -oneIfOkElseZero;
-				shouldNotBecomeNegative |= ~negativeOneIfOkElseZero | sparse[id & negativeOneIfOkElseZero];
-			}
-
-			return shouldNotBecomeNegative;
+			return NonNegativeIfAssignedInAll(id, sets) >= 0;
 		}
 
 		/// <summary>
@@ -55,25 +36,34 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool NotAssignedInAll(int id, SparseSet[] sets)
 		{
-			return ReturnNegativeIfNotAssignedInAll(id, sets) < 0;
+			return NegativeIfNotAssignedInAll(id, sets) < 0;
 		}
 
 		/// <summary>
 		/// Works only if provided ID is non-negative.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int ReturnNegativeIfNotAssignedInAll(int id, SparseSet[] sets)
+		public static int NonNegativeIfAssignedInAll(int id, SparseSet[] sets)
+		{
+			var shouldNotBecomeNegative = 0;
+			for (var i = 0; i < sets.Length; i++)
+			{
+				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
+			}
+			return shouldNotBecomeNegative;
+		}
+
+		/// <summary>
+		/// Works only if provided ID is non-negative.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int NegativeIfNotAssignedInAll(int id, SparseSet[] sets)
 		{
 			var shouldStayNegative = ~0;
 			for (var i = 0; i < sets.Length; i++)
 			{
-				var sparse = sets[i].Sparse;
-				int negativeIfOk = id - sparse.Length;
-				int oneIfOkElseZero = (int)((uint)negativeIfOk >> 31);
-				int negativeOneIfOkElseZero = -oneIfOkElseZero;
-				shouldStayNegative &= negativeOneIfOkElseZero & sparse[id & negativeOneIfOkElseZero];
+				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
 			}
-
 			return shouldStayNegative;
 		}
 

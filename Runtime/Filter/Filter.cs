@@ -25,10 +25,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
-			int combinedSign = id
-				| SetUtils.ReturnNonNegativeIfAssignedInAll(id, Included)
-				| ~SetUtils.ReturnNegativeIfNotAssignedInAll(id, Excluded);
-			return combinedSign >= 0;
+			return (id
+				| SetUtils.NonNegativeIfAssignedInAll(id, Included)
+				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded)) >= 0;
 		}
 
 		public static void ThrowIfConflicting(SparseSet[] included, SparseSet[] excluded, string errorMessage)
