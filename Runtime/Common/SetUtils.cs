@@ -68,6 +68,17 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int NegativeIfNotAssignedInAll(int id, SparseSet[] sets, int setsLength)
+		{
+			var shouldStayNegative = ~0;
+			for (var i = 0; i < setsLength; i++)
+			{
+				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
+			}
+			return shouldStayNegative;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SparseSet GetMinimalSet(SparseSet[] sets)
 		{
 			var minimal = sets[0];

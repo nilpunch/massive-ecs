@@ -12,6 +12,7 @@ namespace Massive
 	{
 		public bool IsRented { get; }
 		public int IncludedLength { get; }
+		public int ExcludedLength { get; }
 		public SparseSet[] Included { get; }
 		public SparseSet[] Excluded { get; }
 
@@ -21,13 +22,14 @@ namespace Massive
 			IncludedLength = includedLength;
 			IsRented = isRented;
 			Excluded = excluded;
+			ExcludedLength = excluded.Length;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
 			return (SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedLength)
-				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded)) >= 0;
+				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedLength)) >= 0;
 		}
 
 		public void Dispose()
