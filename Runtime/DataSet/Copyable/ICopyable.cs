@@ -7,6 +7,7 @@ namespace Massive
 		private static void ReflectionSupportForAOT()
 		{
 			_ = new MassiveCopyingDataSet<T>();
+			_ = new CopyingDataSet<T>();
 		}
 	}
 }

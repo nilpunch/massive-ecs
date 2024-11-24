@@ -34,7 +34,19 @@ namespace Massive
 			}
 
 			var args = new object[] { _pageSize, GetPackingFor(type) };
-			return (SparseSet)ReflectionUtils.CreateGeneric(typeof(DataSet<>), type, args);
+
+			if (CopyableUtils.IsImplementedFor(type))
+			{
+				return (SparseSet)ReflectionUtils.CreateGeneric(typeof(CopyingDataSet<>), type, args);
+			}
+			else if (type.IsManaged())
+			{
+				return (SparseSet)ReflectionUtils.CreateGeneric(typeof(SwappingDataSet<>), type, args);
+			}
+			else
+			{
+				return (SparseSet)ReflectionUtils.CreateGeneric(typeof(DataSet<>), type, args);
+			}
 		}
 
 		private SparseSet CreateSparseSet(Packing packing)
@@ -44,7 +56,18 @@ namespace Massive
 
 		private SparseSet CreateDataSet<T>()
 		{
-			return new DataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+			if (CopyableUtils.IsImplementedFor(typeof(T)))
+			{
+				return CopyableUtils.CreateCopyableDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+			}
+			else if (typeof(T).IsManaged())
+			{
+				return new SwappingDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+			}
+			else
+			{
+				return new DataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+			}
 		}
 
 		private Packing GetPackingFor(Type type)

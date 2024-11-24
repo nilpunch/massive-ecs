@@ -39,6 +39,11 @@ namespace Massive
 			return Activator.CreateInstance(constructedType, args);
 		}
 
+		public static bool IsManaged(this Type type)
+		{
+			return !IsUnmanaged(type);
+		}
+
 		public static bool IsUnmanaged(this Type type)
 		{
 			try

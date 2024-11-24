@@ -11,6 +11,11 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SwappingDataSet<T> : DataSet<T>
 	{
+		public SwappingDataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
+			: base(pageSize, packing)
+		{
+		}
+
 		public override void MoveDataAt(int source, int destination)
 		{
 			Data.Swap(source, destination);

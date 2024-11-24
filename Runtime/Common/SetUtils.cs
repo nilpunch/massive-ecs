@@ -49,7 +49,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int NonNegativeIfAssignedInAll(int id, SparseSet[] sets, int setsLength)
 		{
-			var shouldNotBecomeNegative = 0;
+			var shouldNotBecomeNegative = id;
 			for (var i = 0; i < setsLength; i++)
 			{
 				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
@@ -60,7 +60,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int NegativeIfNotAssignedInAll(int id, SparseSet[] sets, int setsLength)
 		{
-			var shouldStayNegative = ~0;
+			var shouldStayNegative = ~id;
 			for (var i = 0; i < setsLength; i++)
 			{
 				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);

@@ -11,6 +11,11 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class CopyingDataSet<T> : DataSet<T> where T : ICopyable<T>
 	{
+		public CopyingDataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
+			: base(pageSize, packing)
+		{
+		}
+
 		public override void MoveDataAt(int source, int destination)
 		{
 			Data.Swap(source, destination);

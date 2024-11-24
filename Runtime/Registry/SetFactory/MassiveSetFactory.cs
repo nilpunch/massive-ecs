@@ -42,9 +42,19 @@ namespace Massive
 			}
 
 			var args = new object[] { _framesCapacity, _pageSize, GetPackingFor(type) };
-			var massiveDataSet = CopyableUtils.IsImplementedFor(type)
-				? ReflectionUtils.CreateGeneric(typeof(MassiveCopyingDataSet<>), type, args)
-				: ReflectionUtils.CreateGeneric(typeof(MassiveDataSet<>), type, args);
+			object massiveDataSet;
+			if (CopyableUtils.IsImplementedFor(type))
+			{
+				massiveDataSet = (SparseSet)ReflectionUtils.CreateGeneric(typeof(MassiveCopyingDataSet<>), type, args);
+			}
+			else if (type.IsManaged())
+			{
+				massiveDataSet = (SparseSet)ReflectionUtils.CreateGeneric(typeof(MassiveSwappingDataSet<>), type, args);
+			}
+			else
+			{
+				massiveDataSet = (SparseSet)ReflectionUtils.CreateGeneric(typeof(MassiveDataSet<>), type, args);
+			}
 			((IMassive)massiveDataSet).SaveFrame();
 			return (SparseSet)massiveDataSet;
 		}
@@ -58,9 +68,19 @@ namespace Massive
 
 		private SparseSet CreateDataSet<T>()
 		{
-			var massiveDataSet = CopyableUtils.IsImplementedFor(typeof(T))
-				? CopyableUtils.CreateMassiveCopyableDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)))
-				: new MassiveDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+			SparseSet massiveDataSet;
+			if (CopyableUtils.IsImplementedFor(typeof(T)))
+			{
+				massiveDataSet = CopyableUtils.CreateMassiveCopyableDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+			}
+			else if (typeof(T).IsManaged())
+			{
+				massiveDataSet = new MassiveSwappingDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+			}
+			else
+			{
+				massiveDataSet = new MassiveDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+			}
 			((IMassive)massiveDataSet).SaveFrame();
 			return massiveDataSet;
 		}
