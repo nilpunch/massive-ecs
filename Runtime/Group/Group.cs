@@ -86,9 +86,8 @@ namespace Massive
 
 		private void AddToGroup(int id)
 		{
-			if (IsSynced
-				&& (Included.Length == 0 || SetUtils.AssignedInAll(id, Included))
-				&& (Excluded.Length == 0 || SetUtils.NotAssignedInAll(id, Excluded)))
+			if (IsSynced && SetUtils.AssignedInAll(id, Included)
+				&& SetUtils.NotAssignedInAll(id, Excluded))
 			{
 				Set.Assign(id);
 			}
@@ -105,8 +104,7 @@ namespace Massive
 		private void AddToGroupBeforeUnassignedFromExcluded(int id)
 		{
 			// Applies only when removed from the last remaining exclude set
-			if (IsSynced
-				&& (Included.Length == 0 || SetUtils.AssignedInAll(id, Included))
+			if (IsSynced && SetUtils.AssignedInAll(id, Included)
 				&& SetUtils.CountAssignedInAll(id, Excluded) == 1)
 			{
 				Set.Assign(id);
