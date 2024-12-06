@@ -36,6 +36,7 @@ namespace Massive
 
 		public int PackedCapacity { get; private set; }
 		public int SparseCapacity { get; private set; }
+
 		private int NextHole { get; set; } = EndHole;
 
 		public SparseSet(Packing packing = Packing.Continuous)

@@ -26,7 +26,7 @@ namespace Massive
 
 		public SparseSet CreateAppropriateSet<T>()
 		{
-			if (TypeInfo.HasNoFields(typeof(T)) && !_storeEmptyTypesAsDataSets)
+			if (ReflectionUtils.HasNoFields(typeof(T)) && !_storeEmptyTypesAsDataSets)
 			{
 				return CreateSparseSet(GetPackingFor(typeof(T)));
 			}
@@ -36,7 +36,7 @@ namespace Massive
 
 		public SparseSet CreateAppropriateSetReflected(Type type)
 		{
-			if (TypeInfo.HasNoFields(type) && !_storeEmptyTypesAsDataSets)
+			if (ReflectionUtils.HasNoFields(type) && !_storeEmptyTypesAsDataSets)
 			{
 				return CreateSparseSet(GetPackingFor(type));
 			}

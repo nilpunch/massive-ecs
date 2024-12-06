@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Massive
 {
@@ -37,6 +38,16 @@ namespace Massive
 		{
 			var constructedType = genericType.MakeGenericType(genericArg);
 			return Activator.CreateInstance(constructedType, args);
+		}
+
+		public static bool HasNoFields(Type type)
+		{
+			return !HasAnyFields(type);
+		}
+
+		public static bool HasAnyFields(Type type)
+		{
+			return type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
 		}
 
 		public static bool IsManaged(this Type type)

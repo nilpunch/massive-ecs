@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -24,7 +23,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet Find<TKey>()
 		{
-			var typeIndex = TypeLookup<TKey>.Index;
+			var typeIndex = TypeIdentifier<TKey>.Info.Index;
 
 			if (typeIndex >= _lookup.Length)
 			{
@@ -62,7 +61,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf<TKey>()
 		{
-			return TypeLookup<TKey>.Index;
+			return TypeIdentifier<TKey>.Info.Index;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -95,7 +94,8 @@ namespace Massive
 
 		public void Assign<TKey>(SparseSet item)
 		{
-			var typeIndex = TypeLookup<TKey>.Index;
+			var typeInfo = TypeIdentifier<TKey>.Info;
+			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit
 			if (typeIndex >= _lookup.Length)
@@ -108,11 +108,10 @@ namespace Massive
 			_keyLookup[typeIndex] = typeof(TKey);
 
 			// Maintain items sorted
-			var itemId = TypeLookup<TKey>.FullName;
+			var itemId = typeInfo.FullName;
 			Assign(itemId, item);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet Find(Type key)
 		{
 			var typeIndex = IndexOf(key);
@@ -125,19 +124,15 @@ namespace Massive
 			return _lookup[typeIndex];
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(Type key)
 		{
-			var property = MakeTypeLookupType(key).GetProperty("Index", BindingFlags.Public | BindingFlags.Static);
-			return (int)property.GetValue(null);
+			return CommonTypeIdentifier.Get(key).Index;
 		}
 
 		public void Assign(Type keyType, SparseSet item)
 		{
-			var typeLookup = MakeTypeLookupType(keyType);
-
-			var typeIndex = (int)typeLookup.GetProperty("Index", BindingFlags.Public | BindingFlags.Static).GetValue(null);
-			var typeFullName = (string)typeLookup.GetProperty("FullName", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+			var typeInfo = CommonTypeIdentifier.Get(keyType);
+			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit
 			if (typeIndex >= _lookup.Length)
@@ -149,31 +144,7 @@ namespace Massive
 			_lookup[typeIndex] = item;
 			_keyLookup[typeIndex] = keyType;
 
-			Assign(typeFullName, item);
-		}
-
-		private Type MakeTypeLookupType(Type keyType)
-		{
-			return typeof(TypeLookup<>).MakeGenericType(keyType);
-		}
-
-		[Il2CppEagerStaticClassConstruction]
-		private static class TypeLookup<TKey>
-		{
-			public static int Index { get; }
-			public static string FullName { get; }
-
-			static TypeLookup()
-			{
-				Index = IndexCounter.NextIndex++;
-				FullName = typeof(TKey).GetFullGenericName();
-			}
-		}
-
-		[Il2CppEagerStaticClassConstruction]
-		private static class IndexCounter
-		{
-			public static int NextIndex { get; set; }
+			Assign(typeInfo.FullName, item);
 		}
 	}
 }

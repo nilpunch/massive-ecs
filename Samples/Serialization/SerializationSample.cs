@@ -18,8 +18,8 @@ namespace Massive.Samples.Serialization
 
 			var registrySerializer = new RegistrySerializer();
 
-			// By default, for managed types it uses BinaryFormatter and requires Serializable attribute on the component.
-			// But it can be customized like this
+			// By default, managed types are serialized using BinaryFormatter, which requires the [Serializable] attribute on the component.
+			// Custom serialization can be implemented like this:
 			registrySerializer.AddCustomSerializer(typeof(Inventory), new DefaultDataSerializer());
 
 			// Save registry to the file

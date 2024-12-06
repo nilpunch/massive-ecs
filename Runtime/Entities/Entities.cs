@@ -17,6 +17,7 @@ namespace Massive
 
 		public int PackedCapacity { get; private set; }
 		public int SparseCapacity { get; private set; }
+
 		public int MaxId { get; private set; }
 		private int NextHoleId { get; set; } = EndHoleId;
 
