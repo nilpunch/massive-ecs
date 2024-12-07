@@ -14,7 +14,7 @@ namespace Massive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
-		private readonly int[][] _idsByFrames;
+		private readonly int[][] _packedByFrames;
 		private readonly uint[][] _versionsByFrames;
 		private readonly int[][] _sparseByFrames;
 		private readonly State[] _stateByFrames;
@@ -23,14 +23,14 @@ namespace Massive
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
-			_idsByFrames = new int[framesCapacity][];
+			_packedByFrames = new int[framesCapacity][];
 			_versionsByFrames = new uint[framesCapacity][];
 			_sparseByFrames = new int[framesCapacity][];
 			_stateByFrames = new State[framesCapacity];
 
 			for (var i = 0; i < framesCapacity; i++)
 			{
-				_idsByFrames[i] = Array.Empty<int>();
+				_packedByFrames[i] = Array.Empty<int>();
 				_versionsByFrames[i] = Array.Empty<uint>();
 				_sparseByFrames[i] = Array.Empty<int>();
 			}
@@ -48,7 +48,7 @@ namespace Massive
 			EnsureCapacityForFrame(currentFrame);
 
 			// Copy everything from current state to current frame
-			Array.Copy(Ids, _idsByFrames[currentFrame], MaxId);
+			Array.Copy(Packed, _packedByFrames[currentFrame], MaxId);
 			Array.Copy(Versions, _versionsByFrames[currentFrame], MaxId);
 			Array.Copy(Sparse, _sparseByFrames[currentFrame], MaxId);
 			_stateByFrames[currentFrame] = CurrentState;
@@ -63,7 +63,7 @@ namespace Massive
 			var rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			var rollbackState = _stateByFrames[rollbackFrame];
 
-			Array.Copy(_idsByFrames[rollbackFrame], Ids, rollbackState.MaxId);
+			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackState.MaxId);
 			Array.Copy(_versionsByFrames[rollbackFrame], Versions, rollbackState.MaxId);
 			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackState.MaxId);
 			CurrentState = rollbackState;
@@ -72,9 +72,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void EnsureCapacityForFrame(int frame)
 		{
-			if (_idsByFrames[frame].Length < PackedCapacity)
+			if (_packedByFrames[frame].Length < PackedCapacity)
 			{
-				Array.Resize(ref _idsByFrames[frame], PackedCapacity);
+				Array.Resize(ref _packedByFrames[frame], PackedCapacity);
 				Array.Resize(ref _versionsByFrames[frame], PackedCapacity);
 			}
 			if (_sparseByFrames[frame].Length < SparseCapacity)

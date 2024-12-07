@@ -7,29 +7,29 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public struct IdsEnumerator : IDisposable
+	public struct PackedEnumerator : IDisposable
 	{
-		private readonly IdsSource _idsSource;
+		private readonly PackedSet _packedSet;
 		private readonly Packing _originalPacking;
 		private int _index;
 
-		public IdsEnumerator(IdsSource idsSource, Packing packingWhenIterating = Packing.WithHoles)
+		public PackedEnumerator(PackedSet packedSet, Packing packingWhenIterating = Packing.WithHoles)
 		{
-			_idsSource = idsSource;
-			_originalPacking = _idsSource.ExchangeToStricterPacking(packingWhenIterating);
-			_index = _idsSource.Count;
+			_packedSet = packedSet;
+			_originalPacking = _packedSet.ExchangeToStricterPacking(packingWhenIterating);
+			_index = _packedSet.Count;
 		}
 
 		public int Current
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _idsSource.Ids[_index];
+			get => _packedSet.Packed[_index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			while (--_index >= 0 && (_index >= _idsSource.Count || _idsSource.Ids[_index] < 0))
+			while (--_index >= 0 && (_index >= _packedSet.Count || _packedSet.Packed[_index] < 0))
 			{
 			}
 
@@ -39,7 +39,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Dispose()
 		{
-			_idsSource.ExchangePacking(_originalPacking);
+			_packedSet.ExchangePacking(_originalPacking);
 		}
 	}
 }

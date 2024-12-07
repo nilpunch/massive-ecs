@@ -17,7 +17,7 @@ namespace Massive.Serialization
 			WriteInt(state.NextHoleId, stream);
 			WriteByte((byte)state.Packing, stream);
 
-			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
+			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Packed.AsSpan(0, entities.MaxId)));
 			stream.Write(MemoryMarshal.Cast<uint, byte>(entities.Versions.AsSpan(0, entities.MaxId)));
 			stream.Write(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
 		}
@@ -32,7 +32,7 @@ namespace Massive.Serialization
 
 			entities.EnsureCapacityAt(entities.MaxId);
 
-			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Ids.AsSpan(0, entities.MaxId)));
+			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Packed.AsSpan(0, entities.MaxId)));
 			stream.Read(MemoryMarshal.Cast<uint, byte>(entities.Versions.AsSpan(0, entities.MaxId)));
 			stream.Read(MemoryMarshal.Cast<int, byte>(entities.Sparse.AsSpan(0, entities.MaxId)));
 		}

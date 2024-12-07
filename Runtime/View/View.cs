@@ -32,7 +32,7 @@ namespace Massive
 					continue;
 				}
 
-				var id = entities.Ids[i];
+				var id = entities.Packed[i];
 				if (id >= 0)
 				{
 					if (!action.Apply(id))
@@ -66,7 +66,7 @@ namespace Massive
 						continue;
 					}
 
-					var id = dataSet.Ids[indexOffset + index];
+					var id = dataSet.Packed[indexOffset + index];
 					if (id >= 0)
 					{
 						if (!action.Apply(id, ref page[index]))
@@ -111,7 +111,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet1.Ids[indexOffset + index1];
+						var id = dataSet1.Packed[indexOffset + index1];
 						var index2 = dataSet2.GetIndexOrInvalid(id);
 						if (index2 >= 0)
 						{
@@ -141,7 +141,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet2.Ids[indexOffset + index2];
+						var id = dataSet2.Packed[indexOffset + index2];
 						var index1 = dataSet1.GetIndexOrInvalid(id);
 						if (index1 >= 0)
 						{
@@ -190,7 +190,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet1.Ids[indexOffset + index1];
+						var id = dataSet1.Packed[indexOffset + index1];
 						var index2 = dataSet2.GetIndexOrInvalid(id);
 						var index3 = dataSet3.GetIndexOrInvalid(id);
 						if ((index2 | index3) >= 0)
@@ -221,7 +221,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet2.Ids[indexOffset + index2];
+						var id = dataSet2.Packed[indexOffset + index2];
 						var index1 = dataSet1.GetIndexOrInvalid(id);
 						var index3 = dataSet3.GetIndexOrInvalid(id);
 						if ((index1 | index3) >= 0)
@@ -252,7 +252,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet2.Ids[indexOffset + index3];
+						var id = dataSet2.Packed[indexOffset + index3];
 						var index1 = dataSet1.GetIndexOrInvalid(id);
 						var index2 = dataSet2.GetIndexOrInvalid(id);
 						if ((index1 | index2) >= 0)
@@ -304,7 +304,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet1.Ids[indexOffset + index1];
+						var id = dataSet1.Packed[indexOffset + index1];
 						var index2 = dataSet2.GetIndexOrInvalid(id);
 						var index3 = dataSet3.GetIndexOrInvalid(id);
 						var index4 = dataSet4.GetIndexOrInvalid(id);
@@ -336,7 +336,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet2.Ids[indexOffset + index2];
+						var id = dataSet2.Packed[indexOffset + index2];
 						var index1 = dataSet1.GetIndexOrInvalid(id);
 						var index3 = dataSet3.GetIndexOrInvalid(id);
 						var index4 = dataSet4.GetIndexOrInvalid(id);
@@ -368,7 +368,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet3.Ids[indexOffset + index3];
+						var id = dataSet3.Packed[indexOffset + index3];
 						var index1 = dataSet1.GetIndexOrInvalid(id);
 						var index2 = dataSet2.GetIndexOrInvalid(id);
 						var index4 = dataSet4.GetIndexOrInvalid(id);
@@ -400,7 +400,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet4.Ids[indexOffset + index4];
+						var id = dataSet4.Packed[indexOffset + index4];
 						var index1 = dataSet1.GetIndexOrInvalid(id);
 						var index2 = dataSet2.GetIndexOrInvalid(id);
 						var index3 = dataSet3.GetIndexOrInvalid(id);
@@ -419,9 +419,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IdsEnumerator GetEnumerator()
+		public PackedEnumerator GetEnumerator()
 		{
-			return new IdsEnumerator(Registry.Entities, PackingWhenIterating);
+			return new PackedEnumerator(Registry.Entities, PackingWhenIterating);
 		}
 	}
 }

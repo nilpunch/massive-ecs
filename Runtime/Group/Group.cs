@@ -68,10 +68,10 @@ namespace Massive
 			IsSynced = true;
 
 			Set.Clear();
-			IdsSource minimal = Included.Length == 0 ? Entities : SetUtils.GetMinimalSet(Included);
+			PackedSet minimal = Included.Length == 0 ? Entities : SetUtils.GetMinimalSet(Included);
 			for (var i = 0; i < minimal.Count; i++)
 			{
-				var id = minimal.Ids[i];
+				var id = minimal.Packed[i];
 				if (id >= 0)
 				{
 					AddToGroup(id);
@@ -112,9 +112,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IdsEnumerator GetEnumerator()
+		public PackedEnumerator GetEnumerator()
 		{
-			return new IdsEnumerator(Set);
+			return new PackedEnumerator(Set);
 		}
 	}
 }

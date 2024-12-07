@@ -49,7 +49,7 @@ namespace Massive.Tests
 			for (int i = 0; i < EntitiesToCreate; i++)
 			{
 				Assert.IsFalse(entities.IsAlive(i));
-				Assert.IsTrue(entities.Ids[i] >= 0);
+				Assert.IsTrue(entities.Packed[i] >= 0);
 			}
 		}
 		

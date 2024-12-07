@@ -27,11 +27,10 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class SparseSet : IdsSource
+	public class SparseSet : PackedSet
 	{
 		private const int EndHole = int.MaxValue;
 
-		public int[] Packed { get; private set; } = Array.Empty<int>();
 		public int[] Sparse { get; private set; } = Array.Empty<int>();
 
 		public int PackedCapacity { get; private set; }
@@ -42,7 +41,6 @@ namespace Massive
 		public SparseSet(Packing packing = Packing.Continuous)
 		{
 			Packing = packing;
-			Ids = Packed;
 		}
 
 		/// <summary>
@@ -223,7 +221,6 @@ namespace Massive
 			var packed = Packed;
 			Array.Resize(ref packed, capacity);
 			Packed = packed;
-			Ids = Packed;
 			PackedCapacity = capacity;
 		}
 
@@ -240,24 +237,10 @@ namespace Massive
 			SparseCapacity = capacity;
 		}
 
-		public override Packing ExchangePacking(Packing packing)
-		{
-			var previousPacking = Packing;
-			if (packing != Packing)
-			{
-				if (packing == Packing.Continuous)
-				{
-					Compact();
-				}
-				Packing = packing;
-			}
-			return previousPacking;
-		}
-
 		/// <summary>
 		/// Removes all holes from the packed array.
 		/// </summary>
-		public void Compact()
+		public override void Compact()
 		{
 			if (HasHoles)
 			{
@@ -285,9 +268,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IdsEnumerator GetEnumerator()
+		public PackedEnumerator GetEnumerator()
 		{
-			return new IdsEnumerator(this);
+			return new PackedEnumerator(this);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
