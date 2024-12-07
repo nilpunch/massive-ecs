@@ -31,7 +31,6 @@ namespace Massive
 		{
 			private readonly T[][] _pagedData;
 			private readonly int _pageSize;
-			private readonly int _length;
 			private int _pageIndex;
 			private Span<T> _currentPage;
 			private int _indexInPage;
@@ -40,11 +39,10 @@ namespace Massive
 			{
 				_pagedData = pagedArray.Pages;
 				_pageSize = pagedArray.PageSize;
-				_length = length;
 
-				_pageIndex = _length / _pageSize;
-				_indexInPage = MathUtils.FastMod(_length, _pageSize);
-				_currentPage = new Span<T>(_pagedData[_pageIndex]);
+				_pageIndex = length / _pageSize;
+				_indexInPage = MathUtils.FastMod(length, _pageSize);
+				_currentPage = _pageIndex < _pagedData.Length ? new Span<T>(_pagedData[_pageIndex]) : Span<T>.Empty;
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
