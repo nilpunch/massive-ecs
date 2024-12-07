@@ -31,8 +31,8 @@ namespace Massive
 	{
 		private const int EndHole = int.MaxValue;
 
-		private int[] _packed = Array.Empty<int>();
-		private int[] _sparse = Array.Empty<int>();
+		public int[] Packed { get; private set; } = Array.Empty<int>();
+		public int[] Sparse { get; private set; } = Array.Empty<int>();
 
 		public int PackedCapacity { get; private set; }
 		public int SparseCapacity { get; private set; }
@@ -42,7 +42,7 @@ namespace Massive
 		public SparseSet(Packing packing = Packing.Continuous)
 		{
 			Packing = packing;
-			Ids = _packed;
+			Ids = Packed;
 		}
 
 		/// <summary>
@@ -62,10 +62,6 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => Packing != Packing.Continuous && NextHole != EndHole;
 		}
-
-		public int[] Packed => _packed;
-
-		public int[] Sparse => _sparse;
 
 		/// <summary>
 		/// Shoots only after <see cref="Assign"/> call, when the id was not alive and therefore was created.
@@ -224,19 +220,22 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizePacked(int capacity)
 		{
-			Array.Resize(ref _packed, capacity);
-			Ids = _packed;
+			var packed = Packed;
+			Array.Resize(ref packed, capacity);
+			Packed = packed;
+			Ids = Packed;
 			PackedCapacity = capacity;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
-			var previousCapacity = SparseCapacity;
-			Array.Resize(ref _sparse, capacity);
-			if (capacity > previousCapacity)
+			var sparse = Sparse;
+			Array.Resize(ref sparse, capacity);
+			Sparse = sparse;
+			if (capacity > SparseCapacity)
 			{
-				Array.Fill(Sparse, Constants.InvalidId, previousCapacity, capacity - previousCapacity);
+				Array.Fill(Sparse, Constants.InvalidId, SparseCapacity, capacity - SparseCapacity);
 			}
 			SparseCapacity = capacity;
 		}

@@ -9,21 +9,20 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class PagedArray<T> : IPagedArray
 	{
-		private const int DefaultPagesAmount = 4;
-
 		private readonly int _pageSizePower;
+		private int _pagesCapacity;
 		private T[][] _pages;
 
 		public PagedArray(int pageSize = Constants.DefaultPageSize)
 		{
 			if (!MathUtils.IsPowerOfTwo(pageSize))
 			{
-				throw new Exception("Page capacity must be power of two!");
+				throw new Exception("Page size must be power of two!");
 			}
 
 			PageSize = pageSize;
 			_pageSizePower = MathUtils.FastLog2(pageSize);
-			_pages = new T[DefaultPagesAmount][];
+			_pages = Array.Empty<T[]>();
 		}
 
 		public T[][] Pages
@@ -63,9 +62,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePage(int page)
 		{
-			if (page >= _pages.Length)
+			if (page >= _pagesCapacity)
 			{
 				Array.Resize(ref _pages, page + 1);
+				_pagesCapacity = page + 1;
 			}
 
 			_pages[page] ??= new T[PageSize];
@@ -80,7 +80,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool HasPage(int page)
 		{
-			return page < _pages.Length && _pages[page] != null;
+			return page < _pagesCapacity && _pages[page] != null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

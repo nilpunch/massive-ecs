@@ -1,58 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Unity.IL2CPP.CompilerServices;
 
+// ReSharper disable all StaticMemberInGenericType
 namespace Massive
 {
-	public class TypeInfo
-	{
-		public readonly int Index;
-		public readonly string FullName;
-
-		public TypeInfo(int index, string fullName)
-		{
-			Index = index;
-			FullName = fullName;
-		}
-	}
-
-	[Il2CppEagerStaticClassConstruction]
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public static class CommonTypeIdentifier
-	{
-		internal static readonly Dictionary<Type, TypeInfo> RuntimeTypeInfo = new Dictionary<Type, TypeInfo>();
-		internal static int NextFreeIndex;
-
-		public static TypeInfo Get(Type type)
-		{
-			if (!RuntimeTypeInfo.TryGetValue(type, out var typeInfo))
-			{
-				Warmup(type);
-				typeInfo = RuntimeTypeInfo[type];
-			}
-			return typeInfo;
-		}
-
-		private static void Warmup(Type type)
-		{
-			var typeId = typeof(TypeIdentifier<>).MakeGenericType(type);
-			var warm = typeId.GetMethod("Warmup", BindingFlags.Static | BindingFlags.Public);
-			warm.Invoke(null, null);
-		}
-	}
-
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public static class TypeIdentifier<T>
 	{
-		// ReSharper disable once StaticMemberInGenericType
-		public static TypeInfo Info;
+		public static TypeIdentifier.TypeInfo Info;
+		private static bool s_initialized;
 
 		static TypeIdentifier()
 		{
@@ -61,18 +24,84 @@ namespace Massive
 
 		public static void Warmup()
 		{
-			if (Info != null)
+			if (s_initialized)
 			{
 				return;
 			}
 
+			Info = TypeIdentifier.RegisterNew<T>();
+			s_initialized = true;
+		}
+	}
+
+	[Il2CppEagerStaticClassConstruction]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
+	public static class TypeIdentifier
+	{
+		private static readonly Dictionary<Type, TypeInfo> s_runtimeTypeInfo = new Dictionary<Type, TypeInfo>();
+
+		public static TypeInfo GetInfo(Type type)
+		{
+			if (!s_runtimeTypeInfo.TryGetValue(type, out var typeInfo))
+			{
+				Warmup(type);
+				typeInfo = s_runtimeTypeInfo[type];
+			}
+			return typeInfo;
+		}
+
+		private static void Warmup(Type type)
+		{
+			var typeIdenifier = typeof(TypeIdentifier<>).MakeGenericType(type);
+			var warmup = typeIdenifier.GetMethod("Warmup", BindingFlags.Static | BindingFlags.Public);
+			warmup.Invoke(null, null);
+		}
+
+		internal static TypeInfo RegisterNew<T>()
+		{
 			var type = typeof(T);
+			var index = TypesCounter.Increment();
+			var typeName = type.GetFullGenericName();
 
-			var index = Interlocked.Increment(ref CommonTypeIdentifier.NextFreeIndex);
-			var typeName = typeof(T).GetFullGenericName();
+			var info = new TypeInfo(index, typeName);
+			s_runtimeTypeInfo.Add(type, info);
 
-			Info = new TypeInfo(index, typeName);
-			CommonTypeIdentifier.RuntimeTypeInfo.Add(type, Info);
+			return info;
+		}
+
+		public struct TypeInfo
+		{
+			public readonly int Index;
+			public readonly string FullName;
+
+			public TypeInfo(int index, string fullName)
+			{
+				Index = index;
+				FullName = fullName;
+			}
+		}
+	}
+
+	[Il2CppEagerStaticClassConstruction]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
+	internal static class TypesCounter
+	{
+		private static int s_value;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static int Increment()
+		{
+			return Interlocked.Increment(ref s_value);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static int Get()
+		{
+			return s_value;
 		}
 	}
 }

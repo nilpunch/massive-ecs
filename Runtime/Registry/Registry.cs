@@ -33,17 +33,17 @@ namespace Massive
 			Entities = entities;
 			PageSize = pageSize;
 
+			var allSets = SetRegistry.All;
 			Entities.BeforeDestroyed += UnassignFromAllSets;
-		}
 
-		private void UnassignFromAllSets(int entityId)
-		{
-			var setList = SetRegistry.All;
-			var setCount = setList.Count;
-			var sets = setList.Items;
-			for (var i = 0; i < setCount; i++)
+			void UnassignFromAllSets(int entityId)
 			{
-				sets[i].Unassign(entityId);
+				var setCount = allSets.Count;
+				var sets = allSets.Items;
+				for (var i = setCount - 1; i >= 0; i--)
+				{
+					sets[i].Unassign(entityId);
+				}
 			}
 		}
 	}

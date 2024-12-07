@@ -126,12 +126,12 @@ namespace Massive
 
 		public int IndexOf(Type key)
 		{
-			return CommonTypeIdentifier.Get(key).Index;
+			return TypeIdentifier.GetInfo(key).Index;
 		}
 
 		public void Assign(Type keyType, SparseSet item)
 		{
-			var typeInfo = CommonTypeIdentifier.Get(keyType);
+			var typeInfo = TypeIdentifier.GetInfo(keyType);
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit

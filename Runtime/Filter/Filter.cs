@@ -11,8 +11,11 @@ namespace Massive
 	{
 		public static Filter Empty { get; } = new Filter(Array.Empty<SparseSet>(), Array.Empty<SparseSet>());
 
-		public SparseSet[] Included { get; }
-		public SparseSet[] Excluded { get; }
+		public int IncludedCount { get; protected set; }
+		public int ExcludedCount { get; protected set; }
+
+		public SparseSet[] Included { get; protected set; }
+		public SparseSet[] Excluded { get; protected set; }
 
 		public Filter(SparseSet[] included, SparseSet[] excluded)
 		{
@@ -20,13 +23,15 @@ namespace Massive
 
 			Included = included;
 			Excluded = excluded;
+			IncludedCount = included.Length;
+			ExcludedCount = excluded.Length;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
-			return (SetUtils.NonNegativeIfAssignedInAll(id, Included)
-				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded)) >= 0;
+			return (SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedCount)
+				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedCount)) >= 0;
 		}
 
 		public static void ThrowIfConflicting(SparseSet[] included, SparseSet[] excluded, string errorMessage)

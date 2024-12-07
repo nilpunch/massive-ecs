@@ -12,18 +12,18 @@ namespace Massive
 	{
 		public SparseSet[] Included { get; }
 		public int IncludedLength { get; }
-		public bool IncludedRented { get; }
+		public bool IsRented { get; }
 
 		public SparseSet[] Excluded { get; }
 		public int ExcludedLength { get; }
 
-		public TrimmedFilter(SparseSet[] included, int includedLength, bool includedRented, SparseSet[] excluded)
+		public TrimmedFilter(SparseSet[] included, int includedLength, bool isRented, SparseSet[] excluded, int excludedLength)
 		{
 			Included = included;
 			IncludedLength = includedLength;
-			IncludedRented = includedRented;
+			IsRented = isRented;
 			Excluded = excluded;
-			ExcludedLength = excluded.Length;
+			ExcludedLength = excludedLength;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -36,7 +36,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Dispose()
 		{
-			if (IncludedRented)
+			if (IsRented)
 			{
 				ArrayPool<SparseSet>.Shared.Return(Included);
 			}
