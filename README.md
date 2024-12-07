@@ -28,7 +28,7 @@ ECS features:
 - Supports сomponents of any type.
 - No deferred command execution or shadow copies — work directly with live entities and components.
 - Garbage-free API for in-place queries, and non-generic version to improve IL2CPP build time and size.
-- Lightweight views for [flexible](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#what-is-allowed-during-iterations) iteration over entities and components.
+- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#what-is-allowed-during-iterations) for flexible iteration over entities and components.
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components
   - Or enable full stability for the entire registry
