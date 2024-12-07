@@ -34,6 +34,13 @@ namespace Massive
 				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedCount)) >= 0;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool NotContainsId(int id)
+		{
+			return (SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedCount)
+				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedCount)) < 0;
+		}
+
 		public static void ThrowIfConflicting(SparseSet[] included, SparseSet[] excluded, string errorMessage)
 		{
 			if (included.ContainsAny(excluded))

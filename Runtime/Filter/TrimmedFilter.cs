@@ -34,6 +34,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool NotContainsId(int id)
+		{
+			return (SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedLength)
+				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedLength)) < 0;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Dispose()
 		{
 			if (IsRented)
