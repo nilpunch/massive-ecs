@@ -1,6 +1,6 @@
 # Massive ECS
 
-`Massive` is a simple and easy-to-use library for game programming and more.  
+`Massive` is a lightwight and easy-to-use library for game programming and more.  
 Designed for use in games with deterministic prediction-rollback netcode.  
 Inspired by [EnTT](https://github.com/skypjack/entt).
 
@@ -25,13 +25,14 @@ ECS features:
 - Fast and simple.
 - No code generation.
 - No archetypes or bitsets.
-- Supports сomponents of any type.
+- Support сomponents of any type.
+- No allocs and minimal memory consumption.
 - No deferred command execution or shadow copies — work directly with live entities and components.
-- Garbage-free API for in-place queries, and non-generic version to improve IL2CPP build time and size.
+- Generic API for in-place filtering, and non-generic version to improve IL2CPP build time and size.
 - Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#what-is-allowed-during-iterations) for flexible iteration over entities and components.
 - Fully stable storage on demand:
-  - Use the `IStable` marker interface for components
-  - Or enable full stability for the entire registry
+  - Use the `IStable` marker interface for components.
+  - Or enable full stability for the entire registry.
 - Full-state serialization and deserialization.
 - IL2CPP friendly, tested with high stripping level on PC | Android | WebGL.
 - [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP).
@@ -105,7 +106,7 @@ class Program
 				// ...
 			});
 
-		// Make queries right in place where they are used.
+		// Filter entities right in place.
 		// You don't have to cache anything
 		registry.View()
 			.Filter<Include<Player>, Exclude<Velocity>>()
