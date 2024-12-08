@@ -218,18 +218,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizePacked(int capacity)
 		{
-			var packed = Packed;
-			Array.Resize(ref packed, capacity);
-			Packed = packed;
+			Packed = Packed.Resize(capacity);
 			PackedCapacity = capacity;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
-			var sparse = Sparse;
-			Array.Resize(ref sparse, capacity);
-			Sparse = sparse;
+			Sparse = Sparse.Resize(capacity);
 			if (capacity > SparseCapacity)
 			{
 				Array.Fill(Sparse, Constants.InvalidId, SparseCapacity, capacity - SparseCapacity);

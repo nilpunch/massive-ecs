@@ -36,9 +36,7 @@ namespace Massive
 
 			if (IncludedCount >= Included.Length)
 			{
-				var included = Included;
-				Array.Resize(ref included, MathUtils.NextPowerOf2(IncludedCount + 1));
-				Included = included;
+				Included = Included.Resize(MathUtils.NextPowerOf2(IncludedCount + 1));
 			}
 
 			Included[IncludedCount] = set;
@@ -63,9 +61,7 @@ namespace Massive
 
 			if (ExcludedCount >= Excluded.Length)
 			{
-				var included = Excluded;
-				Array.Resize(ref included, MathUtils.NextPowerOf2(ExcludedCount + 1));
-				Excluded = included;
+				Excluded = Excluded.Resize(MathUtils.NextPowerOf2(ExcludedCount + 1));
 			}
 
 			Excluded[ExcludedCount] = set;

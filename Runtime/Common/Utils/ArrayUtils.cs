@@ -1,9 +1,18 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	public static class ArrayExtensions
+	public static class ArrayUtils
 	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static T[] Resize<T>(this T[] array, int capacity)
+		{
+			Array.Resize(ref array, capacity);
+			return array;
+		}
+
 		public static bool Contains<T>(this T[] array, T value)
 		{
 			var equalityComparer = EqualityComparer<T>.Default;
