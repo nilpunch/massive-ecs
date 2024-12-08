@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 // ReSharper disable all StaticMemberInGenericType
@@ -15,7 +16,11 @@ namespace Massive
 		private static IdentifierInfo s_info;
 		private static bool s_initialized;
 
-		public static IdentifierInfo Info => s_info;
+		public static IdentifierInfo Info
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => s_info;
+		}
 
 		static TypeIdentifier()
 		{
