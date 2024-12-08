@@ -1,22 +1,27 @@
 # Changelog
 
-## 17.0.0-beta - November 14, 2024
+## 17.0.0 - December 9, 2024
 
-Iteration stability improvements and groups rework.
+Iteration stability, sets customization, groups rework, performance improvements and more.
 
+- Added: Copy, move, and swap customization for data sets.
+- Added: `DynamicFilter` for builder-like style when working with non-generic filtering.
+- Added: `TrimmedFilter`, which removes the leading set from included ones, optimizing iteration.
 - Added: New packing option `WithPersistentHoles`.
 - Changed: Renamed `PackingMode` to `Packing`.
 - Changed: `Packing` now dynamically changes for the iteration leader,  
   ensuring each unique entity appears only once during iteration in most cases,  
   or in all cases when using the new packing option.
 - Changed: Hide setters in data structures. Added full-state assignment API.
+- Changed: Renamed `IdsSource` to `PackedSet`.
+- Changed: Renamed `IManaged<T>` to `ICopyable<T>`. Now used also for entity components cloning.
 - Changed: Renamed `NonOwningGroup` to `Group`.
 - Removed: `OwningGroup` for SoA access. It may return in some form in the future.
 - Removed: `GroupView`. Groups are now used directly as is.
 - Removed: `GroupPage`, `GroupPageSequence` and `IOwnSelector`.
-- Removed: Utils folder.
+- Removed: Runtime/Utils folder.
 - Removed: `RegistryReflectionExtensions`. Reflection methods remain directly accessible.
-- Fixed: `Il2CppSetOption` was not applied.
+- Fixed: `Il2CppSetOption` was not applied correctly.
 
 ## 16.3.0 - November 7, 2024
 
