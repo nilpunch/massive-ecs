@@ -2,16 +2,21 @@
 {
 	public class RegistryConfig
 	{
-		public int PageSize = Constants.DefaultPageSize;
+		public readonly int PageSize = Constants.DefaultPageSize;
 
-		public bool StoreEmptyTypesAsDataSets = false;
+		public readonly bool StoreEmptyTypesAsDataSets = false;
 
-		/// <summary>
-		/// Enables full stability for component storage. 
-		/// This has a minor cost that may balance itself out.
-		/// While it can increase iteration count and space consumption,
-		/// it eliminates data movements in memory, making component assignment and unassignment faster.
-		/// </summary>
-		public bool FullStability = false;
+		public readonly bool FullStability = false;
+
+		public readonly Packing PackingWhenIterating = Packing.WithHoles;
+
+		public RegistryConfig(int? pageSize = default, bool? storeEmptyTypesAsDataSets = default,
+			bool? fullStability = default, Packing? packingWhenIterating = default)
+		{
+			PageSize = pageSize ?? PageSize;
+			StoreEmptyTypesAsDataSets = storeEmptyTypesAsDataSets ?? StoreEmptyTypesAsDataSets;
+			FullStability = fullStability ?? FullStability;
+			PackingWhenIterating = packingWhenIterating ?? PackingWhenIterating;
+		}
 	}
 }

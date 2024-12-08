@@ -12,7 +12,7 @@ namespace Massive
 		public GroupRegistry GroupRegistry { get; }
 		public Entities Entities { get; }
 
-		public int PageSize { get; }
+		public RegistryConfig Config { get; }
 
 		public Registry()
 			: this(new RegistryConfig())
@@ -21,17 +21,17 @@ namespace Massive
 
 		public Registry(RegistryConfig registryConfig)
 			: this(new NormalSetFactory(registryConfig.StoreEmptyTypesAsDataSets, registryConfig.PageSize, registryConfig.FullStability),
-				new NormalGroupFactory(), new Entities(), registryConfig.PageSize)
+				new NormalGroupFactory(), new Entities(), registryConfig)
 		{
 		}
 
-		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities, int pageSize)
+		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities, RegistryConfig registryConfig)
 		{
 			SetRegistry = new SetRegistry(setFactory);
 			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory, entities);
 			FilterRegistry = new FilterRegistry(SetRegistry);
 			Entities = entities;
-			PageSize = pageSize;
+			Config = registryConfig;
 
 			var allSets = SetRegistry.All;
 			Entities.BeforeDestroyed += UnassignFromAllSets;

@@ -46,7 +46,7 @@ namespace Massive.PerformanceTests
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Registry PrepareTestRegistry(RegistryFilling registryFilling, bool fullStability)
 		{
-			var config = new RegistryConfig() { FullStability = fullStability };
+			var config = new RegistryConfig(fullStability: fullStability);
 			return registryFilling switch
 			{
 				RegistryFilling.SingleComponent => new Registry(config).FillRegistryWithSingleComponent(),

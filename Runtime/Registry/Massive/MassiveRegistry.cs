@@ -10,6 +10,8 @@ namespace Massive
 	{
 		private readonly MassiveEntities _massiveEntities;
 
+		public new MassiveRegistryConfig Config { get; }
+
 		public MassiveRegistry()
 			: this(new MassiveRegistryConfig())
 		{
@@ -17,10 +19,12 @@ namespace Massive
 
 		public MassiveRegistry(MassiveRegistryConfig registryConfig)
 			: base(new MassiveSetFactory(registryConfig.FramesCapacity, registryConfig.StoreEmptyTypesAsDataSets, registryConfig.PageSize, registryConfig.FullStability),
-				new MassiveGroupFactory(registryConfig.FramesCapacity), new MassiveEntities(registryConfig.FramesCapacity), registryConfig.PageSize)
+				new MassiveGroupFactory(registryConfig.FramesCapacity), new MassiveEntities(registryConfig.FramesCapacity), registryConfig)
 		{
 			// Fetch instances from base
 			_massiveEntities = (MassiveEntities)Entities;
+
+			Config = registryConfig;
 		}
 
 		public event Action FrameSaved;

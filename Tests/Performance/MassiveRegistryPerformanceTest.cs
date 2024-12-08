@@ -20,7 +20,7 @@ namespace Massive.PerformanceTests
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static MassiveRegistry PrepareTestRegistry()
 		{
-			var config = new MassiveRegistryConfig() { FramesCapacity = 2 };
+			var config = new MassiveRegistryConfig(framesCapacity: 2);
 			var registry = new MassiveRegistry(config);
 
 			for (int i = 0; i < EntitiesCount; i++)
