@@ -2,7 +2,7 @@
 
 `Massive` is a lightwight and easy-to-use library for game programming and more.  
 Designed for use in games with deterministic prediction-rollback netcode.  
-Inspired by [EnTT](https://github.com/skypjack/entt).
+Based on sparse sets. Inspired by [EnTT](https://github.com/skypjack/entt).
 
 > [!NOTE]
 > Some APIs are subject to change, but overall the architecture is stable.
