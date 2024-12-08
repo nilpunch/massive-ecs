@@ -42,7 +42,7 @@ namespace Massive
 			}
 
 			var args = new object[] { _framesCapacity, _pageSize, GetPackingFor(type) };
-			object massiveDataSet;
+			SparseSet massiveDataSet;
 			if (CopyableUtils.IsImplementedFor(type))
 			{
 				massiveDataSet = (SparseSet)ReflectionUtils.CreateGeneric(typeof(MassiveCopyingDataSet<>), type, args);
@@ -56,7 +56,7 @@ namespace Massive
 				massiveDataSet = (SparseSet)ReflectionUtils.CreateGeneric(typeof(MassiveDataSet<>), type, args);
 			}
 			((IMassive)massiveDataSet).SaveFrame();
-			return (SparseSet)massiveDataSet;
+			return massiveDataSet;
 		}
 
 		private SparseSet CreateSparseSet(Packing packing)

@@ -129,7 +129,7 @@ namespace Massive
 			if (Packing == Packing.Continuous)
 			{
 				Count -= 1;
-				CopyAt(Count, Sparse[id]);
+				MoveAt(Count, Sparse[id]);
 			}
 			else
 			{
@@ -256,7 +256,7 @@ namespace Massive
 					if (holeIndex < count)
 					{
 						count -= 1;
-						CopyAt(count, holeIndex);
+						MoveAt(count, holeIndex);
 
 						for (; count > 0 && Packed[count - 1] < 0; count--) { }
 					}
@@ -305,7 +305,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void CopyAt(int source, int destination)
+		private void MoveAt(int source, int destination)
 		{
 			var sourceId = Packed[source];
 			AssignIndex(sourceId, destination);
