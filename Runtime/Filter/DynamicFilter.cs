@@ -8,20 +8,30 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class DynamicFilter : Filter
 	{
-		public Registry Registry { get; }
+		public SetRegistry SetRegistry { get; }
 
 		public DynamicFilter(Registry registry) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
 		{
-			Registry = registry;
+			SetRegistry = registry.SetRegistry;
 		}
 
-		public void Include<T>()
+		public DynamicFilter(SetRegistry setRegistry) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
 		{
-			var set = Registry.Set<T>();
+			SetRegistry = setRegistry;
+		}
+
+		public DynamicFilter Include<T>()
+		{
+			var set = SetRegistry.Get<T>();
 
 			if (Excluded.Contains(set))
 			{
 				throw new Exception("Conflict with excluded!");
+			}
+
+			if (Included.Contains(set))
+			{
+				return this;
 			}
 
 			if (IncludedCount >= Included.Length)
@@ -33,15 +43,22 @@ namespace Massive
 
 			Included[IncludedCount] = set;
 			IncludedCount += 1;
+
+			return this;
 		}
 
-		public void Exclude<T>()
+		public DynamicFilter Exclude<T>()
 		{
-			var set = Registry.Set<T>();
+			var set = SetRegistry.Get<T>();
 
 			if (Included.Contains(set))
 			{
 				throw new Exception("Conflict with included!");
+			}
+
+			if (Excluded.Contains(set))
+			{
+				return this;
 			}
 
 			if (ExcludedCount >= Excluded.Length)
@@ -53,6 +70,8 @@ namespace Massive
 
 			Excluded[ExcludedCount] = set;
 			ExcludedCount += 1;
+
+			return this;
 		}
 	}
 }

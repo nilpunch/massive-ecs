@@ -1,29 +1,31 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
+// ReSharper disable StaticMemberInGenericType
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class GenericLookupSparseSet
+	public class GenericLookup<TAbstract>
 	{
 		private readonly FastList<string> _itemIds = new FastList<string>();
-		private readonly FastListSparseSet _items = new FastListSparseSet();
-		private SparseSet[] _lookup = Array.Empty<SparseSet>();
+		private readonly FastList<TAbstract> _items = new FastList<TAbstract>();
+		private TAbstract[] _lookup = Array.Empty<TAbstract>();
 		private Type[] _keyLookup = Array.Empty<Type>();
 
-		public FastListSparseSet All
+		public FastList<TAbstract> All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _items;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Find<TKey>()
+		public TAbstract Find<TKey>()
 		{
-			var typeIndex = TypeIdentifier<TKey>.Info.Index;
+			var typeIndex = TypeIdentifier<TAbstract, TKey>.Info.Index;
 
 			if (typeIndex >= _lookup.Length)
 			{
@@ -34,7 +36,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Find(int index)
+		public TAbstract Find(int index)
 		{
 			if (index >= _lookup.Length)
 			{
@@ -45,7 +47,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Find(string id)
+		public TAbstract Find(string id)
 		{
 			var itemIndex = _itemIds.BinarySearch(id);
 			if (itemIndex >= 0)
@@ -54,29 +56,29 @@ namespace Massive
 			}
 			else
 			{
-				return null;
+				return default;
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf<TKey>()
 		{
-			return TypeIdentifier<TKey>.Info.Index;
+			return TypeIdentifier<TAbstract, TKey>.Info.Index;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(SparseSet item)
+		public int IndexOf(TAbstract item)
 		{
 			return Array.IndexOf(_lookup, item);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Type GetKey(SparseSet item)
+		public Type GetKey(TAbstract item)
 		{
 			return _keyLookup[Array.IndexOf(_lookup, item)];
 		}
 
-		public void Assign(string itemId, SparseSet item)
+		public void Assign(string itemId, TAbstract item)
 		{
 			// Maintain items sorted
 			var itemIndex = _itemIds.BinarySearch(itemId);
@@ -92,9 +94,9 @@ namespace Massive
 			}
 		}
 
-		public void Assign<TKey>(SparseSet item)
+		public void Assign<TKey>(TAbstract item)
 		{
-			var typeInfo = TypeIdentifier<TKey>.Info;
+			var typeInfo = TypeIdentifier<TAbstract, TKey>.Info;
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit
@@ -112,7 +114,7 @@ namespace Massive
 			Assign(itemId, item);
 		}
 
-		public SparseSet Find(Type key)
+		public TAbstract Find(Type key)
 		{
 			var typeIndex = IndexOf(key);
 
@@ -126,12 +128,12 @@ namespace Massive
 
 		public int IndexOf(Type key)
 		{
-			return TypeIdentifier.GetInfo(key).Index;
+			return TypeIdentifier<TAbstract>.GetInfo(key).Index;
 		}
 
-		public void Assign(Type keyType, SparseSet item)
+		public void Assign(Type keyType, TAbstract item)
 		{
-			var typeInfo = TypeIdentifier.GetInfo(keyType);
+			var typeInfo = TypeIdentifier<TAbstract>.GetInfo(keyType);
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit
