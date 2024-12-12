@@ -82,13 +82,13 @@ namespace Massive
 			{
 				var index = NextHole;
 				NextHole = ~Packed[index];
-				AssignIndex(id, index);
+				Pair(id, index);
 			}
 			else
 			{
 				EnsurePackedAt(Count);
 				EnsureDataAt(Count);
-				AssignIndex(id, Count);
+				Pair(id, Count);
 				Count += 1;
 			}
 
@@ -258,8 +258,8 @@ namespace Massive
 			ThrowIfNegative(firstId, $"Can't swap negative id.");
 			ThrowIfNegative(secondId, $"Can't swap negative id.");
 
-			AssignIndex(firstId, second);
-			AssignIndex(secondId, first);
+			Pair(firstId, second);
+			Pair(secondId, first);
 
 			SwapDataAt(first, second);
 		}
@@ -284,12 +284,12 @@ namespace Massive
 		private void MoveAt(int source, int destination)
 		{
 			var sourceId = Packed[source];
-			AssignIndex(sourceId, destination);
+			Pair(sourceId, destination);
 			MoveDataAt(source, destination);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignIndex(int id, int index)
+		private void Pair(int id, int index)
 		{
 			Sparse[id] = index;
 			Packed[index] = id;

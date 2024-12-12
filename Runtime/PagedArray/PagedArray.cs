@@ -9,9 +9,11 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class PagedArray<T> : IPagedArray
 	{
-		private readonly int _pageSizePower;
-		private int _pagesCapacity;
-		private T[][] _pages;
+		public T[][] Pages { get; private set; } = Array.Empty<T[]>();
+		public int PagesCapacity { get; private set; }
+
+		public int PageSize { get; }
+		public int PageSizePower { get; }
 
 		public PagedArray(int pageSize = Constants.DefaultPageSize)
 		{
@@ -21,31 +23,22 @@ namespace Massive
 			}
 
 			PageSize = pageSize;
-			_pageSizePower = MathUtils.FastLog2(pageSize);
-			_pages = Array.Empty<T[]>();
+			PageSizePower = MathUtils.FastLog2(pageSize);
 		}
-
-		public T[][] Pages
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _pages;
-		}
-
-		public int PageSize { get; }
 
 		public Type ElementType => typeof(T);
 
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref _pages[PageIndex(index)][IndexInPage(index)];
+			get => ref Pages[PageIndex(index)][IndexInPage(index)];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Swap(int first, int second)
 		{
-			var firstPage = _pages[PageIndex(first)];
-			var secondPage = _pages[PageIndex(second)];
+			var firstPage = Pages[PageIndex(first)];
+			var secondPage = Pages[PageIndex(second)];
 
 			var firstIndex = IndexInPage(first);
 			var secondIndex = IndexInPage(second);
@@ -62,13 +55,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePage(int page)
 		{
-			if (page >= _pagesCapacity)
+			if (page >= PagesCapacity)
 			{
-				Array.Resize(ref _pages, page + 1);
-				_pagesCapacity = page + 1;
+				Pages = Pages.Resize(page + 1);
+				PagesCapacity = page + 1;
 			}
 
-			_pages[page] ??= new T[PageSize];
+			Pages[page] ??= new T[PageSize];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -80,7 +73,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool HasPage(int page)
 		{
-			return page < _pagesCapacity && _pages[page] != null;
+			return page < PagesCapacity && Pages[page] != null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,13 +85,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Array GetPage(int page)
 		{
-			return _pages[page];
+			return Pages[page];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private int PageIndex(int index)
 		{
-			return MathUtils.FastPowDiv(index, _pageSizePower);
+			return MathUtils.FastPowDiv(index, PageSizePower);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
