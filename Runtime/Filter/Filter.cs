@@ -51,7 +51,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ReducedFilter ReduceIncluded(SparseSet included)
 		{
-			for (int i = 0; i < ReducedFilters.Length; i++)
+			for (var i = 0; i < ReducedFilters.Length; i++)
 			{
 				var reducedFilter = ReducedFilters[i];
 				if (reducedFilter.Reduced == included)
@@ -70,7 +70,7 @@ namespace Massive
 			{
 				var previousLength = ReducedFilters.Length;
 				ReducedFilters = ReducedFilters.Resize(Included.Length);
-				for (int i = previousLength; i < Included.Length; i++)
+				for (var i = previousLength; i < Included.Length; i++)
 				{
 					ReducedFilters[i] = FilterUtils.MakeReducedFilter(this, Included[i]);
 				}
