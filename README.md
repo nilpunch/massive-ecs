@@ -18,31 +18,31 @@ See minimum required Unity version in the `package.json` file.
 ## Overview
 
 This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.  
-Check out the [wiki](https://github.com/nilpunch/massive-ecs/wiki).
+Check out the [wiki](https://github.com/nilpunch/massive-ecs/wiki) for more information.
 
 ECS features:
 
 - Fast and simple.
 - No code generation.
 - No archetypes or bitsets.
-- Support сomponents of any type.
-- No allocs and minimal memory consumption.
-- No deferred command execution or shadow copies — work directly with live entities and components.
-- Generic API for in-place filtering, and non-generic version to improve IL2CPP build time and size.
+- Supports components of any type.
+- No allocations and minimal memory consumption.
+- No deferred command execution — all changes take effect immediately.
+- Generic API for in-place filtering, with a non-generic version to improve IL2CPP build time and size.
 - Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#what-is-allowed-during-iterations) for flexible iteration over entities and components.
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components.
   - Or enable full stability for the entire registry.
 - Full-state serialization and deserialization.
-- IL2CPP friendly, tested with high stripping level on PC | Android | WebGL.
+- IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
 - [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP).
 
 Rollback features:
 
-- This is an extension for ECS and is completely optional to use.
+- Fully optional and non-intrusive, integrates seamlessly with the existing ECS core.
 - It's natively fast with Array.Copy and cyclic buffers.
-- Minimalistic API - `SaveFrame()` and `Rollback(frames)`
-- Support for components with managed data, such as arrays, strings, etc. (see the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks#managed-components)).
+- Minimalistic API: `SaveFrame()` and `Rollback(frames)`
+- Supports components with managed data (e.g., arrays, strings, etc.). See the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks#managed-components) for details.
 
 Consider this list a work in progress as well as the project.
 
