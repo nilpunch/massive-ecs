@@ -42,6 +42,8 @@ namespace Massive
 			Included[IncludedCount] = set;
 			IncludedCount += 1;
 
+			UpdateReducedFilters();
+
 			return this;
 		}
 

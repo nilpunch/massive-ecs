@@ -17,6 +17,9 @@ namespace Massive
 		public SparseSet[] Included { get; protected set; }
 		public SparseSet[] Excluded { get; protected set; }
 
+		public ReducedFilter NotReduced { get; }
+		private ReducedFilter[] ReducedFilters { get; set; } = Array.Empty<ReducedFilter>();
+
 		public Filter(SparseSet[] included, SparseSet[] excluded)
 		{
 			ThrowIfConflicting(included, excluded, "Conflicting include and exclude filter!");
@@ -25,6 +28,10 @@ namespace Massive
 			Excluded = excluded;
 			IncludedCount = included.Length;
 			ExcludedCount = excluded.Length;
+
+			NotReduced = FilterUtils.MakeReducedFilter(this);
+
+			UpdateReducedFilters();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -39,6 +46,35 @@ namespace Massive
 		{
 			return (SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedCount)
 				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedCount)) < 0;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ReducedFilter ReduceIncluded(SparseSet included)
+		{
+			for (int i = 0; i < ReducedFilters.Length; i++)
+			{
+				var reducedFilter = ReducedFilters[i];
+				if (reducedFilter.Reduced == included)
+				{
+					return reducedFilter;
+				}
+			}
+
+			return NotReduced;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void UpdateReducedFilters()
+		{
+			if (Included.Length > ReducedFilters.Length)
+			{
+				var previousLength = ReducedFilters.Length;
+				ReducedFilters = ReducedFilters.Resize(Included.Length);
+				for (int i = previousLength; i < Included.Length; i++)
+				{
+					ReducedFilters[i] = FilterUtils.MakeReducedFilter(this, Included[i]);
+				}
+			}
 		}
 
 		public static void ThrowIfConflicting(SparseSet[] included, SparseSet[] excluded, string errorMessage)
