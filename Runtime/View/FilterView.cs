@@ -160,7 +160,7 @@ namespace Massive
 
 						var id = dataSet1.Packed[indexOffset + index1];
 						var index2 = dataSet2.GetIndexOrInvalid(id);
-						if (index2 >= 0)
+						if (index2 >= 0 && reducedFilter.ContainsId(id))
 						{
 							if (!action.Apply(id, ref page1[index1], ref data2[index2]))
 							{
@@ -190,7 +190,7 @@ namespace Massive
 
 						var id = dataSet2.Packed[indexOffset + index2];
 						var index1 = dataSet1.GetIndexOrInvalid(id);
-						if (index1 >= 0)
+						if (index1 >= 0 && reducedFilter.ContainsId(id))
 						{
 							if (!action.Apply(id, ref data1[index1], ref page2[index2]))
 							{
