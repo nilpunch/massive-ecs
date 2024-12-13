@@ -37,8 +37,8 @@ namespace Massive
 			excluded ??= Array.Empty<SparseSet>();
 
 			Filter.ThrowIfConflicting(included, excluded, "Conflicting include and exclude filter!");
-			ThrowIfContainsDuplicates(included, "Included contains duplicate sets!");
-			ThrowIfContainsDuplicates(excluded, "Excluded contains duplicate sets!");
+			ThrowIfContainsDuplicates(_setRegistry, included, "Included contains duplicate sets!");
+			ThrowIfContainsDuplicates(_setRegistry, excluded, "Excluded contains duplicate sets!");
 
 			var includeCode = included.GetUnorderedHashCode(_setRegistry);
 			var excludeCode = excluded.GetUnorderedHashCode(_setRegistry);
@@ -80,14 +80,14 @@ namespace Massive
 			return group;
 		}
 
-		private readonly HashSet<int> _duplicatesBuffer = new HashSet<int>();
+		private static readonly HashSet<int> s_duplicatesBuffer = new HashSet<int>();
 
-		private void ThrowIfContainsDuplicates(SparseSet[] sets, string errorMessage)
+		private static void ThrowIfContainsDuplicates(SetRegistry setRegistry, SparseSet[] sets, string errorMessage)
 		{
-			_duplicatesBuffer.Clear();
+			s_duplicatesBuffer.Clear();
 			foreach (var set in sets)
 			{
-				if (!_duplicatesBuffer.Add(_setRegistry.IndexOf(set)))
+				if (!s_duplicatesBuffer.Add(setRegistry.IndexOf(set)))
 				{
 					throw new Exception(errorMessage);
 				}

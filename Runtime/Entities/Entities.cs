@@ -43,8 +43,14 @@ namespace Massive
 			get => Packing == Packing.WithHoles && NextHoleId != EndHoleId;
 		}
 
+		/// <summary>
+		/// Shoots after entity is created.
+		/// </summary>
 		public event Action<int> AfterCreated;
 
+		/// <summary>
+		/// Shoots before entity is destroyed.
+		/// </summary>
 		public event Action<int> BeforeDestroyed;
 
 		/// <summary>
