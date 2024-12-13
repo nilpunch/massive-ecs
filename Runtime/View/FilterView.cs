@@ -74,21 +74,48 @@ namespace Massive
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 			var reducedFilter = Filter.ReduceIncluded(minSet);
 
-			for (var i = minSet.Count - 1; i >= 0; i--)
+			if (minSet == dataSet)
 			{
-				if (i > minSet.Count)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data.PageSize, dataSet.Count))
 				{
-					i = minSet.Count;
-					continue;
-				}
-
-				var id = minSet.Packed[i];
-				var index = dataSet.GetIndexOrInvalid(id);
-				if (index >= 0 && reducedFilter.ContainsId(id))
-				{
-					if (!action.Apply(id, ref data[index]))
+					var page = data.Pages[pageIndex];
+					for (var index = pageLength - 1; index >= 0; index--)
 					{
-						break;
+						if (indexOffset + index > dataSet.Count)
+						{
+							index = dataSet.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet.Packed[indexOffset + index];
+						if (reducedFilter.ContainsId(id))
+						{
+							if (!action.Apply(id, ref page[index]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				for (var i = minSet.Count - 1; i >= 0; i--)
+				{
+					if (i > minSet.Count)
+					{
+						i = minSet.Count;
+						continue;
+					}
+
+					var id = minSet.Packed[i];
+					var index = dataSet.GetIndexOrInvalid(id);
+					if (index >= 0 && reducedFilter.ContainsId(id))
+					{
+						if (!action.Apply(id, ref data[index]))
+						{
+							break;
+						}
 					}
 				}
 			}
@@ -113,23 +140,86 @@ namespace Massive
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 			var reducedFilter = Filter.ReduceIncluded(minSet);
 
-			for (var i = minSet.Count - 1; i >= 0; i--)
+			if (minSet == dataSet1)
 			{
-				if (i > minSet.Count)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, dataSet1.Count))
 				{
-					i = minSet.Count;
-					continue;
-				}
-
-				var id = minSet.Packed[i];
-				var index1 = dataSet1.GetIndexOrInvalid(id);
-				var index2 = dataSet2.GetIndexOrInvalid(id);
-				if ((index1 | index2) >= 0
-					&& reducedFilter.ContainsId(id))
-				{
-					if (!action.Apply(id, ref data1[index1], ref data2[index2]))
+					if (!data2.HasPage(pageIndex))
 					{
-						break;
+						continue;
+					}
+
+					var page1 = data1.Pages[pageIndex];
+					for (var index1 = pageLength - 1; index1 >= 0; index1--)
+					{
+						if (indexOffset + index1 > dataSet1.Count)
+						{
+							index1 = dataSet1.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet1.Packed[indexOffset + index1];
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						if (index2 >= 0)
+						{
+							if (!action.Apply(id, ref page1[index1], ref data2[index2]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else if (minSet == dataSet2)
+			{
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data2.PageSize, dataSet2.Count))
+				{
+					if (!data1.HasPage(pageIndex))
+					{
+						continue;
+					}
+
+					var page2 = data2.Pages[pageIndex];
+					for (var index2 = pageLength - 1; index2 >= 0; index2--)
+					{
+						if (indexOffset + index2 > dataSet2.Count)
+						{
+							index2 = dataSet2.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet2.Packed[indexOffset + index2];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						if (index1 >= 0)
+						{
+							if (!action.Apply(id, ref data1[index1], ref page2[index2]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				for (var i = minSet.Count - 1; i >= 0; i--)
+				{
+					if (i > minSet.Count)
+					{
+						i = minSet.Count;
+						continue;
+					}
+
+					var id = minSet.Packed[i];
+					var index1 = dataSet1.GetIndexOrInvalid(id);
+					var index2 = dataSet2.GetIndexOrInvalid(id);
+					if ((index1 | index2) >= 0
+						&& reducedFilter.ContainsId(id))
+					{
+						if (!action.Apply(id, ref data1[index1], ref data2[index2]))
+						{
+							break;
+						}
 					}
 				}
 			}
@@ -157,24 +247,123 @@ namespace Massive
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 			var reducedFilter = Filter.ReduceIncluded(minSet);
 
-			for (var i = minSet.Count - 1; i >= 0; i--)
+			if (minSet == dataSet1)
 			{
-				if (i > minSet.Count)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, dataSet1.Count))
 				{
-					i = minSet.Count;
-					continue;
-				}
-
-				var id = minSet.Packed[i];
-				var index1 = dataSet1.GetIndexOrInvalid(id);
-				var index2 = dataSet2.GetIndexOrInvalid(id);
-				var index3 = dataSet3.GetIndexOrInvalid(id);
-				if ((index1 | index2 | index3) >= 0
-					&& reducedFilter.ContainsId(id))
-				{
-					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3]))
+					if (!data2.HasPage(pageIndex) || !data3.HasPage(pageIndex))
 					{
-						break;
+						continue;
+					}
+
+					var page1 = data1.Pages[pageIndex];
+					for (var index1 = pageLength - 1; index1 >= 0; index1--)
+					{
+						if (indexOffset + index1 > dataSet1.Count)
+						{
+							index1 = dataSet1.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet1.Packed[indexOffset + index1];
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
+						if ((index2 | index3) >= 0
+							&& reducedFilter.ContainsId(id))
+						{
+							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else if (minSet == dataSet2)
+			{
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data2.PageSize, dataSet2.Count))
+				{
+					if (!data1.HasPage(pageIndex) || !data3.HasPage(pageIndex))
+					{
+						continue;
+					}
+
+					var page2 = data2.Pages[pageIndex];
+					for (var index2 = pageLength - 1; index2 >= 0; index2--)
+					{
+						if (indexOffset + index2 > dataSet2.Count)
+						{
+							index2 = dataSet2.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet2.Packed[indexOffset + index2];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
+						if ((index1 | index3) >= 0
+							&& reducedFilter.ContainsId(id))
+						{
+							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else if (minSet == dataSet3)
+			{
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data3.PageSize, dataSet3.Count))
+				{
+					if (!data1.HasPage(pageIndex) || !data2.HasPage(pageIndex))
+					{
+						continue;
+					}
+
+					var page3 = data3.Pages[pageIndex];
+					for (var index3 = pageLength - 1; index3 >= 0; index3--)
+					{
+						if (indexOffset + index3 > dataSet3.Count)
+						{
+							index3 = dataSet3.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet2.Packed[indexOffset + index3];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						if ((index1 | index2) >= 0
+							&& reducedFilter.ContainsId(id))
+						{
+							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				for (var i = minSet.Count - 1; i >= 0; i--)
+				{
+					if (i > minSet.Count)
+					{
+						i = minSet.Count;
+						continue;
+					}
+
+					var id = minSet.Packed[i];
+					var index1 = dataSet1.GetIndexOrInvalid(id);
+					var index2 = dataSet2.GetIndexOrInvalid(id);
+					var index3 = dataSet3.GetIndexOrInvalid(id);
+					if ((index1 | index2 | index3) >= 0
+						&& reducedFilter.ContainsId(id))
+					{
+						if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3]))
+						{
+							break;
+						}
 					}
 				}
 			}
@@ -205,25 +394,160 @@ namespace Massive
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 			var reducedFilter = Filter.ReduceIncluded(minSet);
 
-			for (var i = minSet.Count - 1; i >= 0; i--)
+			if (minSet == dataSet1)
 			{
-				if (i > minSet.Count)
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data1.PageSize, dataSet1.Count))
 				{
-					i = minSet.Count;
-					continue;
-				}
-
-				var id = minSet.Packed[i];
-				var index1 = dataSet1.GetIndexOrInvalid(id);
-				var index2 = dataSet2.GetIndexOrInvalid(id);
-				var index3 = dataSet3.GetIndexOrInvalid(id);
-				var index4 = dataSet4.GetIndexOrInvalid(id);
-				if ((index1 | index2 | index3 | index4) >= 0
-					&& reducedFilter.ContainsId(id))
-				{
-					if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
+					if (!data2.HasPage(pageIndex) || !data3.HasPage(pageIndex) || !data4.HasPage(pageIndex))
 					{
-						break;
+						continue;
+					}
+
+					var page1 = data1.Pages[pageIndex];
+					for (var index1 = pageLength - 1; index1 >= 0; index1--)
+					{
+						if (indexOffset + index1 > dataSet1.Count)
+						{
+							index1 = dataSet1.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet1.Packed[indexOffset + index1];
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
+						var index4 = dataSet4.GetIndexOrInvalid(id);
+						if ((index2 | index3 | index4) >= 0
+							&& reducedFilter.ContainsId(id))
+						{
+							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else if (minSet == dataSet2)
+			{
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data2.PageSize, dataSet2.Count))
+				{
+					if (!data1.HasPage(pageIndex) || !data3.HasPage(pageIndex) || !data4.HasPage(pageIndex))
+					{
+						continue;
+					}
+
+					var page2 = data2.Pages[pageIndex];
+					for (var index2 = pageLength - 1; index2 >= 0; index2--)
+					{
+						if (indexOffset + index2 > dataSet2.Count)
+						{
+							index2 = dataSet2.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet2.Packed[indexOffset + index2];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
+						var index4 = dataSet4.GetIndexOrInvalid(id);
+						if ((index1 | index3 | index4) >= 0
+							&& reducedFilter.ContainsId(id))
+						{
+							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3], ref data4[index4]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else if (minSet == dataSet3)
+			{
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data3.PageSize, dataSet3.Count))
+				{
+					if (!data1.HasPage(pageIndex) || !data2.HasPage(pageIndex) || !data4.HasPage(pageIndex))
+					{
+						continue;
+					}
+
+					var page3 = data3.Pages[pageIndex];
+					for (var index3 = pageLength - 1; index3 >= 0; index3--)
+					{
+						if (indexOffset + index3 > dataSet3.Count)
+						{
+							index3 = dataSet3.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet3.Packed[indexOffset + index3];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index4 = dataSet4.GetIndexOrInvalid(id);
+						if ((index1 | index2 | index4) >= 0
+							&& reducedFilter.ContainsId(id))
+						{
+							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3], ref data4[index4]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else if (minSet == dataSet4)
+			{
+				foreach (var (pageIndex, pageLength, indexOffset) in new PageSequence(data4.PageSize, dataSet4.Count))
+				{
+					if (!data1.HasPage(pageIndex) || !data2.HasPage(pageIndex) || !data3.HasPage(pageIndex))
+					{
+						continue;
+					}
+
+					var page4 = data4.Pages[pageIndex];
+					for (var index4 = pageLength - 1; index4 >= 0; index4--)
+					{
+						if (indexOffset + index4 > dataSet4.Count)
+						{
+							index4 = dataSet4.Count - indexOffset;
+							continue;
+						}
+
+						var id = dataSet4.Packed[indexOffset + index4];
+						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index3 = dataSet3.GetIndexOrInvalid(id);
+						if ((index1 | index2 | index3) >= 0
+							&& reducedFilter.ContainsId(id))
+						{
+							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref page4[index4]))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				for (var i = minSet.Count - 1; i >= 0; i--)
+				{
+					if (i > minSet.Count)
+					{
+						i = minSet.Count;
+						continue;
+					}
+
+					var id = minSet.Packed[i];
+					var index1 = dataSet1.GetIndexOrInvalid(id);
+					var index2 = dataSet2.GetIndexOrInvalid(id);
+					var index3 = dataSet3.GetIndexOrInvalid(id);
+					var index4 = dataSet4.GetIndexOrInvalid(id);
+					if ((index1 | index2 | index3 | index4) >= 0
+						&& reducedFilter.ContainsId(id))
+					{
+						if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
+						{
+							break;
+						}
 					}
 				}
 			}
