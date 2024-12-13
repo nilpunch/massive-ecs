@@ -7,10 +7,11 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class Registry
 	{
+		public Entities Entities { get; }
+
 		public SetRegistry SetRegistry { get; }
 		public FilterRegistry FilterRegistry { get; }
 		public GroupRegistry GroupRegistry { get; }
-		public Entities Entities { get; }
 
 		public RegistryConfig Config { get; }
 
@@ -20,16 +21,16 @@ namespace Massive
 		}
 
 		public Registry(RegistryConfig registryConfig)
-			: this(new NormalSetFactory(registryConfig), new NormalGroupFactory(), new Entities(), registryConfig)
+			: this(new Entities(), new NormalSetFactory(registryConfig), new NormalGroupFactory(), registryConfig)
 		{
 		}
 
-		protected Registry(ISetFactory setFactory, IGroupFactory groupFactory, Entities entities, RegistryConfig registryConfig)
+		protected Registry(Entities entities, ISetFactory setFactory, IGroupFactory groupFactory, RegistryConfig registryConfig)
 		{
+			Entities = entities;
 			SetRegistry = new SetRegistry(setFactory);
 			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory, entities);
 			FilterRegistry = new FilterRegistry(SetRegistry);
-			Entities = entities;
 			Config = registryConfig;
 
 			var allSets = SetRegistry.All;

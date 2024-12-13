@@ -25,7 +25,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TAbstract Find<TKey>()
 		{
-			var typeIndex = TypeIdentifier<TAbstract, TKey>.Info.Index;
+			var typeIndex = TypeIdentifier<TKey>.Info.Index;
 
 			if (typeIndex >= _lookup.Length)
 			{
@@ -63,7 +63,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf<TKey>()
 		{
-			return TypeIdentifier<TAbstract, TKey>.Info.Index;
+			return TypeIdentifier<TKey>.Info.Index;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -96,7 +96,7 @@ namespace Massive
 
 		public void Assign<TKey>(TAbstract item)
 		{
-			var typeInfo = TypeIdentifier<TAbstract, TKey>.Info;
+			var typeInfo = TypeIdentifier<TKey>.Info;
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit
@@ -109,9 +109,7 @@ namespace Massive
 			_lookup[typeIndex] = item;
 			_keyLookup[typeIndex] = typeof(TKey);
 
-			// Maintain items sorted
-			var itemId = typeInfo.FullName;
-			Assign(itemId, item);
+			Assign(typeInfo.FullName, item);
 		}
 
 		public TAbstract Find(Type key)
@@ -128,12 +126,12 @@ namespace Massive
 
 		public int IndexOf(Type key)
 		{
-			return TypeIdentifier<TAbstract>.GetInfo(key).Index;
+			return RuntimeTypeIdentifier.GetInfo(key).Index;
 		}
 
 		public void Assign(Type keyType, TAbstract item)
 		{
-			var typeInfo = TypeIdentifier<TAbstract>.GetInfo(keyType);
+			var typeInfo = RuntimeTypeIdentifier.GetInfo(keyType);
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit

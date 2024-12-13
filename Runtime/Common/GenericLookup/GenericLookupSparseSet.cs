@@ -23,7 +23,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet Find<TKey>()
 		{
-			var typeIndex = SparseSetIdentifier<TKey>.Info.Index;
+			var typeIndex = TypeIdentifier<TKey>.Info.Index;
 
 			if (typeIndex >= _lookup.Length)
 			{
@@ -61,7 +61,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf<TKey>()
 		{
-			return SparseSetIdentifier<TKey>.Info.Index;
+			return TypeIdentifier<TKey>.Info.Index;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -94,7 +94,7 @@ namespace Massive
 
 		public void Assign<TKey>(SparseSet item)
 		{
-			var typeInfo = SparseSetIdentifier<TKey>.Info;
+			var typeInfo = TypeIdentifier<TKey>.Info;
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit
@@ -107,9 +107,7 @@ namespace Massive
 			_lookup[typeIndex] = item;
 			_keyLookup[typeIndex] = typeof(TKey);
 
-			// Maintain items sorted
-			var itemId = typeInfo.FullName;
-			Assign(itemId, item);
+			Assign(typeInfo.FullName, item);
 		}
 
 		public SparseSet Find(Type key)
@@ -126,12 +124,12 @@ namespace Massive
 
 		public int IndexOf(Type key)
 		{
-			return SparseSetIdentifier.GetInfo(key).Index;
+			return RuntimeTypeIdentifier.GetInfo(key).Index;
 		}
 
 		public void Assign(Type keyType, SparseSet item)
 		{
-			var typeInfo = SparseSetIdentifier.GetInfo(keyType);
+			var typeInfo = RuntimeTypeIdentifier.GetInfo(keyType);
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit

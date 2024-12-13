@@ -9,7 +9,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	internal static class TypesCounter<TSubset>
+	internal static class TypesCounter
 	{
 		private static int s_value;
 
