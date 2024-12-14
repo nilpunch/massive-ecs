@@ -29,14 +29,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			if (--_index > _packedSet.Count)
+			while (--_index >= 0 && (_index >= _packedSet.Count || _packedSet.Packed[_index] < 0))
 			{
-				_index = _packedSet.Count - 1;
-			}
-
-			while (_index >= 0 && _packedSet.Packed[_index] < 0)
-			{
-				_index -= 1;
 			}
 
 			return _index >= 0;

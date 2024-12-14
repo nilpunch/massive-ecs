@@ -32,14 +32,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			if (--_index > _packedSet.Count)
+			while (--_index >= 0 && (_index >= _packedSet.Count || _reducedFilter.NotContainsId(_packedSet.Packed[_index])))
 			{
-				_index = _packedSet.Count - 1;
-			}
-
-			while (_index >= 0 && _reducedFilter.NotContainsId(_packedSet.Packed[_index]))
-			{
-				_index -= 1;
 			}
 
 			return _index >= 0;
