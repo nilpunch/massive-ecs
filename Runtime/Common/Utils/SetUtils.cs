@@ -17,26 +17,25 @@ namespace Massive
 				var index = sets[i].GetIndexOrInvalid(id);
 				counter -= (int)((uint)index >> 31);
 			}
-
 			return counter;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool AssignedInAll(int id, SparseSet[] sets)
 		{
-			return id >= 0 && NonNegativeIfAssignedInAll(id, sets, sets.Length) >= 0;
+			return NonNegativeIfAssignedInAll(id, sets, sets.Length) >= 0;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool NotAssignedInAll(int id, SparseSet[] sets)
 		{
-			return id >= 0 && NegativeIfNotAssignedInAll(id, sets, sets.Length) < 0;
+			return NegativeIfNotAssignedInAll(id, sets, sets.Length) < 0;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int NonNegativeIfAssignedInAll(int id, SparseSet[] sets, int setsLength)
 		{
-			var shouldNotBecomeNegative = 0;
+			var shouldNotBecomeNegative = id;
 			for (var i = 0; i < setsLength; i++)
 			{
 				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
@@ -47,7 +46,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int NegativeIfNotAssignedInAll(int id, SparseSet[] sets, int setsLength)
 		{
-			var shouldStayNegative = -1;
+			var shouldStayNegative = id;
 			for (var i = 0; i < setsLength; i++)
 			{
 				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
@@ -59,7 +58,6 @@ namespace Massive
 		public static SparseSet GetMinimalSet(SparseSet[] sets)
 		{
 			var minimal = sets[0];
-
 			for (var i = 1; i < sets.Length; i++)
 			{
 				if (minimal.Count > sets[i].Count)
@@ -67,7 +65,6 @@ namespace Massive
 					minimal = sets[i];
 				}
 			}
-
 			return minimal;
 		}
 
@@ -75,7 +72,6 @@ namespace Massive
 		public static SparseSet GetMinimalSet(SparseSet first, SparseSet[] sets)
 		{
 			var minimal = first;
-
 			for (var i = 0; i < sets.Length; i++)
 			{
 				if (minimal.Count > sets[i].Count)
@@ -83,7 +79,6 @@ namespace Massive
 					minimal = sets[i];
 				}
 			}
-
 			return minimal;
 		}
 
@@ -94,10 +89,7 @@ namespace Massive
 			{
 				return set1;
 			}
-			else
-			{
-				return set2;
-			}
+			return set2;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -107,12 +99,10 @@ namespace Massive
 			{
 				return set1;
 			}
-
 			if (set2.Count <= set1.Count && set2.Count <= set3.Count)
 			{
 				return set2;
 			}
-
 			return set3;
 		}
 
@@ -123,17 +113,14 @@ namespace Massive
 			{
 				return set1;
 			}
-
 			if (set2.Count <= set1.Count && set2.Count <= set3.Count && set2.Count <= set4.Count)
 			{
 				return set2;
 			}
-
 			if (set3.Count <= set1.Count && set3.Count <= set2.Count && set3.Count <= set4.Count)
 			{
 				return set3;
 			}
-
 			return set4;
 		}
 
