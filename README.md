@@ -33,7 +33,7 @@ ECS features:
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components.
   - Or enable full stability for the entire registry.
-- Full-state serialization and deserialization.
+- Full-state serialization and deserialization ([package](https://github.com/nilpunch/massive-serialization)).
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
 - [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP).
 
