@@ -70,7 +70,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Assign(int id)
 		{
-			// If ID is negative or element is alive, nothing to be done
+			// If ID is negative or already assigned, nothing to be done
 			if (id < 0 || id < SparseCapacity && Sparse[id] != Constants.InvalidId)
 			{
 				return;
@@ -98,7 +98,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Unassign(int id)
 		{
-			// If ID is negative or element is not alive, nothing to be done
+			// If ID is negative or not assigned, nothing to be done
 			if (id < 0 || id >= SparseCapacity || Sparse[id] == Constants.InvalidId)
 			{
 				return;

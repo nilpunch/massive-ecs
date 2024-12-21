@@ -105,7 +105,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int id)
 		{
-			// If ID is negative or element is not alive, nothing to be done
+			// If ID is negative or entity is not alive, nothing to be done
 			if (id < 0 || id >= MaxId || Sparse[id] >= Count || Packed[Sparse[id]] != id)
 			{
 				return;
