@@ -42,7 +42,7 @@ Rollback features:
 - Fully optional and non-intrusive, integrates seamlessly with the existing ECS core.
 - Minimalistic API: `SaveFrame()` and `Rollback(frames)`
 - Supports components with managed data (e.g., arrays, strings, etc.). See the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks#managed-components) for details.
-- Performance benchmark:  
+- Performance reference:  
   - 1000 entities, each with 150 components, can be saved 24 times in 4.5 ms.
   - The 150 components include 50 components of 64 bytes, 50 components of 4 bytes, and 50 tags.
 
