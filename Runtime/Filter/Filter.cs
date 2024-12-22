@@ -37,15 +37,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool ContainsId(int id)
 		{
-			return SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedCount) >= 0 
-				&& SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedCount) < 0;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool NotContainsId(int id)
-		{
-			return SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedCount) < 0 
-				|| SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedCount) >= 0;
+			return (SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedCount) 
+				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedCount)) >= 0;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

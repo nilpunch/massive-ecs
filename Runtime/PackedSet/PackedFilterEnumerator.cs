@@ -37,7 +37,7 @@ namespace Massive
 				_index = _packedSet.Count - 1;
 			}
 
-			while (_index >= 0 && _reducedFilter.NotContainsId(_packedSet.Packed[_index]))
+			while (_index >= 0 && !_reducedFilter.ContainsId(_packedSet.Packed[_index]))
 			{
 				--_index;
 			}
