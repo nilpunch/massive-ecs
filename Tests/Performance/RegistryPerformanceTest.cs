@@ -265,6 +265,21 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
+		public void Registry_ViewFiltation_Overhead()
+		{
+			Measure.Method(() =>
+				{
+					foreach (var i in _registry.View().Include<PositionComponent, VelocityComponent>())
+					{
+						break;
+					}
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(2000)
+				.Run();
+		}
+
+		[Test, Performance]
 		public void Registry_SetLookupOverhead()
 		{
 			Measure.Method(() =>
