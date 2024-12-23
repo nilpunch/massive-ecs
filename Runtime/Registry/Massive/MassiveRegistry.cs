@@ -95,6 +95,17 @@ namespace Massive
 				}
 			}
 
+			var serviceList = ServiceRegistry.All;
+			var serviceCount = serviceList.Count;
+			var services = serviceList.Items;
+			for (var i = 0; i < serviceCount; i++)
+			{
+				if (services[i] is IMassive massive)
+				{
+					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
+				}
+			}
+
 			Rollbacked?.Invoke(frames);
 		}
 	}
