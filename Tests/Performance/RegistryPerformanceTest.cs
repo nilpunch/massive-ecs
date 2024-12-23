@@ -275,7 +275,7 @@ namespace Massive.PerformanceTests
 					}
 				})
 				.MeasurementCount(MeasurementCount)
-				.IterationsPerMeasurement(2000)
+				.IterationsPerMeasurement(IterationsPerMeasurement * 1000)
 				.Run();
 		}
 
