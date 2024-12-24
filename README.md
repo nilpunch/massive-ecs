@@ -4,6 +4,8 @@
 Designed for use in games with deterministic prediction-rollback netcode.  
 Based on sparse sets. Inspired by [EnTT](https://github.com/skypjack/entt).
 
+Does not reference Unity Engine, so it could be used in a regular C# project.
+
 > [!NOTE]
 > Some APIs are subject to change, but overall the architecture is stable.
 
@@ -19,11 +21,12 @@ See minimum required Unity version in the `package.json` file.
 
 This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.
 
-ECS features ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System)):
+### Entity Component System ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System))
 
 - Fast and simple.
 - No code generation.
 - No archetypes or bitsets.
+- Fully managed, no unsafe code.
 - Supports components of any type.
 - No allocations and minimal memory consumption.
 - No deferred command execution — all changes take effect immediately.
@@ -36,7 +39,7 @@ ECS features ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Entity-Compone
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
 - [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP).
 
-Rollback features ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks)):
+### Rollbacks ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks))
 
 - Fully optional and non-intrusive, integrates seamlessly with the existing ECS core.
 - Minimalistic API: `SaveFrame()` and `Rollback(frames)`
