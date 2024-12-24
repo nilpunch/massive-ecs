@@ -4,7 +4,16 @@
 
 ### Added
 
-- `ServiceRegistry` for `Registry`.
+- `ServiceRegistry` class implementing the service locator pattern.
+  Integrated it with `Registry`.
+
+### Changed
+
+- Empty types (tags) can now only be value types, instead of any type without fields.
+- Renamed `TrimmedFilter` to `ReducedFilted` and tweak some internal method names.
+- Reworked `TypeIdentifier` and `GenericLookup`.
+- Optimize `FilterView.ForEach()` methods for cases where a minimal set is one of the selected data sets.
+- Moved serialization to a separate package to eliminate unsafe code from the core library.
 
 ## 17.0.0 - December 9, 2024
 
