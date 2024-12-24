@@ -111,7 +111,7 @@ Major devirtualization and other optimizations.
 - Replaced `IGroup` and `IOwningGroup` with `Group` and `OwningGroup` classes.
 - Increased default page size from 1024 to 16384 (except `MassiveRegistry`, which remains 1024).
 
-## Removed
+### Removed
 
 - `IGroup`, `IFilter`, and `IIdsSource` interfaces.
 - `SetCapacity` parameter; now defaults to 0 across the board.
