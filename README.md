@@ -31,7 +31,7 @@ This is **a library**, not a framework. Thus, it does not try to take control of
 - No allocations and minimal memory consumption.
 - No deferred command execution — all changes take effect immediately.
 - Generic API for in-place filtering, with a non-generic version to improve IL2CPP build time and size.
-- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#what-is-allowed-during-iterations) for flexible iteration over entities and components.
+- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#what-is-allowed-during-iterations) for safe and flexible iteration over entities and components.
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components.
   - Or enable full stability for the entire registry.
