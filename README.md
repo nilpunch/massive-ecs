@@ -17,10 +17,9 @@ See minimum required Unity version in the `package.json` file.
 
 ## Overview
 
-This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.  
-Check out the [wiki](https://github.com/nilpunch/massive-ecs/wiki) for more information.
+This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.
 
-ECS features:
+ECS features ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System)):
 
 - Fast and simple.
 - No code generation.
@@ -37,12 +36,12 @@ ECS features:
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
 - [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP).
 
-Rollback features:
+Rollback features ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks)):
 
 - Fully optional and non-intrusive, integrates seamlessly with the existing ECS core.
 - Minimalistic API: `SaveFrame()` and `Rollback(frames)`
-- Supports components with managed data (e.g., arrays, strings, etc.). See the [wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks#managed-components) for details.
-- Performance benchmark:  
+- Supports components with managed data (e.g., arrays, strings, etc.).
+- Performance reference (PC, CPU i7-11700KF, RAM 2666 MHz):  
   - 1000 entities, each with 150 components, can be saved 24 times in 6 ms.  
     The 150 components include 50 components of 64 bytes, 50 components of 4 bytes, and 50 tags.
   - Need more entities or reduced overhead? Adjust components or savings per frame.  
