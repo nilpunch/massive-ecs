@@ -29,7 +29,7 @@ namespace Massive
 			IncludedCount = included.Length;
 			ExcludedCount = excluded.Length;
 
-			NotReduced = FilterUtils.MakeReducedFilter(this);
+			NotReduced = ReducedFilter.Create(this);
 
 			UpdateReducedFilters();
 		}
@@ -41,7 +41,6 @@ namespace Massive
 				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedCount)) >= 0;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ReducedFilter ReduceIncluded(SparseSet included)
 		{
 			for (var i = 0; i < ReducedFilters.Length; i++)
@@ -56,7 +55,6 @@ namespace Massive
 			return NotReduced;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void UpdateReducedFilters()
 		{
 			if (Included.Length > ReducedFilters.Length)
@@ -65,7 +63,7 @@ namespace Massive
 				ReducedFilters = ReducedFilters.Resize(Included.Length);
 				for (var i = previousLength; i < Included.Length; i++)
 				{
-					ReducedFilters[i] = FilterUtils.MakeReducedFilter(this, Included[i]);
+					ReducedFilters[i] = ReducedFilter.Create(this, Included[i]);
 				}
 			}
 		}

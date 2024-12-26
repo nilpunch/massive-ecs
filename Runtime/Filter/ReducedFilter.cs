@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -30,6 +31,31 @@ namespace Massive
 		{
 			return (SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedLength)
 				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedLength)) >= 0;
+		}
+
+        public static ReducedFilter Create(Filter filter, SparseSet reduced = null)
+		{
+			if (filter.IncludedCount == 0 || filter.IncludedCount == 1 && filter.Included[0] == reduced)
+			{
+				return new ReducedFilter(Array.Empty<SparseSet>(), 0, filter.Excluded, filter.ExcludedCount, null);
+			}
+
+			var ignoredIndex = Array.IndexOf(filter.Included, reduced, 0, filter.IncludedCount);
+			if (ignoredIndex == -1)
+			{
+				return new ReducedFilter(filter.Included, filter.IncludedCount, filter.Excluded, filter.ExcludedCount, null);
+			}
+			else if (ignoredIndex == filter.IncludedCount - 1)
+			{
+				return new ReducedFilter(filter.Included, filter.IncludedCount - 1, filter.Excluded, filter.ExcludedCount, filter.Included[^1]);
+			}
+			else
+			{
+				var included = new SparseSet[filter.IncludedCount - 1];
+				Array.Copy(filter.Included, included, filter.IncludedCount - 1);
+				included[ignoredIndex] = filter.Included[^1];
+				return new ReducedFilter(included, filter.IncludedCount - 1, filter.Excluded, filter.ExcludedCount, filter.Included[ignoredIndex]);
+			}
 		}
 	}
 }
