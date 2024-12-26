@@ -17,7 +17,7 @@ namespace Massive
 		public SparseSet[] Included { get; protected set; }
 		public SparseSet[] Excluded { get; protected set; }
 
-		public ReducedFilter NotReduced { get; }
+		public ReducedFilter NotReduced { get; private set; }
 		private ReducedFilter[] ReducedFilters { get; set; } = Array.Empty<ReducedFilter>();
 
 		public Filter(SparseSet[] included, SparseSet[] excluded)
@@ -28,8 +28,6 @@ namespace Massive
 			Excluded = excluded;
 			IncludedCount = included.Length;
 			ExcludedCount = excluded.Length;
-
-			NotReduced = ReducedFilter.Create(this);
 
 			UpdateReducedFilters();
 		}
@@ -55,13 +53,14 @@ namespace Massive
 			return NotReduced;
 		}
 
-		public void UpdateReducedFilters()
+		protected void UpdateReducedFilters()
 		{
-			if (Included.Length > ReducedFilters.Length)
+			NotReduced = ReducedFilter.Create(this);
+
+			if (IncludedCount > ReducedFilters.Length)
 			{
-				var previousLength = ReducedFilters.Length;
-				ReducedFilters = ReducedFilters.Resize(Included.Length);
-				for (var i = previousLength; i < Included.Length; i++)
+				ReducedFilters = ReducedFilters.Resize(IncludedCount);
+				for (var i = 0; i < IncludedCount; i++)
 				{
 					ReducedFilters[i] = ReducedFilter.Create(this, Included[i]);
 				}

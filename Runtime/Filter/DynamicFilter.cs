@@ -69,6 +69,8 @@ namespace Massive
 			Excluded[ExcludedCount] = set;
 			ExcludedCount += 1;
 
+			UpdateReducedFilters();
+
 			return this;
 		}
 	}
