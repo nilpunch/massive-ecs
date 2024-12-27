@@ -18,7 +18,11 @@ namespace Massive
 
 		public int CurrentFrame { get; private set; }
 
-		public int CanRollbackFrames => _savedFrames - 1;
+		public int CanRollbackFrames
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _savedFrames - 1;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()

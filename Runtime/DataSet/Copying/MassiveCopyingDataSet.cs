@@ -5,21 +5,17 @@ namespace Massive
 	/// <summary>
 	/// Rollback extension for <see cref="Massive.DataSet{T}"/> with custom copying.
 	/// Swaps data when elements are moved.
+	/// Used in registry for managed components to reduce allocations.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveCopyingDataSet<T> : MassiveDataSet<T> where T : ICopyable<T>
+	public class MassiveCopyingDataSet<T> : MassiveSwappingDataSet<T> where T : ICopyable<T>
 	{
 		public MassiveCopyingDataSet(int framesCapacity = Constants.DefaultFramesCapacity,
 			int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
 			: base(framesCapacity, pageSize, packing)
 		{
-		}
-
-		public override void MoveDataAt(int source, int destination)
-		{
-			Data.Swap(source, destination);
 		}
 
 		public override void CopyDataAt(int source, int destination)

@@ -6,6 +6,8 @@ namespace Massive
 {
 	/// <summary>
 	/// Rollback extension for <see cref="Massive.DataSet{T}"/>.
+	/// Resets data when elemets are moved.
+	/// Used in registry for unmanaged components.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]

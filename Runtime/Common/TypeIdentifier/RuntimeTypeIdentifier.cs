@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Unity.IL2CPP.CompilerServices;
 
-// ReSharper disable all StaticMemberInGenericType
 namespace Massive
 {
 	[Il2CppEagerStaticClassConstruction]

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
-// ReSharper disable StaticMemberInGenericType
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]

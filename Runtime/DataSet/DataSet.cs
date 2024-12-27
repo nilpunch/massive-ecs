@@ -5,6 +5,8 @@ namespace Massive
 {
 	/// <summary>
 	/// Data extension for <see cref="Massive.SparseSet"/>.
+	/// Resets data when elemets are moved.
+	/// Used in registry for unmanaged components.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -27,7 +29,9 @@ namespace Massive
 
 		public override void MoveDataAt(int source, int destination)
 		{
-			Data[destination] = Data[source];
+			ref var sourceData = ref Data[source];
+			Data[destination] = sourceData;
+			sourceData = default;
 		}
 
 		public override void SwapDataAt(int first, int second)
