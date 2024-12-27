@@ -59,7 +59,7 @@ namespace Massive
 			for (var i = 0; i < setCount; i++)
 			{
 				var set = sets[i];
-				var index = set.GetIndexOrInvalid(id);
+				var index = set.GetIndexOrNegative(id);
 				if (index >= 0)
 				{
 					set.Assign(cloneId);

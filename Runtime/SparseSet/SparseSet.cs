@@ -161,7 +161,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetIndexOrInvalid(int id)
+		public int GetIndexOrNegative(int id)
 		{
 			if (id < 0 || id >= SparseCapacity)
 			{

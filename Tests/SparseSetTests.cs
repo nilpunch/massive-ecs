@@ -54,7 +54,7 @@ namespace Massive.Tests
 		{
 			var sparseSet = new SparseSet();
 
-			var index = sparseSet.GetIndexOrInvalid(id);
+			var index = sparseSet.GetIndexOrNegative(id);
 
 			Assert.IsTrue(index < 0);
 		}

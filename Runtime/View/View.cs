@@ -112,7 +112,7 @@ namespace Massive
 						}
 
 						var id = dataSet1.Packed[indexOffset + index1];
-						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index2 = dataSet2.GetIndexOrNegative(id);
 						if (index2 >= 0)
 						{
 							if (!action.Apply(id, ref page1[index1], ref data2[index2]))
@@ -142,7 +142,7 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[indexOffset + index2];
-						var index1 = dataSet1.GetIndexOrInvalid(id);
+						var index1 = dataSet1.GetIndexOrNegative(id);
 						if (index1 >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref page2[index2]))
@@ -191,8 +191,8 @@ namespace Massive
 						}
 
 						var id = dataSet1.Packed[indexOffset + index1];
-						var index2 = dataSet2.GetIndexOrInvalid(id);
-						var index3 = dataSet3.GetIndexOrInvalid(id);
+						var index2 = dataSet2.GetIndexOrNegative(id);
+						var index3 = dataSet3.GetIndexOrNegative(id);
 						if ((index2 | index3) >= 0)
 						{
 							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3]))
@@ -222,8 +222,8 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[indexOffset + index2];
-						var index1 = dataSet1.GetIndexOrInvalid(id);
-						var index3 = dataSet3.GetIndexOrInvalid(id);
+						var index1 = dataSet1.GetIndexOrNegative(id);
+						var index3 = dataSet3.GetIndexOrNegative(id);
 						if ((index1 | index3) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3]))
@@ -253,8 +253,8 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[indexOffset + index3];
-						var index1 = dataSet1.GetIndexOrInvalid(id);
-						var index2 = dataSet2.GetIndexOrInvalid(id);
+						var index1 = dataSet1.GetIndexOrNegative(id);
+						var index2 = dataSet2.GetIndexOrNegative(id);
 						if ((index1 | index2) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3]))
@@ -305,9 +305,9 @@ namespace Massive
 						}
 
 						var id = dataSet1.Packed[indexOffset + index1];
-						var index2 = dataSet2.GetIndexOrInvalid(id);
-						var index3 = dataSet3.GetIndexOrInvalid(id);
-						var index4 = dataSet4.GetIndexOrInvalid(id);
+						var index2 = dataSet2.GetIndexOrNegative(id);
+						var index3 = dataSet3.GetIndexOrNegative(id);
+						var index4 = dataSet4.GetIndexOrNegative(id);
 						if ((index2 | index3 | index4) >= 0)
 						{
 							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
@@ -337,9 +337,9 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[indexOffset + index2];
-						var index1 = dataSet1.GetIndexOrInvalid(id);
-						var index3 = dataSet3.GetIndexOrInvalid(id);
-						var index4 = dataSet4.GetIndexOrInvalid(id);
+						var index1 = dataSet1.GetIndexOrNegative(id);
+						var index3 = dataSet3.GetIndexOrNegative(id);
+						var index4 = dataSet4.GetIndexOrNegative(id);
 						if ((index1 | index3 | index4) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3], ref data4[index4]))
@@ -369,9 +369,9 @@ namespace Massive
 						}
 
 						var id = dataSet3.Packed[indexOffset + index3];
-						var index1 = dataSet1.GetIndexOrInvalid(id);
-						var index2 = dataSet2.GetIndexOrInvalid(id);
-						var index4 = dataSet4.GetIndexOrInvalid(id);
+						var index1 = dataSet1.GetIndexOrNegative(id);
+						var index2 = dataSet2.GetIndexOrNegative(id);
+						var index4 = dataSet4.GetIndexOrNegative(id);
 						if ((index1 | index2 | index4) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3], ref data4[index4]))
@@ -401,9 +401,9 @@ namespace Massive
 						}
 
 						var id = dataSet4.Packed[indexOffset + index4];
-						var index1 = dataSet1.GetIndexOrInvalid(id);
-						var index2 = dataSet2.GetIndexOrInvalid(id);
-						var index3 = dataSet3.GetIndexOrInvalid(id);
+						var index1 = dataSet1.GetIndexOrNegative(id);
+						var index2 = dataSet2.GetIndexOrNegative(id);
+						var index3 = dataSet3.GetIndexOrNegative(id);
 						if ((index1 | index2 | index3) >= 0)
 						{
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref page4[index4]))

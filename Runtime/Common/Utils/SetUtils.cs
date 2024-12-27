@@ -14,7 +14,7 @@ namespace Massive
 			var counter = sets.Length;
 			for (var i = 0; i < sets.Length; i++)
 			{
-				var index = sets[i].GetIndexOrInvalid(id);
+				var index = sets[i].GetIndexOrNegative(id);
 				counter -= (int)((uint)index >> 31);
 			}
 			return counter;
@@ -38,7 +38,7 @@ namespace Massive
 			var shouldNotBecomeNegative = id;
 			for (var i = 0; i < setsLength; i++)
 			{
-				shouldNotBecomeNegative |= sets[i].GetIndexOrInvalid(id);
+				shouldNotBecomeNegative |= sets[i].GetIndexOrNegative(id);
 			}
 			return shouldNotBecomeNegative;
 		}
@@ -49,7 +49,7 @@ namespace Massive
 			var shouldStayNegative = ~id;
 			for (var i = 0; i < setsLength; i++)
 			{
-				shouldStayNegative &= sets[i].GetIndexOrInvalid(id);
+				shouldStayNegative &= sets[i].GetIndexOrNegative(id);
 			}
 			return shouldStayNegative;
 		}
