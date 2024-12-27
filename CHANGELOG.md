@@ -9,7 +9,7 @@
 
 ### Changed
 
-- Empty types (tags) can now only be value types, instead of any type without fields.
+- Empty type optimization (tags) now only applies to value types, instead of any type without fields.
 - Renamed `TrimmedFilter` to `ReducedFilted` and tweak some internal method names.
 - Reworked `TypeIdentifier` and `GenericLookup`.
 - Optimize `FilterView.ForEach()` methods for cases where a minimal set is one of the selected data sets.
