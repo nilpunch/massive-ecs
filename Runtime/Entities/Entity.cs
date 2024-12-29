@@ -19,7 +19,7 @@ namespace Massive
 		public int IdWithOffset
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => (int)(IdAndVersion & 0x00000000FFFFFFFF);
+			get => (int)IdAndVersion;
 		}
 
 		public uint Version
@@ -28,25 +28,12 @@ namespace Massive
 			get => (uint)(IdAndVersion >> 32);
 		}
 
-		private Entity(long idAndVersion)
+		public Entity(int id, uint version)
 		{
-			IdAndVersion = idAndVersion;
+			IdAndVersion = (uint)(id + IdOffset) | ((long)version << 32);
 		}
 
-		public static Entity Dead
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new Entity(0);
-		}
-
-#pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity Create(int id, uint version)
-		{
-			var idAndVersion = (id + IdOffset) | ((long)version << 32);
-			return new Entity(idAndVersion);
-		}
-#pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand
+		public static readonly Entity Dead;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool operator ==(Entity a, Entity b)

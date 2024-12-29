@@ -1,6 +1,6 @@
 ﻿namespace Massive
 {
-	public struct IdentifierInfo
+	public readonly struct IdentifierInfo
 	{
 		public readonly int Index;
 		public readonly string FullName;

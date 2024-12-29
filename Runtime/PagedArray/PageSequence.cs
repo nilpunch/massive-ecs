@@ -57,10 +57,26 @@ namespace Massive
 				return false;
 			}
 
-			public (int PageIndex, int PageLength, int IndexOffset) Current
+			public Page Current
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => (_page, _pageLength, _page * _pageSize);
+				get => new Page(_page, _pageLength, _page * _pageSize);
+			}
+		}
+
+		public readonly struct Page
+		{
+			public readonly int Index;
+
+			public readonly int Length;
+
+			public readonly int Offset;
+
+			public Page(int index, int length, int offset)
+			{
+				Index = index;
+				Length = length;
+				Offset = offset;
 			}
 		}
 	}

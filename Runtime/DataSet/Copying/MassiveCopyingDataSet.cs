@@ -25,19 +25,19 @@ namespace Massive
 
 		protected override void CopyData(PagedArray<T> source, PagedArray<T> destination, int count)
 		{
-			foreach (var (pageIndex, pageLength, _) in new PageSequence(source.PageSize, count))
+			foreach (var page in new PageSequence(source.PageSize, count))
 			{
-				if (!source.HasPage(pageIndex))
+				if (!source.HasPage(page.Index))
 				{
 					continue;
 				}
 
-				destination.EnsurePage(pageIndex);
+				destination.EnsurePage(page.Index);
 
-				var sourcePage = source.Pages[pageIndex];
-				var destinationPage = destination.Pages[pageIndex];
+				var sourcePage = source.Pages[page.Index];
+				var destinationPage = destination.Pages[page.Index];
 
-				for (var i = 0; i < pageLength; i++)
+				for (var i = 0; i < page.Length; i++)
 				{
 					sourcePage[i].CopyTo(ref destinationPage[i]);
 				}

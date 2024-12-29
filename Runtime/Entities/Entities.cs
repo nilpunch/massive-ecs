@@ -83,7 +83,7 @@ namespace Massive
 				var index = Sparse[id];
 				NextHoleId = ~Packed[index];
 				Packed[index] = id;
-				entity = Entity.Create(id, Versions[index]);
+				entity = new Entity(id, Versions[index]);
 			}
 			else if (Count < MaxId)
 			{
@@ -92,7 +92,7 @@ namespace Massive
 			}
 			else
 			{
-				entity = Entity.Create(MaxId, 0);
+				entity = new Entity(MaxId, 0);
 				AssignEntity(MaxId, 0, Count);
 				MaxId += 1;
 				Count += 1;
@@ -203,7 +203,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
-			return GetEntityAt(Sparse[id]);
+			return new Entity(id, Versions[Sparse[id]]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -295,7 +295,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private Entity GetEntityAt(int index)
 		{
-			return Entity.Create(Packed[index], Versions[index]);
+			return new Entity(Packed[index], Versions[index]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
