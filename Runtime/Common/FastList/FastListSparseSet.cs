@@ -119,9 +119,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Enumerator GetEnumerator()
+		public Span<SparseSet>.Enumerator GetEnumerator()
 		{
-			return new Enumerator(_items, Count);
+			return new Span<SparseSet>(_items, 0, Count).GetEnumerator();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -130,30 +130,6 @@ namespace Massive
 			if (Capacity < min)
 			{
 				Capacity = MathUtils.NextPowerOf2(min);
-			}
-		}
-
-		public struct Enumerator
-		{
-			private readonly SparseSet[] _items;
-			private int _index;
-
-			public Enumerator(SparseSet[] items, int index)
-			{
-				_items = items;
-				_index = index;
-			}
-
-			public SparseSet Current
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => _items[_index];
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool MoveNext()
-			{
-				return --_index >= 0;
 			}
 		}
 	}

@@ -119,6 +119,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Span<T>.Enumerator GetEnumerator()
+		{
+			return new Span<T>(_items, 0, Count).GetEnumerator();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void EnsureCapacity(int min)
 		{
 			if (Capacity < min)
