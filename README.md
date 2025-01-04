@@ -35,9 +35,7 @@ This is **a library**, not a framework. Thus, it does not try to take control of
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components.
   - Or enable full stability for the entire registry.
-- Full-state serialization and deserialization ([package](https://github.com/nilpunch/massive-serialization)).
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
-- [Unity integration](https://github.com/nilpunch/massive-unity-integration) (WIP).
 
 ### Rollbacks ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks))
 
@@ -49,6 +47,12 @@ This is **a library**, not a framework. Thus, it does not try to take control of
     The 150 components include 50 components of 64 bytes, 50 components of 4 bytes, and 50 tags.
   - Need more entities or reduced overhead? Adjust components or savings per frame.  
     For example, 10000 entities with 15 components each can be saved 12 times in 2.3 ms.
+
+### Addons
+
+- Full-state serialization and deserialization ([package](https://github.com/nilpunch/massive-serialization)).
+- Networking with input buffers, commands prediction, and resimulation loop ([package](https://github.com/nilpunch/massive-netcode)).
+- Unity integration ([package](https://github.com/nilpunch/massive-unity-integration)).
 
 Consider this list a work in progress as well as the project.
 
