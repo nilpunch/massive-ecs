@@ -20,8 +20,10 @@ namespace Massive
 		public MassiveRegistry(MassiveRegistryConfig registryConfig)
 			: base(new MassiveEntities(registryConfig.FramesCapacity), new MassiveSetFactory(registryConfig), new MassiveGroupFactory(registryConfig.FramesCapacity), registryConfig)
 		{
-			// Fetch instance from base
+			// Fetch instance from base.
 			Entities = (MassiveEntities)base.Entities;
+
+			Entities.SaveFrame(); // Save first empty frame so we can rollback to it.
 
 			Config = registryConfig;
 		}

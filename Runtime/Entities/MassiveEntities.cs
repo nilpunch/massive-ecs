@@ -47,7 +47,7 @@ namespace Massive
 
 			EnsureCapacityForFrame(currentFrame);
 
-			// Copy everything from current state to current frame
+			// Copy everything from current state to current frame.
 			Array.Copy(Packed, _packedByFrames[currentFrame], MaxId);
 			Array.Copy(Versions, _versionsByFrames[currentFrame], MaxId);
 			Array.Copy(Sparse, _sparseByFrames[currentFrame], MaxId);
@@ -59,7 +59,7 @@ namespace Massive
 		{
 			_cyclicFrameCounter.Rollback(frames);
 
-			// Copy everything from rollback frame to current state
+			// Copy everything from rollback frame to current state.
 			var rollbackFrame = _cyclicFrameCounter.CurrentFrame;
 			var rollbackState = _stateByFrames[rollbackFrame];
 

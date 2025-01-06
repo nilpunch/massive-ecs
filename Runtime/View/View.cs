@@ -92,7 +92,7 @@ namespace Massive
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
-			// Iterate over smallest data set
+			// Iterate over the smallest data set.
 			if (minSet == dataSet1)
 			{
 				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
@@ -171,7 +171,7 @@ namespace Massive
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
-			// Iterate over smallest data set
+			// Iterate over the smallest data set.
 			if (minSet == dataSet1)
 			{
 				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
@@ -285,7 +285,7 @@ namespace Massive
 			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
 
-			// Iterate over the smallest data set
+			// Iterate over the smallest data set.
 			if (minSet == dataSet1)
 			{
 				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))

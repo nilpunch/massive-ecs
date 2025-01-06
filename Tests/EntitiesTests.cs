@@ -17,17 +17,17 @@ namespace Massive.Tests
 		[Test]
 		public void WhenCompact_AndThereIsHoles_ThenRemoveHoles()
 		{
-			// Arrange
+			// Arrange.
 			var entities = new Entities(Packing.WithHoles);
 			for (int i = 0; i < EntitiesToCreate; i++)
 				entities.Create();
 			foreach (var id in IdsToDestroy)
 				entities.Destroy(id);
 
-			// Act
+			// Act.
 			entities.Compact();
 
-			// Assert
+			// Assert.
 			int remainIdsCount = EntitiesToCreate - IdsToDestroy.Length;
 			Assert.AreEqual(remainIdsCount, entities.Count);
 		}
@@ -35,17 +35,17 @@ namespace Massive.Tests
 		[Test]
 		public void WhenClear_AndThereIsHoles_ThenRestoreTheIdsAndClear()
 		{
-			// Arrange
+			// Arrange.
 			var entities = new Entities(Packing.WithHoles);
 			for (int i = 0; i < EntitiesToCreate; i++)
 				entities.Create();
 			foreach (var id in IdsToDestroy)
 				entities.Destroy(id);
 
-			// Act
+			// Act.
 			entities.Clear();
 
-			// Assert
+			// Assert.
 			for (int i = 0; i < EntitiesToCreate; i++)
 			{
 				Assert.IsFalse(entities.IsAlive(i));

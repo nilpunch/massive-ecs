@@ -78,7 +78,7 @@ namespace Massive
 
 		public void Assign(string itemId, SparseSet item)
 		{
-			// Maintain items sorted
+			// Maintain items sorted.
 			var itemIndex = _itemIds.BinarySearch(itemId);
 			if (itemIndex >= 0)
 			{
@@ -97,7 +97,7 @@ namespace Massive
 			var typeInfo = TypeIdentifier<TKey>.Info;
 			var typeIndex = typeInfo.Index;
 
-			// Resize lookup to fit
+			// Resize lookup to fit.
 			if (typeIndex >= _lookup.Length)
 			{
 				Array.Resize(ref _lookup, MathUtils.NextPowerOf2(typeIndex + 1));
@@ -132,7 +132,7 @@ namespace Massive
 			var typeInfo = RuntimeTypeIdentifier.GetInfo(keyType);
 			var typeIndex = typeInfo.Index;
 
-			// Resize lookup to fit
+			// Resize lookup to fit.
 			if (typeIndex >= _lookup.Length)
 			{
 				Array.Resize(ref _lookup, MathUtils.NextPowerOf2(typeIndex + 1));

@@ -17,7 +17,7 @@
 				{
 					ref var bullet = ref bullets.Get(bulletId);
 
-					// Don't collide a character with its own bullet
+					// Don't collide a character with its own bullet.
 					if (bullet.Owner == registry.GetEntity(characterId))
 					{
 						continue;

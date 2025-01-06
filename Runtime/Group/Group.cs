@@ -103,7 +103,7 @@ namespace Massive
 
 		private void AddToGroupBeforeUnassignedFromExcluded(int id)
 		{
-			// Applies only when removed from the last remaining exclude set
+			// Applies only when removed from the last remaining exclude set.
 			if (IsSynced && SetUtils.AssignedInAll(id, Included)
 				&& SetUtils.CountAssignedInAll(id, Excluded) == 1)
 			{

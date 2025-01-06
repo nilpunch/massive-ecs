@@ -15,7 +15,7 @@ namespace Massive
 		public MassiveGroup(SparseSet[] included = null, SparseSet[] excluded = null, int framesCapacity = Constants.DefaultFramesCapacity, Entities entities = null)
 			: base(new MassiveSparseSet(framesCapacity), included, excluded, entities)
 		{
-			// Fetch instance from base
+			// Fetch instance from base.
 			_massiveMainSet = (IMassive)Set;
 
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);

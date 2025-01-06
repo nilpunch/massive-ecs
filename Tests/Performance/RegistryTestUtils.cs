@@ -150,7 +150,7 @@
 		{
 			while (entitiesAmount != 0)
 			{
-				// 50 different components
+				// 50 different components.
 				var id = registry.Create();
 				registry.Assign<TestState64>(id);
 				registry.Assign<TestState64_2>(id);
@@ -212,7 +212,7 @@
 		{
 			while (entitiesAmount != 0)
 			{
-				// 50 different tags
+				// 50 different tags.
 				var id = registry.Create();
 				registry.Assign<TestTag>(id);
 				registry.Assign<TestTag<int, int, int>>(id);
