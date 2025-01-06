@@ -8,7 +8,7 @@ namespace Massive
 	/// </summary>
 	public class MassiveRegistry : Registry, IMassive
 	{
-		private readonly MassiveEntities _massiveEntities;
+		public new MassiveEntities Entities { get; }
 
 		public new MassiveRegistryConfig Config { get; }
 
@@ -20,8 +20,8 @@ namespace Massive
 		public MassiveRegistry(MassiveRegistryConfig registryConfig)
 			: base(new MassiveEntities(registryConfig.FramesCapacity), new MassiveSetFactory(registryConfig), new MassiveGroupFactory(registryConfig.FramesCapacity), registryConfig)
 		{
-			// Fetch instances from base
-			_massiveEntities = (MassiveEntities)Entities;
+			// Fetch instance from base
+			Entities = (MassiveEntities)base.Entities;
 
 			Config = registryConfig;
 		}
@@ -29,39 +29,32 @@ namespace Massive
 		public event Action FrameSaved;
 		public event Action<int> Rollbacked;
 
-		public int CanRollbackFrames => _massiveEntities.CanRollbackFrames;
+		public int CanRollbackFrames => Entities.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			_massiveEntities.SaveFrame();
+			Entities.SaveFrame();
 
-			var setList = SetRegistry.All;
-			var setCount = setList.Count;
-			var sets = setList.Items;
-			for (var i = 0; i < setCount; i++)
+			foreach (var set in SetRegistry.All)
 			{
-				if (sets[i] is IMassive massive)
+				if (set is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
 			}
 
-			var groups = GroupRegistry.All;
-			for (var i = 0; i < groups.Length; i++)
+			foreach (var group in GroupRegistry.All)
 			{
-				if (groups[i] is IMassive massive)
+				if (group is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
 			}
 
-			var serviceList = ServiceRegistry.All;
-			var serviceCount = serviceList.Count;
-			var services = serviceList.Items;
-			for (var i = 0; i < serviceCount; i++)
+			foreach (var service in ServiceRegistry.All)
 			{
-				if (services[i] is IMassive massive)
+				if (service is IMassive massive)
 				{
 					massive.SaveFrame();
 				}
@@ -73,34 +66,27 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			_massiveEntities.Rollback(Math.Min(frames, _massiveEntities.CanRollbackFrames));
+			Entities.Rollback(Math.Min(frames, Entities.CanRollbackFrames));
 
-			var setList = SetRegistry.All;
-			var setCount = setList.Count;
-			var sets = setList.Items;
-			for (var i = 0; i < setCount; i++)
+			foreach (var set in SetRegistry.All)
 			{
-				if (sets[i] is IMassive massive)
+				if (set is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}
 			}
 
-			var groups = GroupRegistry.All;
-			for (var i = 0; i < groups.Length; i++)
+			foreach (var group in GroupRegistry.All)
 			{
-				if (groups[i] is IMassive massive)
+				if (group is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}
 			}
 
-			var serviceList = ServiceRegistry.All;
-			var serviceCount = serviceList.Count;
-			var services = serviceList.Items;
-			for (var i = 0; i < serviceCount; i++)
+			foreach (var service in ServiceRegistry.All)
 			{
-				if (services[i] is IMassive massive)
+				if (service is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}

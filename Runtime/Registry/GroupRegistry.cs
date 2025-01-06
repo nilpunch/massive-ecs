@@ -25,10 +25,10 @@ namespace Massive
 			_entities = entities;
 		}
 
-		public ReadOnlySpan<Group> All
+		public FastList<Group> All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _allGroups.ReadOnlySpan;
+			get => _allGroups;
 		}
 
 		public Group Get(SparseSet[] included = null, SparseSet[] excluded = null)
