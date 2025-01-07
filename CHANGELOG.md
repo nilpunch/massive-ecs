@@ -15,6 +15,11 @@
 - Optimize `FilterView.ForEach()` methods for cases where a minimal set is one of the selected data sets.
 - Moved serialization to a separate package to eliminate unsafe code from the core library.
 - `PageSequence` now use `Page` struct to iterate.
+- `MassiveRegistry` now saves first empty for `MassiveEntities` on creation.
+
+### Fixed
+
+- IL2CPP stripping for `ICopyable<T>`.
 
 ## 17.0.0 - December 9, 2024
 
