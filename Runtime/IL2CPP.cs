@@ -1,5 +1,7 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
+using System;
+
 namespace Unity.IL2CPP.CompilerServices
 {
 	using System;
@@ -27,6 +29,14 @@ namespace Unity.IL2CPP.CompilerServices
 
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false)]
 	internal class Il2CppEagerStaticClassConstructionAttribute : Attribute
+	{
+	}
+}
+
+namespace UnityEngine.Scripting
+{
+	[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Constructor | AttributeTargets.Delegate | AttributeTargets.Enum | AttributeTargets.Event | AttributeTargets.Field | AttributeTargets.Interface | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Struct, Inherited = false)]
+	public class PreserveAttribute : Attribute
 	{
 	}
 }

@@ -1,5 +1,0 @@
-<linker>
-    <assembly fullname="Massive">
-        <type fullname="Massive.ICopyable*" preserve="all" />
-    </assembly>
-</linker>

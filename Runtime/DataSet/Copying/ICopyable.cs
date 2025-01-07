@@ -4,6 +4,7 @@ namespace Massive
 	{
 		void CopyTo(ref T other);
 
+		[UnityEngine.Scripting.Preserve]
 		private static void ReflectionSupportForAOT()
 		{
 			_ = new MassiveCopyingDataSet<T>();
