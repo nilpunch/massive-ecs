@@ -33,7 +33,7 @@ namespace Massive
 				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedLength)) >= 0;
 		}
 
-        public static ReducedFilter Create(Filter filter, SparseSet reduced = null)
+		public static ReducedFilter Create(Filter filter, SparseSet reduced = null)
 		{
 			if (filter.IncludedCount == 0 || filter.IncludedCount == 1 && filter.Included[0] == reduced)
 			{
