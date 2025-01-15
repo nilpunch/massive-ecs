@@ -1,4 +1,6 @@
-![Massive ECS](https://github.com/user-attachments/assets/7b608876-c28d-48db-9fcb-85e920aefa32)
+# Massive ECS
+
+<img align="right" width="180" height="180" src="https://github.com/user-attachments/assets/6d8b0770-62eb-46df-8fed-9026204a6a04" />
 
 `Massive` is a lightwight and easy-to-use library for game programming and more.  
 Designed for use in games with deterministic prediction-rollback netcode.  
