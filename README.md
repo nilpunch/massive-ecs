@@ -1,4 +1,6 @@
-![Massive ECS](https://github.com/user-attachments/assets/7b608876-c28d-48db-9fcb-85e920aefa32)
+# Massive ECS
+
+<img align="right" width="180" height="180" src="https://github.com/user-attachments/assets/6d8b0770-62eb-46df-8fed-9026204a6a04" />
 
 `Massive` is a lightwight and easy-to-use library for game programming and more.  
 Designed for use in games with deterministic prediction-rollback netcode.  
@@ -31,7 +33,7 @@ This is **a library**, not a framework. Thus, it does not try to take control of
 - No allocations and minimal memory consumption.
 - No deferred command execution — all changes take effect immediately.
 - Generic API for in-place filtering, with a non-generic version to improve IL2CPP build time and size.
-- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#what-is-allowed-during-iterations) for safe and flexible iteration over entities and components.
+- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for safe and flexible iteration over entities and components.
 - Fully stable storage on demand:
   - Use the `IStable` marker interface for components.
   - Or enable full stability for the entire registry.
