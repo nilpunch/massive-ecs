@@ -40,12 +40,12 @@ namespace Massive
 				return new ReducedFilter(Array.Empty<SparseSet>(), 0, filter.Excluded, filter.ExcludedCount, null);
 			}
 
-			var ignoredIndex = Array.IndexOf(filter.Included, reduced, 0, filter.IncludedCount);
-			if (ignoredIndex == -1)
+			var reducedIndex = Array.IndexOf(filter.Included, reduced, 0, filter.IncludedCount);
+			if (reducedIndex == -1)
 			{
 				return new ReducedFilter(filter.Included, filter.IncludedCount, filter.Excluded, filter.ExcludedCount, null);
 			}
-			else if (ignoredIndex == filter.IncludedCount - 1)
+			else if (reducedIndex == filter.IncludedCount - 1)
 			{
 				return new ReducedFilter(filter.Included, filter.IncludedCount - 1, filter.Excluded, filter.ExcludedCount, filter.Included[^1]);
 			}
@@ -53,8 +53,8 @@ namespace Massive
 			{
 				var included = new SparseSet[filter.IncludedCount - 1];
 				Array.Copy(filter.Included, included, filter.IncludedCount - 1);
-				included[ignoredIndex] = filter.Included[^1];
-				return new ReducedFilter(included, filter.IncludedCount - 1, filter.Excluded, filter.ExcludedCount, filter.Included[ignoredIndex]);
+				included[reducedIndex] = filter.Included[^1];
+				return new ReducedFilter(included, filter.IncludedCount - 1, filter.Excluded, filter.ExcludedCount, filter.Included[reducedIndex]);
 			}
 		}
 	}

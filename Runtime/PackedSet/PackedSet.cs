@@ -9,6 +9,10 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public abstract class PackedSet
 	{
+		/// <summary>
+		/// Gets the current number of elements in the packed array.
+		/// May include unassigned IDs due to holes.
+		/// </summary>
 		public int Count { get; protected set; }
 
 		public int[] Packed { get; protected set; } = Array.Empty<int>();

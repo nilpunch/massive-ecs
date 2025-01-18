@@ -13,6 +13,9 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class DataSet<T> : SparseSet, IDataSet
 	{
+		/// <summary>
+		/// The paged array that stores packed data.
+		/// </summary>
 		public PagedArray<T> Data { get; }
 
 		public DataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
@@ -21,12 +24,18 @@ namespace Massive
 			Data = new PagedArray<T>(pageSize);
 		}
 
+		/// <summary>
+		/// Gets a reference to the data associated with the specified ID.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
 			return ref Data[Sparse[id]];
 		}
 
+		/// <summary>
+		/// Moves the data from one index to another.
+		/// </summary>
 		public override void MoveDataAt(int source, int destination)
 		{
 			ref var sourceData = ref Data[source];
@@ -34,16 +43,25 @@ namespace Massive
 			sourceData = default;
 		}
 
+		/// <summary>
+		/// Swaps the data between two indices.
+		/// </summary>
 		public override void SwapDataAt(int first, int second)
 		{
 			Data.Swap(first, second);
 		}
 
+		/// <summary>
+		/// Copies the data from one index to another.
+		/// </summary>
 		public override void CopyDataAt(int source, int destination)
 		{
 			Data[destination] = Data[source];
 		}
 
+		/// <summary>
+		/// Ensures data exists at the specified index.
+		/// </summary>
 		public override void EnsureDataAt(int index)
 		{
 			Data.EnsurePageAt(index);

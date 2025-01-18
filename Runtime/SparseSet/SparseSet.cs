@@ -11,11 +11,24 @@ namespace Massive
 	{
 		private const int EndHole = int.MaxValue;
 
+		/// <summary>
+		/// The sparse array, mapping IDs to their packed indices.
+		/// </summary>
 		public int[] Sparse { get; private set; } = Array.Empty<int>();
 
+		/// <summary>
+		/// The current capacity of the packed array.
+		/// </summary>
 		public int PackedCapacity { get; private set; }
+
+		/// <summary>
+		/// The current capacity of the sparse array.
+		/// </summary>
 		public int SparseCapacity { get; private set; }
 
+		/// <summary>
+		/// The index of the next available hole in the packed array, or <see cref="EndHole"/> if no holes exist.
+		/// </summary>
 		private int NextHole { get; set; } = EndHole;
 
 		public SparseSet(Packing packing = Packing.Continuous)
@@ -52,7 +65,7 @@ namespace Massive
 		public event Action<int> BeforeUnassigned;
 
 		/// <summary>
-		/// For serialization and rollbacks only.
+		/// Gets or sets the current state for serialization or rollback purposes.
 		/// </summary>
 		public State CurrentState
 		{
@@ -67,6 +80,9 @@ namespace Massive
 			}
 		}
 
+		/// <summary>
+		/// Assigns an ID. If the ID is negative or already assigned, no action is performed.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Assign(int id)
 		{
@@ -95,6 +111,9 @@ namespace Massive
 			AfterAssigned?.Invoke(id);
 		}
 
+		/// <summary>
+		/// Unassigns an ID. If the ID is negative or already unassigned, no action is performed.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Unassign(int id)
 		{
@@ -121,6 +140,9 @@ namespace Massive
 			Sparse[id] = Constants.InvalidId;
 		}
 
+		/// <summary>
+		/// Unassigns all IDs and triggers the <see cref="BeforeUnassigned"/> event for each one.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
@@ -150,7 +172,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// For deserialization only.
+		/// Unassigns all IDs without triggering the <see cref="BeforeUnassigned"/> event.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ClearWithoutNotify()
@@ -160,6 +182,9 @@ namespace Massive
 			NextHole = EndHole;
 		}
 
+		/// <summary>
+		/// Returns the packed index of the specified ID, or a negative value if the ID is not assigned.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetIndexOrNegative(int id)
 		{
@@ -171,12 +196,18 @@ namespace Massive
 			return Sparse[id];
 		}
 
+		/// <summary>
+		/// Checks whether the specified ID is assigned.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAssigned(int id)
 		{
 			return id >= 0 && id < SparseCapacity && Sparse[id] != Constants.InvalidId;
 		}
 
+		/// <summary>
+		/// Ensures the packed array has sufficient capacity for the specified index.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePackedAt(int index)
 		{
@@ -186,6 +217,9 @@ namespace Massive
 			}
 		}
 
+		/// <summary>
+		/// Ensures the sparse array has sufficient capacity for the specified index.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureSparseAt(int index)
 		{
@@ -195,6 +229,9 @@ namespace Massive
 			}
 		}
 
+		/// <summary>
+		/// Resizes the packed array to the specified capacity.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizePacked(int capacity)
 		{
@@ -202,6 +239,9 @@ namespace Massive
 			PackedCapacity = capacity;
 		}
 
+		/// <summary>
+		/// Resizes the sparse array to the specified capacity.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
@@ -249,6 +289,9 @@ namespace Massive
 			return new PackedEnumerator(this);
 		}
 
+		/// <summary>
+		/// Swaps the positions of two elements in the packed array.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SwapAt(int first, int second)
 		{
@@ -264,18 +307,30 @@ namespace Massive
 			SwapDataAt(first, second);
 		}
 
+		/// <summary>
+		/// Moves the data from one index to another.
+		/// </summary>
 		public virtual void MoveDataAt(int source, int destination)
 		{
 		}
 
+		/// <summary>
+		/// Swaps the data between two indices.
+		/// </summary>
 		public virtual void SwapDataAt(int first, int second)
 		{
 		}
 
+		/// <summary>
+		/// Copies the data from one index to another.
+		/// </summary>
 		public virtual void CopyDataAt(int source, int destination)
 		{
 		}
 
+		/// <summary>
+		/// Ensures data exists at the specified index.
+		/// </summary>
 		public virtual void EnsureDataAt(int index)
 		{
 		}
