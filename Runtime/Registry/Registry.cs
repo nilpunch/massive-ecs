@@ -12,7 +12,6 @@ namespace Massive
 		public SetRegistry SetRegistry { get; }
 		public FilterRegistry FilterRegistry { get; }
 		public GroupRegistry GroupRegistry { get; }
-		public ServiceRegistry ServiceRegistry { get; }
 
 		public RegistryConfig Config { get; }
 
@@ -32,7 +31,6 @@ namespace Massive
 			SetRegistry = new SetRegistry(setFactory);
 			FilterRegistry = new FilterRegistry(SetRegistry);
 			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory, entities);
-			ServiceRegistry = new ServiceRegistry();
 			Config = registryConfig;
 
 			var allSets = SetRegistry.All;

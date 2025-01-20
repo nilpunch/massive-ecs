@@ -54,14 +54,6 @@ namespace Massive
 				}
 			}
 
-			foreach (var service in ServiceRegistry.All)
-			{
-				if (service is IMassive massive)
-				{
-					massive.SaveFrame();
-				}
-			}
-
 			FrameSaved?.Invoke();
 		}
 
@@ -81,14 +73,6 @@ namespace Massive
 			foreach (var group in GroupRegistry.All)
 			{
 				if (group is IMassive massive)
-				{
-					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
-				}
-			}
-
-			foreach (var service in ServiceRegistry.All)
-			{
-				if (service is IMassive massive)
 				{
 					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
 				}
