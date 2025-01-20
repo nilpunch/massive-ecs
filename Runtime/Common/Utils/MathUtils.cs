@@ -103,5 +103,20 @@ namespace Massive
 				return hash;
 			}
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int SaturationAdd(int a, int b)
+		{
+			unchecked
+			{
+				var result = a + b;
+				if (result < a)
+				{
+					return int.MaxValue;
+				}
+
+				return result;
+			}
+		}
 	}
 }
