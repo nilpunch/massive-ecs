@@ -1,11 +1,6 @@
 # Changelog
 
-## 18.0.0-alpha - January 7, 2025
-
-### Added
-
-- `ServiceRegistry` class implementing the service locator pattern.
-  Integrated it with `Registry`.
+## 18.0.0-alpha - January 22, 2025
 
 ### Changed
 
