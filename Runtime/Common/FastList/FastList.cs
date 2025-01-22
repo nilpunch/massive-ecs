@@ -10,40 +10,34 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class FastList<T>
 	{
-		private T[] _items = Array.Empty<T>();
+		public T[] Items { get; private set; } = Array.Empty<T>();
 
-		public int Count { get; private set; }
+		public int Count { get; protected set; }
 
 		public int Capacity
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _items.Length;
+			get => Items.Length;
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			set => Array.Resize(ref _items, value);
+			set => Items = Items.Resize(value);
 		}
 
 		public Span<T> Span
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new Span<T>(_items, 0, Count);
+			get => new Span<T>(Items, 0, Count);
 		}
 
 		public ReadOnlySpan<T> ReadOnlySpan
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ReadOnlySpan<T>(_items, 0, Count);
-		}
-
-		public T[] Items
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _items;
+			get => new ReadOnlySpan<T>(Items, 0, Count);
 		}
 
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref _items[index];
+			get => ref Items[index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,7 +45,7 @@ namespace Massive
 		{
 			EnsureCapacity(Count + 1);
 
-			_items[Count++] = item;
+			Items[Count++] = item;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -74,16 +68,16 @@ namespace Massive
 
 			if (index < Count)
 			{
-				Array.Copy(_items, index + 1, _items, index, Count - index);
+				Array.Copy(Items, index + 1, Items, index, Count - index);
 			}
 
-			_items[Count] = default;
+			Items[Count] = default;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item)
 		{
-			return Array.IndexOf(_items, item, 0, Count);
+			return Array.IndexOf(Items, item, 0, Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -93,10 +87,10 @@ namespace Massive
 
 			if (index < Count)
 			{
-				Array.Copy(_items, index, _items, index + 1, Count - index);
+				Array.Copy(Items, index, Items, index + 1, Count - index);
 			}
 
-			_items[index] = item;
+			Items[index] = item;
 			Count++;
 		}
 
@@ -115,13 +109,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int BinarySearch(int index, int count, T item, IComparer<T> comparer)
 		{
-			return Array.BinarySearch(_items, index, count, item, comparer ?? Comparer<T>.Default);
+			return Array.BinarySearch(Items, index, count, item, comparer ?? Comparer<T>.Default);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Span<T>.Enumerator GetEnumerator()
 		{
-			return new Span<T>(_items, 0, Count).GetEnumerator();
+			return new Span<T>(Items, 0, Count).GetEnumerator();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
