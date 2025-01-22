@@ -1,6 +1,12 @@
 # Changelog
 
-## 18.0.0-alpha - January 22, 2025
+## 18.0.0 - January 22, 2025
+
+### Fixed
+
+- `Entities.HasHoles` worked incorrectly for `Packing.WithPersistentHoles`.
+
+## 18.0.0-alpha - January 7, 2025
 
 ### Changed
 
