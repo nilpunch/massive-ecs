@@ -40,7 +40,7 @@ namespace Massive
 		public bool HasHoles
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Packing == Packing.WithHoles && NextHoleId != EndHoleId;
+			get => Packing != Packing.Continuous && NextHoleId != EndHoleId;
 		}
 
 		/// <summary>
