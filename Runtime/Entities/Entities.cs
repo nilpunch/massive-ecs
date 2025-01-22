@@ -11,13 +11,34 @@ namespace Massive
 	{
 		private const int EndHoleId = int.MaxValue;
 
+		/// <summary>
+		/// The packed array, containing entities versions.
+		/// </summary>
 		public uint[] Versions { get; private set; } = Array.Empty<uint>();
+
+		/// <summary>
+		/// The sparse array, mapping IDs to their packed indices.
+		/// </summary>
 		public int[] Sparse { get; private set; } = Array.Empty<int>();
 
+		/// <summary>
+		/// The current capacity of the packed array.
+		/// </summary>
 		public int PackedCapacity { get; private set; }
+
+		/// <summary>
+		/// The current capacity of the sparse array.
+		/// </summary>
 		public int SparseCapacity { get; private set; }
 
+		/// <summary>
+		/// Gets the maximum count of entities in use.
+		/// </summary>
 		public int MaxId { get; private set; }
+
+		/// <summary>
+		/// The ID of the next available hole in the sparse array, or <see cref="EndHoleId"/> if no holes exist.
+		/// </summary>
 		private int NextHoleId { get; set; } = EndHoleId;
 
 		public Entities(Packing packing = Packing.Continuous)
@@ -54,7 +75,7 @@ namespace Massive
 		public event Action<int> BeforeDestroyed;
 
 		/// <summary>
-		/// For serialization and rollbacks only.
+		/// Gets or sets the current state for serialization or rollback purposes.
 		/// </summary>
 		public State CurrentState
 		{
@@ -162,6 +183,9 @@ namespace Massive
 			}
 		}
 
+		/// <summary>
+		/// Destroys all entities and triggers the <see cref="BeforeDestroyed"/> event for each one.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
@@ -225,6 +249,9 @@ namespace Massive
 			return id >= 0 && id < MaxId && Sparse[id] < Count && Packed[Sparse[id]] == id;
 		}
 
+		/// <summary>
+		/// Ensures the sparse and packed arrays has sufficient capacity for the specified index.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureCapacityAt(int index)
 		{
@@ -236,6 +263,9 @@ namespace Massive
 			}
 		}
 
+		/// <summary>
+		/// Resizes the packed array to the specified capacity.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizePacked(int capacity)
 		{
@@ -244,6 +274,9 @@ namespace Massive
 			PackedCapacity = capacity;
 		}
 
+		/// <summary>
+		/// Resizes the sparse array to the specified capacity.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ResizeSparse(int capacity)
 		{
@@ -251,6 +284,9 @@ namespace Massive
 			SparseCapacity = capacity;
 		}
 
+		/// <summary>
+		/// Removes all holes from the packed array.
+		/// </summary>
 		public override void Compact()
 		{
 			if (HasHoles)

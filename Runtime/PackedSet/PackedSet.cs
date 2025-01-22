@@ -10,11 +10,14 @@ namespace Massive
 	public abstract class PackedSet
 	{
 		/// <summary>
-		/// Gets the current number of elements in the packed array.
+		/// Gets the current number of elements in the packed array.<br/>
 		/// May include unassigned IDs due to holes.
 		/// </summary>
 		public int Count { get; protected set; }
 
+		/// <summary>
+		/// The packed array, containing IDs.
+		/// </summary>
 		public int[] Packed { get; protected set; } = Array.Empty<int>();
 
 		public Packing Packing { get; protected set; }

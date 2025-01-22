@@ -55,12 +55,12 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Shoots only after <see cref="Assign"/> call, when the id was not alive and therefore was created.
+		/// Shoots only after <see cref="Assign"/> call, when the ID was not already assigned.
 		/// </summary>
 		public event Action<int> AfterAssigned;
 
 		/// <summary>
-		/// Shoots before each <see cref="Unassign"/> call, when the id was alive.
+		/// Shoots before each <see cref="Unassign"/> call, when the ID was asigned.
 		/// </summary>
 		public event Action<int> BeforeUnassigned;
 
@@ -100,7 +100,7 @@ namespace Massive
 				NextHole = ~Packed[index];
 				Pair(id, index);
 			}
-			else
+			else // Packing.Continuous || Packing.WithPersistentHoles
 			{
 				EnsurePackedAt(Count);
 				EnsureDataAt(Count);
@@ -130,7 +130,7 @@ namespace Massive
 				Count -= 1;
 				MoveAt(Count, Sparse[id]);
 			}
-			else
+			else // Packing.WithHoles || Packing.WithPersistentHoles
 			{
 				var index = Sparse[id];
 				Packed[index] = ~NextHole;

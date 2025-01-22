@@ -14,7 +14,7 @@ namespace Massive
 	public class DataSet<T> : SparseSet, IDataSet
 	{
 		/// <summary>
-		/// The paged array that stores packed data.
+		/// The packed array that stores paged data.
 		/// </summary>
 		public PagedArray<T> Data { get; }
 

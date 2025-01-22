@@ -40,8 +40,8 @@ namespace Massive
 			ThrowIfContainsDuplicates(_setRegistry, included, "Included contains duplicate sets!");
 			ThrowIfContainsDuplicates(_setRegistry, excluded, "Excluded contains duplicate sets!");
 
-			var includeCode = included.GetUnorderedHashCode(_setRegistry);
-			var excludeCode = excluded.GetUnorderedHashCode(_setRegistry);
+			var includeCode = GetUnorderedHashCode(included, _setRegistry);
+			var excludeCode = GetUnorderedHashCode(excluded, _setRegistry);
 			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
 
 			if (_codeLookup.TryGetValue(fullCode, out var group))
@@ -92,6 +92,17 @@ namespace Massive
 					throw new Exception(errorMessage);
 				}
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static int GetUnorderedHashCode(SparseSet[] sets, SetRegistry setRegistry)
+		{
+			var hash = 0;
+			for (var i = 0; i < sets.Length; i++)
+			{
+				hash = setRegistry.IndexOf(sets[i]);
+			}
+			return hash;
 		}
 	}
 }
