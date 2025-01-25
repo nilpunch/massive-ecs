@@ -30,7 +30,7 @@ namespace Massive
 		{
 			if (registry.Set<T>() is not DataSet<T>)
 			{
-				throw new Exception(suggestion);
+				throw new Exception(ErrorMessage.TypeHasNoData<T>(suggestion));
 			}
 		}
 	}
