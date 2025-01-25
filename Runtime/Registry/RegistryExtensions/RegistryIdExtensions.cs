@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -51,7 +50,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this Registry registry, int id)
 		{
-			Debug.Assert(registry.IsAlive(id), ErrorMessage.EntityDead(id));
+			Debug.AssertEntityAlive(registry, id);
 
 			var cloneId = registry.Create();
 
@@ -102,7 +101,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id, T data)
 		{
-			Debug.Assert(registry.IsAlive(id), ErrorMessage.EntityDead(id));
+			Debug.AssertEntityAlive(registry, id);
 
 			var set = registry.Set<T>();
 			set.Assign(id);
@@ -122,7 +121,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id)
 		{
-			Debug.Assert(registry.IsAlive(id), ErrorMessage.EntityDead(id));
+			Debug.AssertEntityAlive(registry, id);
 
 			registry.Set<T>().Assign(id);
 		}
@@ -161,7 +160,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this Registry registry, int id)
 		{
-			Debug.Assert(registry.IsAlive(id), ErrorMessage.EntityDead(id));
+			Debug.AssertEntityAlive(registry, id);
 			Debug.AssertNotEmptyType<T>(registry, SuggestionMessage.DontUseGet);
 
 			var dataSet = registry.Set<T>() as DataSet<T>;

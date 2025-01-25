@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Massive
+﻿namespace Massive
 {
 	public static class ErrorMessage
 	{

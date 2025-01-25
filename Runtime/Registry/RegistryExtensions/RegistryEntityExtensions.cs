@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -18,7 +17,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity GetEntity(this Registry registry, int id)
 		{
-			Debug.Assert(registry.IsAlive(id), ErrorMessage.EntityDead(id));
+			Debug.AssertEntityAlive(registry, id);
 
 			return registry.Entities.GetEntity(id);
 		}
@@ -65,7 +64,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity Clone(this Registry registry, Entity entity)
 		{
-			Debug.Assert(registry.IsAlive(entity), ErrorMessage.EntityDead(entity));
+			Debug.AssertEntityAlive(registry, entity);
 
 			var cloneId = registry.Clone(entity.Id);
 			return registry.GetEntity(cloneId);
@@ -104,7 +103,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, Entity entity, T data)
 		{
-			Debug.Assert(registry.IsAlive(entity), ErrorMessage.EntityDead(entity));
+			Debug.AssertEntityAlive(registry, entity);
 
 			registry.Assign(entity.Id, data);
 		}
@@ -119,7 +118,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, Entity entity)
 		{
-			Debug.Assert(registry.IsAlive(entity), ErrorMessage.EntityDead(entity));
+			Debug.AssertEntityAlive(registry, entity);
 
 			registry.Assign<T>(entity.Id);
 		}
@@ -168,7 +167,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this Registry registry, Entity entity)
 		{
-			Debug.Assert(registry.IsAlive(entity), ErrorMessage.EntityDead(entity));
+			Debug.AssertEntityAlive(registry, entity);
 
 			return ref registry.Get<T>(entity.Id);
 		}

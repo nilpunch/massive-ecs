@@ -227,7 +227,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
-			Debug.Assert(IsAlive(id), ErrorMessage.EntityDead(id));
+			Debug.AssertEntityAlive(this, id);
 
 			return new Entity(id, Versions[Sparse[id]]);
 		}
