@@ -5,6 +5,8 @@
 ### Added
 
 - Debug assertions for many execution paths.
+- `Clone(entity)` and `Clone(id)` methods now throw when associated entity is dead.
+- `Assign<T>(entity)` method now throw when entity is dead.
 
 ## 18.0.0 - January 22, 2025
 
