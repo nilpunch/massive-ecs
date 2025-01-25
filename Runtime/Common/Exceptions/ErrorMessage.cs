@@ -5,7 +5,6 @@ namespace Massive
 	public static class ErrorMessage
 	{
 		public const string ConflictingFilter = "Conflicting included and excluded components!";
-		public const string ViewsWithEmptyTypes = "Don't use empty types as generic arguments in ForEach(ref T ...) methods";
 
 		public static string EntityDead(Entity entity) => $"The {entity} is not alive.";
 		public static string EntityDead(int entityId) => $"The entity with id:{entityId} is not alive.";

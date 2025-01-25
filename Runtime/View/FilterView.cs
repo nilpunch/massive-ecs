@@ -65,7 +65,7 @@ namespace Massive
 		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			Debug.AssertNotEmptyType<T>(Registry, ErrorMessage.TypeHasNoData<T>(ErrorMessage.ViewsWithEmptyTypes));
+			Debug.AssertNotEmptyType<T>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
 
 			var dataSet = Registry.DataSet<T>();
 
@@ -129,8 +129,8 @@ namespace Massive
 		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			Debug.AssertNotEmptyType<T1>(Registry, ErrorMessage.TypeHasNoData<T1>(ErrorMessage.ViewsWithEmptyTypes));
-			Debug.AssertNotEmptyType<T2>(Registry, ErrorMessage.TypeHasNoData<T2>(ErrorMessage.ViewsWithEmptyTypes));
+			Debug.AssertNotEmptyType<T1>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
+			Debug.AssertNotEmptyType<T2>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
 
 			var dataSet1 = Registry.DataSet<T1>();
 			var dataSet2 = Registry.DataSet<T2>();
@@ -236,9 +236,9 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			Debug.AssertNotEmptyType<T1>(Registry, ErrorMessage.TypeHasNoData<T1>(ErrorMessage.ViewsWithEmptyTypes));
-			Debug.AssertNotEmptyType<T2>(Registry, ErrorMessage.TypeHasNoData<T2>(ErrorMessage.ViewsWithEmptyTypes));
-			Debug.AssertNotEmptyType<T3>(Registry, ErrorMessage.TypeHasNoData<T3>(ErrorMessage.ViewsWithEmptyTypes));
+			Debug.AssertNotEmptyType<T1>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
+			Debug.AssertNotEmptyType<T2>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
+			Debug.AssertNotEmptyType<T3>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
 
 			var dataSet1 = Registry.DataSet<T1>();
 			var dataSet2 = Registry.DataSet<T2>();
@@ -384,10 +384,10 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			Debug.AssertNotEmptyType<T1>(Registry, ErrorMessage.TypeHasNoData<T1>(ErrorMessage.ViewsWithEmptyTypes));
-			Debug.AssertNotEmptyType<T2>(Registry, ErrorMessage.TypeHasNoData<T2>(ErrorMessage.ViewsWithEmptyTypes));
-			Debug.AssertNotEmptyType<T3>(Registry, ErrorMessage.TypeHasNoData<T3>(ErrorMessage.ViewsWithEmptyTypes));
-			Debug.AssertNotEmptyType<T4>(Registry, ErrorMessage.TypeHasNoData<T4>(ErrorMessage.ViewsWithEmptyTypes));
+			Debug.AssertNotEmptyType<T1>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
+			Debug.AssertNotEmptyType<T2>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
+			Debug.AssertNotEmptyType<T3>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
+			Debug.AssertNotEmptyType<T4>(Registry, SuggestionMessage.ViewsWithEmptyTypes);
 
 			var dataSet1 = Registry.DataSet<T1>();
 			var dataSet2 = Registry.DataSet<T2>();

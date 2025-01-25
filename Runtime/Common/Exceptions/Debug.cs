@@ -26,11 +26,11 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertNotEmptyType<T>(Registry registry, string message)
+		public static void AssertNotEmptyType<T>(Registry registry, string suggestion)
 		{
 			if (registry.Set<T>() is not DataSet<T>)
 			{
-				throw new Exception(message);
+				throw new Exception(suggestion);
 			}
 		}
 	}
