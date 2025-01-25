@@ -108,7 +108,7 @@ namespace Massive
 			}
 			else if (Count < MaxId)
 			{
-				entity = GetEntityAt(Count);
+				entity = new Entity(Packed[Count], Versions[Count]);
 				Count += 1;
 			}
 			else
@@ -227,6 +227,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
+			Debug.Assert(IsAlive(id), ErrorMessage.EntityDead(id));
+
 			return new Entity(id, Versions[Sparse[id]]);
 		}
 
@@ -326,12 +328,6 @@ namespace Massive
 		public PackedEnumerator GetEnumerator()
 		{
 			return new PackedEnumerator(this);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Entity GetEntityAt(int index)
-		{
-			return new Entity(Packed[index], Versions[index]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

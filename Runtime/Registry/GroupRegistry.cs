@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -36,9 +37,9 @@ namespace Massive
 			included ??= Array.Empty<SparseSet>();
 			excluded ??= Array.Empty<SparseSet>();
 
-			Filter.ThrowIfConflicting(included, excluded, "Conflicting include and exclude filter!");
-			ThrowIfContainsDuplicates(_setRegistry, included, "Included contains duplicate sets!");
-			ThrowIfContainsDuplicates(_setRegistry, excluded, "Excluded contains duplicate sets!");
+			Debug.Assert(included.ContainsNo(excluded), ErrorMessage.ConflictingFilter);
+			ThrowIfContainsDuplicates(included, "Included contains duplicate sets!");
+			ThrowIfContainsDuplicates(excluded, "Excluded contains duplicate sets!");
 
 			var includeCode = GetUnorderedHashCode(included, _setRegistry);
 			var excludeCode = GetUnorderedHashCode(excluded, _setRegistry);
@@ -80,16 +81,18 @@ namespace Massive
 			return group;
 		}
 
-		private static readonly HashSet<int> s_duplicatesBuffer = new HashSet<int>();
-
-		private static void ThrowIfContainsDuplicates(SetRegistry setRegistry, SparseSet[] sets, string errorMessage)
+		[Conditional(Debug.Symbol)]
+		private static void ThrowIfContainsDuplicates(SparseSet[] sets, string errorMessage)
 		{
-			s_duplicatesBuffer.Clear();
-			foreach (var set in sets)
+			for (int i = 0; i < sets.Length; i++)
 			{
-				if (!s_duplicatesBuffer.Add(setRegistry.IndexOf(set)))
+				var set = sets[i];
+				for (int j = i + 1; j < sets.Length; j++)
 				{
-					throw new Exception(errorMessage);
+					if (set == sets[j])
+					{
+						throw new Exception(errorMessage);
+					}
 				}
 			}
 		}

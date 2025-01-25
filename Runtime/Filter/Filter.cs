@@ -22,7 +22,7 @@ namespace Massive
 
 		public Filter(SparseSet[] included, SparseSet[] excluded)
 		{
-			ThrowIfConflicting(included, excluded, "Conflicting include and exclude filter!");
+			Debug.Assert(included.ContainsNo(excluded), ErrorMessage.ConflictingFilter);
 
 			Included = included;
 			Excluded = excluded;
@@ -64,14 +64,6 @@ namespace Massive
 				{
 					ReducedFilters[i] = ReducedFilter.Create(this, Included[i]);
 				}
-			}
-		}
-
-		public static void ThrowIfConflicting(SparseSet[] included, SparseSet[] excluded, string errorMessage)
-		{
-			if (included.ContainsAny(excluded))
-			{
-				throw new Exception(errorMessage);
 			}
 		}
 	}

@@ -46,11 +46,13 @@ namespace Massive
 		/// Creates a unique entity with components of another entity and returns the entity ID.
 		/// </summary>
 		/// <remarks>
-		/// Cloning entity that is not alive will fall back to the <see cref="Create"/> method.
+		/// Cloning entity that is not alive will throw an exception.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this Registry registry, int id)
 		{
+			Debug.Assert(registry.IsAlive(id), ErrorMessage.EntityDead(id));
+
 			var cloneId = registry.Create();
 
 			var setList = registry.SetRegistry.All;
@@ -72,7 +74,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Destroys any alive entity with this ID, regardless of generation.
+		/// Destroys any alive entity with this ID, regardless of version.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this Registry registry, int id)
@@ -81,7 +83,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether an entity with this ID is alive, regardless of generation.
+		/// Checks whether an entity with this ID is alive, regardless of version.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAlive(this Registry registry, int id)
@@ -90,15 +92,18 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns a component to an entity with this ID, regardless of generation.
+		/// Assigns a component to an entity with this ID, regardless of version.
+		/// Repeat assignments are allowed.
 		/// </summary>
 		/// <param name="data"> Initial data for the assigned component. </param>
 		/// <remarks>
-		/// Assigning a component to an entity that is being destroyed can lead to undefined behavior.
+		/// Assigning a component to an entity that is being destroyed will throw an exception.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id, T data)
 		{
+			Debug.Assert(registry.IsAlive(id), ErrorMessage.EntityDead(id));
+
 			var set = registry.Set<T>();
 			set.Assign(id);
 			if (set is DataSet<T> dataSet)
@@ -108,20 +113,26 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns a component to an entity with this ID, regardless of generation, without data initialization.
+		/// Assigns a component to an entity with this ID, regardless of version, without data initialization.
+		/// Repeat assignments are allowed.
 		/// </summary>
 		/// <remarks>
-		/// Assigning a component to an entity that is being destroyed can lead to undefined behavior.
+		/// Assigning a component to an entity that is being destroyed will throw an exception.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id)
 		{
+			Debug.Assert(registry.IsAlive(id), ErrorMessage.EntityDead(id));
+
 			registry.Set<T>().Assign(id);
 		}
 
 		/// <summary>
-		/// Unassigns a component from an entity with this ID, regardless of generation.
+		/// Unassigns a component from an entity with this ID, regardless of version.
 		/// </summary>
+		/// <remarks>
+		/// If the entity is not alive or does not have the component, nothing happens.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Unassign<T>(this Registry registry, int id)
 		{
@@ -129,7 +140,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether an entity with this ID has such a component, regardless of generation.
+		/// Checks whether an entity with this ID has such a component, regardless of version.
 		/// </summary>
 		/// <remarks>
 		/// Returns false if the entity is not alive.
@@ -141,19 +152,19 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Returns a reference to the component of the entity with this ID, regardless of generation.
+		/// Returns a reference to the component of the entity with this ID, regardless of version.
 		/// </summary>
 		/// <remarks>
-		/// Requesting a component from an entity that is being destroyed can lead to undefined behavior,
-		/// and this method may throw an exception if the type has no associated data.
+		/// Requesting a component from an entity that is being destroyed will throw an exception,
+		/// and this method will throw an exception if the type has no associated data.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this Registry registry, int id)
 		{
-			if (registry.Set<T>() is not DataSet<T> dataSet)
-			{
-				throw new Exception("Type has no associated data!");
-			}
+			Debug.Assert(registry.IsAlive(id), ErrorMessage.EntityDead(id));
+			Debug.AssertNotEmptyType<T>(registry, ErrorMessage.TypeHasNoData<T>($"Don't use {nameof(Get)}<T>() with empty types"));
+
+			var dataSet = registry.Set<T>() as DataSet<T>;
 
 			return ref dataSet.Get(id);
 		}

@@ -206,6 +206,15 @@ namespace Massive
 		}
 
 		/// <summary>
+		/// Checks whether the packed index is assigned.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsAssignedAt(int index)
+		{
+			return index >= 0 && index < PackedCapacity && Packed[index] >= 0;
+		}
+
+		/// <summary>
 		/// Ensures the packed array has sufficient capacity for the specified index.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -295,11 +304,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SwapAt(int first, int second)
 		{
+			Debug.Assert(IsAssignedAt(first), ErrorMessage.InvalidIndex(first));
+			Debug.Assert(IsAssignedAt(second), ErrorMessage.InvalidIndex(second));
+
 			var firstId = Packed[first];
 			var secondId = Packed[second];
-
-			ThrowIfNegative(firstId, $"Can't swap negative id.");
-			ThrowIfNegative(secondId, $"Can't swap negative id.");
 
 			Pair(firstId, second);
 			Pair(secondId, first);
@@ -310,7 +319,7 @@ namespace Massive
 		/// <summary>
 		/// Moves the data from one index to another.
 		/// </summary>
-		public virtual void MoveDataAt(int source, int destination)
+		protected virtual void MoveDataAt(int source, int destination)
 		{
 		}
 
@@ -348,14 +357,6 @@ namespace Massive
 		{
 			Sparse[id] = index;
 			Packed[index] = id;
-		}
-
-		private void ThrowIfNegative(int id, string errorMessage)
-		{
-			if (id < 0)
-			{
-				throw new Exception(errorMessage);
-			}
 		}
 
 		public readonly struct State

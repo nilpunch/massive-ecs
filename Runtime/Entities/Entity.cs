@@ -64,5 +64,11 @@ namespace Massive
 		{
 			return IdAndVersion.GetHashCode();
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override string ToString()
+		{
+			return $"Entity(id:{Id} v:{Version})";
+		}
 	}
 }

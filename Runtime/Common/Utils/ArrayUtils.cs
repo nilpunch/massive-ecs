@@ -55,6 +55,19 @@ namespace Massive
 			return false;
 		}
 
+		public static bool ContainsNo<T>(this T[] array, T[] other)
+		{
+			for (var i = 0; i < other.Length; i++)
+			{
+				if (array.Contains(other[i]))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		public static int GetUnorderedHashCode<T>(this T[] array)
 		{
 			var hash = 0;

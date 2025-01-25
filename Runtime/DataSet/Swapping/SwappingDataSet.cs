@@ -17,7 +17,7 @@ namespace Massive
 		{
 		}
 
-		public override void MoveDataAt(int source, int destination)
+		protected override void MoveDataAt(int source, int destination)
 		{
 			Data.Swap(source, destination);
 		}

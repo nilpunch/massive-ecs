@@ -12,12 +12,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static DataSet<T> DataSet<T>(this Registry registry)
 		{
-			if (registry.SetRegistry.Get<T>() is not DataSet<T> dataSet)
-			{
-				throw new Exception($"Type has no associated data! Maybe use {nameof(Set)}<T>() instead.");
-			}
+			Debug.AssertNotEmptyType<T>(registry, ErrorMessage.TypeHasNoData<T>($"Use {nameof(Set)}<T>() for empty types instead"));
 
-			return dataSet;
+			return registry.Set<T>() as DataSet<T>;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
