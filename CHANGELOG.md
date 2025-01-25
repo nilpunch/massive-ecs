@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Debug assertions for many execution paths.
+
 ## 18.0.0 - January 22, 2025
 
 ### Fixed
