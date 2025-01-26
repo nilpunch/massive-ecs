@@ -304,8 +304,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SwapAt(int first, int second)
 		{
-			Debug.Assert(IsAssignedAt(first), ErrorMessage.InvalidIndex(first));
-			Debug.Assert(IsAssignedAt(second), ErrorMessage.InvalidIndex(second));
+			Debug.AssertIdAssignedAt(this, first);
+			Debug.AssertIdAssignedAt(this, second);
 
 			var firstId = Packed[first];
 			var secondId = Packed[second];

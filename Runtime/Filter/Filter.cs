@@ -22,7 +22,7 @@ namespace Massive
 
 		public Filter(SparseSet[] included, SparseSet[] excluded)
 		{
-			Debug.Assert(included.ContainsNo(excluded), ErrorMessage.ConflictingFilter);
+			Debug.AssertNoConflicts(included, excluded);
 
 			Included = included;
 			Excluded = excluded;

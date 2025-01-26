@@ -11,7 +11,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static DataSet<T> DataSet<T>(this Registry registry)
 		{
-			Debug.AssertNotEmptyType<T>(registry, SuggestionMessage.UseSetMethod);
+			Debug.AssertTypeHasData<T>(registry, SuggestionMessage.UseSetMethodWithEmptyTypes);
 
 			return registry.Set<T>() as DataSet<T>;
 		}

@@ -161,7 +161,7 @@ namespace Massive
 		public static ref T Get<T>(this Registry registry, int id)
 		{
 			Debug.AssertEntityAlive(registry, id);
-			Debug.AssertNotEmptyType<T>(registry, SuggestionMessage.DontUseGet);
+			Debug.AssertTypeHasData<T>(registry, SuggestionMessage.DontUseGetWithEmptyTypes);
 
 			var dataSet = registry.Set<T>() as DataSet<T>;
 

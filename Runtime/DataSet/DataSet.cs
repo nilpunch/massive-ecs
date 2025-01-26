@@ -30,7 +30,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			Debug.Assert(IsAssigned(id), ErrorMessage.NotAssigned(id));
+			Debug.AssertIdAssigned(this, id);
 
 			return ref Data[Sparse[id]];
 		}
@@ -50,8 +50,8 @@ namespace Massive
 		/// </summary>
 		public override void SwapDataAt(int first, int second)
 		{
-			Debug.Assert(IsAssignedAt(first), ErrorMessage.InvalidIndex(first));
-			Debug.Assert(IsAssignedAt(second), ErrorMessage.InvalidIndex(second));
+			Debug.AssertIdAssignedAt(this, first);
+			Debug.AssertIdAssignedAt(this, second);
 
 			Data.Swap(first, second);
 		}
@@ -61,8 +61,8 @@ namespace Massive
 		/// </summary>
 		public override void CopyDataAt(int source, int destination)
 		{
-			Debug.Assert(IsAssignedAt(source), ErrorMessage.InvalidIndex(source));
-			Debug.Assert(IsAssignedAt(destination), ErrorMessage.InvalidIndex(destination));
+			Debug.AssertIdAssignedAt(this, source);
+			Debug.AssertIdAssignedAt(this, destination);
 
 			Data[destination] = Data[source];
 		}

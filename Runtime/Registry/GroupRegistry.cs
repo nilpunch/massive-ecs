@@ -37,7 +37,7 @@ namespace Massive
 			included ??= Array.Empty<SparseSet>();
 			excluded ??= Array.Empty<SparseSet>();
 
-			Debug.Assert(included.ContainsNo(excluded), ErrorMessage.ConflictingFilter);
+			Debug.AssertNoConflicts(included, excluded);
 			ThrowIfContainsDuplicates(included, "Included contains duplicate sets!");
 			ThrowIfContainsDuplicates(excluded, "Excluded contains duplicate sets!");
 

@@ -17,12 +17,36 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertNotEmptyType<T>(Registry registry, string suggestion)
+		public static void AssertTypeHasData<T>(Registry registry, string suggestion)
 		{
 			if (registry.Set<T>() is not DataSet<T>)
 			{
-				throw new Exception(ErrorMessage.TypeHasNoData<T>(suggestion));
+				throw new Exception($"The type {typeof(T).GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(RegistryConfig.StoreEmptyTypesAsDataSets)} in registry config.");
 			}
+		}
+
+		[Conditional(Symbol)]
+		public static void AssertIdAssigned(SparseSet set, int id)
+		{
+			if (!set.IsAssigned(id))
+			{
+				throw new Exception($"The id:{id} is not assigned.");
+			}
+		}
+
+		[Conditional(Symbol)]
+		public static void AssertIdAssignedAt(SparseSet set, int index)
+		{
+			if (!set.IsAssignedAt(index))
+			{
+				throw new Exception($"The index:{index} is invalid.");
+			}
+		}
+
+		[Conditional(Symbol)]
+		public static void AssertEntityAlive(Registry registry, int entityId)
+		{
+			AssertEntityAlive(registry.Entities, entityId);
 		}
 
 		[Conditional(Symbol)]
@@ -30,7 +54,7 @@ namespace Massive
 		{
 			if (!entities.IsAlive(entityId))
 			{
-				throw new Exception(ErrorMessage.EntityDead(entityId));
+				throw new Exception($"The entity with id:{entityId} is not alive.");
 			}
 		}
 
@@ -39,16 +63,16 @@ namespace Massive
 		{
 			if (!registry.IsAlive(entity))
 			{
-				throw new Exception(ErrorMessage.EntityDead(entity));
+				throw new Exception($"The {entity} is not alive.");
 			}
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertEntityAlive(Registry registry, int entityId)
+		public static void AssertNoConflicts(SparseSet[] included, SparseSet[] excluded)
 		{
-			if (!registry.IsAlive(entityId))
+			if (included.ContainsAny(excluded))
 			{
-				throw new Exception(ErrorMessage.EntityDead(entityId));
+				throw new Exception("Conflicting included and excluded components!");
 			}
 		}
 	}

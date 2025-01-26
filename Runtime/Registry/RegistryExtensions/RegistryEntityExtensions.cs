@@ -168,7 +168,7 @@ namespace Massive
 		public static ref T Get<T>(this Registry registry, Entity entity)
 		{
 			Debug.AssertEntityAlive(registry, entity);
-			Debug.AssertNotEmptyType<T>(registry, SuggestionMessage.DontUseGet);
+			Debug.AssertTypeHasData<T>(registry, SuggestionMessage.DontUseGetWithEmptyTypes);
 
 			return ref registry.Get<T>(entity.Id);
 		}
