@@ -80,7 +80,7 @@ namespace Massive
 		/// Destroys any alive entity with this ID, regardless of version.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if an entity with this ID is not alive.
+		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this Registry registry, int id)
@@ -91,7 +91,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether an entity with this ID is alive, regardless of version.
+		/// Checks whether the entity with this ID is alive, regardless of version.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAlive(this Registry registry, int id)
@@ -100,12 +100,12 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns a component to an entity with this ID, regardless of version.
+		/// Assigns a component to the entity with this ID, regardless of version.
 		/// Repeat assignments are allowed.
 		/// </summary>
 		/// <param name="data"> Initial data for the assigned component. </param>
 		/// <remarks>
-		/// Will throw an exception if an entity with this ID is not alive.
+		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id, T data)
@@ -121,11 +121,11 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns a component to an entity with this ID, regardless of version, without data initialization.
+		/// Assigns a component to the entity with this ID, regardless of version, without data initialization.
 		/// Repeat assignments are allowed.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if an entity with this ID is not alive.
+		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id)
@@ -136,11 +136,11 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Unassigns a component from an entity with this ID, regardless of version.
+		/// Unassigns a component from the entity with this ID, regardless of version.
 		/// Repeat unassignments are allowed.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if an entity with this ID is not alive.
+		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Unassign<T>(this Registry registry, int id)
@@ -151,10 +151,10 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether an entity with this ID has such a component, regardless of version.
+		/// Checks whether the entity with this ID has such a component, regardless of version.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if an entity with this ID is not alive.
+		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this Registry registry, int id)
@@ -168,7 +168,7 @@ namespace Massive
 		/// Returns a reference to the component of the entity with this ID, regardless of version.
 		/// </summary>
 		/// <remarks>
-		/// Requesting a component from an entity that is being destroyed will throw an exception,
+		/// Requesting a component from the entity that is being destroyed will throw an exception,
 		/// and this method will throw an exception if the type has no associated data.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

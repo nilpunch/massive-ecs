@@ -229,7 +229,7 @@ namespace Massive
 		}
 
 		/// <remarks>
-		/// Will throw an exception if an entity with this ID is not alive.
+		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)

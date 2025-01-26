@@ -16,7 +16,7 @@ namespace Massive
 		/// Returns alive entity for this ID.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if an entity with this ID is not alive.
+		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity GetEntity(this Registry registry, int id)
@@ -87,7 +87,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether an entity is alive.
+		/// Checks whether the entity is alive.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAlive(this Registry registry, Entity entity)
@@ -96,7 +96,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns a component to an entity.
+		/// Assigns a component to the entity.
 		/// </summary>
 		/// <param name="data"> Initial data for the assigned component. </param>
 		/// <remarks>
@@ -111,7 +111,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns a component to an entity, without data initialization.
+		/// Assigns a component to the entity, without data initialization.
 		/// Repeat assignments are allowed.
 		/// </summary>
 		/// <remarks>
@@ -126,7 +126,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Unassigns a component from an entity.
+		/// Unassigns a component from the entity.
 		/// </summary>
 		/// <remarks>
 		/// Will throw an exception if the entity is not alive.
@@ -140,7 +140,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether an entity has such a component.
+		/// Checks whether the entity has such a component.
 		/// </summary>
 		/// <remarks>
 		/// Will throw an exception if the entity is not alive.
@@ -154,10 +154,10 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Returns a reference to the component of an entity.
+		/// Returns a reference to the component of the entity.
 		/// </summary>
 		/// <remarks>
-		/// Requesting a component from an entity that is being destroyed will throw an exception,
+		/// Requesting a component from the entity that is being destroyed will throw an exception,
 		/// and this method will throw an exception if the type has no associated data.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
