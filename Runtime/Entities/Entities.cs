@@ -1,4 +1,4 @@
-﻿#if !MASSIVE_RELEASE
+﻿#if !MASSIVE_DISABLE_ASSERT
 #define MASSIVE_ASSERT
 #endif
 
