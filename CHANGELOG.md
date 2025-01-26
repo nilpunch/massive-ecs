@@ -4,9 +4,13 @@
 
 ### Added
 
-- Debug assertions for many execution paths.
-- `Clone(entity)` and `Clone(id)` methods now throw when associated entity is dead.
-- `Assign<T>(entity)` method now throw when entity is dead.
+- Debug assertions for numerous execution paths.
+
+### Changed
+
+- `Clone(entity)` and `Clone(id)` methods now disallow passing dead entities.
+- `Assign<T>(entity)` method now disallows passing dead entities.
+- `Filter.Empty` static property has been moved to `FilterRegistry` and is now non-static.
 
 ## 18.0.0 - January 22, 2025
 
