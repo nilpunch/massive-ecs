@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -230,7 +234,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
-			Debug.AssertEntityAlive(this, id);
+			Assert.IsAlive(this, id);
 
 			return new Entity(id, Versions[Sparse[id]]);
 		}

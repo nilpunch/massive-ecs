@@ -1,3 +1,7 @@
+#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
 using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
@@ -20,7 +24,7 @@ namespace Massive
 
 		public Filter(SparseSet[] included, SparseSet[] excluded)
 		{
-			Debug.AssertNoConflicts(included, excluded);
+			Assert.NoConflictsInFilter(included, excluded);
 
 			Included = included;
 			Excluded = excluded;

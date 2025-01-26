@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
@@ -47,9 +51,9 @@ namespace Massive
 			included ??= Array.Empty<SparseSet>();
 			excluded ??= Array.Empty<SparseSet>();
 
-			Debug.AssertNoConflicts(included, excluded);
-			Debug.AssertContainsDuplicates(included, "Included contains duplicate sets!");
-			Debug.AssertContainsDuplicates(excluded, "Excluded contains duplicate sets!");
+			Assert.NoConflictsInFilter(included, excluded);
+			Assert.ContainsDuplicates(included, "Included contains duplicate sets!");
+			Assert.ContainsDuplicates(excluded, "Excluded contains duplicate sets!");
 
 			var includeCode = SetUtils.GetUnorderedHashCode(included, _setRegistry);
 			var excludeCode = SetUtils.GetUnorderedHashCode(excluded, _setRegistry);

@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
+using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
@@ -65,7 +69,7 @@ namespace Massive
 		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			Debug.AssertTypeHasData<T>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
 			var dataSet = Registry.DataSet<T>();
 
@@ -129,8 +133,8 @@ namespace Massive
 		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			Debug.AssertTypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Debug.AssertTypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
 			var dataSet1 = Registry.DataSet<T1>();
 			var dataSet2 = Registry.DataSet<T2>();
@@ -236,9 +240,9 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			Debug.AssertTypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Debug.AssertTypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Debug.AssertTypeHasData<T3>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T3>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
 			var dataSet1 = Registry.DataSet<T1>();
 			var dataSet2 = Registry.DataSet<T2>();
@@ -384,10 +388,10 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			Debug.AssertTypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Debug.AssertTypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Debug.AssertTypeHasData<T3>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Debug.AssertTypeHasData<T4>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T3>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T4>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
 			var dataSet1 = Registry.DataSet<T1>();
 			var dataSet2 = Registry.DataSet<T2>();
@@ -584,7 +588,7 @@ namespace Massive
 			}
 		}
 
-		[Conditional(Debug.Symbol)]
+		[Conditional(Assert.Symbol)]
 		private void ThrowIfCantInclude(SparseSet sparseSet)
 		{
 			if (Filter.Excluded.Contains(sparseSet))

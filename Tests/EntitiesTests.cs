@@ -29,7 +29,7 @@ namespace Massive.Tests
 
 			// Assert.
 			int remainIdsCount = EntitiesToCreate - IdsToDestroy.Length;
-			Assert.AreEqual(remainIdsCount, entities.Count);
+			NUnit.Framework.Assert.AreEqual(remainIdsCount, entities.Count);
 		}
 		
 		[Test]
@@ -48,8 +48,8 @@ namespace Massive.Tests
 			// Assert.
 			for (int i = 0; i < EntitiesToCreate; i++)
 			{
-				Assert.IsFalse(entities.IsAlive(i));
-				Assert.IsTrue(entities.Packed[i] >= 0);
+				NUnit.Framework.Assert.IsFalse(entities.IsAlive(i));
+				NUnit.Framework.Assert.IsTrue(entities.Packed[i] >= 0);
 			}
 		}
 		
@@ -62,7 +62,7 @@ namespace Massive.Tests
 
 			var isAlive = entities.IsAlive(id);
 
-			Assert.IsFalse(isAlive);
+			NUnit.Framework.Assert.IsFalse(isAlive);
 		}
 
 		[TestCase(200)]
@@ -71,7 +71,7 @@ namespace Massive.Tests
 		{
 			var entities = new Entities();
 
-			Assert.DoesNotThrow(CheckAlive);
+			NUnit.Framework.Assert.DoesNotThrow(CheckAlive);
 
 			void CheckAlive() => entities.IsAlive(id);
 		}
@@ -84,9 +84,9 @@ namespace Massive.Tests
 			for (var i = 0; i < 10; i++)
 				entities.Create();
 
-			Assert.AreEqual(0, entities.GetEntity(0).Id);
-			Assert.AreEqual(3, entities.GetEntity(3).Id);
-			Assert.AreEqual(6, entities.GetEntity(6).Id);
+			NUnit.Framework.Assert.AreEqual(0, entities.GetEntity(0).Id);
+			NUnit.Framework.Assert.AreEqual(3, entities.GetEntity(3).Id);
+			NUnit.Framework.Assert.AreEqual(6, entities.GetEntity(6).Id);
 
 			for (var i = 0; i <= 5; i++)
 			{
@@ -94,9 +94,9 @@ namespace Massive.Tests
 				entities.Create();
 			}
 
-			Assert.AreEqual(0, entities.GetEntity(0).Id);
-			Assert.AreEqual(3, entities.GetEntity(3).Id);
-			Assert.AreEqual(6, entities.GetEntity(6).Id);
+			NUnit.Framework.Assert.AreEqual(0, entities.GetEntity(0).Id);
+			NUnit.Framework.Assert.AreEqual(3, entities.GetEntity(3).Id);
+			NUnit.Framework.Assert.AreEqual(6, entities.GetEntity(6).Id);
 		}
 
 		[TestCase(0)]
@@ -110,7 +110,7 @@ namespace Massive.Tests
 
 			var isAlive = entities.IsAlive(id);
 
-			Assert.IsTrue(isAlive);
+			NUnit.Framework.Assert.IsTrue(isAlive);
 		}
 
 		[TestCase(4 + 10)]
@@ -119,7 +119,7 @@ namespace Massive.Tests
 		{
 			var entities = new Entities();
 
-			Assert.DoesNotThrow(CreateCheck);
+			NUnit.Framework.Assert.DoesNotThrow(CreateCheck);
 
 			void CreateCheck()
 			{
@@ -138,7 +138,7 @@ namespace Massive.Tests
 
 			var distinctIds = created.Distinct().Count();
 
-			Assert.AreEqual(createAmount, distinctIds);
+			NUnit.Framework.Assert.AreEqual(createAmount, distinctIds);
 		}
 
 		[TestCase(0)]
@@ -153,7 +153,7 @@ namespace Massive.Tests
 			entities.Destroy(id);
 			var isAlive = entities.IsAlive(id);
 
-			Assert.IsFalse(isAlive);
+			NUnit.Framework.Assert.IsFalse(isAlive);
 		}
 
 		[TestCase(200)]
@@ -162,7 +162,7 @@ namespace Massive.Tests
 		{
 			var entities = new Entities();
 
-			Assert.DoesNotThrow(CheckDestroy);
+			NUnit.Framework.Assert.DoesNotThrow(CheckDestroy);
 
 			void CheckDestroy() => entities.Destroy(id);
 		}
@@ -179,8 +179,8 @@ namespace Massive.Tests
 			entities.Destroy(id);
 			var createdIdentifier = entities.Create();
 
-			Assert.AreEqual(id, createdIdentifier.Id);
-			Assert.AreEqual(1, createdIdentifier.Version);
+			NUnit.Framework.Assert.AreEqual(id, createdIdentifier.Id);
+			NUnit.Framework.Assert.AreEqual(1, createdIdentifier.Version);
 		}
 		
 		[TestCase(0)]
@@ -195,7 +195,7 @@ namespace Massive.Tests
 			entities.Clear();
 			var isAlive = entities.IsAlive(id);
 
-			Assert.IsFalse(isAlive);
+			NUnit.Framework.Assert.IsFalse(isAlive);
 		}
 		
 		[TestCase(0)]
@@ -210,7 +210,7 @@ namespace Massive.Tests
 			entities.Clear();
 			var count = entities.Count;
 
-			Assert.AreEqual(0, count);
+			NUnit.Framework.Assert.AreEqual(0, count);
 		}
 		
 		[TestCase(0)]
@@ -225,8 +225,8 @@ namespace Massive.Tests
 			entities.Clear();
 			var createdEntity = entities.Create();
 
-			Assert.LessOrEqual(createdEntity.Id, id);
-			Assert.AreEqual(1, createdEntity.Version);
+			NUnit.Framework.Assert.LessOrEqual(createdEntity.Id, id);
+			NUnit.Framework.Assert.AreEqual(1, createdEntity.Version);
 		}
 
 		[TestCase(0)]
@@ -239,7 +239,7 @@ namespace Massive.Tests
 			entities.CreateMany(id + 1);
 			var isAlive = entities.IsAlive(id);
 
-			Assert.IsTrue(isAlive);
+			NUnit.Framework.Assert.IsTrue(isAlive);
 		}
 
 		[TestCase(4 + 10)]
@@ -248,7 +248,7 @@ namespace Massive.Tests
 		{
 			var entities = new Entities();
 
-			Assert.DoesNotThrow(CreateManyCheck);
+			NUnit.Framework.Assert.DoesNotThrow(CreateManyCheck);
 
 			void CreateManyCheck()
 			{
@@ -266,7 +266,7 @@ namespace Massive.Tests
 			entities.CreateMany(createAmount);
 			var distinctIds = created.Distinct().Count();
 
-			Assert.AreEqual(createAmount, distinctIds);
+			NUnit.Framework.Assert.AreEqual(createAmount, distinctIds);
 		}
 	}
 }

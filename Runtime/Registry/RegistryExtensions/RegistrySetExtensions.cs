@@ -1,4 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -11,7 +15,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static DataSet<T> DataSet<T>(this Registry registry)
 		{
-			Debug.AssertTypeHasData<T>(registry, SuggestionMessage.UseSetMethodWithEmptyTypes);
+			Assert.TypeHasData<T>(registry, SuggestionMessage.UseSetMethodWithEmptyTypes);
 
 			return registry.Set<T>() as DataSet<T>;
 		}

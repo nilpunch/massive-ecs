@@ -1,4 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -50,7 +54,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this Registry registry, int id)
 		{
-			Debug.AssertEntityAlive(registry, id);
+			Assert.IsAlive(registry, id);
 
 			var cloneId = registry.Create();
 
@@ -81,7 +85,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this Registry registry, int id)
 		{
-			Debug.AssertEntityAlive(registry, id);
+			Assert.IsAlive(registry, id);
 
 			registry.Entities.Destroy(id);
 		}
@@ -106,7 +110,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id, T data)
 		{
-			Debug.AssertEntityAlive(registry, id);
+			Assert.IsAlive(registry, id);
 
 			var set = registry.Set<T>();
 			set.Assign(id);
@@ -126,7 +130,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id)
 		{
-			Debug.AssertEntityAlive(registry, id);
+			Assert.IsAlive(registry, id);
 
 			registry.Set<T>().Assign(id);
 		}
@@ -141,7 +145,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Unassign<T>(this Registry registry, int id)
 		{
-			Debug.AssertEntityAlive(registry, id);
+			Assert.IsAlive(registry, id);
 
 			registry.Set<T>().Unassign(id);
 		}
@@ -155,7 +159,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this Registry registry, int id)
 		{
-			Debug.AssertEntityAlive(registry, id);
+			Assert.IsAlive(registry, id);
 
 			return registry.Set<T>().IsAssigned(id);
 		}
@@ -170,8 +174,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this Registry registry, int id)
 		{
-			Debug.AssertEntityAlive(registry, id);
-			Debug.AssertTypeHasData<T>(registry, SuggestionMessage.DontUseGetWithEmptyTypes);
+			Assert.IsAlive(registry, id);
+			Assert.TypeHasData<T>(registry, SuggestionMessage.DontUseGetWithEmptyTypes);
 
 			var dataSet = registry.Set<T>() as DataSet<T>;
 

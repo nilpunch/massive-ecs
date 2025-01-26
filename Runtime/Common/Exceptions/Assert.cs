@@ -1,14 +1,18 @@
-﻿using System;
+﻿#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
+using System;
 using System.Diagnostics;
 
 namespace Massive
 {
-	public static class Debug
+	public static class Assert
 	{
-		public const string Symbol = "MASSIVE_DEBUG";
+		public const string Symbol = "MASSIVE_ASSERT";
 
 		[Conditional(Symbol)]
-		public static void Assert(bool condition, string message)
+		public static void That(bool condition, string message)
 		{
 			if (!condition)
 			{
@@ -17,7 +21,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertTypeHasData<T>(Registry registry, string suggestion)
+		public static void TypeHasData<T>(Registry registry, string suggestion)
 		{
 			if (registry.Set<T>() is not DataSet<T>)
 			{
@@ -26,7 +30,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertIdAssigned(SparseSet set, int id)
+		public static void IdAssigned(SparseSet set, int id)
 		{
 			if (!set.IsAssigned(id))
 			{
@@ -35,7 +39,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertIdAssignedAt(SparseSet set, int index)
+		public static void IdAssignedAt(SparseSet set, int index)
 		{
 			if (!set.IsAssignedAt(index))
 			{
@@ -44,13 +48,13 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertEntityAlive(Registry registry, int entityId)
+		public static void IsAlive(Registry registry, int entityId)
 		{
-			AssertEntityAlive(registry.Entities, entityId);
+			IsAlive(registry.Entities, entityId);
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertEntityAlive(Entities entities, int entityId)
+		public static void IsAlive(Entities entities, int entityId)
 		{
 			if (!entities.IsAlive(entityId))
 			{
@@ -59,7 +63,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertEntityAlive(Registry registry, Entity entity)
+		public static void IsAlive(Registry registry, Entity entity)
 		{
 			if (!registry.IsAlive(entity))
 			{
@@ -68,7 +72,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertNoConflicts(SparseSet[] included, SparseSet[] excluded)
+		public static void NoConflictsInFilter(SparseSet[] included, SparseSet[] excluded)
 		{
 			if (included.ContainsAny(excluded))
 			{
@@ -77,7 +81,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void AssertContainsDuplicates<T>(T[] array, string message) where T : class
+		public static void ContainsDuplicates<T>(T[] array, string message) where T : class
 		{
 			for (var i = 0; i < array.Length; i++)
 			{

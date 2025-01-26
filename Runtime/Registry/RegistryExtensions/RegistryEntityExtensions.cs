@@ -1,4 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -62,7 +66,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity Clone(this Registry registry, Entity entity)
 		{
-			Debug.AssertEntityAlive(registry, entity);
+			Assert.IsAlive(registry, entity);
 
 			var cloneId = registry.Clone(entity.Id);
 			return registry.GetEntity(cloneId);
@@ -77,7 +81,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this Registry registry, Entity entity)
 		{
-			Debug.AssertEntityAlive(registry, entity);
+			Assert.IsAlive(registry, entity);
 
 			registry.Entities.Destroy(entity.Id);
 		}
@@ -101,7 +105,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, Entity entity, T data)
 		{
-			Debug.AssertEntityAlive(registry, entity);
+			Assert.IsAlive(registry, entity);
 
 			registry.Assign(entity.Id, data);
 		}
@@ -116,7 +120,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, Entity entity)
 		{
-			Debug.AssertEntityAlive(registry, entity);
+			Assert.IsAlive(registry, entity);
 
 			registry.Set<T>().Assign(entity.Id);
 		}
@@ -130,7 +134,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Unassign<T>(this Registry registry, Entity entity)
 		{
-			Debug.AssertEntityAlive(registry, entity);
+			Assert.IsAlive(registry, entity);
 
 			registry.Set<T>().Unassign(entity.Id);
 		}
@@ -144,7 +148,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this Registry registry, Entity entity)
 		{
-			Debug.AssertEntityAlive(registry, entity);
+			Assert.IsAlive(registry, entity);
 
 			return registry.Set<T>().IsAssigned(entity.Id);
 		}
@@ -159,8 +163,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this Registry registry, Entity entity)
 		{
-			Debug.AssertEntityAlive(registry, entity);
-			Debug.AssertTypeHasData<T>(registry, SuggestionMessage.DontUseGetWithEmptyTypes);
+			Assert.IsAlive(registry, entity);
+			Assert.TypeHasData<T>(registry, SuggestionMessage.DontUseGetWithEmptyTypes);
 
 			return ref registry.Get<T>(entity.Id);
 		}
