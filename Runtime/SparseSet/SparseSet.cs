@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -304,8 +308,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SwapAt(int first, int second)
 		{
-			Debug.AssertIdAssignedAt(this, first);
-			Debug.AssertIdAssignedAt(this, second);
+			Assert.IdAssignedAt(this, first);
+			Assert.IdAssignedAt(this, second);
 
 			var firstId = Packed[first];
 			var secondId = Packed[second];

@@ -30,7 +30,7 @@ namespace Massive.Tests
 
 			// Assert.
 			int remainIdsCount = IdsToAssign.Length - IdsToUnassign.Length;
-			Assert.AreEqual(remainIdsCount, sparseSet.Count);
+			NUnit.Framework.Assert.AreEqual(remainIdsCount, sparseSet.Count);
 		}
 
 		[TestCase(-1)]
@@ -43,7 +43,7 @@ namespace Massive.Tests
 
 			var isAssigned = sparseSet.IsAssigned(id);
 
-			Assert.IsFalse(isAssigned);
+			NUnit.Framework.Assert.IsFalse(isAssigned);
 		}
 
 		[TestCase(-1)]
@@ -56,7 +56,7 @@ namespace Massive.Tests
 
 			var index = sparseSet.GetIndexOrNegative(id);
 
-			Assert.IsTrue(index < 0);
+			NUnit.Framework.Assert.IsTrue(index < 0);
 		}
 
 		[TestCase(-2)]
@@ -68,7 +68,7 @@ namespace Massive.Tests
 			sparseSet.Assign(id);
 			var isAssigned = sparseSet.IsAssigned(id);
 
-			Assert.IsFalse(isAssigned);
+			NUnit.Framework.Assert.IsFalse(isAssigned);
 		}
 	}
 }

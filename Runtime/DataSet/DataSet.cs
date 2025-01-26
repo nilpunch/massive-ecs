@@ -1,3 +1,7 @@
+#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -30,7 +34,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			Debug.AssertIdAssigned(this, id);
+			Assert.IdAssigned(this, id);
 
 			return ref Data[Sparse[id]];
 		}
@@ -50,8 +54,8 @@ namespace Massive
 		/// </summary>
 		public override void SwapDataAt(int first, int second)
 		{
-			Debug.AssertIdAssignedAt(this, first);
-			Debug.AssertIdAssignedAt(this, second);
+			Assert.IdAssignedAt(this, first);
+			Assert.IdAssignedAt(this, second);
 
 			Data.Swap(first, second);
 		}
@@ -61,8 +65,8 @@ namespace Massive
 		/// </summary>
 		public override void CopyDataAt(int source, int destination)
 		{
-			Debug.AssertIdAssignedAt(this, source);
-			Debug.AssertIdAssignedAt(this, destination);
+			Assert.IdAssignedAt(this, source);
+			Assert.IdAssignedAt(this, destination);
 
 			Data[destination] = Data[source];
 		}

@@ -13,38 +13,38 @@ namespace Massive.Tests
 
 			var group = SetUpWithIntAndChar(registry);
 
-			Assert.AreEqual(0, group.Count);
+			NUnit.Framework.Assert.AreEqual(0, group.Count);
 
 			var entity1 = registry.CreateEntity('1').Id;
 			var entity2 = registry.CreateEntity('2').Id;
 
 			registry.Assign(entity2, 42);
 
-			Assert.AreEqual(1, group.Count);
+			NUnit.Framework.Assert.AreEqual(1, group.Count);
 
 			registry.Assign<int>(entity1);
 
-			Assert.AreEqual(2, group.Count);
+			NUnit.Framework.Assert.AreEqual(2, group.Count);
 
 			registry.Unassign<int>(entity1);
 
-			Assert.AreEqual(1, group.Count);
+			NUnit.Framework.Assert.AreEqual(1, group.Count);
 
 			foreach (var id in group)
 			{
-				Assert.AreEqual(registry.Get<int>(id), 42);
-				Assert.AreEqual(registry.Get<char>(id), '2');
+				NUnit.Framework.Assert.AreEqual(registry.Get<int>(id), 42);
+				NUnit.Framework.Assert.AreEqual(registry.Get<char>(id), '2');
 			}
 
 			var enumerator = group.GetEnumerator();
 			enumerator.MoveNext();
-			Assert.AreEqual(enumerator.Current, entity2);
+			NUnit.Framework.Assert.AreEqual(enumerator.Current, entity2);
 			enumerator.Dispose();
 
 			registry.Unassign<char>(entity1);
 			registry.Unassign<char>(entity2);
 
-			Assert.AreEqual(0, group.Count);
+			NUnit.Framework.Assert.AreEqual(0, group.Count);
 		}
 
 		[Test]
@@ -66,37 +66,37 @@ namespace Massive.Tests
 
 			foreach (var entity in group)
 			{
-				Assert.True(entity == entity1 || entity == entity3);
+				NUnit.Framework.Assert.True(entity == entity1 || entity == entity3);
 
 				if (entity == entity1)
 				{
-					Assert.AreEqual(1, registry.Get<int>(entity1));
+					NUnit.Framework.Assert.AreEqual(1, registry.Get<int>(entity1));
 				}
 				else if (entity == entity3)
 				{
-					Assert.AreEqual(3, registry.Get<int>(entity3));
+					NUnit.Framework.Assert.AreEqual(3, registry.Get<int>(entity3));
 				}
 			}
 
 			registry.Assign<char>(entity1);
 			registry.Assign<char>(entity3);
 
-			Assert.AreEqual(0, group.Count);
+			NUnit.Framework.Assert.AreEqual(0, group.Count);
 
 			registry.Unassign<char>(entity2);
 			registry.Unassign<char>(entity4);
 
 			foreach (var entity in group)
 			{
-				Assert.True(entity == entity2 || entity == entity4);
+				NUnit.Framework.Assert.True(entity == entity2 || entity == entity4);
 
 				if (entity == entity2)
 				{
-					Assert.AreEqual(2, registry.Get<int>(entity2));
+					NUnit.Framework.Assert.AreEqual(2, registry.Get<int>(entity2));
 				}
 				else if (entity == entity4)
 				{
-					Assert.AreEqual(4, registry.Get<int>(entity4));
+					NUnit.Framework.Assert.AreEqual(4, registry.Get<int>(entity4));
 				}
 			}
 		}
@@ -123,7 +123,7 @@ namespace Massive.Tests
 
 			var group = SetUpWithIntAndWithoutChar(registry);
 
-			Assert.AreEqual(5, group.Count);
+			NUnit.Framework.Assert.AreEqual(5, group.Count);
 		}
 
 		private Group SetUpWithIntAndChar(Registry registry)

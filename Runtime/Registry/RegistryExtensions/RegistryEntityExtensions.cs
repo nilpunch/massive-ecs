@@ -1,4 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if !MASSIVE_RELEASE
+#define MASSIVE_ASSERT
+#endif
+
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -12,13 +16,11 @@ namespace Massive
 		/// Returns alive entity for this ID.
 		/// </summary>
 		/// <remarks>
-		/// If an entity with this ID is not alive, will throw an exception.
+		/// Will throw an exception if an entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity GetEntity(this Registry registry, int id)
 		{
-			Debug.AssertEntityAlive(registry, id);
-
 			return registry.Entities.GetEntity(id);
 		}
 
@@ -59,29 +61,29 @@ namespace Massive
 		/// Creates a unique entity with components of another entity.
 		/// </summary>
 		/// <remarks>
-		/// Cloning entity that is not alive will throw an exception.
+		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity Clone(this Registry registry, Entity entity)
 		{
-			Debug.AssertEntityAlive(registry, entity);
+			Assert.IsAlive(registry, entity);
 
 			var cloneId = registry.Clone(entity.Id);
 			return registry.GetEntity(cloneId);
 		}
 
 		/// <summary>
-		/// Destroys this entity if alive.
+		/// Destroys this entity.
 		/// </summary>
+		/// <remarks>
+		/// Will throw an exception if the entity is not alive.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this Registry registry, Entity entity)
 		{
-			if (!registry.Entities.IsAlive(entity))
-			{
-				return;
-			}
+			Assert.IsAlive(registry, entity);
 
-			registry.Destroy(entity.Id);
+			registry.Entities.Destroy(entity.Id);
 		}
 
 		/// <summary>
@@ -98,12 +100,12 @@ namespace Massive
 		/// </summary>
 		/// <param name="data"> Initial data for the assigned component. </param>
 		/// <remarks>
-		/// Assigning a component to an entity that is being destroyed will throw an exception.
+		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, Entity entity, T data)
 		{
-			Debug.AssertEntityAlive(registry, entity);
+			Assert.IsAlive(registry, entity);
 
 			registry.Assign(entity.Id, data);
 		}
@@ -113,48 +115,42 @@ namespace Massive
 		/// Repeat assignments are allowed.
 		/// </summary>
 		/// <remarks>
-		/// Assigning a component to an entity that is being destroyed will throw an exception.
+		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, Entity entity)
 		{
-			Debug.AssertEntityAlive(registry, entity);
+			Assert.IsAlive(registry, entity);
 
-			registry.Assign<T>(entity.Id);
+			registry.Set<T>().Assign(entity.Id);
 		}
 
 		/// <summary>
 		/// Unassigns a component from an entity.
 		/// </summary>
 		/// <remarks>
-		/// If the entity is not alive or does not have the component, nothing happens.
+		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Unassign<T>(this Registry registry, Entity entity)
 		{
-			if (!registry.Entities.IsAlive(entity))
-			{
-				return;
-			}
+			Assert.IsAlive(registry, entity);
 
-			registry.Unassign<T>(entity.Id);
+			registry.Set<T>().Unassign(entity.Id);
 		}
 
 		/// <summary>
 		/// Checks whether an entity has such a component.
 		/// </summary>
 		/// <remarks>
-		/// Returns false if the entity is not alive.
+		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this Registry registry, Entity entity)
 		{
-			if (!registry.Entities.IsAlive(entity))
-			{
-				return false;
-			}
+			Assert.IsAlive(registry, entity);
 
-			return registry.Has<T>(entity.Id);
+			return registry.Set<T>().IsAssigned(entity.Id);
 		}
 
 		/// <summary>
@@ -167,8 +163,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this Registry registry, Entity entity)
 		{
-			Debug.AssertEntityAlive(registry, entity);
-			Debug.AssertTypeHasData<T>(registry, SuggestionMessage.DontUseGetWithEmptyTypes);
+			Assert.IsAlive(registry, entity);
+			Assert.TypeHasData<T>(registry, SuggestionMessage.DontUseGetWithEmptyTypes);
 
 			return ref registry.Get<T>(entity.Id);
 		}

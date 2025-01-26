@@ -21,9 +21,9 @@ namespace Massive.Tests
 
 			massiveData.Unassign(1);
 
-			Assert.IsTrue(massiveData.IsAssigned(0));
-			Assert.IsFalse(massiveData.IsAssigned(1));
-			Assert.IsTrue(massiveData.IsAssigned(2));
+			NUnit.Framework.Assert.IsTrue(massiveData.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massiveData.IsAssigned(1));
+			NUnit.Framework.Assert.IsTrue(massiveData.IsAssigned(2));
 		}
 
 		[Test]
@@ -31,17 +31,17 @@ namespace Massive.Tests
 		{
 			var massiveData = new MassiveDataSet<TestState>(framesCapacity: 2);
 
-			Assert.IsFalse(massiveData.IsAssigned(0));
-			Assert.IsFalse(massiveData.IsAssigned(1));
-			Assert.IsFalse(massiveData.IsAssigned(2));
+			NUnit.Framework.Assert.IsFalse(massiveData.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massiveData.IsAssigned(1));
+			NUnit.Framework.Assert.IsFalse(massiveData.IsAssigned(2));
 
 			massiveData.Assign(0, new TestState { Value = 1 });
 			massiveData.Assign(1, new TestState { Value = 2 });
 			massiveData.Assign(2, new TestState { Value = 3 });
 
-			Assert.IsTrue(massiveData.IsAssigned(0));
-			Assert.IsTrue(massiveData.IsAssigned(1));
-			Assert.IsTrue(massiveData.IsAssigned(2));
+			NUnit.Framework.Assert.IsTrue(massiveData.IsAssigned(0));
+			NUnit.Framework.Assert.IsTrue(massiveData.IsAssigned(1));
+			NUnit.Framework.Assert.IsTrue(massiveData.IsAssigned(2));
 		}
 
 		[Test]
@@ -53,9 +53,9 @@ namespace Massive.Tests
 			massiveData.Assign(1, new TestState { Value = 2 });
 			massiveData.Assign(2, new TestState { Value = 3 });
 
-			Assert.AreEqual(massiveData.Get(0).Value, 1);
-			Assert.AreEqual(massiveData.Get(1).Value, 2);
-			Assert.AreEqual(massiveData.Get(2).Value, 3);
+			NUnit.Framework.Assert.AreEqual(massiveData.Get(0).Value, 1);
+			NUnit.Framework.Assert.AreEqual(massiveData.Get(1).Value, 2);
+			NUnit.Framework.Assert.AreEqual(massiveData.Get(2).Value, 3);
 		}
 
 		[Test]
@@ -67,7 +67,7 @@ namespace Massive.Tests
 
 			massiveData.Get(0).Value = 2;
 
-			Assert.AreEqual(massiveData.Get(0).Value, 2);
+			NUnit.Framework.Assert.AreEqual(massiveData.Get(0).Value, 2);
 		}
 
 		[Test]
@@ -81,9 +81,9 @@ namespace Massive.Tests
 
 			massiveData.SaveFrame();
 
-			Assert.AreEqual(massiveData.Get(0).Value, 1);
-			Assert.AreEqual(massiveData.Get(1).Value, 2);
-			Assert.AreEqual(massiveData.Get(2).Value, 3);
+			NUnit.Framework.Assert.AreEqual(massiveData.Get(0).Value, 1);
+			NUnit.Framework.Assert.AreEqual(massiveData.Get(1).Value, 2);
+			NUnit.Framework.Assert.AreEqual(massiveData.Get(2).Value, 3);
 		}
 
 		[Test]
@@ -97,7 +97,7 @@ namespace Massive.Tests
 			massiveData.Get(0).Value = 2;
 			massiveData.Rollback(0);
 
-			Assert.AreEqual(massiveData.Get(0).Value, 1);
+			NUnit.Framework.Assert.AreEqual(massiveData.Get(0).Value, 1);
 		}
 
 		[Test]
@@ -111,18 +111,18 @@ namespace Massive.Tests
 			massiveData.Assign(1, new TestState { Value = 2 });
 			massiveData.Unassign(1);
 
-			Assert.IsTrue(massiveData.IsAssigned(0));
-			Assert.IsFalse(massiveData.IsAssigned(1));
+			NUnit.Framework.Assert.IsTrue(massiveData.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massiveData.IsAssigned(1));
 
 			massiveData.SaveFrame();
 
-			Assert.IsTrue(massiveData.IsAssigned(0));
-			Assert.IsFalse(massiveData.IsAssigned(1));
+			NUnit.Framework.Assert.IsTrue(massiveData.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massiveData.IsAssigned(1));
 
 			massiveData.Rollback(1);
 
-			Assert.IsFalse(massiveData.IsAssigned(0));
-			Assert.IsFalse(massiveData.IsAssigned(1));
+			NUnit.Framework.Assert.IsFalse(massiveData.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massiveData.IsAssigned(1));
 		}
 	}
 }

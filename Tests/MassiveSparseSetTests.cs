@@ -12,11 +12,11 @@ namespace Massive.Tests
 
 			var id = 2;
 
-			Assert.IsFalse(massive.IsAssigned(id));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(id));
 
 			massive.Assign(id);
 
-			Assert.IsTrue(massive.IsAssigned(id));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(id));
 		}
 
 		[Test]
@@ -30,9 +30,9 @@ namespace Massive.Tests
 
 			massive.Unassign(1);
 
-			Assert.IsTrue(massive.IsAssigned(0));
-			Assert.IsFalse(massive.IsAssigned(1));
-			Assert.IsTrue(massive.IsAssigned(2));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(1));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(2));
 		}
 
 		[Test]
@@ -40,17 +40,17 @@ namespace Massive.Tests
 		{
 			var massive = new MassiveSparseSet(framesCapacity: 2);
 
-			Assert.IsFalse(massive.IsAssigned(0));
-			Assert.IsFalse(massive.IsAssigned(1));
-			Assert.IsFalse(massive.IsAssigned(2));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(1));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(2));
 
 			massive.Assign(0);
 			massive.Assign(1);
 			massive.Assign(2);
 
-			Assert.IsTrue(massive.IsAssigned(0));
-			Assert.IsTrue(massive.IsAssigned(1));
-			Assert.IsTrue(massive.IsAssigned(2));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(1));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(2));
 		}
 
 		[Test]
@@ -64,9 +64,9 @@ namespace Massive.Tests
 
 			massive.SaveFrame();
 
-			Assert.IsTrue(massive.IsAssigned(0));
-			Assert.IsTrue(massive.IsAssigned(1));
-			Assert.IsTrue(massive.IsAssigned(2));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(1));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(2));
 		}
 
 		[Test]
@@ -76,17 +76,17 @@ namespace Massive.Tests
 
 			massive.Assign(0);
 
-			Assert.IsTrue(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(0));
 
 			massive.SaveFrame();
 
 			massive.Unassign(0);
 
-			Assert.IsFalse(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(0));
 
 			massive.Rollback(0);
 
-			Assert.IsTrue(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(0));
 		}
 
 		[Test]
@@ -100,18 +100,18 @@ namespace Massive.Tests
 			massive.Assign(1);
 			massive.Unassign(1);
 
-			Assert.IsTrue(massive.IsAssigned(0));
-			Assert.IsFalse(massive.IsAssigned(1));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(1));
 
 			massive.SaveFrame();
 
-			Assert.IsTrue(massive.IsAssigned(0));
-			Assert.IsFalse(massive.IsAssigned(1));
+			NUnit.Framework.Assert.IsTrue(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(1));
 
 			massive.Rollback(1);
 
-			Assert.IsFalse(massive.IsAssigned(0));
-			Assert.IsFalse(massive.IsAssigned(1));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(0));
+			NUnit.Framework.Assert.IsFalse(massive.IsAssigned(1));
 		}
 	}
 }
