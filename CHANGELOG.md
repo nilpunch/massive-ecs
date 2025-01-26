@@ -4,12 +4,11 @@
 
 ### Added
 
-- Debug assertions for numerous execution paths.
+- Assertions for numerous execution paths.
 
 ### Changed
 
-- `Clone(entity)` and `Clone(id)` methods now disallow passing dead entities.
-- `Assign<T>(entity)` method now disallows passing dead entities.
+- `Destroy`, `Assign`, `Unassign`, `Has` and `Clone` methods now disallow passing dead entities or IDs.
 - `Filter.Empty` static property has been moved to `FilterRegistry` and is now non-static.
 
 ## 18.0.0 - January 22, 2025
