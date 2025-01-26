@@ -9,8 +9,6 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class Filter
 	{
-		public static Filter Empty { get; } = new Filter(Array.Empty<SparseSet>(), Array.Empty<SparseSet>());
-
 		public int IncludedCount { get; protected set; }
 		public int ExcludedCount { get; protected set; }
 

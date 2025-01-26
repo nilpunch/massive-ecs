@@ -123,5 +123,16 @@ namespace Massive
 			}
 			return set4;
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int GetUnorderedHashCode(SparseSet[] sets, SetRegistry setRegistry)
+		{
+			var hash = 0;
+			for (var i = 0; i < sets.Length; i++)
+			{
+				hash = setRegistry.IndexOf(sets[i]);
+			}
+			return hash;
+		}
 	}
 }

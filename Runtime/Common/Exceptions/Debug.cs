@@ -75,5 +75,21 @@ namespace Massive
 				throw new Exception("Conflicting included and excluded components!");
 			}
 		}
+
+		[Conditional(Symbol)]
+		public static void AssertContainsDuplicates<T>(T[] array, string message) where T : class
+		{
+			for (var i = 0; i < array.Length; i++)
+			{
+				var set = array[i];
+				for (var j = i + 1; j < array.Length; j++)
+				{
+					if (set == array[j])
+					{
+						throw new Exception(message);
+					}
+				}
+			}
+		}
 	}
 }

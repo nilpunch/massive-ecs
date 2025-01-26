@@ -31,7 +31,7 @@ namespace Massive
 		{
 			if ((included == null || included.Length == 0) && entities == null)
 			{
-				throw new Exception("You must provide at least one included or entities.");
+				throw new Exception("Include at least one element in included or provide entities.");
 			}
 
 			Set = backingSet;
