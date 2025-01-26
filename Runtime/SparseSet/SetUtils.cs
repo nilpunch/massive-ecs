@@ -130,7 +130,7 @@ namespace Massive
 			var hash = 0;
 			for (var i = 0; i < sets.Length; i++)
 			{
-				hash = setRegistry.IndexOf(sets[i]);
+				hash ^= setRegistry.IndexOf(sets[i]);
 			}
 			return hash;
 		}
