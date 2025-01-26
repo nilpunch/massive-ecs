@@ -19,7 +19,7 @@ namespace Massive
 		{
 			Registry = registry;
 			PackingWhenIterating = packingWhenIterating;
-			Filter = filter ?? Filter.Empty;
+			Filter = filter ?? registry.FilterRegistry.Empty;
 		}
 
 		public void ForEach<TAction>(ref TAction action)

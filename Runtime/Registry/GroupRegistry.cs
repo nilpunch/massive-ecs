@@ -32,33 +32,7 @@ namespace Massive
 			get => _allGroups;
 		}
 
-		public Group Get(SparseSet[] included = null, SparseSet[] excluded = null)
-		{
-			included ??= Array.Empty<SparseSet>();
-			excluded ??= Array.Empty<SparseSet>();
-
-			Debug.AssertNoConflicts(included, excluded);
-			ThrowIfContainsDuplicates(included, "Included contains duplicate sets!");
-			ThrowIfContainsDuplicates(excluded, "Excluded contains duplicate sets!");
-
-			var includeCode = GetUnorderedHashCode(included, _setRegistry);
-			var excludeCode = GetUnorderedHashCode(excluded, _setRegistry);
-			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
-
-			if (_codeLookup.TryGetValue(fullCode, out var group))
-			{
-				group.EnsureSynced();
-				return group;
-			}
-
-			var entitiesIfNoIncludes = included.Length == 0 ? _entities : null;
-			group = _groupFactory.CreateGroup(included, excluded, entitiesIfNoIncludes);
-			_codeLookup.Add(fullCode, group);
-			_allGroups.Add(group);
-			group.EnsureSynced();
-			return group;
-		}
-
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Group Get<TInclude, TExclude>()
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
@@ -81,31 +55,32 @@ namespace Massive
 			return group;
 		}
 
-		[Conditional(Debug.Symbol)]
-		private static void ThrowIfContainsDuplicates(SparseSet[] sets, string errorMessage)
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public Group Get(SparseSet[] included = null, SparseSet[] excluded = null)
 		{
-			for (int i = 0; i < sets.Length; i++)
-			{
-				var set = sets[i];
-				for (int j = i + 1; j < sets.Length; j++)
-				{
-					if (set == sets[j])
-					{
-						throw new Exception(errorMessage);
-					}
-				}
-			}
-		}
+			included ??= Array.Empty<SparseSet>();
+			excluded ??= Array.Empty<SparseSet>();
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static int GetUnorderedHashCode(SparseSet[] sets, SetRegistry setRegistry)
-		{
-			var hash = 0;
-			for (var i = 0; i < sets.Length; i++)
+			Debug.AssertNoConflicts(included, excluded);
+			Debug.AssertContainsDuplicates(included, "Included contains duplicate sets!");
+			Debug.AssertContainsDuplicates(excluded, "Excluded contains duplicate sets!");
+
+			var includeCode = SetUtils.GetUnorderedHashCode(included, _setRegistry);
+			var excludeCode = SetUtils.GetUnorderedHashCode(excluded, _setRegistry);
+			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
+
+			if (_codeLookup.TryGetValue(fullCode, out var group))
 			{
-				hash = setRegistry.IndexOf(sets[i]);
+				group.EnsureSynced();
+				return group;
 			}
-			return hash;
+
+			var entitiesIfNoIncludes = included.Length == 0 ? _entities : null;
+			group = _groupFactory.CreateGroup(included, excluded, entitiesIfNoIncludes);
+			_codeLookup.Add(fullCode, group);
+			_allGroups.Add(group);
+			group.EnsureSynced();
+			return group;
 		}
 	}
 }
