@@ -75,9 +75,14 @@ namespace Massive
 		/// <summary>
 		/// Destroys any alive entity with this ID, regardless of version.
 		/// </summary>
+		/// <remarks>
+		/// Will throw an exception if an entity with this ID is not alive.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this Registry registry, int id)
 		{
+			Debug.AssertEntityAlive(registry, id);
+
 			registry.Entities.Destroy(id);
 		}
 
@@ -96,7 +101,7 @@ namespace Massive
 		/// </summary>
 		/// <param name="data"> Initial data for the assigned component. </param>
 		/// <remarks>
-		/// Assigning a component to an entity that is being destroyed will throw an exception.
+		/// Will throw an exception if an entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id, T data)
@@ -116,7 +121,7 @@ namespace Massive
 		/// Repeat assignments are allowed.
 		/// </summary>
 		/// <remarks>
-		/// Assigning a component to an entity that is being destroyed will throw an exception.
+		/// Will throw an exception if an entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Assign<T>(this Registry registry, int id)
@@ -128,13 +133,16 @@ namespace Massive
 
 		/// <summary>
 		/// Unassigns a component from an entity with this ID, regardless of version.
+		/// Repeat unassignments are allowed.
 		/// </summary>
 		/// <remarks>
-		/// If the entity is not alive or does not have the component, nothing happens.
+		/// Will throw an exception if an entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Unassign<T>(this Registry registry, int id)
 		{
+			Debug.AssertEntityAlive(registry, id);
+
 			registry.Set<T>().Unassign(id);
 		}
 
@@ -142,11 +150,13 @@ namespace Massive
 		/// Checks whether an entity with this ID has such a component, regardless of version.
 		/// </summary>
 		/// <remarks>
-		/// Returns false if the entity is not alive.
+		/// Will throw an exception if an entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this Registry registry, int id)
 		{
+			Debug.AssertEntityAlive(registry, id);
+
 			return registry.Set<T>().IsAssigned(id);
 		}
 
