@@ -16,12 +16,14 @@ namespace Massive
 		private const int EndHoleId = int.MaxValue;
 
 		/// <summary>
-		/// The packed array, containing entities versions.
+		/// The packed array, containing entities versions.<br/>
+		/// Don't cache it and use as is, underlying array can be resized at any moment.
 		/// </summary>
 		public uint[] Versions { get; private set; } = Array.Empty<uint>();
 
 		/// <summary>
-		/// The sparse array, mapping IDs to their packed indices.
+		/// The sparse array, mapping IDs to their packed indices.<br/>
+		/// Don't cache it and use as is, underlying array can be resized at any moment.
 		/// </summary>
 		public int[] Sparse { get; private set; } = Array.Empty<int>();
 

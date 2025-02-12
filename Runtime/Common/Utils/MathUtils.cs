@@ -36,7 +36,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPowerOfTwo(int value)
 		{
-			return value > 0 && unchecked(value & (value - 1)) == 0;
+			return value > 0 && (value & (value - 1)) == 0;
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int FastMod(int value, int mod)
 		{
-			return unchecked(value & (mod - 1));
+			return value & (mod - 1);
 		}
 
 		/// <summary>
@@ -114,7 +114,6 @@ namespace Massive
 				{
 					return int.MaxValue;
 				}
-
 				return result;
 			}
 		}

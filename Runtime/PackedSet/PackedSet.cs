@@ -16,7 +16,8 @@ namespace Massive
 		public int Count { get; protected set; }
 
 		/// <summary>
-		/// The packed array, containing IDs.
+		/// The packed array, containing IDs.<br/>
+		/// Don't cache it and use as is, underlying array can be resized at any moment.
 		/// </summary>
 		public int[] Packed { get; protected set; } = Array.Empty<int>();
 

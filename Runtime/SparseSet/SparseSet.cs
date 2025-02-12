@@ -17,6 +17,7 @@ namespace Massive
 
 		/// <summary>
 		/// The sparse array, mapping IDs to their packed indices.
+		/// Don't cache it and use as is, underlying array can be resized at any moment.
 		/// </summary>
 		public int[] Sparse { get; private set; } = Array.Empty<int>();
 

@@ -178,7 +178,7 @@ namespace Massive
 			view.ForEach(ref returnFirstEntity);
 			return returnFirstEntity.Result == Constants.InvalidId
 				? Entity.Dead
-				: view.Registry.Entities.GetEntity(returnFirstEntity.Result);
+				: view.Registry.GetEntity(returnFirstEntity.Result);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
