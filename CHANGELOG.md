@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 18.1.0 - February 24, 2025
 
 ### Added
 

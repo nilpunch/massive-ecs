@@ -9,12 +9,11 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SetRegistry
 	{
-		private readonly GenericLookupSparseSet _setLookup;
+		private readonly GenericLookupSparseSet _setLookup = new GenericLookupSparseSet();
 		private readonly ISetFactory _setFactory;
 
 		public SetRegistry(ISetFactory setFactory)
 		{
-			_setLookup = new GenericLookupSparseSet();
 			_setFactory = setFactory;
 		}
 
