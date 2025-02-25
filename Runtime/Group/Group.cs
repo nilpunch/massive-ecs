@@ -68,7 +68,7 @@ namespace Massive
 			IsSynced = true;
 
 			Set.Clear();
-			PackedSet minimal = Included.Length == 0 ? Entities : SetUtils.GetMinimalSet(Included);
+			var minimal = Included.Length == 0 ? (PackedSet)Entities : SetUtils.GetMinimalSet(Included);
 			for (var i = 0; i < minimal.Count; i++)
 			{
 				var id = minimal.Packed[i];

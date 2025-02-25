@@ -23,7 +23,7 @@ namespace Massive
 		[Conditional(Symbol)]
 		public static void TypeHasData<T>(Registry registry, string suggestion)
 		{
-			if (registry.Set<T>() is not DataSet<T>)
+			if (!(registry.Set<T>() is DataSet<T>))
 			{
 				throw new Exception($"The type {typeof(T).GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(RegistryConfig.StoreEmptyTypesAsDataSets)} in registry config.");
 			}
