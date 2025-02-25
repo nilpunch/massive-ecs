@@ -4,13 +4,14 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>v18.1.0</Version>
+        <Version>18.1.2</Version>
         <Title>Massive ECS</Title>
         <Authors>Daniil Pankevich</Authors>
         <Description>Sparse set ECS library made for prediction-rollback netcode</Description>
         <Copyright>Copyright (c) 2025 Daniil Pankevich</Copyright>
         <PackageLicenseUrl>https://github.com/nilpunch/massive-ecs/blob/master/LICENSE.md</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/nilpunch/massive-ecs</RepositoryUrl>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
