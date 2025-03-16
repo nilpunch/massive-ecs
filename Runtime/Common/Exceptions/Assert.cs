@@ -65,7 +65,13 @@ namespace Massive
 		[Conditional(Symbol)]
 		public static void IsAlive(Registry registry, Entity entity)
 		{
-			if (!registry.IsAlive(entity))
+			IsAlive(registry.Entities, entity);
+		}
+
+		[Conditional(Symbol)]
+		public static void IsAlive(Entities entities, Entity entity)
+		{
+			if (!entities.IsAlive(entity))
 			{
 				throw new Exception($"The {entity} is not alive.");
 			}

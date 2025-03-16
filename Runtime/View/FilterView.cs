@@ -12,7 +12,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public readonly struct FilterView : IView
+	public readonly struct FilterView : IView, IViewT, IViewTT, IViewTTT, IViewTTTT
 	{
 		public Registry Registry { get; }
 		public Filter Filter { get; }

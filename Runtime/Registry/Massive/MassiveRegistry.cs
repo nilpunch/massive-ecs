@@ -60,7 +60,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			Entities.Rollback(Math.Min(frames, Entities.CanRollbackFrames));
+			Entities.Rollback(frames);
 
 			foreach (var set in SetRegistry.All)
 			{

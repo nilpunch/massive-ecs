@@ -5,7 +5,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveGroup : Group, IMassive
+	public sealed class MassiveGroup : Group, IMassive
 	{
 		private readonly IMassive _massiveMainSet;
 		private readonly CyclicFrameCounter _cyclicFrameCounter;

@@ -5,15 +5,12 @@ namespace Massive
 {
 	public readonly struct Entity : IEquatable<Entity>
 	{
-		private const int DefaultId = Constants.InvalidId;
-		public const int IdOffset = -DefaultId;
-
 		public readonly long IdAndVersion;
 
 		public int Id
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => IdWithOffset - IdOffset;
+			get => IdWithOffset - Constants.IdOffset;
 		}
 
 		public int IdWithOffset
@@ -30,10 +27,14 @@ namespace Massive
 
 		public Entity(int id, uint version)
 		{
-			IdAndVersion = (uint)(id + IdOffset) | ((long)version << 32);
+			IdAndVersion = (uint)(id + Constants.IdOffset) | ((long)version << 32);
 		}
 
-		public static readonly Entity Dead;
+		public static Entity Dead
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new Entity(0, 0);
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool operator ==(Entity a, Entity b)

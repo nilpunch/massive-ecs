@@ -19,7 +19,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<TView, T>(this TView view, EntityActionRef<T> action)
-			where TView : IView
+			where TView : IViewT
 		{
 			var entityActionRefAdapter = new EntityActionRefAdapter<T> { Action = action };
 			view.ForEach<EntityActionRefAdapter<T>, T>(ref entityActionRefAdapter);
@@ -27,7 +27,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<TView, T1, T2>(this TView view, EntityActionRef<T1, T2> action)
-			where TView : IView
+			where TView : IViewTT
 		{
 			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2> { Action = action };
 			view.ForEach<EntityActionRefAdapter<T1, T2>, T1, T2>(ref entityActionRefAdapter);
@@ -35,7 +35,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<TView, T1, T2, T3>(this TView view, EntityActionRef<T1, T2, T3> action)
-			where TView : IView
+			where TView : IViewTTT
 		{
 			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3> { Action = action };
 			view.ForEach<EntityActionRefAdapter<T1, T2, T3>, T1, T2, T3>(ref entityActionRefAdapter);
@@ -43,7 +43,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<TView, T1, T2, T3, T4>(this TView view, EntityActionRef<T1, T2, T3, T4> action)
-			where TView : IView
+			where TView : IViewTTTT
 		{
 			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4> { Action = action };
 			view.ForEach<EntityActionRefAdapter<T1, T2, T3, T4>, T1, T2, T3, T4>(ref entityActionRefAdapter);
@@ -59,7 +59,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEachExtra<TView, TExtra, T>(this TView view, TExtra extra, EntityActionRefExtra<T, TExtra> action)
-			where TView : IView
+			where TView : IViewT
 		{
 			var entityActionRefExtraAdapter = new EntityActionRefExtraAdapter<T, TExtra> { Action = action, Extra = extra };
 			view.ForEach<EntityActionRefExtraAdapter<T, TExtra>, T>(ref entityActionRefExtraAdapter);
@@ -67,7 +67,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEachExtra<TView, TExtra, T1, T2>(this TView view, TExtra extra, EntityActionRefExtra<T1, T2, TExtra> action)
-			where TView : IView
+			where TView : IViewTT
 		{
 			var entityActionRefExtraAdapter = new EntityActionRefExtraAdapter<T1, T2, TExtra> { Action = action, Extra = extra };
 			view.ForEach<EntityActionRefExtraAdapter<T1, T2, TExtra>, T1, T2>(ref entityActionRefExtraAdapter);
@@ -75,7 +75,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEachExtra<TView, TExtra, T1, T2, T3>(this TView view, TExtra extra, EntityActionRefExtra<T1, T2, T3, TExtra> action)
-			where TView : IView
+			where TView : IViewTTT
 		{
 			var entityActionRefExtraAdapter = new EntityActionRefExtraAdapter<T1, T2, T3, TExtra> { Action = action, Extra = extra };
 			view.ForEach<EntityActionRefExtraAdapter<T1, T2, T3, TExtra>, T1, T2, T3>(ref entityActionRefExtraAdapter);
@@ -83,7 +83,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEachExtra<TView, TExtra, T1, T2, T3, T4>(this TView view, TExtra extra, EntityActionRefExtra<T1, T2, T3, T4, TExtra> action)
-			where TView : IView
+			where TView : IViewTTTT
 		{
 			var entityActionRefExtraAdapter = new EntityActionRefExtraAdapter<T1, T2, T3, T4, TExtra> { Action = action, Extra = extra };
 			view.ForEach<EntityActionRefExtraAdapter<T1, T2, T3, T4, TExtra>, T1, T2, T3, T4>(ref entityActionRefExtraAdapter);
@@ -91,7 +91,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<TView, T>(this TView view, ActionRef<T> action)
-			where TView : IView
+			where TView : IViewT
 		{
 			var actionRefAdapter = new ActionRefAdapter<T> { Action = action };
 			view.ForEach<ActionRefAdapter<T>, T>(ref actionRefAdapter);
@@ -99,7 +99,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<TView, T1, T2>(this TView view, ActionRef<T1, T2> action)
-			where TView : IView
+			where TView : IViewTT
 		{
 			var actionRefAdapter = new ActionRefAdapter<T1, T2> { Action = action };
 			view.ForEach<ActionRefAdapter<T1, T2>, T1, T2>(ref actionRefAdapter);
@@ -107,7 +107,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<TView, T1, T2, T3>(this TView view, ActionRef<T1, T2, T3> action)
-			where TView : IView
+			where TView : IViewTTT
 		{
 			var actionRefAdapter = new ActionRefAdapter<T1, T2, T3> { Action = action };
 			view.ForEach<ActionRefAdapter<T1, T2, T3>, T1, T2, T3>(ref actionRefAdapter);
@@ -115,7 +115,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<TView, T1, T2, T3, T4>(this TView view, ActionRef<T1, T2, T3, T4> action)
-			where TView : IView
+			where TView : IViewTTTT
 		{
 			var actionRefAdapter = new ActionRefAdapter<T1, T2, T3, T4> { Action = action };
 			view.ForEach<ActionRefAdapter<T1, T2, T3, T4>, T1, T2, T3, T4>(ref actionRefAdapter);
@@ -123,7 +123,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEachExtra<TView, TExtra, T>(this TView view, TExtra extra, ActionRefExtra<T, TExtra> action)
-			where TView : IView
+			where TView : IViewT
 		{
 			var actionRefExtraAdapter = new ActionRefExtraAdapter<T, TExtra> { Action = action, Extra = extra };
 			view.ForEach<ActionRefExtraAdapter<T, TExtra>, T>(ref actionRefExtraAdapter);
@@ -131,7 +131,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEachExtra<TView, TExtra, T1, T2>(this TView view, TExtra extra, ActionRefExtra<T1, T2, TExtra> action)
-			where TView : IView
+			where TView : IViewTT
 		{
 			var actionRefExtraAdapter = new ActionRefExtraAdapter<T1, T2, TExtra> { Action = action, Extra = extra };
 			view.ForEach<ActionRefExtraAdapter<T1, T2, TExtra>, T1, T2>(ref actionRefExtraAdapter);
@@ -139,7 +139,7 @@ namespace Massive
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEachExtra<TView, TExtra, T1, T2, T3>(this TView view, TExtra extra, ActionRefExtra<T1, T2, T3, TExtra> action)
-			where TView : IView
+			where TView : IViewTTT
 		{
 			var actionRefExtraAdapter = new ActionRefExtraAdapter<T1, T2, T3, TExtra> { Action = action, Extra = extra };
 			view.ForEach<ActionRefExtraAdapter<T1, T2, T3, TExtra>, T1, T2, T3>(ref actionRefExtraAdapter);
