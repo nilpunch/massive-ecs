@@ -5,9 +5,9 @@
 	/// </summary>
 	public static class MovementSystem
 	{
-		public static void Update(Registry registry, float deltaTime)
+		public static void Update(World world, float deltaTime)
 		{
-			registry.View().Exclude<Dead>().ForEachExtra(deltaTime,
+			world.View().Exclude<Dead>().ForEachExtra(deltaTime,
 				static (ref Velocity velocity, ref Position position, float deltaTime) =>
 				{
 					position.Value += velocity.Value * deltaTime;

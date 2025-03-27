@@ -157,7 +157,7 @@ namespace Massive
 		public static void Fill<TView>(this TView view, IList<Entity> result)
 			where TView : IView
 		{
-			var fillEntities = new FillEntities { Result = result, Entities = view.Registry.Entities };
+			var fillEntities = new FillEntities { Result = result, Entities = view.World.Entities };
 			view.ForEach(ref fillEntities);
 		}
 
@@ -178,14 +178,14 @@ namespace Massive
 			view.ForEach(ref returnFirstEntity);
 			return returnFirstEntity.Result == Constants.InvalidId
 				? Entity.Dead
-				: view.Registry.GetEntity(returnFirstEntity.Result);
+				: view.World.GetEntity(returnFirstEntity.Result);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy<TView>(this TView view)
 			where TView : IView
 		{
-			var destroyEntities = new DestroyAll { Entities = view.Registry.Entities };
+			var destroyEntities = new DestroyAll { Entities = view.World.Entities };
 			view.ForEach(ref destroyEntities);
 		}
 

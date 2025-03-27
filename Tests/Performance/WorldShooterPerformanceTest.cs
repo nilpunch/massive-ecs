@@ -7,7 +7,7 @@ using Unity.PerformanceTesting;
 namespace Massive.PerformanceTests
 {
 	[TestFixture]
-	public class RegistryShooterPerformanceTest
+	public class WorldShooterPerformanceTest
 	{
 		private const int CharacterRowsAmount = 10;
 
@@ -19,7 +19,7 @@ namespace Massive.PerformanceTests
 
 			Shooter shooter = new Shooter();
 
-			Measure.Method(() => shooter.Systems.Invoke(shooter.Registry, 1f / fps))
+			Measure.Method(() => shooter.Systems.Invoke(shooter.World, 1f / fps))
 				.SetUp(() =>
 				{
 					shooter.CreateCharactersInTwoOppositeRows(Vector2.Zero,
@@ -27,9 +27,9 @@ namespace Massive.PerformanceTests
 						new Vector2(1f, 0f),
 						CharacterRowsAmount);
 				})
-				.CleanUp(() => shooter.Registry.View().ForEach((entityId) =>
+				.CleanUp(() => shooter.World.View().ForEach((entityId) =>
 				{
-					shooter.Registry.Destroy(entityId);
+					shooter.World.Destroy(entityId);
 				}))
 				.WarmupCount(1)
 				.MeasurementCount(20)

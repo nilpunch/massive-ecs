@@ -5,7 +5,7 @@ namespace Massive
 	/// <summary>
 	/// Data extension for <see cref="Massive.SparseSet"/>.
 	/// Swaps data when elements are moved.
-	/// Used in registry for managed components to reduce allocations.
+	/// Used for managed components to reduce allocations.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]

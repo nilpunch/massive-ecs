@@ -10,20 +10,20 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public static class RegistrySetExtensions
+	public static class WorldSetExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static DataSet<T> DataSet<T>(this Registry registry)
+		public static DataSet<T> DataSet<T>(this World world)
 		{
-			Assert.TypeHasData<T>(registry, SuggestionMessage.UseSetMethodWithEmptyTypes);
+			Assert.TypeHasData<T>(world, SuggestionMessage.UseSetMethodWithEmptyTypes);
 
-			return registry.Set<T>() as DataSet<T>;
+			return world.Set<T>() as DataSet<T>;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static SparseSet Set<T>(this Registry registry)
+		public static SparseSet Set<T>(this World world)
 		{
-			return registry.SetRegistry.Get<T>();
+			return world.SetRegistry.Get<T>();
 		}
 	}
 }

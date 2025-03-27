@@ -5,9 +5,9 @@ namespace Massive.Samples.Shooter
 {
 	public class Shooter
 	{
-		public Registry Registry { get; } = new Registry();
+		public World World { get; } = new World();
 
-		public Action<Registry, float> Systems { get; } = (_, _) => { };
+		public Action<World, float> Systems { get; } = (_, _) => { };
 
 		public Shooter()
 		{
@@ -33,15 +33,15 @@ namespace Massive.Samples.Shooter
 
 		public void CreateCharacter(Vector2 position, Vector2 direction, float bulletsPerSecond)
 		{
-			var id = Registry.Create();
-			Registry.Assign(id, new Character(maxHealth: 20));
-			Registry.Assign(id, new Position() { Value = position });
-			Registry.Assign(id, new Weapon()
+			var id = World.Create();
+			World.Assign(id, new Character(maxHealth: 20));
+			World.Assign(id, new Position() { Value = position });
+			World.Assign(id, new Weapon()
 			{
 				BulletsPerSecond = bulletsPerSecond, ShootingDirection = Vector2.Normalize(direction),
 				BulletDamage = 1, BulletSpeed = 5f, BulletLifetime = 5f
 			});
-			Registry.Assign(id, new CircleCollider() { Radius = 0.25f });
+			World.Assign(id, new CircleCollider() { Radius = 0.25f });
 		}
 	}
 }

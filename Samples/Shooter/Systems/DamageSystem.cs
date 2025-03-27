@@ -2,35 +2,35 @@
 {
 	public static class DamageSystem
 	{
-		public static void Update(Registry registry, float deltaTime)
+		public static void Update(World world, float deltaTime)
 		{
-			var characters = registry.DataSet<Character>();
-			var bullets = registry.DataSet<Bullet>();
-			var colliders = registry.DataSet<CircleCollider>();
-			var positions = registry.DataSet<Position>();
+			var characters = world.DataSet<Character>();
+			var bullets = world.DataSet<Bullet>();
+			var colliders = world.DataSet<CircleCollider>();
+			var positions = world.DataSet<Position>();
 
-			foreach (var characterId in registry.View().Filter<Include<Character>, Exclude<Dead>>())
+			foreach (var characterId in world.View().Filter<Include<Character>, Exclude<Dead>>())
 			{
 				ref var character = ref characters.Get(characterId);
 
-				foreach (var bulletId in registry.View().Filter<Include<Bullet>, Exclude<Dead>>())
+				foreach (var bulletId in world.View().Filter<Include<Bullet>, Exclude<Dead>>())
 				{
 					ref var bullet = ref bullets.Get(bulletId);
 
 					// Don't collide a character with its own bullet.
-					if (bullet.Owner == registry.GetEntity(characterId))
+					if (bullet.Owner == world.GetEntity(characterId))
 					{
 						continue;
 					}
 
 					if (IsCollided(bulletId, characterId))
 					{
-						registry.Assign(bulletId, new Dead());
+						world.Assign(bulletId, new Dead());
 
 						character.Health -= bullet.Damage;
 						if (character.Health <= 0)
 						{
-							registry.Assign(characterId, new Dead());
+							world.Assign(characterId, new Dead());
 							DestroyCharacterBullets(characterId);
 							break;
 						}
@@ -40,14 +40,14 @@
 
 			void DestroyCharacterBullets(int characterId)
 			{
-				registry.View().Exclude<Dead>().ForEachExtra((characterId, registry),
-					static (int bulletId, ref Bullet bullet, (int CharacterId, Registry Registry) args) =>
+				world.View().Exclude<Dead>().ForEachExtra((characterId, world: world),
+					static (int bulletId, ref Bullet bullet, (int CharacterId, World World) args) =>
 					{
-						var (characterId, registry) = args;
+						var (characterId, world) = args;
 
-						if (bullet.Owner == registry.GetEntity(characterId))
+						if (bullet.Owner == world.GetEntity(characterId))
 						{
-							registry.Assign<Dead>(bulletId);
+							world.Assign<Dead>(bulletId);
 						}
 					});
 			}

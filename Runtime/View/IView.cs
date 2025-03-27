@@ -2,7 +2,7 @@
 {
 	public interface IView
 	{
-		Registry Registry { get; }
+		World World { get; }
 
 		void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction;

@@ -1,6 +1,6 @@
 ﻿namespace Massive
 {
-	public class RegistryConfig
+	public class WorldConfig
 	{
 		public readonly int PageSize = Constants.DefaultPageSize;
 
@@ -10,7 +10,7 @@
 
 		public readonly Packing PackingWhenIterating = Packing.WithHoles;
 
-		public RegistryConfig(int? pageSize = default, bool? storeEmptyTypesAsDataSets = default,
+		public WorldConfig(int? pageSize = default, bool? storeEmptyTypesAsDataSets = default,
 			bool? fullStability = default, Packing? packingWhenIterating = default)
 		{
 			PageSize = pageSize ?? PageSize;

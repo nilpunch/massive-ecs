@@ -7,31 +7,31 @@ namespace Massive.Tests
 	[TestFixture(typeof(TestState64Stable), typeof(TestState64))]
 	[TestFixture(typeof(TestState64), typeof(TestState64Stable))]
 	[TestFixture(typeof(TestState64Stable), typeof(TestState64Stable_2))]
-	public class RegistryIntegrationTests<TComponent1, TComponent2>
+	public class WorldIntegrationTests<TComponent1, TComponent2>
 	{
 		[Test]
 		public void StorageResizeDuringIterationOverComponents_ShouldNotCauseConfusion()
 		{
-			var registry = new Registry();
+			var world = new World();
 
 			for (int i = 0; i < 1000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
-			registry.View().ForEach((ref TComponent1 value) =>
+			world.View().ForEach((ref TComponent1 value) =>
 			{
 				if (iterations == 0)
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						var entity = world.Create<TComponent1>();
 					}
 
-					registry.View().ForEach((int id, ref TComponent1 value) =>
+					world.View().ForEach((int id, ref TComponent1 value) =>
 					{
-						registry.Destroy(id);
+						world.Destroy(id);
 					});
 				}
 
@@ -44,31 +44,31 @@ namespace Massive.Tests
 		[Test]
 		public void StorageResizeDuringIterationOverComponents_ShouldNotCauseConfusion_v2()
 		{
-			var registry = new Registry();
+			var world = new World();
 
 			for (int i = 0; i < 1000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
-			registry.View().ForEach((ref TComponent1 value) =>
+			world.View().ForEach((ref TComponent1 value) =>
 			{
 				if (iterations == 0)
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						var entity = world.Create<TComponent1>();
 					}
 
-					registry.View().ForEach((int id, ref TComponent1 value) =>
+					world.View().ForEach((int id, ref TComponent1 value) =>
 					{
-						registry.Destroy(id);
+						world.Destroy(id);
 					});
 					
 					for (int i = 0; i < 1000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						var entity = world.Create<TComponent1>();
 					}
 				}
 
@@ -81,26 +81,26 @@ namespace Massive.Tests
 		[Test]
 		public void StorageResizeDuringIterationOverEntities_ShouldNotCauseConfusion()
 		{
-			var registry = new Registry();
+			var world = new World();
 
 			for (int i = 0; i < 1000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
-			registry.View().ForEach(_ =>
+			world.View().ForEach(_ =>
 			{
 				if (iterations == 0)
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						var entity = world.Create<TComponent1>();
 					}
 
-					registry.View().ForEach((int id, ref TComponent1 value) =>
+					world.View().ForEach((int id, ref TComponent1 value) =>
 					{
-						registry.Destroy(id);
+						world.Destroy(id);
 					});
 				}
 
@@ -113,26 +113,26 @@ namespace Massive.Tests
 		[Test]
 		public void StorageResizeDuringIterationOverEntities_ShouldNotCauseConfusion_v2()
 		{
-			var registry = new Registry();
+			var world = new World();
 
 			for (int i = 0; i < 1000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 			}
 
 			dynamic iterations = new int();
-			foreach (var id in registry.View())
+			foreach (var id in world.View())
 			{
 				if (iterations == 0)
 				{
 					for (int i = 0; i < 2000; i++)
 					{
-						var entity = registry.Create<TComponent1>();
+						var entity = world.Create<TComponent1>();
 					}
 
-					registry.View().ForEach((int id, ref TComponent1 value) =>
+					world.View().ForEach((int id, ref TComponent1 value) =>
 					{
-						registry.Destroy(id);
+						world.Destroy(id);
 					});
 				}
 
@@ -145,24 +145,24 @@ namespace Massive.Tests
 		[Test]
 		public void DestroyManyEntitiesDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSame()
 		{
-			var registry = new Registry();
+			var world = new World();
 
 			for (int i = 0; i < 2000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					registry.Assign<TComponent2>(entity);
+					world.Assign<TComponent2>(entity);
 				}
 			}
 
 			dynamic iterations = new int();
-			registry.View().ForEach((ref TComponent2 b) =>
+			world.View().ForEach((ref TComponent2 b) =>
 			{
 				iterations += 1;
-				registry.View().ForEach((int innerId, ref TComponent2 innerB) =>
+				world.View().ForEach((int innerId, ref TComponent2 innerB) =>
 				{
-					registry.Destroy(innerId);
+					world.Destroy(innerId);
 				});
 			});
 
@@ -172,24 +172,24 @@ namespace Massive.Tests
 		[Test]
 		public void DestroyManyEntitiesDuringIterationOverEntities_TheNumberOfIterationsGoesDownTheSame()
 		{
-			var registry = new Registry();
+			var world = new World();
 
 			for (int i = 0; i < 2000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					registry.Assign<TComponent2>(entity);
+					world.Assign<TComponent2>(entity);
 				}
 			}
 
 			dynamic iterations = new int();
-			registry.View().ForEach(_ =>
+			world.View().ForEach(_ =>
 			{
 				iterations += 1;
-				registry.View().ForEach((int innerId, ref TComponent2 innerB) =>
+				world.View().ForEach((int innerId, ref TComponent2 innerB) =>
 				{
-					registry.Destroy(innerId);
+					world.Destroy(innerId);
 				});
 			});
 
@@ -199,24 +199,24 @@ namespace Massive.Tests
 		[Test]
 		public void DestroyManyEntitiesDuringIterationOverEntities_TheNumberOfIterationsGoesDownTheSame_v2()
 		{
-			var registry = new Registry();
+			var world = new World();
 
 			for (int i = 0; i < 2000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					registry.Assign<TComponent2>(entity);
+					world.Assign<TComponent2>(entity);
 				}
 			}
 
 			dynamic iterations = new int();
-			foreach (var id in registry.View())
+			foreach (var id in world.View())
 			{
 				iterations += 1;
-				registry.View().ForEach((int innerId, ref TComponent2 innerB) =>
+				world.View().ForEach((int innerId, ref TComponent2 innerB) =>
 				{
-					registry.Destroy(innerId);
+					world.Destroy(innerId);
 				});
 			}
 
@@ -226,23 +226,23 @@ namespace Massive.Tests
 		[Test]
 		public void UnassignManyComponentsDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSameAmount()
 		{
-			var registry = new Registry();
+			var world = new World();
 			for (int i = 0; i < 2000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					registry.Assign<TComponent2>(entity);
+					world.Assign<TComponent2>(entity);
 				}
 			}
 
 			dynamic iterations = new int();
-			registry.View().ForEach((ref TComponent2 b) =>
+			world.View().ForEach((ref TComponent2 b) =>
 			{
 				iterations += 1;
-				registry.View().ForEach((int innerId, ref TComponent2 innerB) =>
+				world.View().ForEach((int innerId, ref TComponent2 innerB) =>
 				{
-					registry.Unassign<TComponent2>(innerId);
+					world.Unassign<TComponent2>(innerId);
 				});
 			});
 
@@ -252,23 +252,23 @@ namespace Massive.Tests
 		[Test]
 		public void UnassignManyComponentsDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSameAmount_v2()
 		{
-			var registry = new Registry();
+			var world = new World();
 			for (int i = 0; i < 2000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					registry.Assign<TComponent2>(entity);
+					world.Assign<TComponent2>(entity);
 				}
 			}
 
 			dynamic iterations = new int();
-			registry.View().ForEach((ref TComponent1 c1, ref TComponent2 c2) =>
+			world.View().ForEach((ref TComponent1 c1, ref TComponent2 c2) =>
 			{
 				iterations += 1;
-				registry.View().ForEach((int innerId, ref TComponent2 innerC2) =>
+				world.View().ForEach((int innerId, ref TComponent2 innerC2) =>
 				{
-					registry.Unassign<TComponent2>(innerId);
+					world.Unassign<TComponent2>(innerId);
 				});
 			});
 
@@ -278,23 +278,23 @@ namespace Massive.Tests
 		[Test]
 		public void UnassignManyComponentsDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSameAmount_v3()
 		{
-			var registry = new Registry();
+			var world = new World();
 			for (int i = 0; i < 2000; i++)
 			{
-				var entity = registry.Create<TComponent1>();
+				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					registry.Assign<TComponent2>(entity);
+					world.Assign<TComponent2>(entity);
 				}
 			}
 
 			dynamic iterations = new int();
-			registry.View().ForEach((ref TComponent1 c1, ref TComponent2 c2) =>
+			world.View().ForEach((ref TComponent1 c1, ref TComponent2 c2) =>
 			{
 				iterations += 1;
-				registry.View().ForEach((int innerId, ref TComponent1 innerC2) =>
+				world.View().ForEach((int innerId, ref TComponent1 innerC2) =>
 				{
-					registry.Unassign<TComponent1>(innerId);
+					world.Unassign<TComponent1>(innerId);
 				});
 			});
 
@@ -303,7 +303,7 @@ namespace Massive.Tests
 	}
 
 	[TestFixture]
-	public class RegistryIntegrationTests
+	public class WorldIntegrationTests
 	{
 		private struct StableData : IStable
 		{
@@ -313,25 +313,25 @@ namespace Massive.Tests
 		[Test]
 		public void UnassignManyEntitiesFromBeginning_WithStable_TheDataDoesNotInvalidating()
 		{
-			var registry = new Registry();
+			var world = new World();
 			for (int i = 0; i <= 2000; i++)
 			{
-				int entity = registry.Create();
-				registry.Assign(entity, new StableData() { Value = entity });
+				int entity = world.Create();
+				world.Assign(entity, new StableData() { Value = entity });
 			}
 
-			registry.View().ForEach((int entity, ref StableData c2) =>
+			world.View().ForEach((int entity, ref StableData c2) =>
 			{
-				NUnit.Framework.Assert.AreEqual(registry.Get<StableData>(entity).Value, c2.Value);
+				NUnit.Framework.Assert.AreEqual(world.Get<StableData>(entity).Value, c2.Value);
 
 				for (int i = 0; i < 1000; i++)
 				{
-					registry.Unassign<StableData>(i);
+					world.Unassign<StableData>(i);
 				}
 
 				c2.Value = 1000000;
 
-				NUnit.Framework.Assert.AreEqual(registry.Get<StableData>(entity).Value, c2.Value);
+				NUnit.Framework.Assert.AreEqual(world.Get<StableData>(entity).Value, c2.Value);
 			});
 		}
 	}

@@ -12,19 +12,19 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public readonly struct View : IView, IViewT, IViewTT, IViewTTT, IViewTTTT
 	{
-		public Registry Registry { get; }
+		public World World { get; }
 		public Packing PackingWhenIterating { get; }
 
-		public View(Registry registry, Packing packingWhenIterating = Packing.WithHoles)
+		public View(World world, Packing packingWhenIterating = Packing.WithHoles)
 		{
-			Registry = registry;
+			World = world;
 			PackingWhenIterating = packingWhenIterating;
 		}
 
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			var entities = Registry.Entities;
+			var entities = World.Entities;
 
 			var originalPacking = entities.ExchangeToStricterPacking(PackingWhenIterating);
 
@@ -52,9 +52,9 @@ namespace Massive
 		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			Assert.TypeHasData<T>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet = Registry.DataSet<T>();
+			var dataSet = World.DataSet<T>();
 
 			var data = dataSet.Data;
 
@@ -89,11 +89,11 @@ namespace Massive
 		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			Assert.TypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = Registry.DataSet<T1>();
-			var dataSet2 = Registry.DataSet<T2>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -169,13 +169,13 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			Assert.TypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T3>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = Registry.DataSet<T1>();
-			var dataSet2 = Registry.DataSet<T2>();
-			var dataSet3 = Registry.DataSet<T3>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -285,15 +285,15 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			Assert.TypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T3>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T4>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T4>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = Registry.DataSet<T1>();
-			var dataSet2 = Registry.DataSet<T2>();
-			var dataSet3 = Registry.DataSet<T3>();
-			var dataSet4 = Registry.DataSet<T4>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
+			var dataSet4 = World.DataSet<T4>();
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -439,7 +439,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public PackedEnumerator GetEnumerator()
 		{
-			return new PackedEnumerator(Registry.Entities, PackingWhenIterating);
+			return new PackedEnumerator(World.Entities, PackingWhenIterating);
 		}
 	}
 }

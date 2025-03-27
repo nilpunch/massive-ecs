@@ -4,28 +4,28 @@ using System.Runtime.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Rollback extension for <see cref="Massive.Registry"/>.
+	/// Rollback extension for <see cref="World"/>.
 	/// </summary>
-	public class MassiveRegistry : Registry, IMassive
+	public class MassiveWorld : World, IMassive
 	{
 		public new MassiveEntities Entities { get; }
 
-		public new MassiveRegistryConfig Config { get; }
+		public new MassiveWorldConfig Config { get; }
 
-		public MassiveRegistry()
-			: this(new MassiveRegistryConfig())
+		public MassiveWorld()
+			: this(new MassiveWorldConfig())
 		{
 		}
 
-		public MassiveRegistry(MassiveRegistryConfig registryConfig)
-			: base(new MassiveEntities(registryConfig.FramesCapacity), new MassiveSetFactory(registryConfig), new MassiveGroupFactory(registryConfig.FramesCapacity), registryConfig)
+		public MassiveWorld(MassiveWorldConfig worldConfig)
+			: base(new MassiveEntities(worldConfig.FramesCapacity), new MassiveSetFactory(worldConfig), new MassiveGroupFactory(worldConfig.FramesCapacity), worldConfig)
 		{
 			// Fetch instance from base.
 			Entities = (MassiveEntities)base.Entities;
 
 			Entities.SaveFrame(); // Save first empty frame so we can rollback to it.
 
-			Config = registryConfig;
+			Config = worldConfig;
 		}
 
 		public event Action FrameSaved;

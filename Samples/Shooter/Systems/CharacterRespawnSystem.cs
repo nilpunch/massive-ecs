@@ -5,18 +5,18 @@
 	/// </summary>
 	public static class CharacterRespawnSystem
 	{
-		public static void Update(Registry registry, float deltaTime)
+		public static void Update(World world, float deltaTime)
 		{
-			registry.View().ForEachExtra((registry, deltaTime),
-				static (int characterId, ref Dead dead, ref Character character, (Registry Registry, float DeltaTime) args) =>
+			world.View().ForEachExtra((world: world, deltaTime),
+				static (int characterId, ref Dead dead, ref Character character, (World World, float DeltaTime) args) =>
 				{
-					var (registry, deltaTime) = args;
+					var (world, deltaTime) = args;
 
 					dead.ElapsedTimeSinceDeath += deltaTime;
 
 					if (dead.ElapsedTimeSinceDeath > 3f)
 					{
-						registry.Unassign<Dead>(characterId);
+						world.Unassign<Dead>(characterId);
 						character.Health = character.MaxHealth;
 					}
 				});

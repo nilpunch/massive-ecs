@@ -21,11 +21,11 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void TypeHasData<T>(Registry registry, string suggestion)
+		public static void TypeHasData<T>(World world, string suggestion)
 		{
-			if (!(registry.Set<T>() is DataSet<T>))
+			if (!(world.Set<T>() is DataSet<T>))
 			{
-				throw new Exception($"The type {typeof(T).GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(RegistryConfig.StoreEmptyTypesAsDataSets)} in registry config.");
+				throw new Exception($"The type {typeof(T).GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
 			}
 		}
 
@@ -48,9 +48,9 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void IsAlive(Registry registry, int entityId)
+		public static void IsAlive(World world, int entityId)
 		{
-			IsAlive(registry.Entities, entityId);
+			IsAlive(world.Entities, entityId);
 		}
 
 		[Conditional(Symbol)]
@@ -63,9 +63,9 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void IsAlive(Registry registry, Entity entity)
+		public static void IsAlive(World world, Entity entity)
 		{
-			IsAlive(registry.Entities, entity);
+			IsAlive(world.Entities, entity);
 		}
 
 		[Conditional(Symbol)]

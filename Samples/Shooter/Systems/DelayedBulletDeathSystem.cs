@@ -5,18 +5,18 @@
 	/// </summary>
 	public static class DelayedBulletDeathSystem
 	{
-		public static void Update(Registry registry, float deltaTime)
+		public static void Update(World world, float deltaTime)
 		{
-			registry.View().Include<Bullet>().ForEachExtra((registry, deltaTime),
-				static (int id, ref Dead dead, (Registry Registry, float DeltaTime) args) =>
+			world.View().Include<Bullet>().ForEachExtra((world: world, deltaTime),
+				static (int id, ref Dead dead, (World World, float DeltaTime) args) =>
 				{
-					var (registry, deltaTime) = args;
+					var (world, deltaTime) = args;
 
 					dead.ElapsedTimeSinceDeath += deltaTime;
 
 					if (dead.ElapsedTimeSinceDeath > 1f)
 					{
-						registry.Destroy(id);
+						world.Destroy(id);
 					}
 				});
 		}

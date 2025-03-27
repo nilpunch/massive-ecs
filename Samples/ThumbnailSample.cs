@@ -10,27 +10,27 @@
 	{
 		static void Main()
 		{
-			var registry = new Registry();
+			var world = new World();
 
 			// Create empty entity
-			var enemy = registry.Create();
+			var enemy = world.Create();
 
 			// Or with a component
-			var player = registry.Create(new Player());
+			var player = world.Create(new Player());
 
 			// Assign components
-			registry.Assign(player, new Velocity() { Magnitude = 10f });
-			registry.Assign(enemy, new Velocity());
-			registry.Assign<Position>(enemy); // Assigns component without initialization
+			world.Assign(player, new Velocity() { Magnitude = 10f });
+			world.Assign(enemy, new Velocity());
+			world.Assign<Position>(enemy); // Assigns component without initialization
 
 			// Get full entity identifier from player ID.
 			// Handy when uniqueness is required, for example, when storing entities for later
-			Entity playerEntity = registry.GetEntity(player);
+			Entity playerEntity = world.GetEntity(player);
 
 			var deltaTime = 1f / 60f;
 
 			// Iterate using lightweight views
-			var view = registry.View();
+			var view = world.View();
 
 			// Views will select only those entities that contain all the necessary components
 			view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
@@ -40,7 +40,7 @@
 				if (position.Y > 5f)
 				{
 					// Create and destroy any amount of entities during iteration
-					registry.Destroy(entityId);
+					world.Destroy(entityId);
 				}
 
 				// NOTE:
@@ -49,16 +49,16 @@
 			});
 
 			// Pass extra arguments to avoid boxing
-			view.ForEachExtra((registry, deltaTime),
+			view.ForEachExtra((world: world, deltaTime),
 				(ref Position position, ref Velocity velocity,
-					(Registry Registry, float DeltaTime) args) =>
+					(World World, float DeltaTime) args) =>
 				{
 					// ...
 				});
 
 			// Make queries right in place where they are used.
 			// You don't have to cache anything
-			registry.View()
+			world.View()
 				.Filter<Include<Player>, Exclude<Velocity>>()
 				.ForEach((ref Position position) =>
 				{
@@ -66,14 +66,14 @@
 				});
 
 			// Iterate using foreach
-			foreach (var entityId in registry.View().Include<Player, Position>())
+			foreach (var entityId in world.View().Include<Player, Position>())
 			{
-				ref var position = ref registry.Get<Position>(entityId);
+				ref var position = ref world.Get<Position>(entityId);
 				// ...
 			}
 
 			// Iterate manually over data sets
-			var velocities = registry.DataSet<Velocity>();
+			var velocities = world.DataSet<Velocity>();
 			for (int i = 0; i < velocities.Count; ++i)
 			{
 				ref var velocity = ref velocities.Data[i];
@@ -81,14 +81,14 @@
 			}
 
 			// Chain any amount of components in filters
-			var filter = registry.Filter<
+			var filter = world.Filter<
 				Include<int, string, bool, Include<short, byte, uint, Include<ushort>>>,
 				Exclude<long, char, float, Exclude<double>>>();
 
 			// Reuse filter variable to reduce code duplication
 			// in case of multiple iterations
-			registry.View().Filter(filter).ForEach((ref int n, ref bool b) => { });
-			registry.View().Filter(filter).ForEach((ref string str) => { });
+			world.View().Filter(filter).ForEach((ref int n, ref bool b) => { });
+			world.View().Filter(filter).ForEach((ref string str) => { });
 		}
 	}
 }

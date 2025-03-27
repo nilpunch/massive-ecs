@@ -6,16 +6,16 @@ using Unity.PerformanceTesting;
 
 namespace Massive.PerformanceTests
 {
-	[TestFixture(RegistryFilling.x50Components, RegistryStability.FullStability)]
-	[TestFixture(RegistryFilling.x50Components, RegistryStability.DefaultStability)]
-	[TestFixture(RegistryFilling.SingleComponent, RegistryStability.DefaultStability)]
-	[TestFixture(RegistryFilling.x50Tags, RegistryStability.DefaultStability)]
-	public class RegistryPerformanceTest
+	[TestFixture(WorldFilling.x50Components, WorldStability.FullStability)]
+	[TestFixture(WorldFilling.x50Components, WorldStability.DefaultStability)]
+	[TestFixture(WorldFilling.SingleComponent, WorldStability.DefaultStability)]
+	[TestFixture(WorldFilling.x50Tags, WorldStability.DefaultStability)]
+	public class WorldPerformanceTest
 	{
-		private readonly RegistryFilling _registryFilling;
+		private readonly WorldFilling _worldFilling;
 		private readonly bool _fullStability;
 
-		public enum RegistryFilling
+		public enum WorldFilling
 		{
 			SingleComponent,
 			x50Components,
@@ -23,7 +23,7 @@ namespace Massive.PerformanceTests
 			x50Tags,
 		}
 
-		public enum RegistryStability
+		public enum WorldStability
 		{
 			DefaultStability,
 			FullStability,
@@ -33,34 +33,34 @@ namespace Massive.PerformanceTests
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
 
-		private readonly Registry _registry;
+		private readonly World _world;
 
-		public RegistryPerformanceTest(RegistryFilling registryFilling, RegistryStability registryStability)
+		public WorldPerformanceTest(WorldFilling worldFilling, WorldStability worldStability)
 		{
-			_registryFilling = registryFilling;
-			_fullStability = registryStability == RegistryStability.FullStability;
-			_registry = PrepareTestRegistry(_registryFilling, _fullStability);
-			_registry.Clear();
+			_worldFilling = worldFilling;
+			_fullStability = worldStability == WorldStability.FullStability;
+			_world = PrepareTestRegistry(_worldFilling, _fullStability);
+			_world.Clear();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Registry PrepareTestRegistry(RegistryFilling registryFilling, bool fullStability)
+		public static World PrepareTestRegistry(WorldFilling worldFilling, bool fullStability)
 		{
-			var config = new RegistryConfig(fullStability: fullStability);
-			return registryFilling switch
+			var config = new WorldConfig(fullStability: fullStability);
+			return worldFilling switch
 			{
-				RegistryFilling.SingleComponent => new Registry(config).FillRegistryWithSingleComponent(),
-				RegistryFilling.x50Components => new Registry(config).FillRegistryWith50Components(),
-				RegistryFilling.x50ComponentsPlusNonOwningGroup => new Registry(config).FillRegistryWith50Components().FillRegistryWithNonOwningGroup<Include<PositionComponent>>(),
-				RegistryFilling.x50Tags => new Registry(config).FillRegistryWith50Tags(),
-				_ => throw new ArgumentOutOfRangeException(nameof(_registryFilling))
+				WorldFilling.SingleComponent => new World(config).FillWorldWithSingleComponent(),
+				WorldFilling.x50Components => new World(config).FillWorldWith50Components(),
+				WorldFilling.x50ComponentsPlusNonOwningGroup => new World(config).FillWorldWith50Components().FillWorldWithNonOwningGroup<Include<PositionComponent>>(),
+				WorldFilling.x50Tags => new World(config).FillWorldWith50Tags(),
+				_ => throw new ArgumentOutOfRangeException(nameof(_worldFilling))
 			};
 		}
 
 		[Test, Performance]
 		public void Registry_Initialization()
 		{
-			Measure.Method(() => { PrepareTestRegistry(_registryFilling, _fullStability); })
+			Measure.Method(() => { PrepareTestRegistry(_worldFilling, _fullStability); })
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(1)
 				.CleanUp(GC.Collect)
@@ -74,11 +74,11 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_registry.Create();
+						_world.Create();
 					}
 				})
-				.SetUp(() => _registry.Clear())
-				.CleanUp(() => _registry.Clear())
+				.SetUp(() => _world.Clear())
+				.CleanUp(() => _world.Clear())
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -89,17 +89,17 @@ namespace Massive.PerformanceTests
 		{
 			Measure.Method(() =>
 				{
-					var entityToClone = _registry.Create();
-					_registry.Assign(entityToClone, new PositionComponent() { X = 2, Y = 2 });
-					_registry.Assign(entityToClone, new VelocityComponent() { X = 1, Y = 1 });
+					var entityToClone = _world.Create();
+					_world.Assign(entityToClone, new PositionComponent() { X = 2, Y = 2 });
+					_world.Assign(entityToClone, new VelocityComponent() { X = 1, Y = 1 });
 
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_registry.Clone(entityToClone);
+						_world.Clone(entityToClone);
 					}
 				})
-				.SetUp(() => _registry.Clear())
-				.CleanUp(() => _registry.Clear())
+				.SetUp(() => _world.Clear())
+				.CleanUp(() => _world.Clear())
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -110,17 +110,17 @@ namespace Massive.PerformanceTests
 		{
 			Measure.Method(() =>
 				{
-					_registry.Clear();
+					_world.Clear();
 				})
 				.SetUp(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						int id = _registry.Create();
-						_registry.Assign<PositionComponent>(id);
+						int id = _world.Create();
+						_world.Assign<PositionComponent>(id);
 					}
 				})
-				.CleanUp(() => _registry.Clear())
+				.CleanUp(() => _world.Clear())
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -131,20 +131,20 @@ namespace Massive.PerformanceTests
 		{
 			var result = new List<Entity>();
 
-			_registry.Clear();
+			_world.Clear();
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				_registry.Create<TestState64>();
+				_world.Create<TestState64>();
 			}
 
-			Measure.Method(() => { _registry.View().Filter<Include<TestState64>>().Fill(result); })
+			Measure.Method(() => { _world.View().Filter<Include<TestState64>>().Fill(result); })
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.Clear();
+			_world.Clear();
 		}
 
 		[Test, Performance]
@@ -152,24 +152,24 @@ namespace Massive.PerformanceTests
 		{
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				var entity = _registry.Create();
-				_registry.Assign(entity, new PositionComponent() { X = i, Y = i });
-				_registry.Assign(entity, new VelocityComponent() { X = 1, Y = 1 });
+				var entity = _world.Create();
+				_world.Assign(entity, new PositionComponent() { X = i, Y = i });
+				_world.Assign(entity, new VelocityComponent() { X = 1, Y = 1 });
 			}
 
 			Measure.Method(() =>
 				{
-					foreach (var entityId in _registry.View())
+					foreach (var entityId in _world.View())
 					{
-						_registry.Get<PositionComponent>(entityId);
-						_registry.Get<VelocityComponent>(entityId);
+						_world.Get<PositionComponent>(entityId);
+						_world.Get<VelocityComponent>(entityId);
 					}
 				})
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.Clear();
+			_world.Clear();
 		}
 
 		[Test, Performance]
@@ -177,16 +177,16 @@ namespace Massive.PerformanceTests
 		{
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				var entityId = _registry.Create();
-				_registry.Assign(entityId, new PositionComponent() { X = i, Y = i });
-				_registry.Assign(entityId, new VelocityComponent() { X = 1, Y = 1 });
+				var entityId = _world.Create();
+				_world.Assign(entityId, new PositionComponent() { X = i, Y = i });
+				_world.Assign(entityId, new VelocityComponent() { X = 1, Y = 1 });
 			}
 
 			Measure.Method(() =>
 				{
-					var positions = _registry.DataSet<PositionComponent>();
-					var velocities = _registry.DataSet<VelocityComponent>();
-					foreach (var entityId in _registry.View())
+					var positions = _world.DataSet<PositionComponent>();
+					var velocities = _world.DataSet<VelocityComponent>();
+					foreach (var entityId in _world.View())
 					{
 						positions.Get(entityId);
 						velocities.Get(entityId);
@@ -196,7 +196,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.Clear();
+			_world.Clear();
 		}
 
 		[Test, Performance]
@@ -204,17 +204,17 @@ namespace Massive.PerformanceTests
 		{
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				var entity = _registry.Create();
-				_registry.Assign(entity, new PositionComponent() { X = i, Y = i });
-				_registry.Assign(entity, new VelocityComponent() { X = 1, Y = 1 });
+				var entity = _world.Create();
+				_world.Assign(entity, new PositionComponent() { X = i, Y = i });
+				_world.Assign(entity, new VelocityComponent() { X = 1, Y = 1 });
 			}
 
-			Measure.Method(() => { _registry.View().ForEach((ref PositionComponent position, ref VelocityComponent velocity) => { }); })
+			Measure.Method(() => { _world.View().ForEach((ref PositionComponent position, ref VelocityComponent velocity) => { }); })
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.Clear();
+			_world.Clear();
 		}
 
 		[Test, Performance]
@@ -222,22 +222,22 @@ namespace Massive.PerformanceTests
 		{
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				_registry.Create(new PositionComponent() { X = i, Y = i });
+				_world.Create(new PositionComponent() { X = i, Y = i });
 			}
 
 			Measure.Method(() =>
 				{
-					foreach (var entityId in _registry.View())
+					foreach (var entityId in _world.View())
 					{
-						_registry.Unassign<PositionComponent>(entityId);
-						_registry.Assign(entityId, new PositionComponent() { X = entityId, Y = entityId });
+						_world.Unassign<PositionComponent>(entityId);
+						_world.Assign(entityId, new PositionComponent() { X = entityId, Y = entityId });
 					}
 				})
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.Clear();
+			_world.Clear();
 		}
 
 		[Test, Performance]
@@ -245,13 +245,13 @@ namespace Massive.PerformanceTests
 		{
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				_registry.Create(new PositionComponent() { X = i, Y = i });
+				_world.Create(new PositionComponent() { X = i, Y = i });
 			}
 
 			Measure.Method(() =>
 				{
-					var positions = _registry.DataSet<PositionComponent>();
-					foreach (var entityId in _registry.View())
+					var positions = _world.DataSet<PositionComponent>();
+					foreach (var entityId in _world.View())
 					{
 						positions.Unassign(entityId);
 						positions.Assign(entityId, new PositionComponent() { X = entityId, Y = entityId });
@@ -261,7 +261,7 @@ namespace Massive.PerformanceTests
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 
-			_registry.Clear();
+			_world.Clear();
 		}
 
 		[Test, Performance]
@@ -269,7 +269,7 @@ namespace Massive.PerformanceTests
 		{
 			Measure.Method(() =>
 				{
-					foreach (var i in _registry.View().Include<PositionComponent, VelocityComponent>())
+					foreach (var i in _world.View().Include<PositionComponent, VelocityComponent>())
 					{
 						break;
 					}
@@ -286,7 +286,7 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_registry.DataSet<PositionComponent>();
+						_world.DataSet<PositionComponent>();
 					}
 				})
 				.MeasurementCount(MeasurementCount)

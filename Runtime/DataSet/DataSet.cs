@@ -10,7 +10,7 @@ namespace Massive
 	/// <summary>
 	/// Data extension for <see cref="Massive.SparseSet"/>.
 	/// Resets data when elemets are moved.
-	/// Used in registry for unmanaged components.
+	/// Used for unmanaged components.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]

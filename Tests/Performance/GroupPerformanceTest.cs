@@ -14,14 +14,14 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Group_Include3()
 		{
-			var registry = new Registry().FillRegistryWith50Components(EntitiesCount);
-			var group = registry.Group<Include<TestState64, TestState64_2, TestState64_3>>();
+			var world = new World().FillWorldWith50Components(EntitiesCount);
+			var group = world.Group<Include<TestState64, TestState64_2, TestState64_3>>();
 
 			Measure.Method(() =>
 				{
-					var pool1 = registry.DataSet<TestState64>();
-					var pool2 = registry.DataSet<TestState64_2>();
-					var pool3 = registry.DataSet<TestState64_3>();
+					var pool1 = world.DataSet<TestState64>();
+					var pool2 = world.DataSet<TestState64_2>();
+					var pool3 = world.DataSet<TestState64_3>();
 
 					foreach (var id in group)
 					{

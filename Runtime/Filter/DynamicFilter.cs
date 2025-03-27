@@ -10,9 +10,9 @@ namespace Massive
 	{
 		public SetRegistry SetRegistry { get; }
 
-		public DynamicFilter(Registry registry) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
+		public DynamicFilter(World world) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
 		{
-			SetRegistry = registry.SetRegistry;
+			SetRegistry = world.SetRegistry;
 		}
 
 		public DynamicFilter(SetRegistry setRegistry) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())

@@ -5,7 +5,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class Registry
+	public class World
 	{
 		public Entities Entities { get; }
 
@@ -13,25 +13,25 @@ namespace Massive
 		public FilterRegistry FilterRegistry { get; }
 		public GroupRegistry GroupRegistry { get; }
 
-		public RegistryConfig Config { get; }
+		public WorldConfig Config { get; }
 
-		public Registry()
-			: this(new RegistryConfig())
+		public World()
+			: this(new WorldConfig())
 		{
 		}
 
-		public Registry(RegistryConfig registryConfig)
-			: this(new Entities(), new NormalSetFactory(registryConfig), new NormalGroupFactory(), registryConfig)
+		public World(WorldConfig worldConfig)
+			: this(new Entities(), new NormalSetFactory(worldConfig), new NormalGroupFactory(), worldConfig)
 		{
 		}
 
-		protected Registry(Entities entities, ISetFactory setFactory, IGroupFactory groupFactory, RegistryConfig registryConfig)
+		protected World(Entities entities, ISetFactory setFactory, IGroupFactory groupFactory, WorldConfig worldConfig)
 		{
 			Entities = entities;
 			SetRegistry = new SetRegistry(setFactory);
 			FilterRegistry = new FilterRegistry(SetRegistry);
 			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory, entities);
-			Config = registryConfig;
+			Config = worldConfig;
 
 			var allSets = SetRegistry.All;
 			Entities.BeforeDestroyed += UnassignFromAllSets;

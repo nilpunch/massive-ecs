@@ -5,45 +5,45 @@ using Unity.PerformanceTesting;
 
 namespace Massive.PerformanceTests
 {
-	public class MassiveRegistryPerformanceTest
+	public class MassiveWorldPerformanceTest
 	{
 		private const int EntitiesCount = 10000;
 		private const int MeasurementCount = 100;
 
-		private readonly MassiveRegistry _registry;
+		private readonly MassiveWorld _world;
 
-		public MassiveRegistryPerformanceTest()
+		public MassiveWorldPerformanceTest()
 		{
-			_registry = PrepareTestRegistry();
+			_world = PrepareTestWorld();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static MassiveRegistry PrepareTestRegistry()
+		public static MassiveWorld PrepareTestWorld()
 		{
-			var config = new MassiveRegistryConfig(framesCapacity: 2);
-			var registry = new MassiveRegistry(config);
+			var config = new MassiveWorldConfig(framesCapacity: 2);
+			var world = new MassiveWorld(config);
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				var entity = registry.Create();
-				registry.Assign<TestComponent>(entity);
-				registry.Assign<TestComponent1>(entity);
-				registry.Assign<TestComponent2>(entity);
-				registry.Assign<TestComponent3>(entity);
-				registry.Assign<TestComponent4>(entity);
-				registry.Assign<TestComponent5>(entity);
+				var entity = world.Create();
+				world.Assign<TestComponent>(entity);
+				world.Assign<TestComponent1>(entity);
+				world.Assign<TestComponent2>(entity);
+				world.Assign<TestComponent3>(entity);
+				world.Assign<TestComponent4>(entity);
+				world.Assign<TestComponent5>(entity);
 			}
 			
-			registry.SaveFrame();
-			registry.SaveFrame();
+			world.SaveFrame();
+			world.SaveFrame();
 
-			return registry;
+			return world;
 		}
 
 		[Test, Performance]
-		public void MassiveRegistry_PopulateEntities()
+		public void MassiveWorld_PopulateEntities()
 		{
-			Measure.Method(() => { PrepareTestRegistry(); })
+			Measure.Method(() => { PrepareTestWorld(); })
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(1)
 				.CleanUp(GC.Collect)
@@ -51,11 +51,11 @@ namespace Massive.PerformanceTests
 		}
 
 		[Test, Performance]
-		public void MassiveRegistry_Save()
+		public void MassiveWorld_Save()
 		{
 			Measure.Method(() =>
 				{
-					_registry.SaveFrame();
+					_world.SaveFrame();
 				})
 				.MeasurementCount(MeasurementCount)
 				.Run();

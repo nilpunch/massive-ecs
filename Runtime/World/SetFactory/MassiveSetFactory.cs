@@ -15,9 +15,9 @@ namespace Massive
 		private readonly int _pageSize;
 		private readonly bool _fullStability;
 
-		public MassiveSetFactory(MassiveRegistryConfig registryConfig)
-			: this(registryConfig.FramesCapacity, registryConfig.StoreEmptyTypesAsDataSets,
-				registryConfig.PageSize, registryConfig.FullStability)
+		public MassiveSetFactory(MassiveWorldConfig worldConfig)
+			: this(worldConfig.FramesCapacity, worldConfig.StoreEmptyTypesAsDataSets,
+				worldConfig.PageSize, worldConfig.FullStability)
 		{
 		}
 

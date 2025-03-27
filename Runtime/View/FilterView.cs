@@ -14,16 +14,16 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public readonly struct FilterView : IView, IViewT, IViewTT, IViewTTT, IViewTTTT
 	{
-		public Registry Registry { get; }
+		public World World { get; }
 		public Filter Filter { get; }
 		public Packing PackingWhenIterating { get; }
 
-		public FilterView(Registry registry, Filter filter = null,
+		public FilterView(World world, Filter filter = null,
 			Packing packingWhenIterating = Packing.WithHoles)
 		{
-			Registry = registry;
+			World = world;
 			PackingWhenIterating = packingWhenIterating;
-			Filter = filter ?? registry.FilterRegistry.Empty;
+			Filter = filter ?? world.FilterRegistry.Empty;
 		}
 
 		public void ForEach<TAction>(ref TAction action)
@@ -33,7 +33,7 @@ namespace Massive
 			ReducedFilter reducedFilter;
 			if (Filter.Included.Length == 0)
 			{
-				packedSet = Registry.Entities;
+				packedSet = World.Entities;
 				reducedFilter = Filter.NotReduced;
 			}
 			else
@@ -69,9 +69,9 @@ namespace Massive
 		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			Assert.TypeHasData<T>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet = Registry.DataSet<T>();
+			var dataSet = World.DataSet<T>();
 
 			ThrowIfCantInclude(dataSet);
 
@@ -133,11 +133,11 @@ namespace Massive
 		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			Assert.TypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = Registry.DataSet<T1>();
-			var dataSet2 = Registry.DataSet<T2>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
 
 			ThrowIfCantInclude(dataSet1);
 			ThrowIfCantInclude(dataSet2);
@@ -240,13 +240,13 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			Assert.TypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T3>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = Registry.DataSet<T1>();
-			var dataSet2 = Registry.DataSet<T2>();
-			var dataSet3 = Registry.DataSet<T3>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
 
 			ThrowIfCantInclude(dataSet1);
 			ThrowIfCantInclude(dataSet2);
@@ -388,15 +388,15 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			Assert.TypeHasData<T1>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T2>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T3>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T4>(Registry, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			Assert.TypeHasData<T4>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = Registry.DataSet<T1>();
-			var dataSet2 = Registry.DataSet<T2>();
-			var dataSet3 = Registry.DataSet<T3>();
-			var dataSet4 = Registry.DataSet<T4>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
+			var dataSet4 = World.DataSet<T4>();
 
 			ThrowIfCantInclude(dataSet1);
 			ThrowIfCantInclude(dataSet2);
@@ -579,7 +579,7 @@ namespace Massive
 		{
 			if (Filter.Included.Length == 0)
 			{
-				return new PackedFilterEnumerator(Registry.Entities, Filter.NotReduced, PackingWhenIterating);
+				return new PackedFilterEnumerator(World.Entities, Filter.NotReduced, PackingWhenIterating);
 			}
 			else
 			{

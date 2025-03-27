@@ -2,9 +2,9 @@
 {
 	public static class VelocityDampingSystem
 	{
-		public static void Update(Registry registry, float deltaTime)
+		public static void Update(World world, float deltaTime)
 		{
-			registry.View().ForEachExtra(deltaTime,
+			world.View().ForEachExtra(deltaTime,
 				static (ref Velocity velocity, ref VelocityDamper damper, float deltaTime) =>
 				{
 					damper.DampVelocity(ref velocity, deltaTime);

@@ -10,7 +10,7 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public static class RegistryEntityExtensions
+	public static class WorldEntityExtensions
 	{
 		/// <summary>
 		/// Returns alive entity for this ID.
@@ -19,18 +19,18 @@ namespace Massive
 		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity GetEntity(this Registry registry, int id)
+		public static Entity GetEntity(this World world, int id)
 		{
-			return registry.Entities.GetEntity(id);
+			return world.Entities.GetEntity(id);
 		}
 
 		/// <summary>
 		/// Creates a unique entity and returns it.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity CreateEntity(this Registry registry)
+		public static Entity CreateEntity(this World world)
 		{
-			return registry.Entities.Create();
+			return world.Entities.Create();
 		}
 
 		/// <summary>
@@ -38,10 +38,10 @@ namespace Massive
 		/// Does not initialize component data.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity CreateEntity<T>(this Registry registry)
+		public static Entity CreateEntity<T>(this World world)
 		{
-			var entity = registry.CreateEntity();
-			registry.Assign<T>(entity.Id);
+			var entity = world.CreateEntity();
+			world.Assign<T>(entity.Id);
 			return entity;
 		}
 
@@ -50,10 +50,10 @@ namespace Massive
 		/// </summary>
 		/// <param name="data"> Initial data for the assigned component. </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity CreateEntity<T>(this Registry registry, T data)
+		public static Entity CreateEntity<T>(this World world, T data)
 		{
-			var entity = registry.CreateEntity();
-			registry.Assign(entity.Id, data);
+			var entity = world.CreateEntity();
+			world.Assign(entity.Id, data);
 			return entity;
 		}
 
@@ -64,12 +64,12 @@ namespace Massive
 		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity Clone(this Registry registry, Entity entity)
+		public static Entity Clone(this World world, Entity entity)
 		{
-			Assert.IsAlive(registry, entity);
+			Assert.IsAlive(world, entity);
 
-			var cloneId = registry.Clone(entity.Id);
-			return registry.GetEntity(cloneId);
+			var cloneId = world.Clone(entity.Id);
+			return world.GetEntity(cloneId);
 		}
 
 		/// <summary>
@@ -79,20 +79,20 @@ namespace Massive
 		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Destroy(this Registry registry, Entity entity)
+		public static void Destroy(this World world, Entity entity)
 		{
-			Assert.IsAlive(registry, entity);
+			Assert.IsAlive(world, entity);
 
-			registry.Entities.Destroy(entity.Id);
+			world.Entities.Destroy(entity.Id);
 		}
 
 		/// <summary>
 		/// Checks whether the entity is alive.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsAlive(this Registry registry, Entity entity)
+		public static bool IsAlive(this World world, Entity entity)
 		{
-			return registry.Entities.IsAlive(entity);
+			return world.Entities.IsAlive(entity);
 		}
 
 		/// <summary>
@@ -103,11 +103,11 @@ namespace Massive
 		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this Registry registry, Entity entity, T data)
+		public static void Assign<T>(this World world, Entity entity, T data)
 		{
-			Assert.IsAlive(registry, entity);
+			Assert.IsAlive(world, entity);
 
-			registry.Assign(entity.Id, data);
+			world.Assign(entity.Id, data);
 		}
 
 		/// <summary>
@@ -118,11 +118,11 @@ namespace Massive
 		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this Registry registry, Entity entity)
+		public static void Assign<T>(this World world, Entity entity)
 		{
-			Assert.IsAlive(registry, entity);
+			Assert.IsAlive(world, entity);
 
-			registry.Set<T>().Assign(entity.Id);
+			world.Set<T>().Assign(entity.Id);
 		}
 
 		/// <summary>
@@ -132,11 +132,11 @@ namespace Massive
 		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Unassign<T>(this Registry registry, Entity entity)
+		public static void Unassign<T>(this World world, Entity entity)
 		{
-			Assert.IsAlive(registry, entity);
+			Assert.IsAlive(world, entity);
 
-			registry.Set<T>().Unassign(entity.Id);
+			world.Set<T>().Unassign(entity.Id);
 		}
 
 		/// <summary>
@@ -146,11 +146,11 @@ namespace Massive
 		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool Has<T>(this Registry registry, Entity entity)
+		public static bool Has<T>(this World world, Entity entity)
 		{
-			Assert.IsAlive(registry, entity);
+			Assert.IsAlive(world, entity);
 
-			return registry.Set<T>().IsAssigned(entity.Id);
+			return world.Set<T>().IsAssigned(entity.Id);
 		}
 
 		/// <summary>
@@ -161,12 +161,12 @@ namespace Massive
 		/// and this method will throw an exception if the type has no associated data.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ref T Get<T>(this Registry registry, Entity entity)
+		public static ref T Get<T>(this World world, Entity entity)
 		{
-			Assert.IsAlive(registry, entity);
-			Assert.TypeHasData<T>(registry, SuggestionMessage.DontUseGetWithEmptyTypes);
+			Assert.IsAlive(world, entity);
+			Assert.TypeHasData<T>(world, SuggestionMessage.DontUseGetWithEmptyTypes);
 
-			return ref registry.Get<T>(entity.Id);
+			return ref world.Get<T>(entity.Id);
 		}
 	}
 }

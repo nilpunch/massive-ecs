@@ -6,18 +6,18 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public static class RegistryViewExtensions
+	public static class WorldCommonExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static View View(this Registry registry)
+		public static void Clear(this World world)
 		{
-			return new View(registry, registry.Config.PackingWhenIterating);
+			world.Entities.Clear();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static View View(this Registry registry, Packing packingWhenIterating)
+		public static void Clear<T>(this World world)
 		{
-			return new View(registry, packingWhenIterating);
+			world.Set<T>().Clear();
 		}
 	}
 }

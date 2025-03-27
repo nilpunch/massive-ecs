@@ -8,9 +8,9 @@ namespace Massive
 		private readonly int _pageSize;
 		private readonly bool _fullStability;
 
-		public NormalSetFactory(RegistryConfig registryConfig)
-			: this(registryConfig.StoreEmptyTypesAsDataSets,
-				registryConfig.PageSize, registryConfig.FullStability)
+		public NormalSetFactory(WorldConfig worldConfig)
+			: this(worldConfig.StoreEmptyTypesAsDataSets,
+				worldConfig.PageSize, worldConfig.FullStability)
 		{
 		}
 
