@@ -32,6 +32,11 @@ namespace Massive
 		public int SparseCapacity { get; private set; }
 
 		/// <summary>
+		/// The maximum count of ids in use.
+		/// </summary>
+		public int UsedIds { get; private set; }
+
+		/// <summary>
 		/// The index of the next available hole in the packed array, or <see cref="EndHole"/> if no holes exist.
 		/// </summary>
 		private int NextHole { get; set; } = EndHole;
@@ -75,11 +80,12 @@ namespace Massive
 		public State CurrentState
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new State(Count, NextHole, Packing);
+			get => new State(Count, UsedIds, NextHole, Packing);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
 				Count = value.Count;
+				UsedIds = value.UsedIds;
 				NextHole = value.NextHole;
 				Packing = value.Packing;
 			}
@@ -111,6 +117,11 @@ namespace Massive
 				EnsureDataAt(Count);
 				Pair(id, Count);
 				Count += 1;
+			}
+
+			if (id >= UsedIds)
+			{
+				UsedIds = id + 1;
 			}
 
 			AfterAssigned?.Invoke(id);
@@ -173,6 +184,7 @@ namespace Massive
 				}
 			}
 			Count = 0;
+			UsedIds = 0;
 			NextHole = EndHole;
 		}
 
@@ -184,6 +196,7 @@ namespace Massive
 		{
 			Array.Fill(Sparse, Constants.InvalidId);
 			Count = 0;
+			UsedIds = 0;
 			NextHole = EndHole;
 		}
 
@@ -367,12 +380,14 @@ namespace Massive
 		public readonly struct State
 		{
 			public readonly int Count;
+			public readonly int UsedIds;
 			public readonly int NextHole;
 			public readonly Packing Packing;
 
-			public State(int count, int nextHole, Packing packing)
+			public State(int count, int usedIds, int nextHole, Packing packing)
 			{
 				Count = count;
+				UsedIds = usedIds;
 				NextHole = nextHole;
 				Packing = packing;
 			}

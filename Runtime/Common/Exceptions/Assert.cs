@@ -10,6 +10,7 @@ namespace Massive
 	public static class Assert
 	{
 		public const string Symbol = "MASSIVE_ASSERT";
+		public const string Library = "[MASSIVE]";
 
 		[Conditional(Symbol)]
 		public static void That(bool condition, string message)
@@ -25,7 +26,7 @@ namespace Massive
 		{
 			if (!(world.Set<T>() is DataSet<T>))
 			{
-				throw new Exception($"The type {typeof(T).GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
+				throw new Exception($"{Library} The type {typeof(T).GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
 			}
 		}
 
@@ -34,7 +35,7 @@ namespace Massive
 		{
 			if (!set.IsAssigned(id))
 			{
-				throw new Exception($"The id:{id} is not assigned.");
+				throw new Exception($"{Library} The id:{id} is not assigned.");
 			}
 		}
 
@@ -43,7 +44,7 @@ namespace Massive
 		{
 			if (!set.IsAssignedAt(index))
 			{
-				throw new Exception($"The index:{index} is invalid.");
+				throw new Exception($"{Library} The index:{index} is invalid.");
 			}
 		}
 
@@ -58,7 +59,7 @@ namespace Massive
 		{
 			if (!entities.IsAlive(entityId))
 			{
-				throw new Exception($"The entity with id:{entityId} is not alive.");
+				throw new Exception($"{Library} The entity with id:{entityId} is not alive.");
 			}
 		}
 
@@ -73,7 +74,7 @@ namespace Massive
 		{
 			if (!entities.IsAlive(entity))
 			{
-				throw new Exception($"The {entity} is not alive.");
+				throw new Exception($"{Library} The {entity} is not alive.");
 			}
 		}
 
@@ -82,7 +83,7 @@ namespace Massive
 		{
 			if (included.ContainsAny(excluded))
 			{
-				throw new Exception("Conflicting included and excluded components!");
+				throw new Exception($"{Library} Conflicting included and excluded components!");
 			}
 		}
 
