@@ -7,7 +7,7 @@
 	{
 		public static void Update(World world, float deltaTime)
 		{
-			world.View().ForEachExtra((world: world, deltaTime),
+			world.View().ForEachExtra((world, deltaTime),
 				static (int characterId, ref Dead dead, ref Character character, (World World, float DeltaTime) args) =>
 				{
 					var (world, deltaTime) = args;

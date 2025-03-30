@@ -40,7 +40,7 @@
 
 			void DestroyCharacterBullets(int characterId)
 			{
-				world.View().Exclude<Dead>().ForEachExtra((characterId, world: world),
+				world.View().Exclude<Dead>().ForEachExtra((characterId, world),
 					static (int bulletId, ref Bullet bullet, (int CharacterId, World World) args) =>
 					{
 						var (characterId, world) = args;

@@ -4,7 +4,7 @@
 	{
 		public static void Update(World world, float deltaTime)
 		{
-			world.View().Exclude<Dead>().ForEachExtra((world: world, deltaTime),
+			world.View().Exclude<Dead>().ForEachExtra((world, deltaTime),
 				static (int id, ref Weapon weapon, ref Position position, (World World, float DeltaTime) args) =>
 				{
 					var (world, deltaTime) = args;
