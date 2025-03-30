@@ -13,7 +13,7 @@
 
 					if (bullet.Lifetime <= 0f)
 					{
-						world.Assign<Dead>(bulletId);
+						world.Add<Dead>(bulletId);
 					}
 				});
 		}

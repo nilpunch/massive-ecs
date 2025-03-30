@@ -41,14 +41,14 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						set.Assign(i);
+						set.Add(i);
 					}
 				})
 				.CleanUp(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						set.Unassign(i);
+						set.Remove(i);
 					}
 				})
 				.MeasurementCount(MeasurementCount)
@@ -66,14 +66,14 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						set.Unassign(i);
+						set.Remove(i);
 					}
 				})
 				.SetUp(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						set.Assign(i);
+						set.Add(i);
 					}
 				})
 				.MeasurementCount(MeasurementCount)
@@ -90,14 +90,14 @@ namespace Massive.PerformanceTests
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				set.Assign(i);
+				set.Add(i);
 			}
 
 			Measure.Method(() =>
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						set.IsAssigned(i);
+						set.Has(i);
 					}
 				})
 				.MeasurementCount(MeasurementCount)
@@ -115,7 +115,7 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						set.Unassign(i);
+						set.Remove(i);
 					}
 				})
 				.MeasurementCount(MeasurementCount)
@@ -132,7 +132,7 @@ namespace Massive.PerformanceTests
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				set.Assign(i);
+				set.Add(i);
 			}
 
 			Measure.Method(() =>
@@ -157,7 +157,7 @@ namespace Massive.PerformanceTests
 
 			for (int i = 0; i < EntitiesCount; i++)
 			{
-				set.Assign(i);
+				set.Add(i);
 			}
 
 			Measure.Method(() => { massive.SaveFrame(); })
@@ -176,7 +176,7 @@ namespace Massive.PerformanceTests
 
 			for (int i = 0; i < EntitiesCount * IterationsPerMeasurement; i++)
 			{
-				set.Assign(i);
+				set.Add(i);
 			}
 			
 			Measure.Method(() => { massive.SaveFrame(); })

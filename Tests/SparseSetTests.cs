@@ -10,7 +10,7 @@ namespace Massive.Tests
 			0, 1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23
 		};
 
-		public int[] IdsToUnassign =
+		public int[] IdsToRemove =
 		{
 			0, 1, 3, 20, 21, 23
 		};
@@ -21,15 +21,15 @@ namespace Massive.Tests
 			// Arrange.
 			var sparseSet = new SparseSet(packing: Packing.WithHoles);
 			foreach (var id in IdsToAssign)
-				sparseSet.Assign(id);
-			foreach (var id in IdsToUnassign)
-				sparseSet.Unassign(id);
+				sparseSet.Add(id);
+			foreach (var id in IdsToRemove)
+				sparseSet.Remove(id);
 
 			// Act.
 			sparseSet.Compact();
 
 			// Assert.
-			int remainIdsCount = IdsToAssign.Length - IdsToUnassign.Length;
+			int remainIdsCount = IdsToAssign.Length - IdsToRemove.Length;
 			NUnit.Framework.Assert.AreEqual(remainIdsCount, sparseSet.Count);
 		}
 
@@ -41,7 +41,7 @@ namespace Massive.Tests
 		{
 			var sparseSet = new SparseSet();
 
-			var isAssigned = sparseSet.IsAssigned(id);
+			var isAssigned = sparseSet.Has(id);
 
 			NUnit.Framework.Assert.IsFalse(isAssigned);
 		}
@@ -65,8 +65,8 @@ namespace Massive.Tests
 		{
 			var sparseSet = new SparseSet();
 
-			sparseSet.Assign(id);
-			var isAssigned = sparseSet.IsAssigned(id);
+			sparseSet.Add(id);
+			var isAssigned = sparseSet.Has(id);
 
 			NUnit.Framework.Assert.IsFalse(isAssigned);
 		}

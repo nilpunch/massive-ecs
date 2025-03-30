@@ -54,7 +54,7 @@ namespace Massive
 		{
 			Assert.TypeHasData<T>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet = World.DataSet<T>();
+			var dataSet = World.Data<T>();
 
 			var data = dataSet.Data;
 
@@ -92,8 +92,8 @@ namespace Massive
 			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = World.DataSet<T1>();
-			var dataSet2 = World.DataSet<T2>();
+			var dataSet1 = World.Data<T1>();
+			var dataSet2 = World.Data<T2>();
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -173,9 +173,9 @@ namespace Massive
 			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = World.DataSet<T1>();
-			var dataSet2 = World.DataSet<T2>();
-			var dataSet3 = World.DataSet<T3>();
+			var dataSet1 = World.Data<T1>();
+			var dataSet2 = World.Data<T2>();
+			var dataSet3 = World.Data<T3>();
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -290,10 +290,10 @@ namespace Massive
 			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 			Assert.TypeHasData<T4>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = World.DataSet<T1>();
-			var dataSet2 = World.DataSet<T2>();
-			var dataSet3 = World.DataSet<T3>();
-			var dataSet4 = World.DataSet<T4>();
+			var dataSet1 = World.Data<T1>();
+			var dataSet2 = World.Data<T2>();
+			var dataSet3 = World.Data<T3>();
+			var dataSet4 = World.Data<T4>();
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;

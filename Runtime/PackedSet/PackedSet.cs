@@ -11,7 +11,7 @@ namespace Massive
 	{
 		/// <summary>
 		/// Gets the current number of elements in the packed array.<br/>
-		/// May include unassigned IDs due to holes.
+		/// May include removed IDs due to holes.
 		/// </summary>
 		public int Count { get; protected set; }
 

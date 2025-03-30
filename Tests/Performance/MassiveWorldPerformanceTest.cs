@@ -26,12 +26,12 @@ namespace Massive.PerformanceTests
 			for (int i = 0; i < EntitiesCount; i++)
 			{
 				var entity = world.Create();
-				world.Assign<TestComponent>(entity);
-				world.Assign<TestComponent1>(entity);
-				world.Assign<TestComponent2>(entity);
-				world.Assign<TestComponent3>(entity);
-				world.Assign<TestComponent4>(entity);
-				world.Assign<TestComponent5>(entity);
+				world.Add<TestComponent>(entity);
+				world.Add<TestComponent1>(entity);
+				world.Add<TestComponent2>(entity);
+				world.Add<TestComponent3>(entity);
+				world.Add<TestComponent4>(entity);
+				world.Add<TestComponent5>(entity);
 			}
 			
 			world.SaveFrame();

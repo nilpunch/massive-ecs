@@ -19,9 +19,9 @@
 			var player = world.Create(new Player());
 
 			// Assign components
-			world.Assign(player, new Velocity() { Magnitude = 10f });
-			world.Assign(enemy, new Velocity());
-			world.Assign<Position>(enemy); // Assigns component without initialization
+			world.Set(player, new Velocity() { Magnitude = 10f });
+			world.Set(enemy, new Velocity());
+			world.Add<Position>(enemy); // Adds component without initialization
 
 			// Get full entity identifier from player ID.
 			// Handy when uniqueness is required, for example, when storing entities for later
@@ -73,7 +73,7 @@
 			}
 
 			// Iterate manually over data sets
-			var velocities = world.DataSet<Velocity>();
+			var velocities = world.Data<Velocity>();
 			for (int i = 0; i < velocities.Count; ++i)
 			{
 				ref var velocity = ref velocities.Data[i];

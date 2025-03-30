@@ -4,10 +4,10 @@
 	{
 		public static void Update(World world, float deltaTime)
 		{
-			var characters = world.DataSet<Character>();
-			var bullets = world.DataSet<Bullet>();
-			var colliders = world.DataSet<CircleCollider>();
-			var positions = world.DataSet<Position>();
+			var characters = world.Data<Character>();
+			var bullets = world.Data<Bullet>();
+			var colliders = world.Data<CircleCollider>();
+			var positions = world.Data<Position>();
 
 			foreach (var characterId in world.View().Filter<Include<Character>, Exclude<Dead>>())
 			{
@@ -25,12 +25,12 @@
 
 					if (IsCollided(bulletId, characterId))
 					{
-						world.Assign(bulletId, new Dead());
+						world.Set(bulletId, new Dead());
 
 						character.Health -= bullet.Damage;
 						if (character.Health <= 0)
 						{
-							world.Assign(characterId, new Dead());
+							world.Set(characterId, new Dead());
 							DestroyCharacterBullets(characterId);
 							break;
 						}
@@ -47,7 +47,7 @@
 
 						if (bullet.Owner == world.GetEntity(characterId))
 						{
-							world.Assign<Dead>(bulletId);
+							world.Add<Dead>(bulletId);
 						}
 					});
 			}

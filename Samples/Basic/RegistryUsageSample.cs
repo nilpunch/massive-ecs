@@ -10,15 +10,15 @@ namespace Massive.Samples.Basic
 
 			var entity2 = world.CreateEntity<int>(); // Creates unique entity with a component
 
-			world.Assign<int>(entity1); // Assigns component without initialization to the entity
+			world.Add<int>(entity1); // Adds component without initialization to the entity
 
-			world.Assign(entity2, "String component"); // Assigns component with specific value
+			world.Set(entity2, "String component"); // Adds component with specific value
 
-			world.Assign(entity1, 10); // Overrides previously assigned component value
+			world.Set(entity1, 10); // Overrides previously added component value
 
 			if (world.Has<string>(entity2)) // Checks whether the entity has such a component
 			{
-				world.Unassign<string>(entity2); // Unassigns a component from this entity
+				world.Remove<string>(entity2); // Removes a component from this entity
 			}
 
 			ref int value = ref world.Get<int>(entity1); // Returns ref to component value

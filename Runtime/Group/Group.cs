@@ -41,14 +41,14 @@ namespace Massive
 
 			foreach (var set in Included)
 			{
-				set.AfterAssigned += AddToGroup;
-				set.BeforeUnassigned += RemoveFromGroup;
+				set.AfterAdded += AddToGroup;
+				set.BeforeRemoved += RemoveFromGroup;
 			}
 
 			foreach (var set in Excluded)
 			{
-				set.AfterAssigned += RemoveFromGroup;
-				set.BeforeUnassigned += AddToGroupBeforeUnassignedFromExcluded;
+				set.AfterAdded += RemoveFromGroup;
+				set.BeforeRemoved += AddToGroupBeforeRemovedFromExcluded;
 			}
 
 			if (Included.Length == 0)
@@ -89,7 +89,7 @@ namespace Massive
 			if (IsSynced && SetUtils.AssignedInAll(id, Included)
 				&& SetUtils.NotAssignedInAll(id, Excluded))
 			{
-				Set.Assign(id);
+				Set.Add(id);
 			}
 		}
 
@@ -97,17 +97,17 @@ namespace Massive
 		{
 			if (IsSynced)
 			{
-				Set.Unassign(id);
+				Set.Remove(id);
 			}
 		}
 
-		private void AddToGroupBeforeUnassignedFromExcluded(int id)
+		private void AddToGroupBeforeRemovedFromExcluded(int id)
 		{
 			// Applies only when removed from the last remaining exclude set.
 			if (IsSynced && SetUtils.AssignedInAll(id, Included)
 				&& SetUtils.CountAssignedInAll(id, Excluded) == 1)
 			{
-				Set.Assign(id);
+				Set.Add(id);
 			}
 		}
 

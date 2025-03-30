@@ -16,7 +16,7 @@
 
 					if (dead.ElapsedTimeSinceDeath > 3f)
 					{
-						world.Unassign<Dead>(characterId);
+						world.Remove<Dead>(characterId);
 						character.Health = character.MaxHealth;
 					}
 				});

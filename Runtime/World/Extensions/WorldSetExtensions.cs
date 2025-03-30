@@ -13,17 +13,17 @@ namespace Massive
 	public static class WorldSetExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static DataSet<T> DataSet<T>(this World world)
+		public static SparseSet Sparse<T>(this World world)
 		{
-			Assert.TypeHasData<T>(world, SuggestionMessage.UseSetMethodWithEmptyTypes);
-
-			return world.Set<T>() as DataSet<T>;
+			return world.SetRegistry.Get<T>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static SparseSet Set<T>(this World world)
+		public static DataSet<T> Data<T>(this World world)
 		{
-			return world.SetRegistry.Get<T>();
+			Assert.TypeHasData<T>(world, SuggestionMessage.UseSetMethodWithEmptyTypes);
+
+			return (DataSet<T>)world.SetRegistry.Get<T>();
 		}
 	}
 }

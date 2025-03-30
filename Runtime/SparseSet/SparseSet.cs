@@ -65,14 +65,14 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Shoots only after <see cref="Assign"/> call, when the ID was not already assigned.
+		/// Shoots only after <see cref="Add"/> call, when the ID was not already added.
 		/// </summary>
-		public event Action<int> AfterAssigned;
+		public event Action<int> AfterAdded;
 
 		/// <summary>
-		/// Shoots before each <see cref="Unassign"/> call, when the ID was asigned.
+		/// Shoots before each <see cref="Remove"/> call, when the ID was asigned.
 		/// </summary>
-		public event Action<int> BeforeUnassigned;
+		public event Action<int> BeforeRemoved;
 
 		/// <summary>
 		/// Gets or sets the current state for serialization or rollback purposes.
@@ -92,15 +92,15 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns an ID. If the ID is negative or already assigned, no action is performed.
+		/// Adds an ID. If the ID is negative or already added, no action is performed.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Assign(int id)
+		public bool Add(int id)
 		{
-			// If ID is negative or already assigned, nothing to be done.
+			// If ID is negative or already added, nothing to be done.
 			if (id < 0 || id < SparseCapacity && Sparse[id] != Constants.InvalidId)
 			{
-				return;
+				return false;
 			}
 
 			EnsureSparseAt(id);
@@ -124,22 +124,24 @@ namespace Massive
 				UsedIds = id + 1;
 			}
 
-			AfterAssigned?.Invoke(id);
+			AfterAdded?.Invoke(id);
+
+			return true;
 		}
 
 		/// <summary>
-		/// Unassigns an ID. If the ID is negative or already unassigned, no action is performed.
+		/// Removes an ID. If the ID is negative or already removed, no action is performed.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Unassign(int id)
+		public bool Remove(int id)
 		{
-			// If ID is negative or not assigned, nothing to be done.
+			// If ID is negative or not added, nothing to be done.
 			if (id < 0 || id >= SparseCapacity || Sparse[id] == Constants.InvalidId)
 			{
-				return;
+				return false;
 			}
 
-			BeforeUnassigned?.Invoke(id);
+			BeforeRemoved?.Invoke(id);
 
 			if (Packing == Packing.Continuous)
 			{
@@ -154,10 +156,12 @@ namespace Massive
 			}
 
 			Sparse[id] = Constants.InvalidId;
+
+			return true;
 		}
 
 		/// <summary>
-		/// Unassigns all IDs and triggers the <see cref="BeforeUnassigned"/> event for each one.
+		/// Removes all IDs and triggers the <see cref="BeforeRemoved"/> event for each one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
@@ -167,7 +171,7 @@ namespace Massive
 				for (var i = Count - 1; i >= 0; i--)
 				{
 					var id = Packed[i];
-					BeforeUnassigned?.Invoke(id);
+					BeforeRemoved?.Invoke(id);
 					Sparse[id] = Constants.InvalidId;
 				}
 			}
@@ -178,7 +182,7 @@ namespace Massive
 					var id = Packed[i];
 					if (id >= 0)
 					{
-						BeforeUnassigned?.Invoke(id);
+						BeforeRemoved?.Invoke(id);
 						Sparse[id] = Constants.InvalidId;
 					}
 				}
@@ -189,7 +193,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Unassigns all IDs without triggering the <see cref="BeforeUnassigned"/> event.
+		/// Removes all IDs without triggering the <see cref="BeforeRemoved"/> event.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ClearWithoutNotify()
@@ -201,7 +205,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Returns the packed index of the specified ID, or a negative value if the ID is not assigned.
+		/// Returns the packed index of the specified ID, or a negative value if the ID is not added.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetIndexOrNegative(int id)
@@ -215,19 +219,19 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether the specified ID is assigned.
+		/// Checks whether the specified ID is added.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAssigned(int id)
+		public bool Has(int id)
 		{
 			return id >= 0 && id < SparseCapacity && Sparse[id] != Constants.InvalidId;
 		}
 
 		/// <summary>
-		/// Checks whether the packed index is assigned.
+		/// Checks whether the packed index is added.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAssignedAt(int index)
+		public bool HasPacked(int index)
 		{
 			return index >= 0 && index < PackedCapacity && Packed[index] >= 0;
 		}
@@ -322,8 +326,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SwapAt(int first, int second)
 		{
-			Assert.IdAssignedAt(this, first);
-			Assert.IdAssignedAt(this, second);
+			Assert.HasPacked(this, first);
+			Assert.HasPacked(this, second);
 
 			var firstId = Packed[first];
 			var secondId = Packed[second];

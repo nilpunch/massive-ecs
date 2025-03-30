@@ -18,15 +18,15 @@ namespace Massive.Tests
 			var entity1 = world.CreateEntity('1').Id;
 			var entity2 = world.CreateEntity('2').Id;
 
-			world.Assign(entity2, 42);
+			world.Set(entity2, 42);
 
 			NUnit.Framework.Assert.AreEqual(1, group.Count);
 
-			world.Assign<int>(entity1);
+			world.Add<int>(entity1);
 
 			NUnit.Framework.Assert.AreEqual(2, group.Count);
 
-			world.Unassign<int>(entity1);
+			world.Remove<int>(entity1);
 
 			NUnit.Framework.Assert.AreEqual(1, group.Count);
 
@@ -41,8 +41,8 @@ namespace Massive.Tests
 			NUnit.Framework.Assert.AreEqual(enumerator.Current, entity2);
 			enumerator.Dispose();
 
-			world.Unassign<char>(entity1);
-			world.Unassign<char>(entity2);
+			world.Remove<char>(entity1);
+			world.Remove<char>(entity2);
 
 			NUnit.Framework.Assert.AreEqual(0, group.Count);
 		}
@@ -55,14 +55,14 @@ namespace Massive.Tests
 			var entity1 = world.CreateEntity(1).Id;
 
 			var entity2 = world.CreateEntity(2).Id;
-			world.Assign<char>(entity2);
+			world.Add<char>(entity2);
 
 			var group = SetUpWithIntAndWithoutChar(world);
 
 			var entity3 = world.CreateEntity(3).Id;
 
 			var entity4 = world.CreateEntity(4).Id;
-			world.Assign<char>(entity4);
+			world.Add<char>(entity4);
 
 			foreach (var entity in group)
 			{
@@ -78,13 +78,13 @@ namespace Massive.Tests
 				}
 			}
 
-			world.Assign<char>(entity1);
-			world.Assign<char>(entity3);
+			world.Add<char>(entity1);
+			world.Add<char>(entity3);
 
 			NUnit.Framework.Assert.AreEqual(0, group.Count);
 
-			world.Unassign<char>(entity2);
-			world.Unassign<char>(entity4);
+			world.Remove<char>(entity2);
+			world.Remove<char>(entity4);
 
 			foreach (var entity in group)
 			{
@@ -112,12 +112,12 @@ namespace Massive.Tests
 
 				if (i % 2 != 0)
 				{
-					world.Assign<int>(entity);
+					world.Add<int>(entity);
 				}
 
 				if (i % 3 != 0)
 				{
-					world.Assign<char>(entity);
+					world.Add<char>(entity);
 				}
 			}
 

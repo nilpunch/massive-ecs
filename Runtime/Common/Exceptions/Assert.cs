@@ -22,27 +22,36 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		public static void ValidId(int id)
+		{
+			if (id < 0)
+			{
+				throw new Exception($"{Library} The id:{id} is not valid.");
+			}
+		}
+
+		[Conditional(Symbol)]
 		public static void TypeHasData<T>(World world, string suggestion)
 		{
-			if (!(world.Set<T>() is DataSet<T>))
+			if (!(world.Sparse<T>() is DataSet<T>))
 			{
 				throw new Exception($"{Library} The type {typeof(T).GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
 			}
 		}
 
 		[Conditional(Symbol)]
-		public static void IdAssigned(SparseSet set, int id)
+		public static void Has(SparseSet set, int id)
 		{
-			if (!set.IsAssigned(id))
+			if (!set.Has(id))
 			{
-				throw new Exception($"{Library} The id:{id} is not assigned.");
+				throw new Exception($"{Library} The id:{id} is not added.");
 			}
 		}
 
 		[Conditional(Symbol)]
-		public static void IdAssignedAt(SparseSet set, int index)
+		public static void HasPacked(SparseSet set, int index)
 		{
-			if (!set.IsAssignedAt(index))
+			if (!set.HasPacked(index))
 			{
 				throw new Exception($"{Library} The index:{index} is invalid.");
 			}

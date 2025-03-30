@@ -34,26 +34,26 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates a unique entity with the assigned component and returns it.
+		/// Creates a unique entity with the added component and returns it.
 		/// Does not initialize component data.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity CreateEntity<T>(this World world)
 		{
 			var entity = world.CreateEntity();
-			world.Assign<T>(entity.Id);
+			world.Add<T>(entity.Id);
 			return entity;
 		}
 
 		/// <summary>
-		/// Creates a unique entity with the assigned component and returns it.
+		/// Creates a unique entity with the added component and returns it.
 		/// </summary>
-		/// <param name="data"> Initial data for the assigned component. </param>
+		/// <param name="data"> Initial data for the added component. </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity CreateEntity<T>(this World world, T data)
 		{
 			var entity = world.CreateEntity();
-			world.Assign(entity.Id, data);
+			world.Set(entity.Id, data);
 			return entity;
 		}
 
@@ -96,47 +96,47 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns a component to the entity.
+		/// Adds a component to the entity.
 		/// </summary>
-		/// <param name="data"> Initial data for the assigned component. </param>
+		/// <param name="data"> Initial data for the added component. </param>
 		/// <remarks>
 		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this World world, Entity entity, T data)
+		public static void Set<T>(this World world, Entity entity, T data)
 		{
 			Assert.IsAlive(world, entity);
 
-			world.Assign(entity.Id, data);
+			world.Set(entity.Id, data);
 		}
 
 		/// <summary>
-		/// Assigns a component to the entity, without data initialization.
-		/// Repeat assignments are allowed.
+		/// Adds a component to the entity, without data initialization.
+		/// Repeat additions are allowed.
 		/// </summary>
 		/// <remarks>
 		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this World world, Entity entity)
+		public static bool Add<T>(this World world, Entity entity)
 		{
 			Assert.IsAlive(world, entity);
 
-			world.Set<T>().Assign(entity.Id);
+			return world.Sparse<T>().Add(entity.Id);
 		}
 
 		/// <summary>
-		/// Unassigns a component from the entity.
+		/// Removes a component from the entity.
 		/// </summary>
 		/// <remarks>
 		/// Will throw an exception if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Unassign<T>(this World world, Entity entity)
+		public static void Remove<T>(this World world, Entity entity)
 		{
 			Assert.IsAlive(world, entity);
 
-			world.Set<T>().Unassign(entity.Id);
+			world.Sparse<T>().Remove(entity.Id);
 		}
 
 		/// <summary>
@@ -150,7 +150,7 @@ namespace Massive
 		{
 			Assert.IsAlive(world, entity);
 
-			return world.Set<T>().IsAssigned(entity.Id);
+			return world.Sparse<T>().Has(entity.Id);
 		}
 
 		/// <summary>

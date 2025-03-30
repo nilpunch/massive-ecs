@@ -90,8 +90,8 @@ namespace Massive.PerformanceTests
 			Measure.Method(() =>
 				{
 					var entityToClone = _world.Create();
-					_world.Assign(entityToClone, new PositionComponent() { X = 2, Y = 2 });
-					_world.Assign(entityToClone, new VelocityComponent() { X = 1, Y = 1 });
+					_world.Set(entityToClone, new PositionComponent() { X = 2, Y = 2 });
+					_world.Set(entityToClone, new VelocityComponent() { X = 1, Y = 1 });
 
 					for (int i = 0; i < EntitiesCount; i++)
 					{
@@ -117,7 +117,7 @@ namespace Massive.PerformanceTests
 					for (int i = 0; i < EntitiesCount; i++)
 					{
 						int id = _world.Create();
-						_world.Assign<PositionComponent>(id);
+						_world.Add<PositionComponent>(id);
 					}
 				})
 				.CleanUp(() => _world.Clear())
@@ -153,8 +153,8 @@ namespace Massive.PerformanceTests
 			for (int i = 0; i < EntitiesCount; i++)
 			{
 				var entity = _world.Create();
-				_world.Assign(entity, new PositionComponent() { X = i, Y = i });
-				_world.Assign(entity, new VelocityComponent() { X = 1, Y = 1 });
+				_world.Set(entity, new PositionComponent() { X = i, Y = i });
+				_world.Set(entity, new VelocityComponent() { X = 1, Y = 1 });
 			}
 
 			Measure.Method(() =>
@@ -178,14 +178,14 @@ namespace Massive.PerformanceTests
 			for (int i = 0; i < EntitiesCount; i++)
 			{
 				var entityId = _world.Create();
-				_world.Assign(entityId, new PositionComponent() { X = i, Y = i });
-				_world.Assign(entityId, new VelocityComponent() { X = 1, Y = 1 });
+				_world.Set(entityId, new PositionComponent() { X = i, Y = i });
+				_world.Set(entityId, new VelocityComponent() { X = 1, Y = 1 });
 			}
 
 			Measure.Method(() =>
 				{
-					var positions = _world.DataSet<PositionComponent>();
-					var velocities = _world.DataSet<VelocityComponent>();
+					var positions = _world.Data<PositionComponent>();
+					var velocities = _world.Data<VelocityComponent>();
 					foreach (var entityId in _world.View())
 					{
 						positions.Get(entityId);
@@ -205,8 +205,8 @@ namespace Massive.PerformanceTests
 			for (int i = 0; i < EntitiesCount; i++)
 			{
 				var entity = _world.Create();
-				_world.Assign(entity, new PositionComponent() { X = i, Y = i });
-				_world.Assign(entity, new VelocityComponent() { X = 1, Y = 1 });
+				_world.Set(entity, new PositionComponent() { X = i, Y = i });
+				_world.Set(entity, new VelocityComponent() { X = 1, Y = 1 });
 			}
 
 			Measure.Method(() => { _world.View().ForEach((ref PositionComponent position, ref VelocityComponent velocity) => { }); })
@@ -229,8 +229,8 @@ namespace Massive.PerformanceTests
 				{
 					foreach (var entityId in _world.View())
 					{
-						_world.Unassign<PositionComponent>(entityId);
-						_world.Assign(entityId, new PositionComponent() { X = entityId, Y = entityId });
+						_world.Remove<PositionComponent>(entityId);
+						_world.Set(entityId, new PositionComponent() { X = entityId, Y = entityId });
 					}
 				})
 				.MeasurementCount(MeasurementCount)
@@ -250,11 +250,11 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					var positions = _world.DataSet<PositionComponent>();
+					var positions = _world.Data<PositionComponent>();
 					foreach (var entityId in _world.View())
 					{
-						positions.Unassign(entityId);
-						positions.Assign(entityId, new PositionComponent() { X = entityId, Y = entityId });
+						positions.Remove(entityId);
+						positions.Set(entityId, new PositionComponent() { X = entityId, Y = entityId });
 					}
 				})
 				.MeasurementCount(MeasurementCount)
@@ -286,7 +286,7 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_world.DataSet<PositionComponent>();
+						_world.Data<PositionComponent>();
 					}
 				})
 				.MeasurementCount(MeasurementCount)

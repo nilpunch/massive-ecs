@@ -152,7 +152,7 @@ namespace Massive.Tests
 				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					world.Assign<TComponent2>(entity);
+					world.Add<TComponent2>(entity);
 				}
 			}
 
@@ -179,7 +179,7 @@ namespace Massive.Tests
 				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					world.Assign<TComponent2>(entity);
+					world.Add<TComponent2>(entity);
 				}
 			}
 
@@ -206,7 +206,7 @@ namespace Massive.Tests
 				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					world.Assign<TComponent2>(entity);
+					world.Add<TComponent2>(entity);
 				}
 			}
 
@@ -224,7 +224,7 @@ namespace Massive.Tests
 		}
 
 		[Test]
-		public void UnassignManyComponentsDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSameAmount()
+		public void RemoveManyComponentsDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSameAmount()
 		{
 			var world = new World();
 			for (int i = 0; i < 2000; i++)
@@ -232,7 +232,7 @@ namespace Massive.Tests
 				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					world.Assign<TComponent2>(entity);
+					world.Add<TComponent2>(entity);
 				}
 			}
 
@@ -242,7 +242,7 @@ namespace Massive.Tests
 				iterations += 1;
 				world.View().ForEach((int innerId, ref TComponent2 innerB) =>
 				{
-					world.Unassign<TComponent2>(innerId);
+					world.Remove<TComponent2>(innerId);
 				});
 			});
 
@@ -250,7 +250,7 @@ namespace Massive.Tests
 		}
 
 		[Test]
-		public void UnassignManyComponentsDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSameAmount_v2()
+		public void RemoveManyComponentsDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSameAmount_v2()
 		{
 			var world = new World();
 			for (int i = 0; i < 2000; i++)
@@ -258,7 +258,7 @@ namespace Massive.Tests
 				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					world.Assign<TComponent2>(entity);
+					world.Add<TComponent2>(entity);
 				}
 			}
 
@@ -268,7 +268,7 @@ namespace Massive.Tests
 				iterations += 1;
 				world.View().ForEach((int innerId, ref TComponent2 innerC2) =>
 				{
-					world.Unassign<TComponent2>(innerId);
+					world.Remove<TComponent2>(innerId);
 				});
 			});
 
@@ -276,7 +276,7 @@ namespace Massive.Tests
 		}
 
 		[Test]
-		public void UnassignManyComponentsDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSameAmount_v3()
+		public void RemoveManyComponentsDuringIterationOverComponents_TheNumberOfIterationsGoesDownTheSameAmount_v3()
 		{
 			var world = new World();
 			for (int i = 0; i < 2000; i++)
@@ -284,7 +284,7 @@ namespace Massive.Tests
 				var entity = world.Create<TComponent1>();
 				if (i % 2 == 0)
 				{
-					world.Assign<TComponent2>(entity);
+					world.Add<TComponent2>(entity);
 				}
 			}
 
@@ -294,7 +294,7 @@ namespace Massive.Tests
 				iterations += 1;
 				world.View().ForEach((int innerId, ref TComponent1 innerC2) =>
 				{
-					world.Unassign<TComponent1>(innerId);
+					world.Remove<TComponent1>(innerId);
 				});
 			});
 
@@ -311,13 +311,13 @@ namespace Massive.Tests
 		}
 
 		[Test]
-		public void UnassignManyEntitiesFromBeginning_WithStable_TheDataDoesNotInvalidating()
+		public void RemoveManyEntitiesFromBeginning_WithStable_TheDataDoesNotInvalidating()
 		{
 			var world = new World();
 			for (int i = 0; i <= 2000; i++)
 			{
 				int entity = world.Create();
-				world.Assign(entity, new StableData() { Value = entity });
+				world.Set(entity, new StableData() { Value = entity });
 			}
 
 			world.View().ForEach((int entity, ref StableData c2) =>
@@ -326,7 +326,7 @@ namespace Massive.Tests
 
 				for (int i = 0; i < 1000; i++)
 				{
-					world.Unassign<StableData>(i);
+					world.Remove<StableData>(i);
 				}
 
 				c2.Value = 1000000;

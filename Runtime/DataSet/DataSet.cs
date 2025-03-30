@@ -34,7 +34,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			Assert.IdAssigned(this, id);
+			Assert.Has(this, id);
 
 			return ref Data[Sparse[id]];
 		}
@@ -54,8 +54,8 @@ namespace Massive
 		/// </summary>
 		public override void SwapDataAt(int first, int second)
 		{
-			Assert.IdAssignedAt(this, first);
-			Assert.IdAssignedAt(this, second);
+			Assert.HasPacked(this, first);
+			Assert.HasPacked(this, second);
 
 			Data.Swap(first, second);
 		}
@@ -65,8 +65,8 @@ namespace Massive
 		/// </summary>
 		public override void CopyDataAt(int source, int destination)
 		{
-			Assert.IdAssignedAt(this, source);
-			Assert.IdAssignedAt(this, destination);
+			Assert.HasPacked(this, source);
+			Assert.HasPacked(this, destination);
 
 			Data[destination] = Data[source];
 		}

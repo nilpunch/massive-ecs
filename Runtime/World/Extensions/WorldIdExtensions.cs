@@ -22,26 +22,26 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates a unique entity with the assigned component and returns the entity ID.
+		/// Creates a unique entity with the added component and returns the entity ID.
 		/// Does not initialize component data.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Create<T>(this World world)
 		{
 			var id = world.Create();
-			world.Assign<T>(id);
+			world.Add<T>(id);
 			return id;
 		}
 
 		/// <summary>
-		/// Creates a unique entity with the assigned component and returns the entity ID.
+		/// Creates a unique entity with the added component and returns the entity ID.
 		/// </summary>
-		/// <param name="data"> Initial data for the assigned component. </param>
+		/// <param name="data"> Initial data for the added component. </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Create<T>(this World world, T data)
 		{
 			var id = world.Create();
-			world.Assign(id, data);
+			world.Set(id, data);
 			return id;
 		}
 
@@ -67,7 +67,7 @@ namespace Massive
 				var index = set.GetIndexOrNegative(id);
 				if (index >= 0)
 				{
-					set.Assign(cloneId);
+					set.Add(cloneId);
 					var cloneIndex = set.Sparse[cloneId];
 					set.CopyDataAt(index, cloneIndex);
 				}
@@ -100,20 +100,20 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns a component to the entity with this ID, regardless of version.
-		/// Repeat assignments are allowed.
+		/// Adds a component to the entity with this ID, regardless of version.
+		/// Repeat additions are allowed.
 		/// </summary>
-		/// <param name="data"> Initial data for the assigned component. </param>
+		/// <param name="data"> Initial data for the added component. </param>
 		/// <remarks>
 		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this World world, int id, T data)
+		public static void Set<T>(this World world, int id, T data)
 		{
 			Assert.IsAlive(world, id);
 
-			var set = world.Set<T>();
-			set.Assign(id);
+			var set = world.Sparse<T>();
+			set.Add(id);
 			if (set is DataSet<T> dataSet)
 			{
 				dataSet.Get(id) = data;
@@ -121,33 +121,33 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Assigns a component to the entity with this ID, regardless of version, without data initialization.
-		/// Repeat assignments are allowed.
+		/// Adds a component to the entity with this ID, regardless of version, without data initialization.
+		/// Repeat additions are allowed.
 		/// </summary>
 		/// <remarks>
 		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this World world, int id)
+		public static bool Add<T>(this World world, int id)
 		{
 			Assert.IsAlive(world, id);
 
-			world.Set<T>().Assign(id);
+			return world.Sparse<T>().Add(id);
 		}
 
 		/// <summary>
-		/// Unassigns a component from the entity with this ID, regardless of version.
-		/// Repeat unassignments are allowed.
+		/// Removes a component from the entity with this ID, regardless of version.
+		/// Repeat removements are allowed.
 		/// </summary>
 		/// <remarks>
 		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Unassign<T>(this World world, int id)
+		public static void Remove<T>(this World world, int id)
 		{
 			Assert.IsAlive(world, id);
 
-			world.Set<T>().Unassign(id);
+			world.Sparse<T>().Remove(id);
 		}
 
 		/// <summary>
@@ -161,7 +161,7 @@ namespace Massive
 		{
 			Assert.IsAlive(world, id);
 
-			return world.Set<T>().IsAssigned(id);
+			return world.Sparse<T>().Has(id);
 		}
 
 		/// <summary>
@@ -177,7 +177,7 @@ namespace Massive
 			Assert.IsAlive(world, id);
 			Assert.TypeHasData<T>(world, SuggestionMessage.DontUseGetWithEmptyTypes);
 
-			var dataSet = world.Set<T>() as DataSet<T>;
+			var dataSet = world.Sparse<T>() as DataSet<T>;
 
 			return ref dataSet.Get(id);
 		}

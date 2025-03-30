@@ -34,14 +34,14 @@ namespace Massive.Samples.Shooter
 		public void CreateCharacter(Vector2 position, Vector2 direction, float bulletsPerSecond)
 		{
 			var id = World.Create();
-			World.Assign(id, new Character(maxHealth: 20));
-			World.Assign(id, new Position() { Value = position });
-			World.Assign(id, new Weapon()
+			World.Set(id, new Character(maxHealth: 20));
+			World.Set(id, new Position() { Value = position });
+			World.Set(id, new Weapon()
 			{
 				BulletsPerSecond = bulletsPerSecond, ShootingDirection = Vector2.Normalize(direction),
 				BulletDamage = 1, BulletSpeed = 5f, BulletLifetime = 5f
 			});
-			World.Assign(id, new CircleCollider() { Radius = 0.25f });
+			World.Set(id, new CircleCollider() { Radius = 0.25f });
 		}
 	}
 }

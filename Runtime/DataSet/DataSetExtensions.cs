@@ -10,14 +10,11 @@ namespace Massive
 	public static class DataSetExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Assign<T>(this DataSet<T> dataSet, int id, T data)
+		public static void Set<T>(this DataSet<T> dataSet, int id, T data)
 		{
-			if (id < 0)
-			{
-				return;
-			}
+			Assert.ValidId(id);
 
-			dataSet.Assign(id);
+			dataSet.Add(id);
 			dataSet.Get(id) = data;
 		}
 

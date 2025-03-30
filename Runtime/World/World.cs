@@ -34,15 +34,15 @@ namespace Massive
 			Config = worldConfig;
 
 			var allSets = SetRegistry.All;
-			Entities.BeforeDestroyed += UnassignFromAllSets;
+			Entities.BeforeDestroyed += RemoveFromAllSets;
 
-			void UnassignFromAllSets(int entityId)
+			void RemoveFromAllSets(int entityId)
 			{
 				var setCount = allSets.Count;
 				var sets = allSets.Items;
 				for (var i = setCount - 1; i >= 0; i--)
 				{
-					sets[i].Unassign(entityId);
+					sets[i].Remove(entityId);
 				}
 			}
 		}
