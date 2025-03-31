@@ -80,9 +80,10 @@ class Program
 		var player = world.Create(new Player());
 
 		// Add components.
-		world.Set(player, new Velocity() { Magnitude = 10f });
-		world.Set(enemy, new Velocity());
-		world.Add<Position>(enemy); // Add component without initialization.
+		world.Add<Velocity>(player); // Adds component without initializing data.
+		world.Get<Velocity>(player) = new Velocity() { Magnitude = 10f }; // Set the data.
+
+		world.Set(enemy, new Velocity()); // Shortcut for the two operations above.
 
 		// Get full entity identifier from player ID.
 		// Handy when uniqueness is required, for example, when storing entities for later.
