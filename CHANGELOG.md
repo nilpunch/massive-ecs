@@ -2,9 +2,21 @@
 
 ## Unrelease
 
+BREAKING CHANGE: Major renaming.
+
+### Added
+
+- Copying and cloning extension methods to sets (WIP).
+
 ### Changed
 
-- Renamed `Registry` to `World`.
+- Renamed `Registry` class to `World`.
+- Renamed `Assign()` methods that **do not** set data to `Add()`.
+  This method returns `true` if the component is added and `false` if it is already present.
+- Renamed `Assign()` methods that **do** set data to `Set()`.
+- Renamed `IsAssigned()` method in sparse set to `Has()`.
+- Renamed `Set<T>()` extension method for `World` to `SparseSet<T>()`.
+- Added assertions for negative arguments in some methods.
 
 ## 18.1.0 - February 24, 2025
 
