@@ -4,10 +4,10 @@
 	{
 		public static void Update(World world, float deltaTime)
 		{
-			var characters = world.Data<Character>();
-			var bullets = world.Data<Bullet>();
-			var colliders = world.Data<CircleCollider>();
-			var positions = world.Data<Position>();
+			var characters = world.DataSet<Character>();
+			var bullets = world.DataSet<Bullet>();
+			var colliders = world.DataSet<CircleCollider>();
+			var positions = world.DataSet<Position>();
 
 			foreach (var characterId in world.View().Filter<Include<Character>, Exclude<Dead>>())
 			{

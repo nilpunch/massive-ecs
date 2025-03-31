@@ -122,7 +122,7 @@ namespace Massive
 		{
 			Assert.IsAlive(world, entity);
 
-			return world.Sparse<T>().Add(entity.Id);
+			return world.SparseSet<T>().Add(entity.Id);
 		}
 
 		/// <summary>
@@ -136,7 +136,7 @@ namespace Massive
 		{
 			Assert.IsAlive(world, entity);
 
-			world.Sparse<T>().Remove(entity.Id);
+			world.SparseSet<T>().Remove(entity.Id);
 		}
 
 		/// <summary>
@@ -150,7 +150,7 @@ namespace Massive
 		{
 			Assert.IsAlive(world, entity);
 
-			return world.Sparse<T>().Has(entity.Id);
+			return world.SparseSet<T>().Has(entity.Id);
 		}
 
 		/// <summary>

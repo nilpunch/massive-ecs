@@ -33,7 +33,7 @@ namespace Massive
 		[Conditional(Symbol)]
 		public static void TypeHasData<T>(World world, string suggestion)
 		{
-			if (!(world.Sparse<T>() is DataSet<T>))
+			if (!(world.SparseSet<T>() is DataSet<T>))
 			{
 				throw new Exception($"{Library} The type {typeof(T).GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
 			}

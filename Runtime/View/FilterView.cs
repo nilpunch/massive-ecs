@@ -71,7 +71,7 @@ namespace Massive
 		{
 			Assert.TypeHasData<T>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet = World.Data<T>();
+			var dataSet = World.DataSet<T>();
 
 			ThrowIfCantInclude(dataSet);
 
@@ -136,8 +136,8 @@ namespace Massive
 			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = World.Data<T1>();
-			var dataSet2 = World.Data<T2>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
 
 			ThrowIfCantInclude(dataSet1);
 			ThrowIfCantInclude(dataSet2);
@@ -244,9 +244,9 @@ namespace Massive
 			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = World.Data<T1>();
-			var dataSet2 = World.Data<T2>();
-			var dataSet3 = World.Data<T3>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
 
 			ThrowIfCantInclude(dataSet1);
 			ThrowIfCantInclude(dataSet2);
@@ -393,10 +393,10 @@ namespace Massive
 			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 			Assert.TypeHasData<T4>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
-			var dataSet1 = World.Data<T1>();
-			var dataSet2 = World.Data<T2>();
-			var dataSet3 = World.Data<T3>();
-			var dataSet4 = World.Data<T4>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
+			var dataSet4 = World.DataSet<T4>();
 
 			ThrowIfCantInclude(dataSet1);
 			ThrowIfCantInclude(dataSet2);

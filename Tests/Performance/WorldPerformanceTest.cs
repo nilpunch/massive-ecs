@@ -184,8 +184,8 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					var positions = _world.Data<PositionComponent>();
-					var velocities = _world.Data<VelocityComponent>();
+					var positions = _world.DataSet<PositionComponent>();
+					var velocities = _world.DataSet<VelocityComponent>();
 					foreach (var entityId in _world.View())
 					{
 						positions.Get(entityId);
@@ -250,7 +250,7 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					var positions = _world.Data<PositionComponent>();
+					var positions = _world.DataSet<PositionComponent>();
 					foreach (var entityId in _world.View())
 					{
 						positions.Remove(entityId);
@@ -286,7 +286,7 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_world.Data<PositionComponent>();
+						_world.DataSet<PositionComponent>();
 					}
 				})
 				.MeasurementCount(MeasurementCount)

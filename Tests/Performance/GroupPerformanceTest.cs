@@ -19,9 +19,9 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					var pool1 = world.Data<TestState64>();
-					var pool2 = world.Data<TestState64_2>();
-					var pool3 = world.Data<TestState64_3>();
+					var pool1 = world.DataSet<TestState64>();
+					var pool2 = world.DataSet<TestState64_2>();
+					var pool3 = world.DataSet<TestState64_3>();
 
 					foreach (var id in group)
 					{

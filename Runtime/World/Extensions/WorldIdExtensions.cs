@@ -112,7 +112,7 @@ namespace Massive
 		{
 			Assert.IsAlive(world, id);
 
-			var set = world.Sparse<T>();
+			var set = world.SparseSet<T>();
 			set.Add(id);
 			if (set is DataSet<T> dataSet)
 			{
@@ -132,7 +132,7 @@ namespace Massive
 		{
 			Assert.IsAlive(world, id);
 
-			return world.Sparse<T>().Add(id);
+			return world.SparseSet<T>().Add(id);
 		}
 
 		/// <summary>
@@ -147,7 +147,7 @@ namespace Massive
 		{
 			Assert.IsAlive(world, id);
 
-			world.Sparse<T>().Remove(id);
+			world.SparseSet<T>().Remove(id);
 		}
 
 		/// <summary>
@@ -161,7 +161,7 @@ namespace Massive
 		{
 			Assert.IsAlive(world, id);
 
-			return world.Sparse<T>().Has(id);
+			return world.SparseSet<T>().Has(id);
 		}
 
 		/// <summary>
@@ -177,7 +177,7 @@ namespace Massive
 			Assert.IsAlive(world, id);
 			Assert.TypeHasData<T>(world, SuggestionMessage.DontUseGetWithEmptyTypes);
 
-			var dataSet = world.Sparse<T>() as DataSet<T>;
+			var dataSet = world.SparseSet<T>() as DataSet<T>;
 
 			return ref dataSet.Get(id);
 		}
