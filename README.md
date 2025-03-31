@@ -135,7 +135,7 @@ class Program
 		}
 
 		// Iterate manually over data sets.
-		var velocities = world.Data<Velocity>();
+		var velocities = world.DataSet<Velocity>();
 		for (int i = 0; i < velocities.Count; ++i)
 		{
 			ref var velocity = ref velocities.Data[i];
