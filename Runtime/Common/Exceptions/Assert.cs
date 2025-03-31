@@ -40,6 +40,15 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		public static void TypeHasData(SparseSet sparseSet, Type type, string suggestion)
+		{
+			if (!(sparseSet is IDataSet))
+			{
+				throw new Exception($"{Library} The type {type.GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
+			}
+		}
+
+		[Conditional(Symbol)]
 		public static void Has(SparseSet set, int id)
 		{
 			if (!set.Has(id))

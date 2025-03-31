@@ -23,7 +23,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TAbstract Find<TKey>()
 		{
-			var typeIndex = TypeIdentifier<TKey>.Info.Index;
+			var typeIndex = TypeId<TKey>.Info.Index;
 
 			if (typeIndex >= _lookup.Length)
 			{
@@ -61,7 +61,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf<TKey>()
 		{
-			return TypeIdentifier<TKey>.Info.Index;
+			return TypeId<TKey>.Info.Index;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -94,7 +94,7 @@ namespace Massive
 
 		public void Assign<TKey>(TAbstract item)
 		{
-			var typeInfo = TypeIdentifier<TKey>.Info;
+			var typeInfo = TypeId<TKey>.Info;
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit.
@@ -124,12 +124,12 @@ namespace Massive
 
 		public int IndexOf(Type key)
 		{
-			return RuntimeTypeIdentifier.GetInfo(key).Index;
+			return RuntimeTypeId.GetInfo(key).Index;
 		}
 
 		public void Assign(Type keyType, TAbstract item)
 		{
-			var typeInfo = RuntimeTypeIdentifier.GetInfo(keyType);
+			var typeInfo = RuntimeTypeId.GetInfo(keyType);
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit.

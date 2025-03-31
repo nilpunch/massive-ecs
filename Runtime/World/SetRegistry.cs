@@ -9,76 +9,126 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SetRegistry
 	{
-		private readonly GenericLookupSparseSet _setLookup = new GenericLookupSparseSet();
-		private readonly ISetFactory _setFactory;
+		private readonly FastList<string> _setIds = new FastList<string>();
+		private readonly FastListSparseSet _sets = new FastListSparseSet();
+
+		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
+
+		public ISetFactory SetFactory { get; }
 
 		public SetRegistry(ISetFactory setFactory)
 		{
-			_setFactory = setFactory;
+			SetFactory = setFactory;
 		}
 
 		public FastListSparseSet All
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _setLookup.All;
+			get => _sets;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public SparseSet GetExisting(int typeIndex)
+		{
+			if (typeIndex >= Lookup.Length)
+			{
+				return null;
+			}
+
+			return Lookup[typeIndex];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public SparseSet GetExisting(string setId)
+		{
+			var setIndex = _setIds.BinarySearch(setId);
+
+			if (setIndex < 0)
+			{
+				return null;
+			}
+
+			return _sets[setIndex];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet Get<TKey>()
 		{
-			var set = _setLookup.Find<TKey>();
+			var info = TypeId<TKey>.Info;
 
-			if (set is null)
+			var candidate = GetExisting(info.Index);
+
+			if (candidate != null)
 			{
-				set = _setFactory.CreateAppropriateSet<TKey>();
-				_setLookup.Assign<TKey>(set);
+				return candidate;
 			}
 
-			return set;
+			var createdSet = SetFactory.CreateAppropriateSet<TKey>();
+
+			Insert(info.FullName, createdSet);
+			EnsureLookupAt(info.Index);
+			Lookup[info.Index] = createdSet;
+
+			return createdSet;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet GetReflected(Type keyType)
+		public SparseSet GetReflected(Type setType)
 		{
-			var set = _setLookup.Find(keyType);
+			var info = RuntimeTypeId.GetInfo(setType);
 
-			if (set is null)
+			var candidate = GetExisting(info.Index);
+
+			if (candidate != null)
 			{
-				set = _setFactory.CreateAppropriateSetReflected(keyType);
-				_setLookup.Assign(keyType, set);
+				return candidate;
 			}
 
-			return set;
+			var createdSet = SetFactory.CreateAppropriateSetReflected(setType);
+
+			Insert(info.FullName, createdSet);
+			EnsureLookupAt(info.Index);
+			Lookup[info.Index] = createdSet;
+
+			return createdSet;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Assign(Type type, SparseSet sparseSet)
+		public void EnsureLookupAt(int index)
 		{
-			_setLookup.Assign(type, sparseSet);
+			if (index >= Lookup.Length)
+			{
+				Lookup = Lookup.Resize(MathUtils.NextPowerOf2(index + 1));
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Assign(string id, SparseSet sparseSet)
+		public void Insert(string setId, SparseSet set)
 		{
-			_setLookup.Assign(id, sparseSet);
+			// Maintain items sorted.
+			var itemIndex = _setIds.BinarySearch(setId);
+			if (itemIndex >= 0)
+			{
+				_sets[itemIndex] = set;
+			}
+			else
+			{
+				var insertionIndex = ~itemIndex;
+				_setIds.Insert(insertionIndex, setId);
+				_sets.Insert(insertionIndex, set);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Type GetKey(SparseSet set)
+		public int IndexOf(SparseSet sparseSet)
 		{
-			return _setLookup.GetKey(set);
+			return Array.IndexOf(Lookup, sparseSet);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(SparseSet set)
+		public Type TypeOf(SparseSet sparseSet)
 		{
-			return _setLookup.IndexOf(set);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Find(string id)
-		{
-			return _setLookup.Find(id);
+			return RuntimeTypeId.GetTypeByIndex(IndexOf(sparseSet));
 		}
 	}
 }

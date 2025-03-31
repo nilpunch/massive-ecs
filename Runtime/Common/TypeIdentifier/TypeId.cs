@@ -8,18 +8,18 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public abstract class TypeIdentifier<T>
+	public abstract class TypeId<T>
 	{
-		private static IdentifierInfo s_info;
+		private static TypeIdInfo s_info;
 		private static bool s_initialized;
 
-		public static IdentifierInfo Info
+		public static TypeIdInfo Info
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => s_info;
 		}
 
-		static TypeIdentifier()
+		static TypeId()
 		{
 			Warmup();
 		}
@@ -35,12 +35,12 @@ namespace Massive
 			var index = TypesCounter.Increment();
 			var typeName = type.GetFullGenericName();
 
-			var info = new IdentifierInfo(index, typeName);
+			var info = new TypeIdInfo(index, typeName);
 
 			s_info = info;
 			s_initialized = true;
 
-			RuntimeTypeIdentifier.Register(type, info);
+			RuntimeTypeId.Register(type, info);
 		}
 	}
 }

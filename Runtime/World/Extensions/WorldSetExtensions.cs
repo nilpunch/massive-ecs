@@ -15,15 +15,47 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SparseSet SparseSet<T>(this World world)
 		{
-			return world.SetRegistry.Get<T>();
+			var info = TypeId<T>.Info;
+			var setRegistry = world.SetRegistry;
+
+			var candidate = setRegistry.GetExisting(info.Index);
+
+			if (candidate != null)
+			{
+				return candidate;
+			}
+
+			var createdSet = setRegistry.SetFactory.CreateAppropriateSet<T>();
+
+			setRegistry.Insert(info.FullName, createdSet);
+			setRegistry.EnsureLookupAt(info.Index);
+			setRegistry.Lookup[info.Index] = createdSet;
+
+			return createdSet;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static DataSet<T> DataSet<T>(this World world)
 		{
-			Assert.TypeHasData<T>(world, SuggestionMessage.UseSetMethodWithEmptyTypes);
+			var info = TypeId<T>.Info;
+			var setRegistry = world.SetRegistry;
 
-			return (DataSet<T>)world.SetRegistry.Get<T>();
+			var candidate = setRegistry.GetExisting(info.Index);
+
+			if (candidate != null)
+			{
+				Assert.TypeHasData(candidate, typeof(T), SuggestionMessage.UseSetMethodWithEmptyTypes);
+				return (DataSet<T>)candidate;
+			}
+
+			var createdSet = setRegistry.SetFactory.CreateAppropriateSet<T>();
+			Assert.TypeHasData(createdSet, typeof(T), SuggestionMessage.UseSetMethodWithEmptyTypes);
+
+			setRegistry.Insert(info.FullName, createdSet);
+			setRegistry.EnsureLookupAt(info.Index);
+			setRegistry.Lookup[info.Index] = createdSet;
+
+			return (DataSet<T>)createdSet;
 		}
 	}
 }

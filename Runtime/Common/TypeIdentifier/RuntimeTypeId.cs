@@ -9,31 +9,48 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public abstract class RuntimeTypeIdentifier
+	public abstract class RuntimeTypeId
 	{
-		private static readonly Dictionary<Type, IdentifierInfo> s_runtimeIdentifierInfo = new Dictionary<Type, IdentifierInfo>();
+		private static readonly Dictionary<Type, TypeIdInfo> s_typeInfo = new Dictionary<Type, TypeIdInfo>();
+		private static Type[] s_types = Array.Empty<Type>();
 
-		public static IdentifierInfo GetInfo(Type type)
+		public static TypeIdInfo GetInfo(Type type)
 		{
-			if (!s_runtimeIdentifierInfo.TryGetValue(type, out var identifierInfo))
+			if (!s_typeInfo.TryGetValue(type, out var identifierInfo))
 			{
 				WarmupIdentifier(type);
-				identifierInfo = s_runtimeIdentifierInfo[type];
+				identifierInfo = s_typeInfo[type];
 			}
 
 			return identifierInfo;
 		}
 
-		internal static void Register(Type type, IdentifierInfo info)
+		public static Type GetTypeByIndex(int index)
 		{
-			s_runtimeIdentifierInfo.Add(type, info);
+			if (index >= s_types.Length)
+			{
+				return null;
+			}
+
+			return s_types[index];
+		}
+
+		internal static void Register(Type type, TypeIdInfo info)
+		{
+			s_typeInfo.Add(type, info);
+
+			if (info.Index >= s_types.Length)
+			{
+				s_types = s_types.Resize(MathUtils.NextPowerOf2(info.Index + 1));
+			}
+			s_types[info.Index] = type;
 		}
 
 		private static void WarmupIdentifier(Type type)
 		{
 			try
 			{
-				var typeIdenifier = typeof(TypeIdentifier<>).MakeGenericType(type);
+				var typeIdenifier = typeof(TypeId<>).MakeGenericType(type);
 				var warmup = typeIdenifier.GetMethod("Warmup", BindingFlags.Static | BindingFlags.Public);
 				warmup.Invoke(null, null);
 			}
