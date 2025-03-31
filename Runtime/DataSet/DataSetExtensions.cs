@@ -12,8 +12,6 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set<T>(this DataSet<T> dataSet, int id, T data)
 		{
-			Assert.ValidId(id);
-
 			dataSet.Add(id);
 			dataSet.Get(id) = data;
 		}

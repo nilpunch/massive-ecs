@@ -92,13 +92,18 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Adds an ID. If the ID is negative or already added, no action is performed.
+		/// Adds an ID. If the ID is already added, no action is performed.
 		/// </summary>
+		/// <remarks>
+		/// Will throw an exception if provided ID is negative.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Add(int id)
 		{
-			// If ID is negative or already added, nothing to be done.
-			if (id < 0 || id < SparseCapacity && Sparse[id] != Constants.InvalidId)
+			Assert.NonNegative(id, nameof(id));
+
+			// If ID is already added, nothing to be done.
+			if (id < SparseCapacity && Sparse[id] != Constants.InvalidId)
 			{
 				return false;
 			}
@@ -130,13 +135,18 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Removes an ID. If the ID is negative or already removed, no action is performed.
+		/// Removes an ID. If the ID is already removed, no action is performed.
 		/// </summary>
+		/// <remarks>
+		/// Will throw an exception if provided ID is negative.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(int id)
 		{
-			// If ID is negative or not added, nothing to be done.
-			if (id < 0 || id >= SparseCapacity || Sparse[id] == Constants.InvalidId)
+			Assert.NonNegative(id, nameof(id));
+
+			// If ID is not added, nothing to be done.
+			if (id >= SparseCapacity || Sparse[id] == Constants.InvalidId)
 			{
 				return false;
 			}
@@ -205,7 +215,8 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Returns the packed index of the specified ID, or a negative value if the ID is not added.
+		/// Returns the packed index of the specified ID,
+		/// or a negative value if the ID is not added or is negative.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetIndexOrNegative(int id)
@@ -221,19 +232,29 @@ namespace Massive
 		/// <summary>
 		/// Checks whether the specified ID is added.
 		/// </summary>
+		/// <remarks>
+		/// Will throw an exception if provided ID is negative.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has(int id)
 		{
-			return id >= 0 && id < SparseCapacity && Sparse[id] != Constants.InvalidId;
+			Assert.NonNegative(id, nameof(id));
+
+			return id < SparseCapacity && Sparse[id] != Constants.InvalidId;
 		}
 
 		/// <summary>
 		/// Checks whether the packed index is added.
 		/// </summary>
+		/// <remarks>
+		/// Will throw an exception if provided index is negative.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool HasPacked(int index)
 		{
-			return index >= 0 && index < PackedCapacity && Packed[index] >= 0;
+			Assert.NonNegative(index, nameof(index));
+
+			return index < PackedCapacity && Packed[index] >= 0;
 		}
 
 		/// <summary>

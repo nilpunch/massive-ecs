@@ -22,11 +22,11 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
-		public static void ValidId(int id)
+		public static void NonNegative(int id, string paramName = "argument")
 		{
 			if (id < 0)
 			{
-				throw new Exception($"{Library} The id:{id} is not valid.");
+				throw new Exception($"{Library} Provided {paramName} is negative.");
 			}
 		}
 

@@ -129,11 +129,14 @@ namespace Massive
 			return entity;
 		}
 
+		/// <remarks>
+		/// Will throw an exception if provided ID is negative.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int id)
 		{
-			// If ID is negative or entity is not alive, nothing to be done.
-			if (id < 0 || id >= MaxId || Sparse[id] >= Count || Packed[Sparse[id]] != id)
+			// If entity is not alive, nothing to be done.
+			if (id >= MaxId || Sparse[id] >= Count || Packed[Sparse[id]] != id)
 			{
 				return;
 			}
@@ -157,9 +160,14 @@ namespace Massive
 			}
 		}
 
+		/// <remarks>
+		/// Will throw an exception if provided amount is negative.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CreateMany(int amount)
 		{
+			Assert.NonNegative(amount, nameof(amount));
+
 			var needToCreate = amount;
 			EnsureCapacityAt(needToCreate + Count);
 
@@ -254,10 +262,15 @@ namespace Massive
 			return index < Count && Packed[index] == entity.Id && Versions[index] == entity.Version;
 		}
 
+		/// <remarks>
+		/// Will throw an exception if provided ID is negative.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			return id >= 0 && id < MaxId && Sparse[id] < Count && Packed[Sparse[id]] == id;
+			Assert.NonNegative(id, nameof(id));
+
+			return id < MaxId && Sparse[id] < Count && Packed[Sparse[id]] == id;
 		}
 
 		/// <summary>
