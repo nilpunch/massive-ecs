@@ -124,10 +124,7 @@ namespace Massive
 				Count += 1;
 			}
 
-			if (id >= UsedIds)
-			{
-				UsedIds = id + 1;
-			}
+			UsedIds = MathUtils.Max(UsedIds, id + 1);
 
 			AfterAdded?.Invoke(id);
 

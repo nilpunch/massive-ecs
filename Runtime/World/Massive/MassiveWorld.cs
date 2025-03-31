@@ -66,7 +66,7 @@ namespace Massive
 			{
 				if (set is IMassive massive)
 				{
-					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
+					massive.Rollback(MathUtils.Min(frames, massive.CanRollbackFrames));
 				}
 			}
 
@@ -74,7 +74,7 @@ namespace Massive
 			{
 				if (group is IMassive massive)
 				{
-					massive.Rollback(Math.Min(frames, massive.CanRollbackFrames));
+					massive.Rollback(MathUtils.Min(frames, massive.CanRollbackFrames));
 				}
 			}
 

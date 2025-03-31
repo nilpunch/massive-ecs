@@ -4,6 +4,7 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
+	[Il2CppEagerStaticClassConstruction]
 	public static class MathUtils
 	{
 		/// <summary>
@@ -116,6 +117,18 @@ namespace Massive
 				}
 				return result;
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int Max(int a, int b)
+		{
+			return a > b ? a : b;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int Min(int a, int b)
+		{
+			return a < b ? a : b;
 		}
 	}
 }

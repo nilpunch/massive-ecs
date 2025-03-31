@@ -28,7 +28,7 @@ namespace Massive
 		public void SaveFrame()
 		{
 			CurrentFrame = Loop(CurrentFrame + 1, FramesCapacity);
-			_savedFrames = Math.Min(_savedFrames + 1, FramesCapacity);
+			_savedFrames = MathUtils.Min(_savedFrames + 1, FramesCapacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
