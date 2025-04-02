@@ -10,14 +10,9 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public abstract class TypeId<T>
 	{
-		private static TypeIdInfo s_info;
 		private static bool s_initialized;
 
-		public static TypeIdInfo Info
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => s_info;
-		}
+		public static TypeIdInfo Info;
 
 		static TypeId()
 		{
@@ -37,7 +32,7 @@ namespace Massive
 
 			var info = new TypeIdInfo(index, typeName);
 
-			s_info = info;
+			Info = info;
 			s_initialized = true;
 
 			RuntimeTypeId.Register(type, info);

@@ -18,7 +18,8 @@ namespace Massive
 			var info = TypeId<T>.Info;
 			var setRegistry = world.SetRegistry;
 
-			var candidate = setRegistry.GetExisting(info.Index);
+			setRegistry.EnsureLookupAt(info.Index);
+			var candidate = setRegistry.Lookup[info.Index];
 
 			if (candidate != null)
 			{
@@ -28,7 +29,6 @@ namespace Massive
 			var createdSet = setRegistry.SetFactory.CreateAppropriateSet<T>();
 
 			setRegistry.Insert(info.FullName, createdSet);
-			setRegistry.EnsureLookupAt(info.Index);
 			setRegistry.Lookup[info.Index] = createdSet;
 
 			return createdSet;
@@ -40,7 +40,8 @@ namespace Massive
 			var info = TypeId<T>.Info;
 			var setRegistry = world.SetRegistry;
 
-			var candidate = setRegistry.GetExisting(info.Index);
+			setRegistry.EnsureLookupAt(info.Index);
+			var candidate = setRegistry.Lookup[info.Index];
 
 			if (candidate != null)
 			{
@@ -52,7 +53,6 @@ namespace Massive
 			Assert.TypeHasData(createdSet, typeof(T), SuggestionMessage.UseSetMethodWithEmptyTypes);
 
 			setRegistry.Insert(info.FullName, createdSet);
-			setRegistry.EnsureLookupAt(info.Index);
 			setRegistry.Lookup[info.Index] = createdSet;
 
 			return (DataSet<T>)createdSet;

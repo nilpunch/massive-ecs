@@ -56,7 +56,8 @@ namespace Massive
 		{
 			var info = TypeId<TKey>.Info;
 
-			var candidate = GetExisting(info.Index);
+			EnsureLookupAt(info.Index);
+			var candidate = Lookup[info.Index];
 
 			if (candidate != null)
 			{
@@ -66,7 +67,6 @@ namespace Massive
 			var createdSet = SetFactory.CreateAppropriateSet<TKey>();
 
 			Insert(info.FullName, createdSet);
-			EnsureLookupAt(info.Index);
 			Lookup[info.Index] = createdSet;
 
 			return createdSet;
@@ -77,7 +77,8 @@ namespace Massive
 		{
 			var info = RuntimeTypeId.GetInfo(setType);
 
-			var candidate = GetExisting(info.Index);
+			EnsureLookupAt(info.Index);
+			var candidate = Lookup[info.Index];
 
 			if (candidate != null)
 			{
@@ -87,7 +88,6 @@ namespace Massive
 			var createdSet = SetFactory.CreateAppropriateSetReflected(setType);
 
 			Insert(info.FullName, createdSet);
-			EnsureLookupAt(info.Index);
 			Lookup[info.Index] = createdSet;
 
 			return createdSet;

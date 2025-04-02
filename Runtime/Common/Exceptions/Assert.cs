@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
@@ -13,6 +14,7 @@ namespace Massive
 		public const string Library = "[MASSIVE]";
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void That(bool condition, string message)
 		{
 			if (!condition)
@@ -22,6 +24,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void NonNegative(int id, string paramName = "argument")
 		{
 			if (id < 0)
@@ -31,6 +34,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void TypeHasData<T>(World world, string suggestion)
 		{
 			if (!(world.SparseSet<T>() is DataSet<T>))
@@ -40,6 +44,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void TypeHasData(SparseSet sparseSet, Type type, string suggestion)
 		{
 			if (!(sparseSet is IDataSet))
@@ -49,6 +54,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Has(SparseSet set, int id)
 		{
 			if (!set.Has(id))
@@ -58,6 +64,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void HasPacked(SparseSet set, int index)
 		{
 			if (!set.HasPacked(index))
@@ -67,12 +74,14 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void IsAlive(World world, int entityId)
 		{
 			IsAlive(world.Entities, entityId);
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void IsAlive(Entities entities, int entityId)
 		{
 			if (!entities.IsAlive(entityId))
@@ -82,12 +91,14 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void IsAlive(World world, Entity entity)
 		{
 			IsAlive(world.Entities, entity);
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void IsAlive(Entities entities, Entity entity)
 		{
 			if (!entities.IsAlive(entity))
@@ -97,6 +108,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void NoConflictsInFilter(SparseSet[] included, SparseSet[] excluded)
 		{
 			if (included.ContainsAny(excluded))
@@ -106,6 +118,7 @@ namespace Massive
 		}
 
 		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ContainsDuplicates<T>(T[] array, string message) where T : class
 		{
 			for (var i = 0; i < array.Length; i++)
