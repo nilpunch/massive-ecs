@@ -66,7 +66,7 @@ namespace Massive
 		{
 			if (CopyableUtils.IsImplementedFor(typeof(T)))
 			{
-				return CopyableUtils.CreateCopyableDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				return CopyableUtils.CreateCopyingDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
 			}
 			else if (typeof(T).IsManaged())
 			{

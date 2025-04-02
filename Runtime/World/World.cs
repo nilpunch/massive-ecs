@@ -25,7 +25,7 @@ namespace Massive
 		{
 		}
 
-		protected World(Entities entities, ISetFactory setFactory, IGroupFactory groupFactory, WorldConfig worldConfig)
+		public World(Entities entities, ISetFactory setFactory, IGroupFactory groupFactory, WorldConfig worldConfig)
 		{
 			Entities = entities;
 			SetRegistry = new SetRegistry(setFactory);

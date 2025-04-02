@@ -47,5 +47,40 @@ namespace Massive
 				Array.Copy(sourcePage, destinationPage, page.Length);
 			}
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static DataSet<T> CloneCopyable<T>(this DataSet<T> dataSet) where T : ICopyable<T>
+		{
+			var clone = new DataSet<T>();
+			dataSet.CopyTo(clone);
+			return clone;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void CopyToCopyable<T>(this DataSet<T> source, DataSet<T> destination) where T : ICopyable<T>
+		{
+			source.CopySparseTo(destination);
+
+			var sourceData = source.Data;
+			var destinationData = source.Data;
+
+			foreach (var page in new PageSequence(sourceData.PageSize, source.Count))
+			{
+				if (!sourceData.HasPage(page.Index))
+				{
+					continue;
+				}
+
+				destinationData.EnsurePage(page.Index);
+
+				var sourcePage = sourceData.Pages[page.Index];
+				var destinationPage = destinationData.Pages[page.Index];
+
+				for (var i = 0; i < page.Length; i++)
+				{
+					sourcePage[i].CopyTo(ref destinationPage[i]);
+				}
+			}
+		}
 	}
 }

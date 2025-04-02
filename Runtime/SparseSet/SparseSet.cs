@@ -205,7 +205,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ClearWithoutNotify()
 		{
-			Array.Fill(Sparse, Constants.InvalidId);
+			Array.Fill(Sparse, Constants.InvalidId, 0, UsedIds);
 			Count = 0;
 			UsedIds = 0;
 			NextHole = EndHole;

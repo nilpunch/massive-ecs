@@ -1,4 +1,7 @@
-﻿namespace Massive
+﻿using System;
+using System.Runtime.CompilerServices;
+
+namespace Massive
 {
 	public class WorldConfig
 	{
@@ -17,6 +20,15 @@
 			StoreEmptyTypesAsDataSets = storeEmptyTypesAsDataSets ?? StoreEmptyTypesAsDataSets;
 			FullStability = fullStability ?? FullStability;
 			PackingWhenIterating = packingWhenIterating ?? PackingWhenIterating;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool CompatibleWith(WorldConfig other)
+		{
+			return PageSize == other.PageSize
+				&& StoreEmptyTypesAsDataSets == other.StoreEmptyTypesAsDataSets
+				&& FullStability == other.FullStability
+				&& PackingWhenIterating == other.PackingWhenIterating;
 		}
 	}
 }
