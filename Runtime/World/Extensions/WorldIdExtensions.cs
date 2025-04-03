@@ -143,11 +143,11 @@ namespace Massive
 		/// Will throw an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Remove<T>(this World world, int id)
+		public static bool Remove<T>(this World world, int id)
 		{
 			Assert.IsAlive(world, id);
 
-			world.SparseSet<T>().Remove(id);
+			return world.SparseSet<T>().Remove(id);
 		}
 
 		/// <summary>

@@ -11,11 +11,13 @@ BREAKING CHANGE: Major renaming.
 ### Changed
 
 - Renamed `Registry` class to `World`.
-- Renamed `Assign()` methods that **do not** set data to `Add()`.
-  This method returns `true` if the component is added and `false` if it is already present.
-- Renamed `Assign()` methods that **do** set data to `Set()`.
-- Renamed `IsAssigned()` method in sparse set to `Has()`.
-- Renamed `Set<T>()` extension method for `World` to `SparseSet<T>()`.
+- Changed sets API:
+  - Renamed `Assign(id)` to `Add(id)`.
+  - Renamed `Unassign(id)` to `Remove(id)`.
+  - Renamed `IsAssigned(id)` to `Has(id)`.
+  - Renamed `Assign(id, data)` shortcut to `Set(id, data)`.
+  - `Add(id)` and `Remove(id)` returns `true` if the component is added or removed
+    and `false` if it is already present or not there.
 - Added assertions for negative arguments in some methods.
 
 ## 18.1.0 - February 24, 2025
