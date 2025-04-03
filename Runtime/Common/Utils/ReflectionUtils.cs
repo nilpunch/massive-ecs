@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Massive
 {
@@ -51,7 +52,7 @@ namespace Massive
 			return type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
 		}
 
-		private static Dictionary<Type, bool> s_cachedTypes = new Dictionary<Type, bool>();
+		private static readonly Dictionary<Type, bool> s_managedCache = new Dictionary<Type, bool>();
 
 		public static bool IsManaged(this Type type)
 		{
@@ -60,30 +61,25 @@ namespace Massive
 
 		public static bool IsUnmanaged(this Type t)
 		{
-			var result = false;
-			if (s_cachedTypes.ContainsKey(t))
+			if (!s_managedCache.TryGetValue(t, out var isUnmanaged))
 			{
-				return s_cachedTypes[t];
+				if (t.IsPrimitive || t.IsPointer || t.IsEnum)
+				{
+					isUnmanaged = true;
+				}
+				else if (!t.IsValueType)
+				{
+					isUnmanaged = false;
+				}
+				else
+				{
+					isUnmanaged = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+						.All(x => x.FieldType.IsUnmanaged());
+				}
+				s_managedCache.Add(t, isUnmanaged);
 			}
-			else if (t.IsPrimitive || t.IsPointer || t.IsEnum)
-			{
-				result = true;
-			}
-			else if (t.IsGenericType || !t.IsValueType)
-			{
-				result = false;
-			}
-			else
-			{
-				result = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-					.All(x => x.FieldType.IsUnmanaged());
-			}
-			s_cachedTypes.Add(t, result);
-			return result;
-		}
 
-		private class ConstraintUnmanaged<T> where T : unmanaged
-		{
+			return isUnmanaged;
 		}
 	}
 }
