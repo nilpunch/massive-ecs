@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -18,7 +18,7 @@ namespace Massive
 		{
 			if (!s_typeInfo.TryGetValue(type, out var identifierInfo))
 			{
-				WarmupIdentifier(type);
+				WarmupTypeId(type);
 				identifierInfo = s_typeInfo[type];
 			}
 
@@ -46,13 +46,12 @@ namespace Massive
 			s_types[info.Index] = type;
 		}
 
-		private static void WarmupIdentifier(Type type)
+		private static void WarmupTypeId(Type type)
 		{
 			try
 			{
-				var typeIdenifier = typeof(TypeId<>).MakeGenericType(type);
-				var warmup = typeIdenifier.GetMethod("Warmup", BindingFlags.Static | BindingFlags.Public);
-				warmup.Invoke(null, null);
+				var typeId = typeof(TypeId<>).MakeGenericType(type);
+				RuntimeHelpers.RunClassConstructor(typeId.TypeHandle);
 			}
 			catch
 			{

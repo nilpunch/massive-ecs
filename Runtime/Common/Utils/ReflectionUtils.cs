@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -50,23 +51,35 @@ namespace Massive
 			return type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
 		}
 
+		private static Dictionary<Type, bool> s_cachedTypes = new Dictionary<Type, bool>();
+
 		public static bool IsManaged(this Type type)
 		{
 			return !IsUnmanaged(type);
 		}
 
-		public static bool IsUnmanaged(this Type type)
+		public static bool IsUnmanaged(this Type t)
 		{
-			try
+			var result = false;
+			if (s_cachedTypes.ContainsKey(t))
 			{
-				// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-				typeof(ConstraintUnmanaged<>).MakeGenericType(type);
-				return true;
+				return s_cachedTypes[t];
 			}
-			catch (Exception)
+			else if (t.IsPrimitive || t.IsPointer || t.IsEnum)
 			{
-				return false;
+				result = true;
 			}
+			else if (t.IsGenericType || !t.IsValueType)
+			{
+				result = false;
+			}
+			else
+			{
+				result = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+					.All(x => x.FieldType.IsUnmanaged());
+			}
+			s_cachedTypes.Add(t, result);
+			return result;
 		}
 
 		private class ConstraintUnmanaged<T> where T : unmanaged
