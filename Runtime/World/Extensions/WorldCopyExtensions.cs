@@ -29,14 +29,30 @@ namespace Massive
 			source.Entities.CopyTo(destination.Entities);
 
 			// Sets.
-			var destinationSets = destination.SetRegistry;
+			var sourceSetRegistry = source.SetRegistry;
+			var destinationSetRegistry = destination.SetRegistry;
 
-			var clonersList = source.SetRegistry.Cloners;
-			var clonersCount = clonersList.Count;
-			var cloners = clonersList.Items;
-			for (var i = 0; i < clonersCount; i++)
+			foreach (var cloner in sourceSetRegistry.Cloners)
 			{
-				cloners[i].CopyTo(destinationSets);
+				cloner.CopyTo(destinationSetRegistry);
+			}
+
+			// Clear other sets.
+			var destinationSets = destinationSetRegistry.All;
+			var sourceSetHashes = sourceSetRegistry.Hashes;
+			var destinationSetHashes = sourceSetRegistry.Hashes;
+
+			int src = 0;
+			for (int dst = 0; dst < destinationSets.Count; dst++)
+			{
+				if (src >= sourceSetHashes.Count || destinationSetHashes[dst] != sourceSetHashes[src])
+				{
+					destinationSets[dst].Clear();
+				}
+				else
+				{
+					src++;
+				}
 			}
 		}
 	}

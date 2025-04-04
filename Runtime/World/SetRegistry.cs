@@ -10,6 +10,7 @@ namespace Massive
 	public class SetRegistry
 	{
 		private readonly FastList<string> _setIds = new FastList<string>();
+		private readonly FastList<int> _setHashes = new FastList<int>();
 		private readonly FastList<SetCloner> _setCloners = new FastList<SetCloner>();
 		private readonly FastListSparseSet _sets = new FastListSparseSet();
 
@@ -32,6 +33,12 @@ namespace Massive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _setCloners;
+		}
+
+		public FastList<int> Hashes
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _setHashes;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -121,6 +128,7 @@ namespace Massive
 			{
 				var insertionIndex = ~itemIndex;
 				_setIds.Insert(insertionIndex, setId);
+				_setHashes.Insert(insertionIndex, setId.GetHashCode());
 				_sets.Insert(insertionIndex, set);
 				_setCloners.Insert(insertionIndex, cloner);
 			}
