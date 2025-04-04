@@ -18,7 +18,7 @@ namespace Massive
 		}
 
 		public MassiveWorld(MassiveWorldConfig worldConfig)
-			: base(new MassiveEntities(worldConfig.FramesCapacity), new MassiveSetFactory(worldConfig), new MassiveGroupFactory(worldConfig.FramesCapacity), worldConfig)
+			: base(new MassiveEntities(worldConfig.FramesCapacity), new MassiveSetFactory(worldConfig), worldConfig)
 		{
 			// Fetch instance from base.
 			Entities = (MassiveEntities)base.Entities;
@@ -46,14 +46,6 @@ namespace Massive
 				}
 			}
 
-			foreach (var group in GroupRegistry.AllGroups)
-			{
-				if (group is IMassive massive)
-				{
-					massive.SaveFrame();
-				}
-			}
-
 			FrameSaved?.Invoke();
 		}
 
@@ -65,14 +57,6 @@ namespace Massive
 			foreach (var set in SetRegistry.AllSets)
 			{
 				if (set is IMassive massive)
-				{
-					massive.Rollback(MathUtils.Min(frames, massive.CanRollbackFrames));
-				}
-			}
-
-			foreach (var group in GroupRegistry.AllGroups)
-			{
-				if (group is IMassive massive)
 				{
 					massive.Rollback(MathUtils.Min(frames, massive.CanRollbackFrames));
 				}

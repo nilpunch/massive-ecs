@@ -19,7 +19,6 @@ namespace Massive.PerformanceTests
 		{
 			SingleComponent,
 			x50Components,
-			x50ComponentsPlusNonOwningGroup,
 			x50Tags,
 		}
 
@@ -51,7 +50,6 @@ namespace Massive.PerformanceTests
 			{
 				WorldFilling.SingleComponent => new World(config).FillWorldWithSingleComponent(),
 				WorldFilling.x50Components => new World(config).FillWorldWith50Components(),
-				WorldFilling.x50ComponentsPlusNonOwningGroup => new World(config).FillWorldWith50Components().FillWorldWithNonOwningGroup<Include<PositionComponent>>(),
 				WorldFilling.x50Tags => new World(config).FillWorldWith50Tags(),
 				_ => throw new ArgumentOutOfRangeException(nameof(_worldFilling))
 			};

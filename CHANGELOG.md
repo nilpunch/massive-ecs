@@ -2,7 +2,7 @@
 
 ## Unrelease
 
-BREAKING CHANGE: Major renaming.
+BREAKING CHANGE: Major renaming, groups removal.
 
 ### Added
 
@@ -19,6 +19,10 @@ BREAKING CHANGE: Major renaming.
   - `Add(id)` and `Remove(id)` returns `true` if the component is added or removed
     and `false` if it is already present or not there.
 - Added assertions for negative arguments in some methods.
+
+### Removed
+
+- Groups.
 
 ## 18.1.0 - February 24, 2025
 

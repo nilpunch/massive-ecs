@@ -120,21 +120,6 @@
 			return world;
 		}
 
-		public static World FillWorldWithNonOwningGroup<TInclude, TExclude>(this World world)
-			where TInclude : IIncludeSelector, new()
-			where TExclude : IExcludeSelector, new()
-		{
-			world.Group<TInclude, TExclude>();
-			return world;
-		}
-
-		public static World FillWorldWithNonOwningGroup<TInclude>(this World world)
-			where TInclude : IIncludeSelector, new()
-		{
-			world.Group<TInclude>();
-			return world;
-		}
-
 		public static World FillWorldWithSingleComponent(this World world, int entitiesAmount)
 		{
 			while (entitiesAmount != 0)

@@ -11,7 +11,6 @@ namespace Massive
 
 		public SetRegistry SetRegistry { get; }
 		public FilterRegistry FilterRegistry { get; }
-		public GroupRegistry GroupRegistry { get; }
 
 		public WorldConfig Config { get; }
 
@@ -21,16 +20,15 @@ namespace Massive
 		}
 
 		public World(WorldConfig worldConfig)
-			: this(new Entities(), new NormalSetFactory(worldConfig), new NormalGroupFactory(), worldConfig)
+			: this(new Entities(), new NormalSetFactory(worldConfig), worldConfig)
 		{
 		}
 
-		public World(Entities entities, ISetFactory setFactory, IGroupFactory groupFactory, WorldConfig worldConfig)
+		public World(Entities entities, ISetFactory setFactory, WorldConfig worldConfig)
 		{
 			Entities = entities;
 			SetRegistry = new SetRegistry(setFactory);
 			FilterRegistry = new FilterRegistry(SetRegistry);
-			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory, entities);
 			Config = worldConfig;
 
 			var allSets = SetRegistry.AllSets;
