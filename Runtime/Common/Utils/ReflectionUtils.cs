@@ -59,24 +59,24 @@ namespace Massive
 			return !IsUnmanaged(type);
 		}
 
-		public static bool IsUnmanaged(this Type t)
+		public static bool IsUnmanaged(this Type type)
 		{
-			if (!s_managedCache.TryGetValue(t, out var isUnmanaged))
+			if (!s_managedCache.TryGetValue(type, out var isUnmanaged))
 			{
-				if (t.IsPrimitive || t.IsPointer || t.IsEnum)
+				if (type.IsPrimitive || type.IsPointer || type.IsEnum)
 				{
 					isUnmanaged = true;
 				}
-				else if (!t.IsValueType)
+				else if (!type.IsValueType)
 				{
 					isUnmanaged = false;
 				}
 				else
 				{
-					isUnmanaged = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+					isUnmanaged = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
 						.All(x => x.FieldType.IsUnmanaged());
 				}
-				s_managedCache.Add(t, isUnmanaged);
+				s_managedCache.Add(type, isUnmanaged);
 			}
 
 			return isUnmanaged;

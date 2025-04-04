@@ -75,22 +75,20 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet GetReflected(Type setType)
 		{
-			var info = RuntimeTypeId.GetInfo(setType);
-
-			EnsureLookupAt(info.Index);
-			var candidate = Lookup[info.Index];
-
-			if (candidate != null)
+			if (TypeId.TryGetInfo(setType, out var info))
 			{
-				return candidate;
+				EnsureLookupAt(info.Index);
+				var candidate = Lookup[info.Index];
+
+				if (candidate != null)
+				{
+					return candidate;
+				}
 			}
 
-			var createdSet = SetFactory.CreateAppropriateSetReflected(setType);
-
-			Insert(info.FullName, createdSet);
-			Lookup[info.Index] = createdSet;
-
-			return createdSet;
+			var createMethod = typeof(SetRegistry).GetMethod(nameof(Get));
+			var genericMethod = createMethod?.MakeGenericMethod(setType);
+			return (SparseSet)genericMethod?.Invoke(this, new object[] {});
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -128,7 +126,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Type TypeOf(SparseSet sparseSet)
 		{
-			return RuntimeTypeId.GetTypeByIndex(IndexOf(sparseSet));
+			return TypeId.GetTypeByIndex(IndexOf(sparseSet));
 		}
 	}
 }

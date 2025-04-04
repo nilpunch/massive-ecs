@@ -34,29 +34,6 @@ namespace Massive
 			return CreateDataSet<T>();
 		}
 
-		public SparseSet CreateAppropriateSetReflected(Type type)
-		{
-			if (type.IsValueType && ReflectionUtils.HasNoFields(type) && !_storeEmptyTypesAsDataSets)
-			{
-				return CreateSparseSet(GetPackingFor(type));
-			}
-
-			var args = new object[] { _pageSize, GetPackingFor(type) };
-
-			if (CopyableUtils.IsImplementedFor(type))
-			{
-				return (SparseSet)ReflectionUtils.CreateGeneric(typeof(CopyingDataSet<>), type, args);
-			}
-			else if (type.IsManaged())
-			{
-				return (SparseSet)ReflectionUtils.CreateGeneric(typeof(SwappingDataSet<>), type, args);
-			}
-			else
-			{
-				return (SparseSet)ReflectionUtils.CreateGeneric(typeof(DataSet<>), type, args);
-			}
-		}
-
 		private SparseSet CreateSparseSet(Packing packing)
 		{
 			return new SparseSet(packing);

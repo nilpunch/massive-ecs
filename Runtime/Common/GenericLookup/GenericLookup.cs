@@ -124,12 +124,12 @@ namespace Massive
 
 		public int IndexOf(Type key)
 		{
-			return RuntimeTypeId.GetInfo(key).Index;
+			return TypeId.GetInfo(key).Index;
 		}
 
 		public void Assign(Type keyType, TAbstract item)
 		{
-			var typeInfo = RuntimeTypeId.GetInfo(keyType);
+			var typeInfo = TypeId.GetInfo(keyType);
 			var typeIndex = typeInfo.Index;
 
 			// Resize lookup to fit.
