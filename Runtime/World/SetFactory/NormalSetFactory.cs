@@ -22,36 +22,44 @@ namespace Massive
 			_fullStability = fullStability;
 		}
 
-		public SparseSet CreateAppropriateSet<T>()
+		public SetFactoryOutput CreateAppropriateSet<T>()
 		{
 			var type = typeof(T);
 
 			if (type.IsValueType && ReflectionUtils.HasNoFields(type) && !_storeEmptyTypesAsDataSets)
 			{
-				return CreateSparseSet(GetPackingFor(type));
+				return CreateSparseSet<T>();
 			}
 
 			return CreateDataSet<T>();
 		}
 
-		private SparseSet CreateSparseSet(Packing packing)
+		private SetFactoryOutput CreateSparseSet<T>()
 		{
-			return new SparseSet(packing);
+			var sparseSet = new SparseSet(GetPackingFor(typeof(T)));
+			var cloner = new SparseSetCloner<T>(sparseSet);
+			return new SetFactoryOutput(sparseSet, cloner);
 		}
 
-		private SparseSet CreateDataSet<T>()
+		private SetFactoryOutput CreateDataSet<T>()
 		{
 			if (CopyableUtils.IsImplementedFor(typeof(T)))
 			{
-				return CopyableUtils.CreateCopyingDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				var dataSet = CopyableUtils.CreateCopyingDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				var cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
+				return new SetFactoryOutput(dataSet, cloner);
 			}
 			else if (typeof(T).IsManaged())
 			{
-				return new SwappingDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				var dataSet = new SwappingDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				var cloner = new DataSetCloner<T>(dataSet);
+				return new SetFactoryOutput(dataSet, cloner);
 			}
 			else
 			{
-				return new DataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				var dataSet = new DataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				var cloner = new DataSetCloner<T>(dataSet);
+				return new SetFactoryOutput(dataSet, cloner);
 			}
 		}
 

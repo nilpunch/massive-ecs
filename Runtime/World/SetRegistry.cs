@@ -10,6 +10,7 @@ namespace Massive
 	public class SetRegistry
 	{
 		private readonly FastList<string> _setIds = new FastList<string>();
+		private readonly FastList<SetCloner> _setCloners = new FastList<SetCloner>();
 		private readonly FastListSparseSet _sets = new FastListSparseSet();
 
 		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
@@ -25,6 +26,12 @@ namespace Massive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _sets;
+		}
+
+		public FastList<SetCloner> Cloners
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _setCloners;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -64,12 +71,12 @@ namespace Massive
 				return candidate;
 			}
 
-			var createdSet = SetFactory.CreateAppropriateSet<TKey>();
+			var (set, cloner) = SetFactory.CreateAppropriateSet<TKey>();
 
-			Insert(info.FullName, createdSet);
-			Lookup[info.Index] = createdSet;
+			Insert(info.FullName, set, cloner);
+			Lookup[info.Index] = set;
 
-			return createdSet;
+			return set;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -101,19 +108,21 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Insert(string setId, SparseSet set)
+		public void Insert(string setId, SparseSet set, SetCloner cloner)
 		{
 			// Maintain items sorted.
 			var itemIndex = _setIds.BinarySearch(setId);
 			if (itemIndex >= 0)
 			{
 				_sets[itemIndex] = set;
+				_setCloners[itemIndex] = cloner;
 			}
 			else
 			{
 				var insertionIndex = ~itemIndex;
 				_setIds.Insert(insertionIndex, setId);
 				_sets.Insert(insertionIndex, set);
+				_setCloners.Insert(insertionIndex, cloner);
 			}
 		}
 

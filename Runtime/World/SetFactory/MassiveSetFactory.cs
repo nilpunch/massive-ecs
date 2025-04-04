@@ -30,42 +30,47 @@ namespace Massive
 			_fullStability = fullStability;
 		}
 
-		public SparseSet CreateAppropriateSet<T>()
+		public SetFactoryOutput CreateAppropriateSet<T>()
 		{
 			var type = typeof(T);
 
 			if (type.IsValueType && ReflectionUtils.HasNoFields(typeof(T)) && !_storeEmptyTypesAsDataSets)
 			{
-				return CreateSparseSet(GetPackingFor(typeof(T)));
+				return CreateSparseSet<T>();
 			}
 
 			return CreateDataSet<T>();
 		}
 
-		private SparseSet CreateSparseSet(Packing packing)
+		private SetFactoryOutput CreateSparseSet<T>()
 		{
-			var massiveSparseSet = new MassiveSparseSet(_framesCapacity, packing);
-			massiveSparseSet.SaveFrame();
-			return massiveSparseSet;
+			var sparseSet = new MassiveSparseSet(_framesCapacity, GetPackingFor(typeof(T)));
+			var cloner = new SparseSetCloner<T>(sparseSet);
+			sparseSet.SaveFrame();
+			return new SetFactoryOutput(sparseSet, cloner);
 		}
 
-		private SparseSet CreateDataSet<T>()
+		private SetFactoryOutput CreateDataSet<T>()
 		{
-			SparseSet massiveDataSet;
+			DataSet<T> dataSet;
+			SetCloner cloner;
 			if (CopyableUtils.IsImplementedFor(typeof(T)))
 			{
-				massiveDataSet = CopyableUtils.CreateMassiveCopyableDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+				dataSet = CopyableUtils.CreateMassiveCopyableDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+				cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
 			}
 			else if (typeof(T).IsManaged())
 			{
-				massiveDataSet = new MassiveSwappingDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+				dataSet = new MassiveSwappingDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+				cloner = new DataSetCloner<T>(dataSet);
 			}
 			else
 			{
-				massiveDataSet = new MassiveDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+				dataSet = new MassiveDataSet<T>(_framesCapacity, _pageSize, GetPackingFor(typeof(T)));
+				cloner = new DataSetCloner<T>(dataSet);
 			}
-			((IMassive)massiveDataSet).SaveFrame();
-			return massiveDataSet;
+			((IMassive)dataSet).SaveFrame();
+			return new SetFactoryOutput(dataSet, cloner);
 		}
 
 		private Packing GetPackingFor(Type type)

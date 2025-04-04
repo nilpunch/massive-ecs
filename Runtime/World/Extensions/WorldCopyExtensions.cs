@@ -25,9 +25,19 @@ namespace Massive
 		{
 			Assert.CompatibleConfigs(source, destination);
 
+			// Entities.
 			source.Entities.CopyTo(destination.Entities);
 
-			// To be continued...
+			// Sets.
+			var destinationSets = destination.SetRegistry;
+
+			var clonersList = source.SetRegistry.Cloners;
+			var clonersCount = clonersList.Count;
+			var cloners = clonersList.Items;
+			for (var i = 0; i < clonersCount; i++)
+			{
+				cloners[i].CopyTo(destinationSets);
+			}
 		}
 	}
 }

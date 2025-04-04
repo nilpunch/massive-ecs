@@ -9,6 +9,7 @@ namespace Massive
 		{
 			_ = new MassiveCopyingDataSet<T>();
 			_ = new CopyingDataSet<T>();
+			_ = new CopyingDataSetCloner<T>(null);
 		}
 	}
 }

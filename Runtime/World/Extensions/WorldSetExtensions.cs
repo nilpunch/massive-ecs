@@ -26,12 +26,12 @@ namespace Massive
 				return candidate;
 			}
 
-			var createdSet = setRegistry.SetFactory.CreateAppropriateSet<T>();
+			var (set, cloner) = setRegistry.SetFactory.CreateAppropriateSet<T>();
 
-			setRegistry.Insert(info.FullName, createdSet);
-			setRegistry.Lookup[info.Index] = createdSet;
+			setRegistry.Insert(info.FullName, set, cloner);
+			setRegistry.Lookup[info.Index] = set;
 
-			return createdSet;
+			return set;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,13 +49,13 @@ namespace Massive
 				return (DataSet<T>)candidate;
 			}
 
-			var createdSet = setRegistry.SetFactory.CreateAppropriateSet<T>();
-			Assert.TypeHasData(createdSet, typeof(T), SuggestionMessage.UseSetMethodWithEmptyTypes);
+			var (set, cloner) = setRegistry.SetFactory.CreateAppropriateSet<T>();
+			Assert.TypeHasData(set, typeof(T), SuggestionMessage.UseSetMethodWithEmptyTypes);
 
-			setRegistry.Insert(info.FullName, createdSet);
-			setRegistry.Lookup[info.Index] = createdSet;
+			setRegistry.Insert(info.FullName, set, cloner);
+			setRegistry.Lookup[info.Index] = set;
 
-			return (DataSet<T>)createdSet;
+			return (DataSet<T>)set;
 		}
 	}
 }
