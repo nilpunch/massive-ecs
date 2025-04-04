@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -9,7 +10,9 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SetRegistry
 	{
-		private readonly FastList<string> _setIds = new FastList<string>();
+		public Dictionary<string, SparseSet> SetsByIdentifiers { get; } = new Dictionary<string, SparseSet>();
+
+		public FastList<string> Identifiers { get; } = new FastList<string>();
 
 		public FastList<int> Hashes { get; } = new FastList<int>();
 
@@ -40,14 +43,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet GetExisting(string setId)
 		{
-			var setIndex = _setIds.BinarySearch(setId);
-
-			if (setIndex < 0)
+			if (SetsByIdentifiers.TryGetValue(setId, out var set))
 			{
-				return null;
+				return set;
 			}
 
-			return AllSets[setIndex];
+			return null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -103,19 +104,19 @@ namespace Massive
 		public void Insert(string setId, SparseSet set, SetCloner cloner)
 		{
 			// Maintain items sorted.
-			var itemIndex = _setIds.BinarySearch(setId);
+			var itemIndex = Identifiers.BinarySearch(setId);
 			if (itemIndex >= 0)
 			{
-				AllSets[itemIndex] = set;
-				Cloners[itemIndex] = cloner;
+				throw new Exception("Trying to insert already existing item.");
 			}
 			else
 			{
 				var insertionIndex = ~itemIndex;
-				_setIds.Insert(insertionIndex, setId);
-				Hashes.Insert(insertionIndex, setId.GetHashCode());
+				Identifiers.Insert(insertionIndex, setId);
 				AllSets.Insert(insertionIndex, set);
 				Cloners.Insert(insertionIndex, cloner);
+				Hashes.Insert(insertionIndex, setId.GetHashCode());
+				SetsByIdentifiers.Add(setId, set);
 			}
 		}
 

@@ -5,14 +5,14 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public sealed class DataSetClonerById<T> : SetCloner
+	public sealed class SparseSetClonerByIdentifier : SetCloner
 	{
-		private readonly DataSet<T> _dataSet;
+		private readonly SparseSet _sparseSet;
 		private readonly string _setId;
 
-		public DataSetClonerById(DataSet<T> dataSet, string setId)
+		public SparseSetClonerByIdentifier(SparseSet sparseSet, string setId)
 		{
-			_dataSet = dataSet;
+			_sparseSet = sparseSet;
 			_setId = setId;
 		}
 
@@ -22,12 +22,12 @@ namespace Massive
 
 			if (destination == null)
 			{
-				var clone = _dataSet.Clone();
-				setRegistry.Insert(_setId, clone, new DataSetClonerById<T>(clone, _setId));
+				var clone = _sparseSet.CloneSparse();
+				setRegistry.Insert(_setId, clone, new SparseSetClonerByIdentifier(clone, _setId));
 			}
 			else
 			{
-				_dataSet.CopyTo((DataSet<T>)destination);
+				_sparseSet.CopySparseTo(destination);
 			}
 		}
 	}
