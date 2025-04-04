@@ -38,7 +38,7 @@ namespace Massive
 		{
 			Entities.SaveFrame();
 
-			foreach (var set in SetRegistry.All)
+			foreach (var set in SetRegistry.AllSets)
 			{
 				if (set is IMassive massive)
 				{
@@ -46,7 +46,7 @@ namespace Massive
 				}
 			}
 
-			foreach (var group in GroupRegistry.All)
+			foreach (var group in GroupRegistry.AllGroups)
 			{
 				if (group is IMassive massive)
 				{
@@ -62,7 +62,7 @@ namespace Massive
 		{
 			Entities.Rollback(frames);
 
-			foreach (var set in SetRegistry.All)
+			foreach (var set in SetRegistry.AllSets)
 			{
 				if (set is IMassive massive)
 				{
@@ -70,7 +70,7 @@ namespace Massive
 				}
 			}
 
-			foreach (var group in GroupRegistry.All)
+			foreach (var group in GroupRegistry.AllGroups)
 			{
 				if (group is IMassive massive)
 				{

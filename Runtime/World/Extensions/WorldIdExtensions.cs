@@ -58,7 +58,7 @@ namespace Massive
 
 			var cloneId = world.Create();
 
-			var setList = world.SetRegistry.All;
+			var setList = world.SetRegistry.AllSets;
 			var setCount = setList.Count;
 			var sets = setList.Items;
 			for (var i = 0; i < setCount; i++)

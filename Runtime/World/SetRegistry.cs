@@ -10,9 +10,12 @@ namespace Massive
 	public class SetRegistry
 	{
 		private readonly FastList<string> _setIds = new FastList<string>();
-		private readonly FastList<int> _setHashes = new FastList<int>();
-		private readonly FastList<SetCloner> _setCloners = new FastList<SetCloner>();
-		private readonly FastListSparseSet _sets = new FastListSparseSet();
+
+		public FastList<int> Hashes { get; } = new FastList<int>();
+
+		public FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
+
+		public FastListSparseSet AllSets { get; } = new FastListSparseSet();
 
 		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
 
@@ -21,24 +24,6 @@ namespace Massive
 		public SetRegistry(ISetFactory setFactory)
 		{
 			SetFactory = setFactory;
-		}
-
-		public FastListSparseSet All
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _sets;
-		}
-
-		public FastList<SetCloner> Cloners
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _setCloners;
-		}
-
-		public FastList<int> Hashes
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _setHashes;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -62,7 +47,7 @@ namespace Massive
 				return null;
 			}
 
-			return _sets[setIndex];
+			return AllSets[setIndex];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -102,7 +87,7 @@ namespace Massive
 
 			var createMethod = typeof(SetRegistry).GetMethod(nameof(Get));
 			var genericMethod = createMethod?.MakeGenericMethod(setType);
-			return (SparseSet)genericMethod?.Invoke(this, new object[] {});
+			return (SparseSet)genericMethod?.Invoke(this, new object[] { });
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -121,16 +106,16 @@ namespace Massive
 			var itemIndex = _setIds.BinarySearch(setId);
 			if (itemIndex >= 0)
 			{
-				_sets[itemIndex] = set;
-				_setCloners[itemIndex] = cloner;
+				AllSets[itemIndex] = set;
+				Cloners[itemIndex] = cloner;
 			}
 			else
 			{
 				var insertionIndex = ~itemIndex;
 				_setIds.Insert(insertionIndex, setId);
-				_setHashes.Insert(insertionIndex, setId.GetHashCode());
-				_sets.Insert(insertionIndex, set);
-				_setCloners.Insert(insertionIndex, cloner);
+				Hashes.Insert(insertionIndex, setId.GetHashCode());
+				AllSets.Insert(insertionIndex, set);
+				Cloners.Insert(insertionIndex, cloner);
 			}
 		}
 

@@ -29,7 +29,7 @@ namespace Massive
 			_entities = entities;
 		}
 
-		public FastList<Group> All
+		public FastList<Group> AllGroups
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _allGroups;

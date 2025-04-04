@@ -38,7 +38,7 @@ namespace Massive
 			}
 
 			// Clear other sets.
-			var destinationSets = destinationSetRegistry.All;
+			var destinationSets = destinationSetRegistry.AllSets;
 			var sourceSetHashes = sourceSetRegistry.Hashes;
 			var destinationSetHashes = sourceSetRegistry.Hashes;
 

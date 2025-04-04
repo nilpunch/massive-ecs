@@ -33,7 +33,7 @@ namespace Massive
 			GroupRegistry = new GroupRegistry(SetRegistry, groupFactory, entities);
 			Config = worldConfig;
 
-			var allSets = SetRegistry.All;
+			var allSets = SetRegistry.AllSets;
 			Entities.BeforeDestroyed += RemoveFromAllSets;
 
 			void RemoveFromAllSets(int entityId)

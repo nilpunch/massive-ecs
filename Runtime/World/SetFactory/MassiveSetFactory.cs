@@ -30,7 +30,7 @@ namespace Massive
 			_fullStability = fullStability;
 		}
 
-		public SetFactoryOutput CreateAppropriateSet<T>()
+		public ISetFactory.Output CreateAppropriateSet<T>()
 		{
 			var type = typeof(T);
 
@@ -42,15 +42,15 @@ namespace Massive
 			return CreateDataSet<T>();
 		}
 
-		private SetFactoryOutput CreateSparseSet<T>()
+		private ISetFactory.Output CreateSparseSet<T>()
 		{
 			var sparseSet = new MassiveSparseSet(_framesCapacity, GetPackingFor(typeof(T)));
 			var cloner = new SparseSetCloner<T>(sparseSet);
 			sparseSet.SaveFrame();
-			return new SetFactoryOutput(sparseSet, cloner);
+			return new ISetFactory.Output(sparseSet, cloner);
 		}
 
-		private SetFactoryOutput CreateDataSet<T>()
+		private ISetFactory.Output CreateDataSet<T>()
 		{
 			DataSet<T> dataSet;
 			SetCloner cloner;
@@ -70,7 +70,7 @@ namespace Massive
 				cloner = new DataSetCloner<T>(dataSet);
 			}
 			((IMassive)dataSet).SaveFrame();
-			return new SetFactoryOutput(dataSet, cloner);
+			return new ISetFactory.Output(dataSet, cloner);
 		}
 
 		private Packing GetPackingFor(Type type)
