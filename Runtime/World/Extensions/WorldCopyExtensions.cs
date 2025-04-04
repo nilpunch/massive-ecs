@@ -29,25 +29,25 @@ namespace Massive
 			source.Entities.CopyTo(destination.Entities);
 
 			// Sets.
-			var sourceSetRegistry = source.SetRegistry;
-			var destinationSetRegistry = destination.SetRegistry;
+			var srcRegistry = source.SetRegistry;
+			var dstRegistry = destination.SetRegistry;
 
-			foreach (var cloner in sourceSetRegistry.Cloners)
+			foreach (var cloner in srcRegistry.Cloners)
 			{
-				cloner.CopyTo(destinationSetRegistry);
+				cloner.CopyTo(dstRegistry);
 			}
 
 			// Clear other sets.
-			var destinationSets = destinationSetRegistry.AllSets;
-			var sourceSetHashes = sourceSetRegistry.Hashes;
-			var destinationSetHashes = sourceSetRegistry.Hashes;
+			var dstSets = dstRegistry.AllSets;
+			var srcHashes = srcRegistry.Hashes;
+			var dstHashes = srcRegistry.Hashes;
 
-			int src = 0;
-			for (int dst = 0; dst < destinationSets.Count; dst++)
+			var src = 0;
+			for (var dst = 0; dst < dstSets.Count; dst++)
 			{
-				if (src >= sourceSetHashes.Count || destinationSetHashes[dst] != sourceSetHashes[src])
+				if (src >= srcHashes.Count || dstHashes[dst] != srcHashes[src])
 				{
-					destinationSets[dst].Clear();
+					dstSets[dst].Clear();
 				}
 				else
 				{
