@@ -47,7 +47,7 @@ namespace Massive
 			{
 				if (index >= hashes.Count || otherHashes[otherIndex] != hashes[index])
 				{
-					otherSets[otherIndex].Clear();
+					otherSets[otherIndex].ClearWithoutNotify();
 				}
 				else
 				{
