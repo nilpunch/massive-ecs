@@ -4,10 +4,6 @@
 
 BREAKING CHANGE: Major renaming, groups removal.
 
-### Added
-
-- Copying and cloning extension methods to sets (WIP).
-
 ### Changed
 
 - Renamed `Registry` class to `World`.
@@ -19,6 +15,10 @@ BREAKING CHANGE: Major renaming, groups removal.
   - `Add(id)` and `Remove(id)` returns `true` if the component is added or removed
     and `false` if it is already present or not there.
 - Added assertions for negative arguments in some methods.
+
+### Added
+
+- `Clone()` and `CopyTo(other)` methods to `SparseSet`, `DataSet<T>` and `World`.
 
 ### Removed
 
