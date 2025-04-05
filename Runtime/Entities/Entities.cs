@@ -360,6 +360,26 @@ namespace Massive
 			Versions[index] = version;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Entities Clone()
+		{
+			var clone = new Entities();
+			CopyTo(clone);
+			return clone;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(Entities other)
+		{
+			other.EnsureCapacityAt(MaxId - 1);
+
+			Array.Copy(Packed, other.Packed, MaxId);
+			Array.Copy(Versions, other.Versions, MaxId);
+			Array.Copy(Sparse, other.Sparse, MaxId);
+
+			other.CurrentState = CurrentState;
+		}
+
 		public readonly struct State
 		{
 			public readonly int Count;

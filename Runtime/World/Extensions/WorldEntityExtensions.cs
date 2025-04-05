@@ -164,7 +164,6 @@ namespace Massive
 		public static ref T Get<T>(this World world, Entity entity)
 		{
 			Assert.IsAlive(world, entity);
-			Assert.TypeHasData<T>(world, SuggestionMessage.DontUseGetWithEmptyTypes);
 
 			return ref world.Get<T>(entity.Id);
 		}

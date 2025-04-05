@@ -175,9 +175,8 @@ namespace Massive
 		public static ref T Get<T>(this World world, int id)
 		{
 			Assert.IsAlive(world, id);
-			Assert.TypeHasData<T>(world, SuggestionMessage.DontUseGetWithEmptyTypes);
 
-			var dataSet = world.SparseSet<T>() as DataSet<T>;
+			var dataSet = world.DataSet<T>();
 
 			return ref dataSet.Get(id);
 		}

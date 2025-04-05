@@ -29,7 +29,6 @@ namespace Massive
 		public struct Enumerator
 		{
 			private readonly int _pageSize;
-			private readonly int _length;
 			private int _page;
 			private int _nextPageLength;
 			private int _pageLength;
@@ -37,10 +36,8 @@ namespace Massive
 			public Enumerator(int pageSize, int length)
 			{
 				_pageSize = pageSize;
-				_length = length;
-
-				_page = _length == 0 ? 0 : (_length - 1) / _pageSize + 1;
-				_pageLength = _nextPageLength = _length == 0 ? 0 : MathUtils.FastMod(_length - 1, _pageSize) + 1;
+				_page = length == 0 ? 0 : (length - 1) / _pageSize + 1;
+				_pageLength = _nextPageLength = length == 0 ? 0 : MathUtils.FastMod(length - 1, _pageSize) + 1;
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]

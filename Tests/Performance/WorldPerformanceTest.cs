@@ -267,13 +267,13 @@ namespace Massive.PerformanceTests
 		{
 			Measure.Method(() =>
 				{
-					foreach (var i in _world.View().Include<PositionComponent, VelocityComponent>())
+					for (int i = 0; i < EntitiesCount; i++)
 					{
-						break;
+						_world.View().Include<PositionComponent, VelocityComponent>();
 					}
 				})
 				.MeasurementCount(MeasurementCount)
-				.IterationsPerMeasurement(IterationsPerMeasurement * 1000)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
 		}
 

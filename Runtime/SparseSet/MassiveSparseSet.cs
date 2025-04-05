@@ -14,23 +14,18 @@ namespace Massive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
-		private readonly int[][] _packedByFrames;
-		private readonly int[][] _sparseByFrames;
-		private readonly State[] _stateByFrames;
+		private readonly SparseSet[] _frames;
 
 		public MassiveSparseSet(int framesCapacity = Constants.DefaultFramesCapacity, Packing packing = Packing.Continuous)
 			: base(packing)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
 
-			_packedByFrames = new int[framesCapacity][];
-			_sparseByFrames = new int[framesCapacity][];
-			_stateByFrames = new State[framesCapacity];
+			_frames = new SparseSet[framesCapacity];
 
 			for (var i = 0; i < framesCapacity; i++)
 			{
-				_packedByFrames[i] = Array.Empty<int>();
-				_sparseByFrames[i] = Array.Empty<int>();
+				_frames[i] = new SparseSet(packing);
 			}
 		}
 
@@ -43,12 +38,7 @@ namespace Massive
 
 			var currentFrame = _cyclicFrameCounter.CurrentFrame;
 
-			EnsureCapacityForFrame(currentFrame);
-
-			// Copy everything from current state to current frame.
-			Array.Copy(Packed, _packedByFrames[currentFrame], Count);
-			Array.Copy(Sparse, _sparseByFrames[currentFrame], SparseCapacity);
-			_stateByFrames[currentFrame] = CurrentState;
+			CopySparseTo(_frames[currentFrame]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -56,34 +46,9 @@ namespace Massive
 		{
 			_cyclicFrameCounter.Rollback(frames);
 
-			// Copy everything from rollback frame to current state.
 			var rollbackFrame = _cyclicFrameCounter.CurrentFrame;
-			var rollbackSparseCapacity = _sparseByFrames[rollbackFrame].Length;
-			var rollbackState = _stateByFrames[rollbackFrame];
 
-			Array.Copy(_packedByFrames[rollbackFrame], Packed, rollbackState.Count);
-			Array.Copy(_sparseByFrames[rollbackFrame], Sparse, rollbackSparseCapacity);
-			if (rollbackSparseCapacity < SparseCapacity)
-			{
-				Array.Fill(Sparse, Constants.InvalidId, rollbackSparseCapacity, SparseCapacity - rollbackSparseCapacity);
-			}
-			CurrentState = rollbackState;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureCapacityForFrame(int frame)
-		{
-			if (_sparseByFrames[frame].Length < SparseCapacity)
-			{
-				var previousCapacity = _sparseByFrames[frame].Length;
-				Array.Resize(ref _sparseByFrames[frame], SparseCapacity);
-				Array.Fill(_sparseByFrames[frame], Constants.InvalidId, previousCapacity, SparseCapacity - previousCapacity);
-			}
-
-			if (_packedByFrames[frame].Length < PackedCapacity)
-			{
-				Array.Resize(ref _packedByFrames[frame], PackedCapacity);
-			}
+			_frames[rollbackFrame].CopySparseTo(this);
 		}
 	}
 }

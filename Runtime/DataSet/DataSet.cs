@@ -2,6 +2,7 @@
 #define MASSIVE_ASSERT
 #endif
 
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -37,6 +38,13 @@ namespace Massive
 			Assert.Has(this, id);
 
 			return ref Data[Sparse[id]];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Set(int id, T data)
+		{
+			Add(id);
+			Data[Sparse[id]] = data;
 		}
 
 		/// <summary>
@@ -84,5 +92,37 @@ namespace Massive
 		object IDataSet.GetRaw(int id) => Get(id);
 
 		void IDataSet.SetRaw(int id, object value) => Get(id) = (T)value;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public DataSet<T> Clone()
+		{
+			var clone = new DataSet<T>();
+			CopyTo(clone);
+			return clone;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(DataSet<T> other)
+		{
+			CopySparseTo(other);
+
+			var sourceData = Data;
+			var destinationData = other.Data;
+
+			foreach (var page in new PageSequence(sourceData.PageSize, Count))
+			{
+				if (!sourceData.HasPage(page.Index))
+				{
+					continue;
+				}
+
+				destinationData.EnsurePage(page.Index);
+
+				var sourcePage = sourceData.Pages[page.Index];
+				var destinationPage = destinationData.Pages[page.Index];
+
+				Array.Copy(sourcePage, destinationPage, page.Length);
+			}
+		}
 	}
 }

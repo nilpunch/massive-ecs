@@ -1,4 +1,5 @@
-﻿using Unity.IL2CPP.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
@@ -20,6 +21,41 @@ namespace Massive
 		public override void CopyDataAt(int source, int destination)
 		{
 			Data[source].CopyTo(ref Data[destination]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public CopyingDataSet<T> CloneCopyable()
+		{
+			var clone = new CopyingDataSet<T>();
+			CopyTo(clone);
+			return clone;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyToCopyable(DataSet<T> other)
+		{
+			CopySparseTo(other);
+
+			var sourceData = Data;
+			var destinationData = other.Data;
+
+			foreach (var page in new PageSequence(sourceData.PageSize, Count))
+			{
+				if (!sourceData.HasPage(page.Index))
+				{
+					continue;
+				}
+
+				destinationData.EnsurePage(page.Index);
+
+				var sourcePage = sourceData.Pages[page.Index];
+				var destinationPage = destinationData.Pages[page.Index];
+
+				for (var i = 0; i < page.Length; i++)
+				{
+					sourcePage[i].CopyTo(ref destinationPage[i]);
+				}
+			}
 		}
 	}
 }

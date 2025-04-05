@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -10,38 +11,51 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
-	public class MassiveCopyingDataSet<T> : MassiveSwappingDataSet<T> where T : ICopyable<T>
+	public class MassiveCopyingDataSet<T> : CopyingDataSet<T>, IMassive where T : ICopyable<T>
 	{
+		private readonly CyclicFrameCounter _cyclicFrameCounter;
+
+		private readonly CopyingDataSet<T>[] _frames;
+
 		public MassiveCopyingDataSet(int framesCapacity = Constants.DefaultFramesCapacity,
 			int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
-			: base(framesCapacity, pageSize, packing)
+			: base(pageSize, packing)
 		{
+			_cyclicFrameCounter = new CyclicFrameCounter(framesCapacity);
+
+			_frames = new CopyingDataSet<T>[framesCapacity];
+
+			for (var i = 0; i < framesCapacity; i++)
+			{
+				_frames[i] = new CopyingDataSet<T>(pageSize, packing);
+			}
 		}
+
+		public int CanRollbackFrames => _cyclicFrameCounter.CanRollbackFrames;
 
 		public override void CopyDataAt(int source, int destination)
 		{
 			Data[source].CopyTo(ref Data[destination]);
 		}
 
-		protected override void CopyData(PagedArray<T> source, PagedArray<T> destination, int count)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SaveFrame()
 		{
-			foreach (var page in new PageSequence(source.PageSize, count))
-			{
-				if (!source.HasPage(page.Index))
-				{
-					continue;
-				}
+			_cyclicFrameCounter.SaveFrame();
 
-				destination.EnsurePage(page.Index);
+			var currentFrame = _cyclicFrameCounter.CurrentFrame;
 
-				var sourcePage = source.Pages[page.Index];
-				var destinationPage = destination.Pages[page.Index];
+			CopyToCopyable(_frames[currentFrame]);
+		}
 
-				for (var i = 0; i < page.Length; i++)
-				{
-					sourcePage[i].CopyTo(ref destinationPage[i]);
-				}
-			}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Rollback(int frames)
+		{
+			_cyclicFrameCounter.Rollback(frames);
+
+			var rollbackFrame = _cyclicFrameCounter.CurrentFrame;
+
+			_frames[rollbackFrame].CopyToCopyable(this);
 		}
 	}
 }

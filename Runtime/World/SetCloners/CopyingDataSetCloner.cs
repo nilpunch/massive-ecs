@@ -7,9 +7,9 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public sealed class CopyingDataSetCloner<T> : SetCloner where T : ICopyable<T>
 	{
-		private readonly DataSet<T> _dataSet;
+		private readonly CopyingDataSet<T> _dataSet;
 
-		public CopyingDataSetCloner(DataSet<T> dataSet)
+		public CopyingDataSetCloner(CopyingDataSet<T> dataSet)
 		{
 			_dataSet = dataSet;
 		}

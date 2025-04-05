@@ -8,9 +8,9 @@ namespace Massive
 	/// </summary>
 	public class MassiveWorld : World, IMassive
 	{
-		public new MassiveEntities Entities { get; }
+		private readonly CyclicFrameCounter _cyclicFrameCounter;
 
-		public new MassiveWorldConfig Config { get; }
+		private readonly World[] _frames;
 
 		public MassiveWorld()
 			: this(new MassiveWorldConfig())
@@ -18,33 +18,31 @@ namespace Massive
 		}
 
 		public MassiveWorld(MassiveWorldConfig worldConfig)
-			: base(new MassiveEntities(worldConfig.FramesCapacity), new MassiveSetFactory(worldConfig), worldConfig)
+			: base(new Entities(), new NormalSetFactory(worldConfig), worldConfig)
 		{
-			// Fetch instance from base.
-			Entities = (MassiveEntities)base.Entities;
+			_cyclicFrameCounter = new CyclicFrameCounter(worldConfig.FramesCapacity);
 
-			Entities.SaveFrame(); // Save first empty frame so we can rollback to it.
+			_frames = new World[worldConfig.FramesCapacity];
 
-			Config = worldConfig;
+			for (var i = 0; i < worldConfig.FramesCapacity; i++)
+			{
+				_frames[i] = new World(worldConfig);
+			}
 		}
 
 		public event Action FrameSaved;
 		public event Action<int> Rollbacked;
 
-		public int CanRollbackFrames => Entities.CanRollbackFrames;
+		public int CanRollbackFrames => _cyclicFrameCounter.CanRollbackFrames;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()
 		{
-			Entities.SaveFrame();
+			_cyclicFrameCounter.SaveFrame();
 
-			foreach (var set in SetRegistry.AllSets)
-			{
-				if (set is IMassive massive)
-				{
-					massive.SaveFrame();
-				}
-			}
+			var currentFrame = _cyclicFrameCounter.CurrentFrame;
+
+			this.CopyTo(_frames[currentFrame]);
 
 			FrameSaved?.Invoke();
 		}
@@ -52,15 +50,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
-			Entities.Rollback(frames);
+			_cyclicFrameCounter.Rollback(frames);
 
-			foreach (var set in SetRegistry.AllSets)
-			{
-				if (set is IMassive massive)
-				{
-					massive.Rollback(MathUtils.Min(frames, massive.CanRollbackFrames));
-				}
-			}
+			var rollbackFrame = _cyclicFrameCounter.CurrentFrame;
+
+			_frames[rollbackFrame].CopyTo(this);
 
 			Rollbacked?.Invoke(frames);
 		}

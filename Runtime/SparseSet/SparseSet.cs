@@ -399,6 +399,31 @@ namespace Massive
 			Packed[index] = id;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public SparseSet CloneSparse()
+		{
+			var clone = new SparseSet();
+			CopySparseTo(clone);
+			return clone;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopySparseTo(SparseSet other)
+		{
+			other.EnsurePackedAt(Count - 1);
+			other.EnsureSparseAt(UsedIds - 1);
+
+			Array.Copy(Packed, other.Packed, Count);
+			Array.Copy(Sparse, other.Sparse, UsedIds);
+
+			if (UsedIds < other.UsedIds)
+			{
+				Array.Fill(other.Sparse, Constants.InvalidId, UsedIds, other.UsedIds - UsedIds);
+			}
+
+			other.CurrentState = CurrentState;
+		}
+
 		public readonly struct State
 		{
 			public readonly int Count;

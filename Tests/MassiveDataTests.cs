@@ -97,7 +97,7 @@ namespace Massive.Tests
 			massiveData.Get(0).Value = 2;
 			massiveData.Rollback(0);
 
-			NUnit.Framework.Assert.AreEqual(massiveData.Get(0).Value, 1);
+			NUnit.Framework.Assert.AreEqual(1, massiveData.Get(0).Value);
 		}
 
 		[Test]

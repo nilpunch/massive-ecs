@@ -21,37 +21,37 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void CopyTo(this World source, World destination)
+		public static void CopyTo(this World world, World other)
 		{
-			Assert.CompatibleConfigs(source, destination);
+			Assert.CompatibleConfigs(world, other);
 
 			// Entities.
-			source.Entities.CopyTo(destination.Entities);
+			world.Entities.CopyTo(other.Entities);
 
 			// Sets.
-			var srcRegistry = source.SetRegistry;
-			var dstRegistry = destination.SetRegistry;
+			var registry = world.SetRegistry;
+			var otherRegistry = other.SetRegistry;
 
-			foreach (var cloner in srcRegistry.Cloners)
+			foreach (var cloner in registry.Cloners)
 			{
-				cloner.CopyTo(dstRegistry);
+				cloner.CopyTo(otherRegistry);
 			}
 
 			// Clear other sets.
-			var dstSets = dstRegistry.AllSets;
-			var srcHashes = srcRegistry.Hashes;
-			var dstHashes = srcRegistry.Hashes;
+			var hashes = registry.Hashes;
+			var otherHashes = registry.Hashes;
+			var otherSets = otherRegistry.AllSets;
 
-			var src = 0;
-			for (var dst = 0; dst < dstSets.Count; dst++)
+			var index = 0;
+			for (var otherIndex = 0; otherIndex < otherSets.Count; otherIndex++)
 			{
-				if (src >= srcHashes.Count || dstHashes[dst] != srcHashes[src])
+				if (index >= hashes.Count || otherHashes[otherIndex] != hashes[index])
 				{
-					dstSets[dst].Clear();
+					otherSets[otherIndex].Clear();
 				}
 				else
 				{
-					src++;
+					index++;
 				}
 			}
 		}
