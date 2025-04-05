@@ -135,6 +135,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int id)
 		{
+			Assert.NonNegative(id, nameof(id));
+
 			// If entity is not alive, nothing to be done.
 			if (id >= MaxId || Sparse[id] >= Count || Packed[Sparse[id]] != id)
 			{
@@ -252,7 +254,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(Entity entity)
 		{
-			if (entity.Id < 0 || entity.Id >= MaxId)
+			Assert.NonNegative(entity.Id, "entity.Id");
+
+			if (entity.Id >= MaxId)
 			{
 				return false;
 			}
