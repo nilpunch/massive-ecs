@@ -1,6 +1,6 @@
 # Changelog
 
-## Unrelease
+## 19.0.0 - April 5, 2025
 
 BREAKING CHANGE: Major renaming, groups removal.
 
