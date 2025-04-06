@@ -40,6 +40,9 @@ namespace Massive
 			return ref Data[Sparse[id]];
 		}
 
+		/// <summary>
+		/// Gets a reference to the data associated with the specified ID.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set(int id, T data)
 		{
@@ -93,6 +96,10 @@ namespace Massive
 
 		void IDataSet.SetRaw(int id, object value) => Get(id) = (T)value;
 
+		/// <summary>
+		/// Creates and returns a new data set that is an exact copy of the current one.
+		/// All data is copied by value.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DataSet<T> Clone()
 		{
@@ -101,6 +108,10 @@ namespace Massive
 			return clone;
 		}
 
+		/// <summary>
+		/// Copies the contents of the current data set into the specified one.
+		/// All data is copied by value.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(DataSet<T> other)
 		{

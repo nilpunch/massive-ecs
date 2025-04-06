@@ -130,7 +130,7 @@ namespace Massive
 		}
 
 		/// <remarks>
-		/// Will throw an exception if provided ID is negative.
+		/// Throws an exception if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int id)
@@ -163,7 +163,7 @@ namespace Massive
 		}
 
 		/// <remarks>
-		/// Will throw an exception if provided amount is negative.
+		/// Throws an exception if provided amount is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CreateMany(int amount)
@@ -241,7 +241,7 @@ namespace Massive
 		}
 
 		/// <remarks>
-		/// Will throw an exception if the entity with this ID is not alive.
+		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
@@ -267,7 +267,7 @@ namespace Massive
 		}
 
 		/// <remarks>
-		/// Will throw an exception if provided ID is negative.
+		/// Throws an exception if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)

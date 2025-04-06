@@ -18,7 +18,7 @@ namespace Massive
 		}
 
 		public MassiveWorld(MassiveWorldConfig worldConfig)
-			: base(new Entities(), new NormalSetFactory(worldConfig), worldConfig)
+			: base(worldConfig)
 		{
 			_cyclicFrameCounter = new CyclicFrameCounter(worldConfig.FramesCapacity);
 

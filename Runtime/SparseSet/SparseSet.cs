@@ -95,7 +95,7 @@ namespace Massive
 		/// Adds an ID. If the ID is already added, no action is performed.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if provided ID is negative.
+		/// Throws an exception if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Add(int id)
@@ -135,7 +135,7 @@ namespace Massive
 		/// Removes an ID. If the ID is already removed, no action is performed.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if provided ID is negative.
+		/// Throws an exception if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(int id)
@@ -233,7 +233,7 @@ namespace Massive
 		/// Checks whether the specified ID is added.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if provided ID is negative.
+		/// Throws an exception if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has(int id)
@@ -247,7 +247,7 @@ namespace Massive
 		/// Checks whether the packed index is added.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if provided index is negative.
+		/// Throws an exception if provided index is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool HasPacked(int index)
@@ -402,6 +402,9 @@ namespace Massive
 			Packed[index] = id;
 		}
 
+		/// <summary>
+		/// Creates and returns a new sparse set that is an exact copy of the current one.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet CloneSparse()
 		{
@@ -410,6 +413,9 @@ namespace Massive
 			return clone;
 		}
 
+		/// <summary>
+		/// Copies the contents of the current sparse set into the specified one.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopySparseTo(SparseSet other)
 		{

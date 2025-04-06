@@ -17,6 +17,9 @@ namespace Massive
 		{
 		}
 
+		/// <summary>
+		/// Moves the data from one index to another.
+		/// </summary>
 		protected override void MoveDataAt(int source, int destination)
 		{
 			Data.Swap(source, destination);

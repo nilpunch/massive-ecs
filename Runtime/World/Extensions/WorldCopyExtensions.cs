@@ -12,6 +12,9 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public static class WorldCopyExtensions
 	{
+		/// <summary>
+		/// Creates and returns a new world that is an exact copy of the current one.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static World Clone(this World world)
 		{
@@ -20,6 +23,13 @@ namespace Massive
 			return clone;
 		}
 
+		/// <summary>
+		/// Copies the contents of the current world into the specified one.
+		/// Clears sets in the target world that are not present in the source.
+		/// </summary>
+		/// <remarks>
+		/// Throws an exception if the worlds have incompatible configs.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void CopyTo(this World world, World other)
 		{

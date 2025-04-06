@@ -80,7 +80,7 @@ namespace Massive
 		/// Destroys any alive entity with this ID, regardless of version.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if the entity with this ID is not alive.
+		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this World world, int id)
@@ -105,7 +105,7 @@ namespace Massive
 		/// </summary>
 		/// <param name="data"> Initial data for the added component. </param>
 		/// <remarks>
-		/// Will throw an exception if the entity with this ID is not alive.
+		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set<T>(this World world, int id, T data)
@@ -125,7 +125,7 @@ namespace Massive
 		/// Repeat additions are allowed.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if the entity with this ID is not alive.
+		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Add<T>(this World world, int id)
@@ -140,7 +140,7 @@ namespace Massive
 		/// Repeat removements are allowed.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if the entity with this ID is not alive.
+		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Remove<T>(this World world, int id)
@@ -154,7 +154,7 @@ namespace Massive
 		/// Checks whether the entity with this ID has such a component, regardless of version.
 		/// </summary>
 		/// <remarks>
-		/// Will throw an exception if the entity with this ID is not alive.
+		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this World world, int id)

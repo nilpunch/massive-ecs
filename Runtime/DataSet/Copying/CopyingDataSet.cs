@@ -18,11 +18,18 @@ namespace Massive
 		{
 		}
 
+		/// <summary>
+		/// Copies the data from one index to another.
+		/// </summary>
 		public override void CopyDataAt(int source, int destination)
 		{
 			Data[source].CopyTo(ref Data[destination]);
 		}
 
+		/// <summary>
+		/// Creates and returns a new copying data set that is an exact copy of the current one.
+		/// All data is copied using <see cref="ICopyable{T}"/>.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CopyingDataSet<T> CloneCopyable()
 		{
@@ -31,6 +38,10 @@ namespace Massive
 			return clone;
 		}
 
+		/// <summary>
+		/// Copies the contents of the current data set into the specified one.
+		/// All data is copied using <see cref="ICopyable{T}"/>.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToCopyable(DataSet<T> other)
 		{

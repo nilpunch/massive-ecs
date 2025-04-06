@@ -20,14 +20,9 @@ namespace Massive
 		}
 
 		public World(WorldConfig worldConfig)
-			: this(new Entities(), new NormalSetFactory(worldConfig), worldConfig)
 		{
-		}
-
-		public World(Entities entities, ISetFactory setFactory, WorldConfig worldConfig)
-		{
-			Entities = entities;
-			SetRegistry = new SetRegistry(setFactory);
+			Entities = new Entities();
+			SetRegistry = new SetRegistry(new SetFactory(worldConfig));
 			FilterRegistry = new FilterRegistry(SetRegistry);
 			Config = worldConfig;
 

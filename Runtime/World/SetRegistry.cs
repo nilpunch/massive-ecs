@@ -22,9 +22,9 @@ namespace Massive
 
 		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
 
-		public ISetFactory SetFactory { get; }
+		public SetFactory SetFactory { get; }
 
-		public SetRegistry(ISetFactory setFactory)
+		public SetRegistry(SetFactory setFactory)
 		{
 			SetFactory = setFactory;
 		}
