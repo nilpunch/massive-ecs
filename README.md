@@ -130,7 +130,7 @@ class Program
 			});
 
 		// Iterate using foreach.
-		var positions = world.DataSet<Velocity>();
+		var positions = world.DataSet<Position>();
 		foreach (var entityId in world.View().Include<Player, Position>())
 		{
 			ref var position = ref positions.Get(entityId);
