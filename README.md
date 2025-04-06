@@ -32,9 +32,10 @@ This is **a library**, not a framework. Thus, it does not try to take control of
 - Supports components of any type.
 - No allocations and minimal memory consumption.
 - No deferred command execution — all changes take effect immediately.
-- Generic API for in-place filtering, with a non-generic version to improve IL2CPP build time and size.
-- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for safe and flexible iteration over entities and components.
-- Fully stable storage on demand:
+- `Clone()` and `CopyTo(other)` methods for creating snapshots.  
+  Ideal for implementing replays, undo/redo, or rollbacks.
+- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for adaptive iteration over entities and components.
+- Fully stable storage (no reference invalidation) on demand:
   - Use the `IStable` marker interface for components.
   - Or enable full stability for the entire world.
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
@@ -129,17 +130,10 @@ class Program
 			});
 
 		// Iterate using foreach.
+		var positions = world.DataSet<Velocity>();
 		foreach (var entityId in world.View().Include<Player, Position>())
 		{
-			ref var position = ref world.Get<Position>(entityId);
-			// ...
-		}
-
-		// Iterate manually over data sets.
-		var velocities = world.DataSet<Velocity>();
-		for (int i = 0; i < velocities.Count; ++i)
-		{
-			ref var velocity = ref velocities.Data[i];
+			ref var position = ref positions.Get(entityId);
 			// ...
 		}
 
