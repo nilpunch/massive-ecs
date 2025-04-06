@@ -168,8 +168,8 @@ namespace Massive
 		/// Returns a reference to the component of the entity with this ID.
 		/// </summary>
 		/// <remarks>
-		/// Requesting a component from the entity that is being destroyed will throw an exception,
-		/// and this method will throw an exception if the type has no associated data.
+		/// Throws an exception if the entity with this ID is not alive,
+		/// or if the type has no associated data set.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this World world, int id)
