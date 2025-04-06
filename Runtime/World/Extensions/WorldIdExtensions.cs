@@ -22,8 +22,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates a unique entity with the added component and returns the entity ID.
-		/// Does not initialize component data.
+		/// Creates a unique entity, adds a component without initializing data, and returns the entity ID.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Create<T>(this World world)
@@ -34,9 +33,8 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates a unique entity with the added component and returns the entity ID.
+		/// Creates a unique entity, adds a component with provided data, and returns the entity ID.
 		/// </summary>
-		/// <param name="data"> Initial data for the added component. </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Create<T>(this World world, T data)
 		{
@@ -49,7 +47,7 @@ namespace Massive
 		/// Creates a unique entity with components of another entity and returns the entity ID.
 		/// </summary>
 		/// <remarks>
-		/// Cloning entity that is not alive will throw an exception.
+		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this World world, int id)
@@ -77,7 +75,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Destroys any alive entity with this ID, regardless of version.
+		/// Destroys any alive entity with this ID.
 		/// </summary>
 		/// <remarks>
 		/// Throws an exception if the entity with this ID is not alive.
@@ -91,7 +89,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether the entity with this ID is alive, regardless of version.
+		/// Checks whether the entity with this ID is alive.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAlive(this World world, int id)
@@ -100,10 +98,8 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Adds a component to the entity with this ID, regardless of version.
-		/// Repeat additions are allowed.
+		/// Adds a component to the entity with this ID and sets its data.
 		/// </summary>
-		/// <param name="data"> Initial data for the added component. </param>
 		/// <remarks>
 		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
@@ -121,9 +117,11 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Adds a component to the entity with this ID, regardless of version, without data initialization.
-		/// Repeat additions are allowed.
+		/// Adds a component to the entity with this ID without initializing data.
 		/// </summary>
+		/// <returns>
+		/// True if the component was added; false if it was already present.
+		/// </returns>
 		/// <remarks>
 		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
@@ -136,9 +134,11 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Removes a component from the entity with this ID, regardless of version.
-		/// Repeat removements are allowed.
+		/// Removes a component from the entity with this ID.
 		/// </summary>
+		/// <returns>
+		/// True if the component was removed; false if it was not present.
+		/// </returns>
 		/// <remarks>
 		/// Throws an exception if the entity with this ID is not alive.
 		/// </remarks>
@@ -151,7 +151,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether the entity with this ID has such a component, regardless of version.
+		/// Checks whether the entity with this ID has such a component.
 		/// </summary>
 		/// <remarks>
 		/// Throws an exception if the entity with this ID is not alive.
@@ -165,7 +165,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Returns a reference to the component of the entity with this ID, regardless of version.
+		/// Returns a reference to the component of the entity with this ID.
 		/// </summary>
 		/// <remarks>
 		/// Requesting a component from the entity that is being destroyed will throw an exception,

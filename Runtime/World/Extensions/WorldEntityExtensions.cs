@@ -34,8 +34,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates a unique entity with the added component and returns it.
-		/// Does not initialize component data.
+		/// Creates a unique entity, adds a component without initializing data, and returns the entity.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity CreateEntity<T>(this World world)
@@ -46,9 +45,8 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates a unique entity with the added component and returns it.
+		/// Creates a unique entity, adds a component with provided data, and returns the entity.
 		/// </summary>
-		/// <param name="data"> Initial data for the added component. </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity CreateEntity<T>(this World world, T data)
 		{
@@ -89,6 +87,9 @@ namespace Massive
 		/// <summary>
 		/// Checks whether the entity is alive.
 		/// </summary>
+		/// <remarks>
+		/// Throws an exception if provided entity ID is negative.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAlive(this World world, Entity entity)
 		{
@@ -96,9 +97,8 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Adds a component to the entity.
+		/// Adds a component to the entity and sets its data.
 		/// </summary>
-		/// <param name="data"> Initial data for the added component. </param>
 		/// <remarks>
 		/// Throws an exception if the entity is not alive.
 		/// </remarks>
@@ -111,9 +111,11 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Adds a component to the entity, without data initialization.
-		/// Repeat additions are allowed.
+		/// Adds a component to the entity without initializing data.
 		/// </summary>
+		/// <returns>
+		/// True if the component was added; false if it was already present.
+		/// </returns>
 		/// <remarks>
 		/// Throws an exception if the entity is not alive.
 		/// </remarks>
@@ -128,6 +130,9 @@ namespace Massive
 		/// <summary>
 		/// Removes a component from the entity.
 		/// </summary>
+		/// <returns>
+		/// True if the component was removed; false if it was not present.
+		/// </returns>
 		/// <remarks>
 		/// Throws an exception if the entity is not alive.
 		/// </remarks>

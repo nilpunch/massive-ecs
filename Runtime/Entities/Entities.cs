@@ -254,9 +254,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(Entity entity)
 		{
-			Assert.NonNegative(entity.Id, "entity.Id");
-
-			if (entity.Id >= MaxId)
+			if (entity.Id < 0 || entity.Id >= MaxId)
 			{
 				return false;
 			}
@@ -266,15 +264,10 @@ namespace Massive
 			return index < Count && Packed[index] == entity.Id && Versions[index] == entity.Version;
 		}
 
-		/// <remarks>
-		/// Throws an exception if provided ID is negative.
-		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			Assert.NonNegative(id, nameof(id));
-
-			return id < MaxId && Sparse[id] < Count && Packed[Sparse[id]] == id;
+			return id >= 0 && id < MaxId && Sparse[id] < Count && Packed[Sparse[id]] == id;
 		}
 
 		/// <summary>

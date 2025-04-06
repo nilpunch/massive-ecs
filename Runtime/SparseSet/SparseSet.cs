@@ -94,6 +94,9 @@ namespace Massive
 		/// <summary>
 		/// Adds an ID. If the ID is already added, no action is performed.
 		/// </summary>
+		/// <returns>
+		/// True if the ID was added; false if it was already present.
+		/// </returns>
 		/// <remarks>
 		/// Throws an exception if provided ID is negative.
 		/// </remarks>
@@ -134,6 +137,9 @@ namespace Massive
 		/// <summary>
 		/// Removes an ID. If the ID is already removed, no action is performed.
 		/// </summary>
+		/// <returns>
+		/// True if the ID was removed; false if it was not present.
+		/// </returns>
 		/// <remarks>
 		/// Throws an exception if provided ID is negative.
 		/// </remarks>
@@ -230,31 +236,21 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Checks whether the specified ID is added.
+		/// Checks whether the specified ID is present.
 		/// </summary>
-		/// <remarks>
-		/// Throws an exception if provided ID is negative.
-		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has(int id)
 		{
-			Assert.NonNegative(id, nameof(id));
-
-			return id < SparseCapacity && Sparse[id] != Constants.InvalidId;
+			return id >= 0 && id < SparseCapacity && Sparse[id] != Constants.InvalidId;
 		}
 
 		/// <summary>
 		/// Checks whether the packed index is added.
 		/// </summary>
-		/// <remarks>
-		/// Throws an exception if provided index is negative.
-		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool HasPacked(int index)
 		{
-			Assert.NonNegative(index, nameof(index));
-
-			return index < PackedCapacity && Packed[index] >= 0;
+			return index >= 0 && index < PackedCapacity && Packed[index] >= 0;
 		}
 
 		/// <summary>

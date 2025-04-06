@@ -41,7 +41,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Gets a reference to the data associated with the specified ID.
+		/// Adds the specified ID if not present and sets the associated data.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set(int id, T data)
