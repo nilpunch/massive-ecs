@@ -156,17 +156,6 @@ namespace Massive.Tests
 			NUnit.Framework.Assert.IsFalse(isAlive);
 		}
 
-		[TestCase(200)]
-		[TestCase(-1)]
-		public void Destroy_WhenOutOfBounds_ShouldNotThrow(int id)
-		{
-			var entities = new Entities();
-
-			NUnit.Framework.Assert.DoesNotThrow(CheckDestroy);
-
-			void CheckDestroy() => entities.Destroy(id);
-		}
-
 		[TestCase(0)]
 		[TestCase(1)]
 		[TestCase(5)]

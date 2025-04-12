@@ -29,7 +29,7 @@ namespace Massive
 		{
 			if (id < 0)
 			{
-				throw new Exception($"{Library} Provided {paramName} is negative.");
+				throw new Exception($"{Library} Provided {paramName}:{id} is negative.");
 			}
 		}
 

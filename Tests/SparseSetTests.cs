@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace Massive.Tests
 {
@@ -61,14 +62,14 @@ namespace Massive.Tests
 
 		[TestCase(-2)]
 		[TestCase(-1)]
-		public void WhenAssigned_AndNegativeIndex_ThenDoNotAssign(int id)
+		public void WhenAssigned_AndNegativeIndex_ThenThrow(int id)
 		{
 			var sparseSet = new SparseSet();
 
-			sparseSet.Add(id);
-			var isAssigned = sparseSet.Has(id);
-
-			NUnit.Framework.Assert.IsFalse(isAssigned);
+			NUnit.Framework.Assert.Throws<Exception>(() =>
+			{
+				sparseSet.Add(id);
+			});
 		}
 	}
 }
