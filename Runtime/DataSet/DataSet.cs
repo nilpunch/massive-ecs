@@ -97,19 +97,19 @@ namespace Massive
 		void IDataSet.SetRaw(int id, object value) => Get(id) = (T)value;
 
 		/// <summary>
-		/// Creates and returns a new data set that is an exact copy of the current one.
+		/// Creates and returns a new data set that is an exact copy of this one.
 		/// All data is copied by value.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DataSet<T> Clone()
 		{
-			var clone = new DataSet<T>();
+			var clone = new DataSet<T>(Data.PageSize);
 			CopyTo(clone);
 			return clone;
 		}
 
 		/// <summary>
-		/// Copies the contents of the current data set into the specified one.
+		/// Copies all data and sparse state from this set into the specified one.
 		/// All data is copied by value.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

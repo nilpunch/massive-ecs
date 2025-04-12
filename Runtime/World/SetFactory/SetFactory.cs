@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
@@ -20,6 +21,14 @@ namespace Massive
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 			_pageSize = pageSize;
 			_fullStability = fullStability;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool CompatibleWith(SetFactory other)
+		{
+			return _storeEmptyTypesAsDataSets == other._storeEmptyTypesAsDataSets
+				&& _pageSize == other._pageSize
+				&& _fullStability == other._fullStability;
 		}
 
 		public Output CreateAppropriateSet<T>()

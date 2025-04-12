@@ -119,6 +119,16 @@ namespace Massive
 
 		[Conditional(Symbol)]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void CompatibleConfigs(SetFactory a, SetFactory b)
+		{
+			if (!a.CompatibleWith(b))
+			{
+				throw new Exception($"{Library} Worlds configs are incompatible.");
+			}
+		}
+
+		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void NoConflictsInFilter(SparseSet[] included, SparseSet[] excluded)
 		{
 			if (included.ContainsAny(excluded))

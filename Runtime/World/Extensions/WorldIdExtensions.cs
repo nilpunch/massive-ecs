@@ -47,7 +47,7 @@ namespace Massive
 		/// Creates a unique entity with components of another entity and returns the entity ID.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity with this ID is not alive.
+		/// Throws if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this World world, int id)
@@ -78,7 +78,7 @@ namespace Massive
 		/// Destroys any alive entity with this ID.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity with this ID is not alive.
+		/// Throws if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this World world, int id)
@@ -101,7 +101,7 @@ namespace Massive
 		/// Adds a component to the entity with this ID and sets its data.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity with this ID is not alive.
+		/// Throws if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set<T>(this World world, int id, T data)
@@ -123,7 +123,7 @@ namespace Massive
 		/// True if the component was added; false if it was already present.
 		/// </returns>
 		/// <remarks>
-		/// Throws an exception if the entity with this ID is not alive.
+		/// Throws if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Add<T>(this World world, int id)
@@ -140,7 +140,7 @@ namespace Massive
 		/// True if the component was removed; false if it was not present.
 		/// </returns>
 		/// <remarks>
-		/// Throws an exception if the entity with this ID is not alive.
+		/// Throws if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Remove<T>(this World world, int id)
@@ -154,7 +154,7 @@ namespace Massive
 		/// Checks whether the entity with this ID has such a component.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity with this ID is not alive.
+		/// Throws if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this World world, int id)
@@ -168,7 +168,7 @@ namespace Massive
 		/// Returns a reference to the component of the entity with this ID.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity with this ID is not alive,
+		/// Throws if the entity with this ID is not alive,
 		/// or if the type has no associated data set.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -10,13 +10,13 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SetRegistry
 	{
-		public Dictionary<string, SparseSet> SetsByIdentifiers { get; } = new Dictionary<string, SparseSet>();
+		private Dictionary<string, SparseSet> SetsByIdentifiers { get; } = new Dictionary<string, SparseSet>();
 
-		public FastList<string> Identifiers { get; } = new FastList<string>();
+		private FastList<int> Hashes { get; } = new FastList<int>();
 
-		public FastList<int> Hashes { get; } = new FastList<int>();
+		private FastList<string> Identifiers { get; } = new FastList<string>();
 
-		public FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
+		private FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
 
 		public FastListSparseSet AllSets { get; } = new FastListSparseSet();
 
@@ -27,17 +27,6 @@ namespace Massive
 		public SetRegistry(SetFactory setFactory)
 		{
 			SetFactory = setFactory;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet GetExisting(int typeIndex)
-		{
-			if (typeIndex >= Lookup.Length)
-			{
-				return null;
-			}
-
-			return Lookup[typeIndex];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -130,6 +119,49 @@ namespace Massive
 		public Type TypeOf(SparseSet sparseSet)
 		{
 			return TypeId.GetTypeByIndex(IndexOf(sparseSet));
+		}
+
+		/// <summary>
+		/// Copies all sets from this registry into the specified one.
+		/// Clears sets in the target registry that are not present in the source.
+		/// </summary>
+		/// <remarks>
+		/// Throws if the set factories are incompatible.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(SetRegistry other)
+		{
+			Assert.CompatibleConfigs(SetFactory, other.SetFactory);
+
+			// Copy present sets.
+			foreach (var cloner in Cloners)
+			{
+				cloner.CopyTo(other);
+			}
+
+			// Clear other sets.
+			var hashes = Hashes;
+			var otherHashes = other.Hashes;
+			var otherSets = other.AllSets;
+
+			if (hashes.Count == otherHashes.Count)
+			{
+				// Skip clearing if target has exactly the same sets.
+				return;
+			}
+
+			var index = 0;
+			for (var otherIndex = 0; otherIndex < otherSets.Count; otherIndex++)
+			{
+				if (index >= hashes.Count || otherHashes[otherIndex] != hashes[index])
+				{
+					otherSets[otherIndex].ClearWithoutNotify();
+				}
+				else
+				{
+					index++;
+				}
+			}
 		}
 	}
 }

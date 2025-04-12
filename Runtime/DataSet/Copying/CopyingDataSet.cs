@@ -27,19 +27,19 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates and returns a new copying data set that is an exact copy of the current one.
+		/// Creates and returns a new copying data set that is an exact copy of this one.
 		/// All data is copied using <see cref="ICopyable{T}"/>.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CopyingDataSet<T> CloneCopyable()
 		{
-			var clone = new CopyingDataSet<T>();
+			var clone = new CopyingDataSet<T>(Data.PageSize);
 			CopyTo(clone);
 			return clone;
 		}
 
 		/// <summary>
-		/// Copies the contents of the current data set into the specified one.
+		/// Copies all data and sparse state from this set into the specified one.
 		/// All data is copied using <see cref="ICopyable{T}"/>.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

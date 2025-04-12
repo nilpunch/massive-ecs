@@ -65,12 +65,12 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Shoots only after <see cref="Add"/> call, when the ID was not already added.
+		/// Shoots only after <see cref="Add"/> call, when the ID was not already present.
 		/// </summary>
 		public event Action<int> AfterAdded;
 
 		/// <summary>
-		/// Shoots before each <see cref="Remove"/> call, when the ID was asigned.
+		/// Shoots before each <see cref="Remove"/> call, when the ID was removed.
 		/// </summary>
 		public event Action<int> BeforeRemoved;
 
@@ -98,7 +98,7 @@ namespace Massive
 		/// True if the ID was added; false if it was already present.
 		/// </returns>
 		/// <remarks>
-		/// Throws an exception if provided ID is negative.
+		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Add(int id)
@@ -141,7 +141,7 @@ namespace Massive
 		/// True if the ID was removed; false if it was not present.
 		/// </returns>
 		/// <remarks>
-		/// Throws an exception if provided ID is negative.
+		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(int id)
@@ -399,7 +399,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates and returns a new sparse set that is an exact copy of the current one.
+		/// Creates and returns a new sparse set that is an exact copy of this one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet CloneSparse()
@@ -410,7 +410,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Copies the contents of the current sparse set into the specified one.
+		/// Copies all sparse state from this set into the specified one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopySparseTo(SparseSet other)

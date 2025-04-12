@@ -16,7 +16,7 @@ namespace Massive
 		/// Returns alive entity for this ID.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity with this ID is not alive.
+		/// Throws if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity GetEntity(this World world, int id)
@@ -59,7 +59,7 @@ namespace Massive
 		/// Creates a unique entity with components of another entity.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity is not alive.
+		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity Clone(this World world, Entity entity)
@@ -74,7 +74,7 @@ namespace Massive
 		/// Destroys this entity.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity is not alive.
+		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this World world, Entity entity)
@@ -88,7 +88,7 @@ namespace Massive
 		/// Checks whether the entity is alive.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if provided entity ID is negative.
+		/// Throws if provided entity ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAlive(this World world, Entity entity)
@@ -100,7 +100,7 @@ namespace Massive
 		/// Adds a component to the entity and sets its data.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity is not alive.
+		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set<T>(this World world, Entity entity, T data)
@@ -117,7 +117,7 @@ namespace Massive
 		/// True if the component was added; false if it was already present.
 		/// </returns>
 		/// <remarks>
-		/// Throws an exception if the entity is not alive.
+		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Add<T>(this World world, Entity entity)
@@ -134,7 +134,7 @@ namespace Massive
 		/// True if the component was removed; false if it was not present.
 		/// </returns>
 		/// <remarks>
-		/// Throws an exception if the entity is not alive.
+		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Remove<T>(this World world, Entity entity)
@@ -148,7 +148,7 @@ namespace Massive
 		/// Checks whether the entity has such a component.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity is not alive.
+		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this World world, Entity entity)
@@ -162,7 +162,7 @@ namespace Massive
 		/// Returns a reference to the component of the entity.
 		/// </summary>
 		/// <remarks>
-		/// Throws an exception if the entity is not alive,
+		/// Throws if the entity is not alive,
 		/// or if the type has no associated data set.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -130,7 +130,7 @@ namespace Massive
 		}
 
 		/// <remarks>
-		/// Throws an exception if provided ID is negative.
+		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int id)
@@ -163,7 +163,7 @@ namespace Massive
 		}
 
 		/// <remarks>
-		/// Throws an exception if provided amount is negative.
+		/// Throws if provided amount is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CreateMany(int amount)
@@ -241,7 +241,7 @@ namespace Massive
 		}
 
 		/// <remarks>
-		/// Throws an exception if the entity with this ID is not alive.
+		/// Throws if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
@@ -357,6 +357,9 @@ namespace Massive
 			Versions[index] = version;
 		}
 
+		/// <summary>
+		/// Creates and returns a new entities collection that is an exact copy of this one.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entities Clone()
 		{
@@ -365,6 +368,9 @@ namespace Massive
 			return clone;
 		}
 
+		/// <summary>
+		/// Copies all entities and state from this entities collection into the specified one.
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Entities other)
 		{
