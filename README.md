@@ -36,7 +36,7 @@ This is **a library**, not a framework. Thus, it does not try to take control of
   Ideal for implementing replays, undo/redo, or rollbacks.
 - Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for adaptive iteration over entities and components.
 - Fully stable storage (no reference invalidation) on demand:
-  - Use the `IStable` marker interface for components.
+  - Use the `Stable` attribute for components.
   - Or enable full stability for the entire world.
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
 
@@ -103,7 +103,7 @@ view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
 	// NOTE:
 	// After destroying any entities, cached refs to components
 	// may become invalid for the current iteration cycle.
-	// If this behavior does not suit you, use IStable components.
+	// If this behavior does not suit you, use Stable attribute on component.
 });
 
 // Pass extra arguments to avoid boxing.

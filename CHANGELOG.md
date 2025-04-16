@@ -1,5 +1,15 @@
 # Changelog
 
+## 19.1.0 - April 16, 2025
+
+### Added
+
+- `PageSize` attribute to override the default page size for a data set of the specified type.
+
+### Changed
+
+- Replaced the `IStable` marker interface with a `Stable` attribute.
+
 ## 19.0.0 - April 5, 2025
 
 BREAKING CHANGE: Major renaming, groups removal.
@@ -11,7 +21,7 @@ BREAKING CHANGE: Major renaming, groups removal.
   - Renamed `Assign(id)` to `Add(id)`.
   - Renamed `Unassign(id)` to `Remove(id)`.
   - Renamed `IsAssigned(id)` to `Has(id)`.
-  - Renamed `Assign(id, data)` shortcut to `Set(id, data)`.
+  - Renamed `Assign(id, data)` to `Set(id, data)`.
   - `Add(id)` and `Remove(id)` returns `true` if the component is added or removed
     and `false` if it is already present or not there.
 - Added assertions for negative arguments in some methods.

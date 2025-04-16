@@ -129,6 +129,16 @@ namespace Massive
 
 		[Conditional(Symbol)]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void EqualPageSize(IPagedArray a, IPagedArray b)
+		{
+			if (a.PageSize != b.PageSize)
+			{
+				throw new Exception($"{Library} Paged arrays has different page sizes.");
+			}
+		}
+
+		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void NoConflictsInFilter(SparseSet[] included, SparseSet[] excluded)
 		{
 			if (included.ContainsAny(excluded))

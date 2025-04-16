@@ -47,7 +47,7 @@
 				// NOTE:
 				// After destroying any entities, cached refs to components
 				// may become invalid for the current interation cycle.
-				// If this behavior does not suit you, use IStable components.
+				// If this behavior does not suit you, use Stable attribute on component.
 			});
 
 			// Pass extra arguments to avoid boxing.

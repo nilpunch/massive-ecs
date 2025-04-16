@@ -115,6 +115,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(DataSet<T> other)
 		{
+			Assert.EqualPageSize(Data, other.Data);
+
 			CopySparseTo(other);
 
 			var sourceData = Data;

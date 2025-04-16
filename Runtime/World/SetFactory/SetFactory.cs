@@ -54,19 +54,19 @@ namespace Massive
 		{
 			if (CopyableUtils.IsImplementedFor(typeof(T)))
 			{
-				var dataSet = CopyableUtils.CreateCopyingDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				var dataSet = CopyableUtils.CreateCopyingDataSet<T>(GetPageSizeFor(typeof(T)), GetPackingFor(typeof(T)));
 				var cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else if (typeof(T).IsManaged())
 			{
-				var dataSet = new SwappingDataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				var dataSet = new SwappingDataSet<T>(GetPageSizeFor(typeof(T)), GetPackingFor(typeof(T)));
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else
 			{
-				var dataSet = new DataSet<T>(_pageSize, GetPackingFor(typeof(T)));
+				var dataSet = new DataSet<T>(GetPageSizeFor(typeof(T)), GetPackingFor(typeof(T)));
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
@@ -74,7 +74,17 @@ namespace Massive
 
 		private Packing GetPackingFor(Type type)
 		{
-			return _fullStability || IStable.IsImplementedFor(type) ? Packing.WithHoles : Packing.Continuous;
+			return _fullStability || type.IsDefined(typeof(StableAttribute), false) ? Packing.WithHoles : Packing.Continuous;
+		}
+
+		private int GetPageSizeFor(Type type)
+		{
+			if (Attribute.GetCustomAttribute(type, typeof(PageSizeAttribute)) is PageSizeAttribute attribute)
+			{
+				return attribute.PageSize;
+			}
+
+			return _pageSize;
 		}
 
 		public readonly struct Output

@@ -305,7 +305,8 @@ namespace Massive.Tests
 	[TestFixture]
 	public class WorldIntegrationTests
 	{
-		private struct StableData : IStable
+		[Stable]
+		private struct StableData
 		{
 			public int Value;
 		}
