@@ -38,9 +38,9 @@ namespace Massive
 		public int SparseCapacity { get; private set; }
 
 		/// <summary>
-		/// Gets the maximum count of entities in use.
+		/// The maximum count of entity ids in use.
 		/// </summary>
-		public int MaxId { get; private set; }
+		public int UsedIds { get; private set; }
 
 		/// <summary>
 		/// The ID of the next available hole in the sparse array, or <see cref="EndHoleId"/> if no holes exist.
@@ -86,12 +86,12 @@ namespace Massive
 		public State CurrentState
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new State(Count, MaxId, NextHoleId, Packing);
+			get => new State(Count, UsedIds, NextHoleId, Packing);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
 				Count = value.Count;
-				MaxId = value.MaxId;
+				UsedIds = value.UsedIds;
 				NextHoleId = value.NextHoleId;
 				Packing = value.Packing;
 			}
@@ -112,16 +112,16 @@ namespace Massive
 				Packed[index] = id;
 				entity = new Entity(id, Versions[index]);
 			}
-			else if (Count < MaxId)
+			else if (Count < UsedIds)
 			{
 				entity = new Entity(Packed[Count], Versions[Count]);
 				Count += 1;
 			}
 			else
 			{
-				entity = new Entity(MaxId, 0);
-				AssignEntity(MaxId, 0, Count);
-				MaxId += 1;
+				entity = new Entity(UsedIds, 0);
+				AssignEntity(UsedIds, 0, Count);
+				UsedIds += 1;
 				Count += 1;
 			}
 
@@ -138,7 +138,7 @@ namespace Massive
 			Assert.NonNegative(id, nameof(id));
 
 			// If entity is not alive, nothing to be done.
-			if (id >= MaxId || Sparse[id] >= Count || Packed[Sparse[id]] != id)
+			if (id >= UsedIds || Sparse[id] >= Count || Packed[Sparse[id]] != id)
 			{
 				return;
 			}
@@ -183,7 +183,7 @@ namespace Massive
 				AfterCreated?.Invoke(id);
 			}
 
-			while (Count < MaxId && needToCreate > 0)
+			while (Count < UsedIds && needToCreate > 0)
 			{
 				needToCreate -= 1;
 				Count += 1;
@@ -192,10 +192,10 @@ namespace Massive
 
 			for (var i = 0; i < needToCreate; i++)
 			{
-				AssignEntity(MaxId, 0, Count);
-				MaxId += 1;
+				AssignEntity(UsedIds, 0, Count);
+				UsedIds += 1;
 				Count += 1;
-				AfterCreated?.Invoke(MaxId - 1);
+				AfterCreated?.Invoke(UsedIds - 1);
 			}
 		}
 
@@ -254,7 +254,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(Entity entity)
 		{
-			if (entity.Id < 0 || entity.Id >= MaxId)
+			if (entity.Id < 0 || entity.Id >= UsedIds)
 			{
 				return false;
 			}
@@ -267,7 +267,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			return id >= 0 && id < MaxId && Sparse[id] < Count && Packed[Sparse[id]] == id;
+			return id >= 0 && id < UsedIds && Sparse[id] < Count && Packed[Sparse[id]] == id;
 		}
 
 		/// <summary>
@@ -374,11 +374,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Entities other)
 		{
-			other.EnsureCapacityAt(MaxId - 1);
+			other.EnsureCapacityAt(UsedIds - 1);
 
-			Array.Copy(Packed, other.Packed, MaxId);
-			Array.Copy(Versions, other.Versions, MaxId);
-			Array.Copy(Sparse, other.Sparse, MaxId);
+			Array.Copy(Packed, other.Packed, UsedIds);
+			Array.Copy(Versions, other.Versions, UsedIds);
+			Array.Copy(Sparse, other.Sparse, UsedIds);
 
 			other.CurrentState = CurrentState;
 		}
@@ -386,14 +386,14 @@ namespace Massive
 		public readonly struct State
 		{
 			public readonly int Count;
-			public readonly int MaxId;
+			public readonly int UsedIds;
 			public readonly int NextHoleId;
 			public readonly Packing Packing;
 
-			public State(int count, int maxId, int nextHoleId, Packing packing)
+			public State(int count, int usedIds, int nextHoleId, Packing packing)
 			{
 				Count = count;
-				MaxId = maxId;
+				UsedIds = usedIds;
 				NextHoleId = nextHoleId;
 				Packing = packing;
 			}

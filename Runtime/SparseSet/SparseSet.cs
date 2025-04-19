@@ -105,22 +105,27 @@ namespace Massive
 		{
 			Assert.NonNegative(id, nameof(id));
 
-			// If ID is already added, nothing to be done.
-			if (id < SparseCapacity && Sparse[id] != Constants.InvalidId)
+			if (id >= SparseCapacity)
+			{
+				ResizeSparse(MathUtils.NextPowerOf2(id + 1));
+			}
+
+			// If ID is already present, nothing to be done.
+			if (Sparse[id] != Constants.InvalidId)
 			{
 				return false;
 			}
 
-			EnsureSparseAt(id);
-
 			if (Packing == Packing.WithHoles && NextHole != EndHole)
 			{
+				// Fill the holes.
 				var index = NextHole;
 				NextHole = ~Packed[index];
 				Pair(id, index);
 			}
-			else // Packing.Continuous || Packing.WithPersistentHoles
+			else // if (Packing == Packing.Continuous || Packing == Packing.WithPersistentHoles)
 			{
+				// Append to the end.
 				EnsurePackedAt(Count);
 				EnsureDataAt(Count);
 				Pair(id, Count);
@@ -158,11 +163,13 @@ namespace Massive
 
 			if (Packing == Packing.Continuous)
 			{
+				// Swap with last.
 				Count -= 1;
 				MoveAt(Count, Sparse[id]);
 			}
-			else // Packing.WithHoles || Packing.WithPersistentHoles
+			else // if (Packing == Packing.WithHoles || Packing == Packing.WithPersistentHoles)
 			{
+				// Create a hole.
 				var index = Sparse[id];
 				Packed[index] = ~NextHole;
 				NextHole = index;
