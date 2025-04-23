@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
@@ -113,9 +114,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Span<T>.Enumerator GetEnumerator()
+		public Enumerator GetEnumerator()
 		{
-			return new Span<T>(Items, 0, Count).GetEnumerator();
+			return new Enumerator(Items, Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -124,6 +125,33 @@ namespace Massive
 			if (Capacity < min)
 			{
 				Capacity = MathUtils.NextPowerOf2(min);
+			}
+		}
+
+		[Il2CppSetOption(Option.NullChecks, false)]
+		[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+		[Il2CppSetOption(Option.DivideByZeroChecks, false)]
+		public struct Enumerator
+		{
+			private T[] _data;
+			private int _index;
+
+			public Enumerator(T[] data, int count)
+			{
+				_data = data;
+				_index = count;
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool MoveNext()
+			{
+				return --_index >= 0;
+			}
+
+			public ref T Current
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => ref _data[_index];
 			}
 		}
 	}

@@ -19,15 +19,15 @@ namespace Massive
 		}
 	}
 
-	public struct EntityActionRefExtraAdapter<T, TExtra> : IEntityAction<T>
+	public struct EntityActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
 	{
-		public EntityActionRefExtra<T, TExtra> Action;
-		public TExtra Extra;
+		public EntityActionRefArgs<T, TArgs> Action;
+		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id, ref T a)
 		{
-			Action.Invoke(id, ref a, Extra);
+			Action.Invoke(id, ref a, Args);
 			return true;
 		}
 	}
@@ -44,15 +44,15 @@ namespace Massive
 		}
 	}
 
-	public struct ActionRefExtraAdapter<T, TExtra> : IEntityAction<T>
+	public struct ActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
 	{
-		public ActionRefExtra<T, TExtra> Action;
-		public TExtra Extra;
+		public ActionRefArgs<T, TArgs> Action;
+		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id, ref T a)
 		{
-			Action.Invoke(ref a, Extra);
+			Action.Invoke(ref a, Args);
 			return true;
 		}
 	}

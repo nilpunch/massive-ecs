@@ -19,15 +19,15 @@ namespace Massive
 		}
 	}
 
-	public struct EntityActionRefExtraAdapter<T1, T2, T3, T4, TExtra> : IEntityAction<T1, T2, T3, T4>
+	public struct EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs> : IEntityAction<T1, T2, T3, T4>
 	{
-		public EntityActionRefExtra<T1, T2, T3, T4, TExtra> Action;
-		public TExtra Extra;
+		public EntityActionRefArgs<T1, T2, T3, T4, TArgs> Action;
+		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
 		{
-			Action.Invoke(id, ref a, ref b, ref c, ref d, Extra);
+			Action.Invoke(id, ref a, ref b, ref c, ref d, Args);
 			return true;
 		}
 	}
@@ -44,15 +44,15 @@ namespace Massive
 		}
 	}
 
-	public struct ActionRefExtraAdapter<T1, T2, T3, TExtra, T4> : IEntityAction<T1, T2, T3, T4>
+	public struct ActionRefArgsAdapter<T1, T2, T3, TArgs, T4> : IEntityAction<T1, T2, T3, T4>
 	{
-		public ActionRefExtra<T1, T2, T3, T4, TExtra> Action;
-		public TExtra Extra;
+		public ActionRefArgs<T1, T2, T3, T4, TArgs> Action;
+		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
 		{
-			Action.Invoke(ref a, ref b, ref c, ref d, Extra);
+			Action.Invoke(ref a, ref b, ref c, ref d, Args);
 			return true;
 		}
 	}

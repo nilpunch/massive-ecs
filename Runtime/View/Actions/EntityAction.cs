@@ -10,15 +10,15 @@
 
 	public delegate void EntityActionRef<T1, T2, T3, T4>(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d);
 
-	public delegate void EntityActionExtra<TExtra>(int id, TExtra extra);
+	public delegate void EntityActionArgs<TArgs>(int id, TArgs args);
 
-	public delegate void EntityActionRefExtra<T, TExtra>(int id, ref T a, TExtra extra);
+	public delegate void EntityActionRefArgs<T, TArgs>(int id, ref T a, TArgs args);
 
-	public delegate void EntityActionRefExtra<T1, T2, TExtra>(int id, ref T1 a, ref T2 b, TExtra extra);
+	public delegate void EntityActionRefArgs<T1, T2, TArgs>(int id, ref T1 a, ref T2 b, TArgs args);
 
-	public delegate void EntityActionRefExtra<T1, T2, T3, TExtra>(int id, ref T1 a, ref T2 b, ref T3 c, TExtra extra);
+	public delegate void EntityActionRefArgs<T1, T2, T3, TArgs>(int id, ref T1 a, ref T2 b, ref T3 c, TArgs args);
 
-	public delegate void EntityActionRefExtra<T1, T2, T3, T4, TExtra>(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d, TExtra extra);
+	public delegate void EntityActionRefArgs<T1, T2, T3, T4, TArgs>(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d, TArgs args);
 
 	public delegate void ActionRef<T>(ref T a);
 
@@ -28,11 +28,11 @@
 
 	public delegate void ActionRef<T1, T2, T3, T4>(ref T1 a, ref T2 b, ref T3 c, ref T4 d);
 
-	public delegate void ActionRefExtra<T, TExtra>(ref T a, TExtra extra);
+	public delegate void ActionRefArgs<T, TArgs>(ref T a, TArgs args);
 
-	public delegate void ActionRefExtra<T1, T2, TExtra>(ref T1 a, ref T2 b, TExtra extra);
+	public delegate void ActionRefArgs<T1, T2, TArgs>(ref T1 a, ref T2 b, TArgs args);
 
-	public delegate void ActionRefExtra<T1, T2, T3, TExtra>(ref T1 a, ref T2 b, ref T3 c, TExtra extra);
+	public delegate void ActionRefArgs<T1, T2, T3, TArgs>(ref T1 a, ref T2 b, ref T3 c, TArgs args);
 
-	public delegate void ActionRefExtra<T1, T2, T3, T4, TExtra>(ref T1 a, ref T2 b, ref T3 c, ref T4 d, TExtra extra);
+	public delegate void ActionRefArgs<T1, T2, T3, T4, TArgs>(ref T1 a, ref T2 b, ref T3 c, ref T4 d, TArgs args);
 }

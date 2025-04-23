@@ -50,43 +50,43 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEachExtra<TView, TExtra>(this TView view, TExtra extra, EntityActionExtra<TExtra> action)
+		public static void ForEach<TView, TArgs>(this TView view, TArgs args, EntityActionArgs<TArgs> action)
 			where TView : IView
 		{
-			var entityActionExtraAdapter = new EntityActionExtraAdapter<TExtra>() { Action = action, Extra = extra };
-			view.ForEach(ref entityActionExtraAdapter);
+			var entityActionArgsAdapter = new EntityActionArgsAdapter<TArgs>() { Action = action, Args = args };
+			view.ForEach(ref entityActionArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEachExtra<TView, TExtra, T>(this TView view, TExtra extra, EntityActionRefExtra<T, TExtra> action)
+		public static void ForEach<TView, TArgs, T>(this TView view, TArgs args, EntityActionRefArgs<T, TArgs> action)
 			where TView : IViewT
 		{
-			var entityActionRefExtraAdapter = new EntityActionRefExtraAdapter<T, TExtra> { Action = action, Extra = extra };
-			view.ForEach<EntityActionRefExtraAdapter<T, TExtra>, T>(ref entityActionRefExtraAdapter);
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T, TArgs> { Action = action, Args = args };
+			view.ForEach<EntityActionRefArgsAdapter<T, TArgs>, T>(ref entityActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEachExtra<TView, TExtra, T1, T2>(this TView view, TExtra extra, EntityActionRefExtra<T1, T2, TExtra> action)
+		public static void ForEach<TView, TArgs, T1, T2>(this TView view, TArgs args, EntityActionRefArgs<T1, T2, TArgs> action)
 			where TView : IViewTT
 		{
-			var entityActionRefExtraAdapter = new EntityActionRefExtraAdapter<T1, T2, TExtra> { Action = action, Extra = extra };
-			view.ForEach<EntityActionRefExtraAdapter<T1, T2, TExtra>, T1, T2>(ref entityActionRefExtraAdapter);
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, TArgs> { Action = action, Args = args };
+			view.ForEach<EntityActionRefArgsAdapter<T1, T2, TArgs>, T1, T2>(ref entityActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEachExtra<TView, TExtra, T1, T2, T3>(this TView view, TExtra extra, EntityActionRefExtra<T1, T2, T3, TExtra> action)
+		public static void ForEach<TView, TArgs, T1, T2, T3>(this TView view, TArgs args, EntityActionRefArgs<T1, T2, T3, TArgs> action)
 			where TView : IViewTTT
 		{
-			var entityActionRefExtraAdapter = new EntityActionRefExtraAdapter<T1, T2, T3, TExtra> { Action = action, Extra = extra };
-			view.ForEach<EntityActionRefExtraAdapter<T1, T2, T3, TExtra>, T1, T2, T3>(ref entityActionRefExtraAdapter);
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Args = args };
+			view.ForEach<EntityActionRefArgsAdapter<T1, T2, T3, TArgs>, T1, T2, T3>(ref entityActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEachExtra<TView, TExtra, T1, T2, T3, T4>(this TView view, TExtra extra, EntityActionRefExtra<T1, T2, T3, T4, TExtra> action)
+		public static void ForEach<TView, TArgs, T1, T2, T3, T4>(this TView view, TArgs args, EntityActionRefArgs<T1, T2, T3, T4, TArgs> action)
 			where TView : IViewTTTT
 		{
-			var entityActionRefExtraAdapter = new EntityActionRefExtraAdapter<T1, T2, T3, T4, TExtra> { Action = action, Extra = extra };
-			view.ForEach<EntityActionRefExtraAdapter<T1, T2, T3, T4, TExtra>, T1, T2, T3, T4>(ref entityActionRefExtraAdapter);
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs> { Action = action, Args = args };
+			view.ForEach<EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs>, T1, T2, T3, T4>(ref entityActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -122,27 +122,27 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEachExtra<TView, TExtra, T>(this TView view, TExtra extra, ActionRefExtra<T, TExtra> action)
+		public static void ForEach<TView, TArgs, T>(this TView view, TArgs args, ActionRefArgs<T, TArgs> action)
 			where TView : IViewT
 		{
-			var actionRefExtraAdapter = new ActionRefExtraAdapter<T, TExtra> { Action = action, Extra = extra };
-			view.ForEach<ActionRefExtraAdapter<T, TExtra>, T>(ref actionRefExtraAdapter);
+			var actionRefArgsAdapter = new ActionRefArgsAdapter<T, TArgs> { Action = action, Args = args };
+			view.ForEach<ActionRefArgsAdapter<T, TArgs>, T>(ref actionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEachExtra<TView, TExtra, T1, T2>(this TView view, TExtra extra, ActionRefExtra<T1, T2, TExtra> action)
+		public static void ForEach<TView, TArgs, T1, T2>(this TView view, TArgs args, ActionRefArgs<T1, T2, TArgs> action)
 			where TView : IViewTT
 		{
-			var actionRefExtraAdapter = new ActionRefExtraAdapter<T1, T2, TExtra> { Action = action, Extra = extra };
-			view.ForEach<ActionRefExtraAdapter<T1, T2, TExtra>, T1, T2>(ref actionRefExtraAdapter);
+			var actionRefArgsAdapter = new ActionRefArgsAdapter<T1, T2, TArgs> { Action = action, Args = args };
+			view.ForEach<ActionRefArgsAdapter<T1, T2, TArgs>, T1, T2>(ref actionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ForEachExtra<TView, TExtra, T1, T2, T3>(this TView view, TExtra extra, ActionRefExtra<T1, T2, T3, TExtra> action)
+		public static void ForEach<TView, TArgs, T1, T2, T3>(this TView view, TArgs args, ActionRefArgs<T1, T2, T3, TArgs> action)
 			where TView : IViewTTT
 		{
-			var actionRefExtraAdapter = new ActionRefExtraAdapter<T1, T2, T3, TExtra> { Action = action, Extra = extra };
-			view.ForEach<ActionRefExtraAdapter<T1, T2, T3, TExtra>, T1, T2, T3>(ref actionRefExtraAdapter);
+			var actionRefArgsAdapter = new ActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Args = args };
+			view.ForEach<ActionRefArgsAdapter<T1, T2, T3, TArgs>, T1, T2, T3>(ref actionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

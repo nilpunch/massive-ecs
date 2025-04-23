@@ -35,7 +35,7 @@ namespace Massive
 		{
 			var type = typeof(T);
 
-			if (type.IsValueType && ReflectionUtils.HasNoFields(type) && !_storeEmptyTypesAsDataSets)
+			if (TypeHasNoData(type))
 			{
 				return CreateSparseSet<T>();
 			}
@@ -72,12 +72,22 @@ namespace Massive
 			}
 		}
 
-		private Packing GetPackingFor(Type type)
+		public bool TypeHasData(Type type)
+		{
+			return !TypeHasNoData(type);
+		}
+
+		public bool TypeHasNoData(Type type)
+		{
+			return type.IsValueType && ReflectionUtils.HasNoFields(type) && !_storeEmptyTypesAsDataSets;
+		}
+
+		public Packing GetPackingFor(Type type)
 		{
 			return _fullStability || type.IsDefined(typeof(StableAttribute), false) ? Packing.WithHoles : Packing.Continuous;
 		}
 
-		private int GetPageSizeFor(Type type)
+		public int GetPageSizeFor(Type type)
 		{
 			if (Attribute.GetCustomAttribute(type, typeof(PageSizeAttribute)) is PageSizeAttribute attribute)
 			{

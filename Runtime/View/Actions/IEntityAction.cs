@@ -20,15 +20,15 @@ namespace Massive
 		}
 	}
 
-	public struct EntityActionExtraAdapter<TExtra> : IEntityAction
+	public struct EntityActionArgsAdapter<TArgs> : IEntityAction
 	{
-		public EntityActionExtra<TExtra> Action;
-		public TExtra Extra;
+		public EntityActionArgs<TArgs> Action;
+		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id)
 		{
-			Action.Invoke(id, Extra);
+			Action.Invoke(id, Args);
 			return true;
 		}
 	}

@@ -106,8 +106,8 @@ view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
 	// If this behavior does not suit you, use Stable attribute on component.
 });
 
-// Pass extra arguments to avoid boxing.
-view.ForEachExtra((world, deltaTime),
+// Pass arguments to avoid boxing.
+view.ForEach((world, deltaTime),
 	(ref Position position, ref Velocity velocity,
 		(World World, float DeltaTime) args) =>
 	{
