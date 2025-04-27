@@ -54,11 +54,6 @@ namespace Massive
 
 			foreach (var page in new PageSequence(sourceData.PageSize, Count))
 			{
-				if (!sourceData.HasPage(page.Index))
-				{
-					continue;
-				}
-
 				destinationData.EnsurePage(page.Index);
 
 				var sourcePage = sourceData.Pages[page.Index];

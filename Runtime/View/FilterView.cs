@@ -154,11 +154,6 @@ namespace Massive
 			{
 				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
 				{
-					if (!data2.HasPage(page.Index))
-					{
-						continue;
-					}
-
 					var page1 = data1.Pages[page.Index];
 					for (var index1 = page.Length - 1; index1 >= 0; index1--)
 					{
@@ -184,11 +179,6 @@ namespace Massive
 			{
 				foreach (var page in new PageSequence(data2.PageSize, dataSet2.Count))
 				{
-					if (!data1.HasPage(page.Index))
-					{
-						continue;
-					}
-
 					var page2 = data2.Pages[page.Index];
 					for (var index2 = page.Length - 1; index2 >= 0; index2--)
 					{
@@ -265,11 +255,6 @@ namespace Massive
 			{
 				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
 				{
-					if (!data2.HasPage(page.Index) || !data3.HasPage(page.Index))
-					{
-						continue;
-					}
-
 					var page1 = data1.Pages[page.Index];
 					for (var index1 = page.Length - 1; index1 >= 0; index1--)
 					{
@@ -297,11 +282,6 @@ namespace Massive
 			{
 				foreach (var page in new PageSequence(data2.PageSize, dataSet2.Count))
 				{
-					if (!data1.HasPage(page.Index) || !data3.HasPage(page.Index))
-					{
-						continue;
-					}
-
 					var page2 = data2.Pages[page.Index];
 					for (var index2 = page.Length - 1; index2 >= 0; index2--)
 					{
@@ -329,11 +309,6 @@ namespace Massive
 			{
 				foreach (var page in new PageSequence(data3.PageSize, dataSet3.Count))
 				{
-					if (!data1.HasPage(page.Index) || !data2.HasPage(page.Index))
-					{
-						continue;
-					}
-
 					var page3 = data3.Pages[page.Index];
 					for (var index3 = page.Length - 1; index3 >= 0; index3--)
 					{
@@ -343,7 +318,7 @@ namespace Massive
 							continue;
 						}
 
-						var id = dataSet2.Packed[page.Offset + index3];
+						var id = dataSet3.Packed[page.Offset + index3];
 						var index1 = dataSet1.GetIndexOrNegative(id);
 						var index2 = dataSet2.GetIndexOrNegative(id);
 						if ((index1 | index2) >= 0
@@ -417,11 +392,6 @@ namespace Massive
 			{
 				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
 				{
-					if (!data2.HasPage(page.Index) || !data3.HasPage(page.Index) || !data4.HasPage(page.Index))
-					{
-						continue;
-					}
-
 					var page1 = data1.Pages[page.Index];
 					for (var index1 = page.Length - 1; index1 >= 0; index1--)
 					{
@@ -450,11 +420,6 @@ namespace Massive
 			{
 				foreach (var page in new PageSequence(data2.PageSize, dataSet2.Count))
 				{
-					if (!data1.HasPage(page.Index) || !data3.HasPage(page.Index) || !data4.HasPage(page.Index))
-					{
-						continue;
-					}
-
 					var page2 = data2.Pages[page.Index];
 					for (var index2 = page.Length - 1; index2 >= 0; index2--)
 					{
@@ -483,11 +448,6 @@ namespace Massive
 			{
 				foreach (var page in new PageSequence(data3.PageSize, dataSet3.Count))
 				{
-					if (!data1.HasPage(page.Index) || !data2.HasPage(page.Index) || !data4.HasPage(page.Index))
-					{
-						continue;
-					}
-
 					var page3 = data3.Pages[page.Index];
 					for (var index3 = page.Length - 1; index3 >= 0; index3--)
 					{
@@ -516,11 +476,6 @@ namespace Massive
 			{
 				foreach (var page in new PageSequence(data4.PageSize, dataSet4.Count))
 				{
-					if (!data1.HasPage(page.Index) || !data2.HasPage(page.Index) || !data3.HasPage(page.Index))
-					{
-						continue;
-					}
-
 					var page4 = data4.Pages[page.Index];
 					for (var index4 = page.Length - 1; index4 >= 0; index4--)
 					{
