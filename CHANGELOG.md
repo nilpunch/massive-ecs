@@ -1,5 +1,16 @@
 # Changelog
 
+## 20.0.0-alpha - April 27, 2025
+
+### Added
+
+- `DefaultValue` attribute to customize the reset value for unmanaged components.
+
+## Changed
+
+- Renamed `ForEachExtra` to `ForEach`, making it just another overload.
+- Renamed `MaxId` to `UsedIds` in `Entities` for consistency with `SparseSet`.
+
 ## 19.1.0 - April 16, 2025
 
 ### Added
