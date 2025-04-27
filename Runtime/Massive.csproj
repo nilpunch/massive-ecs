@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>18.1.2</Version>
+        <Version>20.0.0</Version>
         <Title>Massive ECS</Title>
         <Authors>Daniil Pankevich</Authors>
         <Description>Sparse set ECS library made for prediction-rollback netcode</Description>

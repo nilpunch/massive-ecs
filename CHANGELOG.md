@@ -1,5 +1,11 @@
 # Changelog
 
+## 20.0.1-alpha - April 27, 2025
+
+## Fixed
+
+- `View` and `FilterView` sometimes choose and use not optimal minimal set.
+
 ## 20.0.0-alpha - April 27, 2025
 
 ### Added
