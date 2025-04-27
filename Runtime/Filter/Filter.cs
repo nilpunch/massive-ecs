@@ -22,6 +22,11 @@ namespace Massive
 		public ReducedFilter NotReduced { get; private set; }
 		private ReducedFilter[] ReducedFilters { get; set; } = Array.Empty<ReducedFilter>();
 
+		public Filter()
+			: this(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
+		{
+		}
+
 		public Filter(SparseSet[] included, SparseSet[] excluded)
 		{
 			Assert.NoConflictsInFilter(included, excluded);

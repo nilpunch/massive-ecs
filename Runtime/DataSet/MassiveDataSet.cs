@@ -1,13 +1,10 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
 	/// <summary>
 	/// Rollback extension for <see cref="Massive.DataSet{T}"/>.
-	/// Resets data when elemets are moved.
-	/// Used for unmanaged components.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]

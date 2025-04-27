@@ -25,11 +25,11 @@ namespace Massive
 
 		[Conditional(Symbol)]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void NonNegative(int id, string paramName = "argument")
+		public static void NonNegative(int value)
 		{
-			if (id < 0)
+			if (value < 0)
 			{
-				throw new Exception($"{Library} Provided {paramName}:{id} is negative.");
+				throw new Exception($"{Library} Provided argument:{value} is negative.");
 			}
 		}
 
@@ -39,7 +39,8 @@ namespace Massive
 		{
 			if (!(world.SparseSet<T>() is DataSet<T>))
 			{
-				throw new Exception($"{Library} The type {typeof(T).GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
+				throw new Exception($"{Library} The type {typeof(T).GetFullGenericName()} has no associated data! " +
+					$"{suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
 			}
 		}
 

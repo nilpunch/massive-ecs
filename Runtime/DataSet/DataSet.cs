@@ -10,8 +10,6 @@ namespace Massive
 {
 	/// <summary>
 	/// Data extension for <see cref="Massive.SparseSet"/>.
-	/// Resets data when elemets are moved.
-	/// Used for unmanaged components.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -46,8 +44,39 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set(int id, T data)
 		{
-			Add(id);
-			Data[Sparse[id]] = data;
+			Assert.NonNegative(id);
+
+			EnsureSparseAt(id);
+
+			var index = Sparse[id];
+			if (index != Constants.InvalidId)
+			{
+				// If ID is already present, write the data.
+				Data[index] = data;
+				return;
+			}
+
+			if (Packing == Packing.WithHoles && NextHole != EndHole)
+			{
+				// Fill the hole.
+				index = NextHole;
+				NextHole = ~Packed[index];
+			}
+			else // if (Packing == Packing.Continuous || Packing == Packing.WithPersistentHoles)
+			{
+				// Append to the end.
+				index = Count;
+				EnsurePackedAt(index);
+				Data.EnsurePageAt(index);
+				Count += 1;
+			}
+
+			Pair(id, index);
+			Data[index] = data;
+
+			UsedIds = MathUtils.Max(UsedIds, id + 1);
+
+			NotifyAfterAdded(id);
 		}
 
 		/// <summary>
@@ -55,9 +84,7 @@ namespace Massive
 		/// </summary>
 		protected override void MoveDataAt(int source, int destination)
 		{
-			ref var sourceData = ref Data[source];
-			Data[destination] = sourceData;
-			sourceData = default;
+			Data[destination] = Data[source];
 		}
 
 		/// <summary>
@@ -85,7 +112,7 @@ namespace Massive
 		/// <summary>
 		/// Ensures data exists at the specified index.
 		/// </summary>
-		public override void EnsureDataAt(int index)
+		protected override void EnsureAndResetDataAt(int index)
 		{
 			Data.EnsurePageAt(index);
 		}
@@ -94,7 +121,7 @@ namespace Massive
 
 		object IDataSet.GetRaw(int id) => Get(id);
 
-		void IDataSet.SetRaw(int id, object value) => Get(id) = (T)value;
+		void IDataSet.SetRaw(int id, object value) => Set(id, (T)value);
 
 		/// <summary>
 		/// Creates and returns a new data set that is an exact copy of this one.

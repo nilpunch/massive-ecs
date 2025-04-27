@@ -13,7 +13,7 @@ namespace Massive
 	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SparseSet : PackedSet
 	{
-		private const int EndHole = int.MaxValue;
+		protected const int EndHole = int.MaxValue;
 
 		/// <summary>
 		/// The sparse array, mapping IDs to their packed indices.
@@ -34,12 +34,12 @@ namespace Massive
 		/// <summary>
 		/// The maximum count of ids in use.
 		/// </summary>
-		public int UsedIds { get; private set; }
+		public int UsedIds { get; protected set; }
 
 		/// <summary>
 		/// The index of the next available hole in the packed array, or <see cref="EndHole"/> if no holes exist.
 		/// </summary>
-		private int NextHole { get; set; } = EndHole;
+		protected int NextHole { get; set; } = EndHole;
 
 		public SparseSet(Packing packing = Packing.Continuous)
 		{
@@ -103,34 +103,34 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Add(int id)
 		{
-			Assert.NonNegative(id, nameof(id));
+			Assert.NonNegative(id);
 
-			if (id >= SparseCapacity)
-			{
-				ResizeSparse(MathUtils.NextPowerOf2(id + 1));
-			}
+			EnsureSparseAt(id);
 
-			// If ID is already present, nothing to be done.
-			if (Sparse[id] != Constants.InvalidId)
+			var index = Sparse[id];
+			if (index != Constants.InvalidId)
 			{
+				// If ID is already present, nothing to be done.
 				return false;
 			}
 
 			if (Packing == Packing.WithHoles && NextHole != EndHole)
 			{
-				// Fill the holes.
-				var index = NextHole;
+				// Fill the hole.
+				index = NextHole;
 				NextHole = ~Packed[index];
-				Pair(id, index);
+				ResetDataAt(index);
 			}
 			else // if (Packing == Packing.Continuous || Packing == Packing.WithPersistentHoles)
 			{
 				// Append to the end.
-				EnsurePackedAt(Count);
-				EnsureDataAt(Count);
-				Pair(id, Count);
+				index = Count;
+				EnsurePackedAt(index);
+				EnsureAndResetDataAt(index);
 				Count += 1;
 			}
+
+			Pair(id, index);
 
 			UsedIds = MathUtils.Max(UsedIds, id + 1);
 
@@ -151,7 +151,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(int id)
 		{
-			Assert.NonNegative(id, nameof(id));
+			Assert.NonNegative(id);
 
 			// If ID is not added, nothing to be done.
 			if (id >= SparseCapacity || Sparse[id] == Constants.InvalidId)
@@ -384,9 +384,16 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Ensures data exists at the specified index.
+		/// Ensures data exists at the specified index, and resets it if necessary.
 		/// </summary>
-		public virtual void EnsureDataAt(int index)
+		protected virtual void EnsureAndResetDataAt(int index)
+		{
+		}
+
+		/// <summary>
+		/// Resets data at the specified index, if necessary.
+		/// </summary>
+		protected virtual void ResetDataAt(int index)
 		{
 		}
 
@@ -399,10 +406,16 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void Pair(int id, int index)
+		protected void Pair(int id, int index)
 		{
 			Sparse[id] = index;
 			Packed[index] = id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected void NotifyAfterAdded(int id)
+		{
+			AfterAdded?.Invoke(id);
 		}
 
 		/// <summary>

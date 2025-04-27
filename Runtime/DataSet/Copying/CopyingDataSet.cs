@@ -34,7 +34,7 @@ namespace Massive
 		public CopyingDataSet<T> CloneCopyable()
 		{
 			var clone = new CopyingDataSet<T>(Data.PageSize);
-			CopyTo(clone);
+			CopyToCopyable(clone);
 			return clone;
 		}
 

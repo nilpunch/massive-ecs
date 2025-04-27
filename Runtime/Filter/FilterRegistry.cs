@@ -18,7 +18,7 @@ namespace Massive
 		private readonly Dictionary<int, Filter> _codeLookup = new Dictionary<int, Filter>();
 		private readonly SetRegistry _setRegistry;
 
-		public Filter Empty { get; } = new Filter(Array.Empty<SparseSet>(), Array.Empty<SparseSet>());
+		public Filter Empty { get; } = new Filter();
 
 		public FilterRegistry(SetRegistry setRegistry)
 		{
