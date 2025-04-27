@@ -112,7 +112,7 @@ namespace Massive
 		/// <summary>
 		/// Ensures data exists at the specified index.
 		/// </summary>
-		protected override void EnsureAndResetDataAt(int index)
+		protected override void EnsureAndPrepareDataAt(int index)
 		{
 			Data.EnsurePageAt(index);
 		}

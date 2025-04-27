@@ -119,14 +119,14 @@ namespace Massive
 				// Fill the hole.
 				index = NextHole;
 				NextHole = ~Packed[index];
-				ResetDataAt(index);
+				PrepareDataAt(index);
 			}
 			else // if (Packing == Packing.Continuous || Packing == Packing.WithPersistentHoles)
 			{
 				// Append to the end.
 				index = Count;
 				EnsurePackedAt(index);
-				EnsureAndResetDataAt(index);
+				EnsureAndPrepareDataAt(index);
 				Count += 1;
 			}
 
@@ -363,16 +363,16 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Moves the data from one index to another.
+		/// Swaps the data between two indices.
 		/// </summary>
-		protected virtual void MoveDataAt(int source, int destination)
+		public virtual void SwapDataAt(int first, int second)
 		{
 		}
 
 		/// <summary>
-		/// Swaps the data between two indices.
+		/// Moves the data from one index to another.
 		/// </summary>
-		public virtual void SwapDataAt(int first, int second)
+		protected virtual void MoveDataAt(int source, int destination)
 		{
 		}
 
@@ -384,16 +384,16 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Ensures data exists at the specified index, and resets it if necessary.
+		/// Ensures data exists at the specified index, and prepares it if necessary.
 		/// </summary>
-		protected virtual void EnsureAndResetDataAt(int index)
+		protected virtual void EnsureAndPrepareDataAt(int index)
 		{
 		}
 
 		/// <summary>
-		/// Resets data at the specified index, if necessary.
+		/// Prepares data at the specified index, if necessary.
 		/// </summary>
-		protected virtual void ResetDataAt(int index)
+		protected virtual void PrepareDataAt(int index)
 		{
 		}
 

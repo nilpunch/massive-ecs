@@ -24,7 +24,7 @@ namespace Massive
 		/// <summary>
 		/// Ensures data exists at the specified index, and resets it.
 		/// </summary>
-		protected override void EnsureAndResetDataAt(int index)
+		protected override void EnsureAndPrepareDataAt(int index)
 		{
 			Data.EnsurePageAt(index);
 			Data[index] = DefaultValue;
@@ -33,7 +33,7 @@ namespace Massive
 		/// <summary>
 		/// Resets data at the specified index.
 		/// </summary>
-		protected override void ResetDataAt(int index)
+		protected override void PrepareDataAt(int index)
 		{
 			Data[index] = DefaultValue;
 		}
