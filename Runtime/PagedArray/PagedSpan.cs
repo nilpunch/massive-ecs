@@ -9,7 +9,6 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public readonly struct PagedSpan<T>
 	{
 		private readonly PagedArray<T> _pagedArray;

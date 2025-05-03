@@ -8,7 +8,6 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveSparseSet : SparseSet, IMassive
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;

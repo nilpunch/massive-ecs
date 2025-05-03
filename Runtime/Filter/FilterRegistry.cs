@@ -11,7 +11,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class FilterRegistry
 	{
 		private readonly GenericLookup<Filter> _filterLookup = new GenericLookup<Filter>();
@@ -51,9 +50,9 @@ namespace Massive
 			included ??= Array.Empty<SparseSet>();
 			excluded ??= Array.Empty<SparseSet>();
 
-			Assert.NoConflictsInFilter(included, excluded);
-			Assert.ContainsDuplicates(included, "Included contains duplicate sets!");
-			Assert.ContainsDuplicates(excluded, "Excluded contains duplicate sets!");
+			MassiveAssert.NoConflictsInFilter(included, excluded);
+			MassiveAssert.ContainsDuplicates(included, "Included contains duplicate sets!");
+			MassiveAssert.ContainsDuplicates(excluded, "Excluded contains duplicate sets!");
 
 			var includeCode = SetUtils.GetUnorderedHashCode(included, _setRegistry);
 			var excludeCode = SetUtils.GetUnorderedHashCode(excluded, _setRegistry);

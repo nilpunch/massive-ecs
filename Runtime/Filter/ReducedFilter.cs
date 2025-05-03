@@ -6,7 +6,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public readonly struct ReducedFilter
 	{
 		public SparseSet Reduced { get; }

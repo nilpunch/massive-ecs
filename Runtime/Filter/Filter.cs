@@ -10,7 +10,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class Filter
 	{
 		public int IncludedCount { get; protected set; }
@@ -29,7 +28,7 @@ namespace Massive
 
 		public Filter(SparseSet[] included, SparseSet[] excluded)
 		{
-			Assert.NoConflictsInFilter(included, excluded);
+			MassiveAssert.NoConflictsInFilter(included, excluded);
 
 			Included = included;
 			Excluded = excluded;

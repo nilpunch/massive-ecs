@@ -7,7 +7,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SetRegistry
 	{
 		private Dictionary<string, SparseSet> SetsByIdentifiers { get; } = new Dictionary<string, SparseSet>();
@@ -131,7 +130,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(SetRegistry other)
 		{
-			Assert.CompatibleConfigs(SetFactory, other.SetFactory);
+			MassiveAssert.CompatibleConfigs(SetFactory, other.SetFactory);
 
 			// Copy present sets.
 			foreach (var cloner in Cloners)

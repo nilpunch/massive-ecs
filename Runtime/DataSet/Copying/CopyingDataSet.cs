@@ -10,7 +10,6 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class CopyingDataSet<T> : SwappingDataSet<T> where T : ICopyable<T>
 	{
 		public CopyingDataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
@@ -45,7 +44,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToCopyable(DataSet<T> other)
 		{
-			Assert.EqualPageSize(Data, other.Data);
+			MassiveAssert.EqualPageSize(Data, other.Data);
 
 			CopySparseTo(other);
 

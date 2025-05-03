@@ -4,7 +4,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public sealed class CopyingDataSetClonerByIdentifier<T> : SetCloner where T : ICopyable<T>
 	{
 		private readonly CopyingDataSet<T> _dataSet;

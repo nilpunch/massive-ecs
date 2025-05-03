@@ -9,7 +9,6 @@ namespace Massive
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public static class TypeId
 	{
 		private static readonly Dictionary<Type, TypeIdInfo> s_typeInfo = new Dictionary<Type, TypeIdInfo>();
@@ -71,7 +70,6 @@ namespace Massive
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public abstract class TypeId<T>
 	{
 		public static readonly TypeIdInfo Info;

@@ -12,11 +12,11 @@ namespace Massive.Tests
 
 			var id = 2;
 
-			NUnit.Framework.Assert.IsFalse(massive.Has(id));
+			Assert.IsFalse(massive.Has(id));
 
 			massive.Add(id);
 
-			NUnit.Framework.Assert.IsTrue(massive.Has(id));
+			Assert.IsTrue(massive.Has(id));
 		}
 
 		[Test]
@@ -30,9 +30,9 @@ namespace Massive.Tests
 
 			massive.Remove(1);
 
-			NUnit.Framework.Assert.IsTrue(massive.Has(0));
-			NUnit.Framework.Assert.IsFalse(massive.Has(1));
-			NUnit.Framework.Assert.IsTrue(massive.Has(2));
+			Assert.IsTrue(massive.Has(0));
+			Assert.IsFalse(massive.Has(1));
+			Assert.IsTrue(massive.Has(2));
 		}
 
 		[Test]
@@ -40,17 +40,17 @@ namespace Massive.Tests
 		{
 			var massive = new MassiveSparseSet(framesCapacity: 2);
 
-			NUnit.Framework.Assert.IsFalse(massive.Has(0));
-			NUnit.Framework.Assert.IsFalse(massive.Has(1));
-			NUnit.Framework.Assert.IsFalse(massive.Has(2));
+			Assert.IsFalse(massive.Has(0));
+			Assert.IsFalse(massive.Has(1));
+			Assert.IsFalse(massive.Has(2));
 
 			massive.Add(0);
 			massive.Add(1);
 			massive.Add(2);
 
-			NUnit.Framework.Assert.IsTrue(massive.Has(0));
-			NUnit.Framework.Assert.IsTrue(massive.Has(1));
-			NUnit.Framework.Assert.IsTrue(massive.Has(2));
+			Assert.IsTrue(massive.Has(0));
+			Assert.IsTrue(massive.Has(1));
+			Assert.IsTrue(massive.Has(2));
 		}
 
 		[Test]
@@ -64,9 +64,9 @@ namespace Massive.Tests
 
 			massive.SaveFrame();
 
-			NUnit.Framework.Assert.IsTrue(massive.Has(0));
-			NUnit.Framework.Assert.IsTrue(massive.Has(1));
-			NUnit.Framework.Assert.IsTrue(massive.Has(2));
+			Assert.IsTrue(massive.Has(0));
+			Assert.IsTrue(massive.Has(1));
+			Assert.IsTrue(massive.Has(2));
 		}
 
 		[Test]
@@ -76,17 +76,17 @@ namespace Massive.Tests
 
 			massive.Add(0);
 
-			NUnit.Framework.Assert.IsTrue(massive.Has(0));
+			Assert.IsTrue(massive.Has(0));
 
 			massive.SaveFrame();
 
 			massive.Remove(0);
 
-			NUnit.Framework.Assert.IsFalse(massive.Has(0));
+			Assert.IsFalse(massive.Has(0));
 
 			massive.Rollback(0);
 
-			NUnit.Framework.Assert.IsTrue(massive.Has(0));
+			Assert.IsTrue(massive.Has(0));
 		}
 
 		[Test]
@@ -100,18 +100,18 @@ namespace Massive.Tests
 			massive.Add(1);
 			massive.Remove(1);
 
-			NUnit.Framework.Assert.IsTrue(massive.Has(0));
-			NUnit.Framework.Assert.IsFalse(massive.Has(1));
+			Assert.IsTrue(massive.Has(0));
+			Assert.IsFalse(massive.Has(1));
 
 			massive.SaveFrame();
 
-			NUnit.Framework.Assert.IsTrue(massive.Has(0));
-			NUnit.Framework.Assert.IsFalse(massive.Has(1));
+			Assert.IsTrue(massive.Has(0));
+			Assert.IsFalse(massive.Has(1));
 
 			massive.Rollback(1);
 
-			NUnit.Framework.Assert.IsFalse(massive.Has(0));
-			NUnit.Framework.Assert.IsFalse(massive.Has(1));
+			Assert.IsFalse(massive.Has(0));
+			Assert.IsFalse(massive.Has(1));
 		}
 	}
 }

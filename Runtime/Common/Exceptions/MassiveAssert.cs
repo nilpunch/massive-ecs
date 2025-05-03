@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	public static class Assert
+	public static class MassiveAssert
 	{
 		public const string Symbol = "MASSIVE_ASSERT";
 		public const string Library = "[MASSIVE]";
@@ -30,6 +30,16 @@ namespace Massive
 			if (value < 0)
 			{
 				throw new Exception($"{Library} Provided argument:{value} is negative.");
+			}
+		}
+
+		[Conditional(Symbol)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void PowerOfTwo(int value)
+		{
+			if (!MathUtils.IsPowerOfTwo(value))
+			{
+				throw new Exception($"{Library} Provided argument:{value} is not power of two.");
 			}
 		}
 

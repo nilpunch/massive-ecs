@@ -7,7 +7,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class FastListSparseSet
 	{
 		private SparseSet[] _items = Array.Empty<SparseSet>();

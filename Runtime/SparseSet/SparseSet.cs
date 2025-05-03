@@ -10,7 +10,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class SparseSet : PackedSet
 	{
 		protected const int EndHole = int.MaxValue;
@@ -103,7 +102,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Add(int id)
 		{
-			Assert.NonNegative(id);
+			MassiveAssert.NonNegative(id);
 
 			EnsureSparseAt(id);
 
@@ -151,7 +150,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(int id)
 		{
-			Assert.NonNegative(id);
+			MassiveAssert.NonNegative(id);
 
 			// If ID is not added, nothing to be done.
 			if (id >= SparseCapacity || Sparse[id] == Constants.InvalidId)
@@ -159,18 +158,27 @@ namespace Massive
 				return false;
 			}
 
-			BeforeRemoved?.Invoke(id);
+			if (BeforeRemoved is not null)
+			{
+				BeforeRemoved.Invoke(id);
 
+				// Check if ID was removed in a callback.
+				if (Sparse[id] == Constants.InvalidId)
+				{
+					return true;
+				}
+			}
+
+			var index = Sparse[id];
 			if (Packing == Packing.Continuous)
 			{
 				// Swap with last.
 				Count -= 1;
-				MoveAt(Count, Sparse[id]);
+				MoveAt(Count, index);
 			}
 			else // if (Packing == Packing.WithHoles || Packing == Packing.WithPersistentHoles)
 			{
 				// Create a hole.
-				var index = Sparse[id];
 				Packed[index] = ~NextHole;
 				NextHole = index;
 			}
@@ -350,8 +358,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SwapAt(int first, int second)
 		{
-			Assert.HasPacked(this, first);
-			Assert.HasPacked(this, second);
+			MassiveAssert.HasPacked(this, first);
+			MassiveAssert.HasPacked(this, second);
 
 			var firstId = Packed[first];
 			var secondId = Packed[second];
@@ -370,13 +378,6 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Moves the data from one index to another.
-		/// </summary>
-		protected virtual void MoveDataAt(int source, int destination)
-		{
-		}
-
-		/// <summary>
 		/// Copies the data from one index to another.
 		/// </summary>
 		public virtual void CopyDataAt(int source, int destination)
@@ -384,16 +385,21 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Ensures data exists at the specified index, and prepares it if necessary.
+		/// Moves the data from one index to another.
 		/// </summary>
+		protected virtual void MoveDataAt(int source, int destination)
+		{
+		}
+
+		protected virtual void PrepareDataAt(int index)
+		{
+		}
+
 		protected virtual void EnsureAndPrepareDataAt(int index)
 		{
 		}
 
-		/// <summary>
-		/// Prepares data at the specified index, if necessary.
-		/// </summary>
-		protected virtual void PrepareDataAt(int index)
+		protected virtual void OnRemovedAt(int index)
 		{
 		}
 

@@ -9,7 +9,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public readonly struct View : IView, IViewT, IViewTT, IViewTTT, IViewTTTT
 	{
 		public World World { get; }
@@ -52,7 +51,7 @@ namespace Massive
 		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			Assert.TypeHasData<T>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
 			var dataSet = World.DataSet<T>();
 
@@ -89,8 +88,8 @@ namespace Massive
 		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
@@ -159,9 +158,9 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
@@ -260,10 +259,10 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			Assert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			Assert.TypeHasData<T4>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			MassiveAssert.TypeHasData<T4>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();

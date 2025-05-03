@@ -10,7 +10,6 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class MassiveCopyingDataSet<T> : CopyingDataSet<T>, IMassive where T : ICopyable<T>
 	{
 		private readonly CyclicFrameCounter _cyclicFrameCounter;
@@ -32,11 +31,6 @@ namespace Massive
 		}
 
 		public int CanRollbackFrames => _cyclicFrameCounter.CanRollbackFrames;
-
-		public override void CopyDataAt(int source, int destination)
-		{
-			Data[source].CopyTo(ref Data[destination]);
-		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SaveFrame()

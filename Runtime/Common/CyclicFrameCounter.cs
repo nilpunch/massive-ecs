@@ -4,7 +4,6 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class CyclicFrameCounter
 	{
 		private int _savedFrames;

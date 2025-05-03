@@ -19,7 +19,7 @@ namespace Massive.Tests
 
 			foreach (var page in sequence)
 			{
-				NUnit.Framework.Assert.AreNotEqual(0, page.Length);
+				Assert.AreNotEqual(0, page.Length);
 			}
 		}
 		
@@ -48,10 +48,10 @@ namespace Massive.Tests
 			foreach (var i in span)
 			{
 				iterationsAmount += 1;
-				NUnit.Framework.Assert.AreEqual(length - iterationsAmount, i);
+				Assert.AreEqual(length - iterationsAmount, i);
 			}
 
-			NUnit.Framework.Assert.AreEqual(length, iterationsAmount);
+			Assert.AreEqual(length, iterationsAmount);
 		}
 
 		[TestCase(Constants.DefaultPageSize, ExpectedResult = 0)]

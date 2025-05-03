@@ -3,7 +3,6 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	[Il2CppEagerStaticClassConstruction]
 	public static class MathUtils
 	{
@@ -50,7 +49,24 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int FastLog2(int value)
 		{
-			return sizeof(int) * 8 - LeadingZeroesCount(value) - 1;
+			var lzc = value;
+			lzc |= lzc >> 1;
+			lzc |= lzc >> 2;
+			lzc |= lzc >> 4;
+			lzc |= lzc >> 8;
+			lzc |= lzc >> 16;
+
+			lzc -= lzc >> 1 & 0x55555555;
+			lzc = (lzc >> 2 & 0x33333333) + (lzc & 0x33333333);
+			lzc = (lzc >> 4) + lzc & 0x0f0f0f0f;
+			lzc += lzc >> 8;
+			lzc += lzc >> 16;
+
+			// lzc = sizeof(int) * 8 - lzc & 0x0000003f;
+			// log2 = sizeof(int) * 8 - lzc - 1;
+			// So, log2 = (lzc & 0x0000003f) - 1;
+
+			return (lzc & 0x0000003f) - 1;
 		}
 
 		/// <summary>

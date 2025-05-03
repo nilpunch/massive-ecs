@@ -10,7 +10,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class Entities : PackedSet
 	{
 		private const int EndHoleId = int.MaxValue;
@@ -135,7 +134,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int id)
 		{
-			Assert.NonNegative(id);
+			MassiveAssert.NonNegative(id);
 
 			// If entity is not alive, nothing to be done.
 			if (id >= UsedIds || Sparse[id] >= Count || Packed[Sparse[id]] != id)
@@ -168,7 +167,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CreateMany(int amount)
 		{
-			Assert.NonNegative(amount);
+			MassiveAssert.NonNegative(amount);
 
 			var needToCreate = amount;
 			EnsureCapacityAt(needToCreate + Count);
@@ -246,7 +245,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
-			Assert.IsAlive(this, id);
+			MassiveAssert.IsAlive(this, id);
 
 			return new Entity(id, Versions[Sparse[id]]);
 		}

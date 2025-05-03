@@ -9,7 +9,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public static class WorldCopyExtensions
 	{
 		/// <summary>
@@ -33,7 +32,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void CopyTo(this World world, World other)
 		{
-			Assert.CompatibleConfigs(world, other);
+			MassiveAssert.CompatibleConfigs(world, other);
 
 			// Entities.
 			world.Entities.CopyTo(other.Entities);

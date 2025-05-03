@@ -34,5 +34,35 @@ namespace Massive
 			_defaultValuesCache[type] = default(T);
 			return default;
 		}
+
+		public static object GetDefaultValueFor(Type type)
+		{
+			if (type.IsManaged())
+			{
+				return null;
+			}
+
+			if (_defaultValuesCache.TryGetValue(type, out var cached))
+			{
+				return cached;
+			}
+
+			var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+			foreach (var property in type.GetProperties(flags))
+			{
+				if (property.IsDefined(typeof(DefaultValueAttribute), inherit: false) &&
+					property.PropertyType == type &&
+					property.GetMethod != null)
+				{
+					var value = property.GetValue(null);
+					_defaultValuesCache[type] = value;
+					return value;
+				}
+			}
+
+			_defaultValuesCache[type] = Activator.CreateInstance(type);
+			return default;
+		}
 	}
 }

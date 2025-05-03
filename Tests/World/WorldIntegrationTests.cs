@@ -38,7 +38,7 @@ namespace Massive.Tests
 				iterations += 1;
 			});
 
-			NUnit.Framework.Assert.AreEqual(1, iterations);
+			Assert.AreEqual(1, iterations);
 		}
 		
 		[Test]
@@ -75,7 +75,7 @@ namespace Massive.Tests
 				iterations += 1;
 			});
 
-			NUnit.Framework.Assert.AreEqual(1000, iterations);
+			Assert.AreEqual(1000, iterations);
 		}
 
 		[Test]
@@ -107,7 +107,7 @@ namespace Massive.Tests
 				iterations += 1;
 			});
 
-			NUnit.Framework.Assert.AreEqual(1, iterations);
+			Assert.AreEqual(1, iterations);
 		}
 
 		[Test]
@@ -139,7 +139,7 @@ namespace Massive.Tests
 				iterations += 1;
 			}
 
-			NUnit.Framework.Assert.AreEqual(1, iterations);
+			Assert.AreEqual(1, iterations);
 		}
 
 		[Test]
@@ -166,7 +166,7 @@ namespace Massive.Tests
 				});
 			});
 
-			NUnit.Framework.Assert.AreEqual(1, iterations);
+			Assert.AreEqual(1, iterations);
 		}
 
 		[Test]
@@ -193,7 +193,7 @@ namespace Massive.Tests
 				});
 			});
 
-			NUnit.Framework.Assert.IsTrue(1000 == iterations || 1001 == iterations);
+			Assert.IsTrue(1000 == iterations || 1001 == iterations);
 		}
 
 		[Test]
@@ -220,7 +220,7 @@ namespace Massive.Tests
 				});
 			}
 
-			NUnit.Framework.Assert.IsTrue(1000 == iterations || 1001 == iterations);
+			Assert.IsTrue(1000 == iterations || 1001 == iterations);
 		}
 
 		[Test]
@@ -246,7 +246,7 @@ namespace Massive.Tests
 				});
 			});
 
-			NUnit.Framework.Assert.AreEqual(1, iterations);
+			Assert.AreEqual(1, iterations);
 		}
 
 		[Test]
@@ -272,7 +272,7 @@ namespace Massive.Tests
 				});
 			});
 
-			NUnit.Framework.Assert.AreEqual(1, iterations);
+			Assert.AreEqual(1, iterations);
 		}
 
 		[Test]
@@ -298,7 +298,7 @@ namespace Massive.Tests
 				});
 			});
 
-			NUnit.Framework.Assert.AreEqual(1, iterations);
+			Assert.AreEqual(1, iterations);
 		}
 	}
 
@@ -323,7 +323,7 @@ namespace Massive.Tests
 
 			world.View().ForEach((int entity, ref StableData c2) =>
 			{
-				NUnit.Framework.Assert.AreEqual(world.Get<StableData>(entity).Value, c2.Value);
+				Assert.AreEqual(world.Get<StableData>(entity).Value, c2.Value);
 
 				for (int i = 0; i < 1000; i++)
 				{
@@ -332,7 +332,7 @@ namespace Massive.Tests
 
 				c2.Value = 1000000;
 
-				NUnit.Framework.Assert.AreEqual(world.Get<StableData>(entity).Value, c2.Value);
+				Assert.AreEqual(world.Get<StableData>(entity).Value, c2.Value);
 			});
 		}
 	}

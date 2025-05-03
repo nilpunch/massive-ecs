@@ -10,10 +10,11 @@ namespace Massive
 {
 	/// <summary>
 	/// Data extension for <see cref="Massive.SparseSet"/>.
+	/// Does not reset the data for added elements.
+	/// Does not preserve data when elements are moved.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class DataSet<T> : SparseSet, IDataSet
 	{
 		/// <summary>
@@ -33,7 +34,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			Assert.Has(this, id);
+			MassiveAssert.Has(this, id);
 
 			return ref Data[Sparse[id]];
 		}
@@ -44,7 +45,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set(int id, T data)
 		{
-			Assert.NonNegative(id);
+			MassiveAssert.NonNegative(id);
 
 			EnsureSparseAt(id);
 
@@ -92,8 +93,8 @@ namespace Massive
 		/// </summary>
 		public override void SwapDataAt(int first, int second)
 		{
-			Assert.HasPacked(this, first);
-			Assert.HasPacked(this, second);
+			MassiveAssert.HasPacked(this, first);
+			MassiveAssert.HasPacked(this, second);
 
 			Data.Swap(first, second);
 		}
@@ -103,8 +104,8 @@ namespace Massive
 		/// </summary>
 		public override void CopyDataAt(int source, int destination)
 		{
-			Assert.HasPacked(this, source);
-			Assert.HasPacked(this, destination);
+			MassiveAssert.HasPacked(this, source);
+			MassiveAssert.HasPacked(this, destination);
 
 			Data[destination] = Data[source];
 		}
@@ -142,7 +143,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(DataSet<T> other)
 		{
-			Assert.EqualPageSize(Data, other.Data);
+			MassiveAssert.EqualPageSize(Data, other.Data);
 
 			CopySparseTo(other);
 

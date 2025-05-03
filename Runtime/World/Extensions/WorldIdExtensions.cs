@@ -9,7 +9,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public static class WorldIdExtensions
 	{
 		/// <summary>
@@ -52,7 +51,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this World world, int id)
 		{
-			Assert.IsAlive(world, id);
+			MassiveAssert.IsAlive(world, id);
 
 			var cloneId = world.Create();
 
@@ -83,7 +82,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this World world, int id)
 		{
-			Assert.IsAlive(world, id);
+			MassiveAssert.IsAlive(world, id);
 
 			world.Entities.Destroy(id);
 		}
@@ -106,7 +105,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set<T>(this World world, int id, T data)
 		{
-			Assert.IsAlive(world, id);
+			MassiveAssert.IsAlive(world, id);
 
 			var set = world.SparseSet<T>();
 			set.Add(id);
@@ -128,7 +127,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Add<T>(this World world, int id)
 		{
-			Assert.IsAlive(world, id);
+			MassiveAssert.IsAlive(world, id);
 
 			return world.SparseSet<T>().Add(id);
 		}
@@ -145,7 +144,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Remove<T>(this World world, int id)
 		{
-			Assert.IsAlive(world, id);
+			MassiveAssert.IsAlive(world, id);
 
 			return world.SparseSet<T>().Remove(id);
 		}
@@ -159,7 +158,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this World world, int id)
 		{
-			Assert.IsAlive(world, id);
+			MassiveAssert.IsAlive(world, id);
 
 			return world.SparseSet<T>().Has(id);
 		}
@@ -174,7 +173,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this World world, int id)
 		{
-			Assert.IsAlive(world, id);
+			MassiveAssert.IsAlive(world, id);
 
 			var dataSet = world.DataSet<T>();
 

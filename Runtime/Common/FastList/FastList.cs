@@ -7,7 +7,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class FastList<T>
 	{
 		public T[] Items { get; private set; } = Array.Empty<T>();
@@ -129,7 +128,6 @@ namespace Massive
 
 		[Il2CppSetOption(Option.NullChecks, false)]
 		[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-		[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 		public struct Enumerator
 		{
 			private T[] _data;

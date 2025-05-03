@@ -6,7 +6,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class PagedArray<T> : IPagedArray
 	{
 		public T[][] Pages { get; private set; } = Array.Empty<T[]>();
@@ -19,7 +18,7 @@ namespace Massive
 		{
 			if (!MathUtils.IsPowerOfTwo(pageSize))
 			{
-				throw new Exception($"[{Assert.Library}] Page size must be power of two! Type:{typeof(PagedArray<T>).GetGenericName()}.");
+				throw new Exception($"{MassiveAssert.Library} Page size must be power of two! Type:{typeof(PagedArray<T>).GetGenericName()}.");
 			}
 
 			PageSize = pageSize;

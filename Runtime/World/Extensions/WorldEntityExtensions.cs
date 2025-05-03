@@ -9,7 +9,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public static class WorldEntityExtensions
 	{
 		/// <summary>
@@ -64,7 +63,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity Clone(this World world, Entity entity)
 		{
-			Assert.IsAlive(world, entity);
+			MassiveAssert.IsAlive(world, entity);
 
 			var cloneId = world.Clone(entity.Id);
 			return world.GetEntity(cloneId);
@@ -79,7 +78,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Destroy(this World world, Entity entity)
 		{
-			Assert.IsAlive(world, entity);
+			MassiveAssert.IsAlive(world, entity);
 
 			world.Entities.Destroy(entity.Id);
 		}
@@ -105,7 +104,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set<T>(this World world, Entity entity, T data)
 		{
-			Assert.IsAlive(world, entity);
+			MassiveAssert.IsAlive(world, entity);
 
 			world.Set(entity.Id, data);
 		}
@@ -122,7 +121,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Add<T>(this World world, Entity entity)
 		{
-			Assert.IsAlive(world, entity);
+			MassiveAssert.IsAlive(world, entity);
 
 			return world.SparseSet<T>().Add(entity.Id);
 		}
@@ -139,7 +138,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Remove<T>(this World world, Entity entity)
 		{
-			Assert.IsAlive(world, entity);
+			MassiveAssert.IsAlive(world, entity);
 
 			return world.SparseSet<T>().Remove(entity.Id);
 		}
@@ -153,7 +152,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this World world, Entity entity)
 		{
-			Assert.IsAlive(world, entity);
+			MassiveAssert.IsAlive(world, entity);
 
 			return world.SparseSet<T>().Has(entity.Id);
 		}
@@ -168,7 +167,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this World world, Entity entity)
 		{
-			Assert.IsAlive(world, entity);
+			MassiveAssert.IsAlive(world, entity);
 
 			var dataSet = world.DataSet<T>();
 

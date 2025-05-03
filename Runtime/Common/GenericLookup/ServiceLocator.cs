@@ -6,7 +6,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public class ServiceLocator
 	{
 		private readonly GenericLookup<object> _lookup = new GenericLookup<object>();

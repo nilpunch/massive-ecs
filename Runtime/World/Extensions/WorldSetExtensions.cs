@@ -9,7 +9,6 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[Il2CppSetOption(Option.DivideByZeroChecks, false)]
 	public static class WorldSetExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -45,12 +44,12 @@ namespace Massive
 
 			if (candidate != null)
 			{
-				Assert.TypeHasData(candidate, typeof(T), SuggestionMessage.UseSparseSetMethodWithEmptyTypes);
+				MassiveAssert.TypeHasData(candidate, typeof(T), SuggestionMessage.UseSparseSetMethodWithEmptyTypes);
 				return (DataSet<T>)candidate;
 			}
 
 			var (set, cloner) = setRegistry.SetFactory.CreateAppropriateSet<T>();
-			Assert.TypeHasData(set, typeof(T), SuggestionMessage.UseSparseSetMethodWithEmptyTypes);
+			MassiveAssert.TypeHasData(set, typeof(T), SuggestionMessage.UseSparseSetMethodWithEmptyTypes);
 
 			setRegistry.Insert(info.FullName, set, cloner);
 			setRegistry.Lookup[info.Index] = set;
