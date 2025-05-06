@@ -4,13 +4,13 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="Massive.SparseSet"/> with custom copying.
+	/// Copying extension for <see cref="Massive.ManagedDataSet{T}"/>.
 	/// Swaps data when elements are moved.
 	/// Used for managed components to reduce allocations.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class CopyingDataSet<T> : SwappingDataSet<T> where T : ICopyable<T>
+	public class CopyingDataSet<T> : ManagedDataSet<T> where T : ICopyable<T>
 	{
 		public CopyingDataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
 			: base(pageSize, packing)

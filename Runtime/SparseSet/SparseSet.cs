@@ -391,15 +391,17 @@ namespace Massive
 		{
 		}
 
+		/// <summary>
+		/// Prepares data at the specified index, if necessary.
+		/// </summary>
 		protected virtual void PrepareDataAt(int index)
 		{
 		}
 
+		/// <summary>
+		/// Ensures data exists at the specified index and prepares it, if necessary.
+		/// </summary>
 		protected virtual void EnsureAndPrepareDataAt(int index)
-		{
-		}
-
-		protected virtual void OnRemovedAt(int index)
 		{
 		}
 

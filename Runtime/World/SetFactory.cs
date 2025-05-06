@@ -61,13 +61,13 @@ namespace Massive
 			}
 			else if (type.IsManaged())
 			{
-				var dataSet = new SwappingDataSet<T>(GetPageSizeFor(type), GetPackingFor(type));
+				var dataSet = new ManagedDataSet<T>(GetPageSizeFor(type), GetPackingFor(type));
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else
 			{
-				var dataSet = new ResettingDataSet<T>(GetPageSizeFor(type), GetPackingFor(type), DefaultValueUtils.GetDefaultValueFor<T>());
+				var dataSet = new UnmanagedDataSet<T>(GetPageSizeFor(type), GetPackingFor(type), DefaultValueUtils.GetDefaultValueFor<T>());
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}

@@ -3,18 +3,19 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="Massive.SparseSet"/>.
+	/// Rollback extension for <see cref="Massive.UnmanagedDataSet{T}"/>.
 	/// Resets data to default value for added elements.
 	/// Used for unmanaged components.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class ResettingDataSet<T> : DataSet<T>
+	public class MassiveUnmanagedDataSet<T> : MassiveDataSet<T>
 	{
 		public T DefaultValue { get; }
 
-		public ResettingDataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous, T defaultValue = default)
-			: base(pageSize, packing)
+		public MassiveUnmanagedDataSet(int framesCapacity = Constants.DefaultFramesCapacity, int pageSize = Constants.DefaultPageSize,
+			Packing packing = Packing.Continuous, T defaultValue = default)
+			: base(framesCapacity, pageSize, packing)
 		{
 			DefaultValue = defaultValue;
 		}

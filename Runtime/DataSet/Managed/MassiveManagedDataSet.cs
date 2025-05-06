@@ -3,15 +3,15 @@
 namespace Massive
 {
 	/// <summary>
-	/// Rollback extension for <see cref="Massive.DataSet{T}"/>.
+	/// Rollback extension for <see cref="Massive.ManagedDataSet{T}"/>.
 	/// Swaps data when elements are moved.
 	/// Used for managed components to reduce allocations.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class MassiveSwappingDataSet<T> : MassiveDataSet<T>
+	public class MassiveManagedDataSet<T> : MassiveDataSet<T>
 	{
-		public MassiveSwappingDataSet(int framesCapacity = Constants.DefaultFramesCapacity, int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
+		public MassiveManagedDataSet(int framesCapacity = Constants.DefaultFramesCapacity, int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
 			: base(framesCapacity, pageSize, packing)
 		{
 		}

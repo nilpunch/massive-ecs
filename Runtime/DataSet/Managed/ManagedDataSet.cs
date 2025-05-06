@@ -9,9 +9,9 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class SwappingDataSet<T> : DataSet<T>
+	public class ManagedDataSet<T> : DataSet<T>
 	{
-		public SwappingDataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
+		public ManagedDataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
 			: base(pageSize, packing)
 		{
 		}

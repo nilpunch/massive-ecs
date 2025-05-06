@@ -4,7 +4,7 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Rollback extension for <see cref="Massive.DataSet{T}"/> with custom copying.
+	/// Rollback extension for <see cref="Massive.CopyingDataSet{T}"/>.
 	/// Swaps data when elements are moved.
 	/// Used for managed components to reduce allocations.
 	/// </summary>

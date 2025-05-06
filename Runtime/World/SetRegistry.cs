@@ -17,7 +17,7 @@ namespace Massive
 
 		private FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
 
-		public FastListSparseSet AllSets { get; } = new FastListSparseSet();
+		public SparseSetList AllSets { get; } = new SparseSetList();
 
 		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
 
