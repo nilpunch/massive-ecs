@@ -23,7 +23,11 @@ namespace Massive
 			_allocator = allocator;
 		}
 
-		public VarHandle<T> AsHandle => new VarHandle<T>(_chunkId);
+		public VarHandle<T> Handle
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new VarHandle<T>(_chunkId);
+		}
 
 		public ref T Value
 		{

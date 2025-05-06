@@ -10,9 +10,14 @@
 		public readonly Allocator<int> Count;
 
 		public ListAllocator(World world)
+			: this(world.Allocator<T>(), world.Allocator<int>())
 		{
-			Items = world.Allocator<T>();
-			Count = world.Allocator<int>();
+		}
+
+		public ListAllocator(Allocator<T> items, Allocator<int> count)
+		{
+			Items = items;
+			Count = count;
 		}
 	}
 }

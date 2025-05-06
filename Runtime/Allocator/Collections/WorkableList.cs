@@ -17,7 +17,11 @@ namespace Massive
 			_count = list.Count.WorkWith(allocator.Count);
 		}
 
-		public ListHandle<T> AsHandle => new ListHandle<T>(_items.AsHandle, _count.AsHandle);
+		public ListHandle<T> Handle
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new ListHandle<T>(_items.Handle, _count.Handle);
+		}
 
 		public ref T this[int index]
 		{

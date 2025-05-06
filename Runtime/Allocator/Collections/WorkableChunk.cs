@@ -24,7 +24,11 @@ namespace Massive
 			_allocator = allocator;
 		}
 
-		public ChunkHandle<T> AsHandle => new ChunkHandle<T>(_chunkId);
+		public ChunkHandle<T> Handle
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new ChunkHandle<T>(_chunkId);
+		}
 
 		public ref T this[int index]
 		{

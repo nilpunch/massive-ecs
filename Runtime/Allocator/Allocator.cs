@@ -66,24 +66,40 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryFree(ChunkId chunkId)
 		{
-			if (IsValid(chunkId))
+			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
-				Free(chunkId);
-				return true;
+				return false;
 			}
 
-			return false;
+			ref var chunk = ref Chunks[chunkId.Id];
+
+			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
+			{
+				return false;
+			}
+
+			var freeList = MathUtils.FastLog2(chunk.Length) + 1;
+			chunk.NextFreeId = ~ChunkFreeLists[freeList];
+			MathUtils.IncrementWrapTo1(ref chunk.Version);
+			ChunkFreeLists[freeList] = chunkId.Id;
+
+			return true;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free(ChunkId chunkId)
 		{
-			if (!IsValid(chunkId))
+			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				ChunkUnknownException.Throw(chunkId);
 			}
 
 			ref var chunk = ref Chunks[chunkId.Id];
+
+			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
+			{
+				ChunkUnknownException.Throw(chunkId);
+			}
 
 			var freeList = MathUtils.FastLog2(chunk.Length) + 1;
 			chunk.NextFreeId = ~ChunkFreeLists[freeList];
@@ -99,22 +115,27 @@ namespace Massive
 				InvalidLengthException.Throw(minimumLength);
 			}
 
-			if (!IsValid(chunkId))
+			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				ChunkUnknownException.Throw(chunkId);
 			}
 
-			var chunkLength = MathUtils.NextPowerOf2(minimumLength);
-
 			ref var chunk = ref Chunks[chunkId.Id];
 
-			if (chunk.Length == chunkLength)
+			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
+			{
+				ChunkUnknownException.Throw(chunkId);
+			}
+
+			var goalLength = MathUtils.NextPowerOf2(minimumLength);
+
+			if (chunk.Length == goalLength)
 			{
 				return;
 			}
 
 			var orignialFreeList = MathUtils.FastLog2(chunk.Length) + 1;
-			var swapFreeList = MathUtils.FastLog2(chunkLength) + 1;
+			var swapFreeList = MathUtils.FastLog2(goalLength) + 1;
 
 			var swapId = ChunkFreeLists[swapFreeList];
 			if (swapId != EndChunkId)
@@ -123,14 +144,14 @@ namespace Massive
 				ref var swapChunk = ref Chunks[swapId];
 				ChunkFreeLists[swapFreeList] = ~swapChunk.NextFreeId;
 
-				CopyData(chunk.Offset, swapChunk.Offset, MathUtils.Min(chunk.Length, chunkLength));
-				if (chunkLength > chunk.Length)
+				CopyData(chunk.Offset, swapChunk.Offset, MathUtils.Min(chunk.Length, goalLength));
+				if (goalLength > chunk.Length)
 				{
-					ResetData(swapChunk.Offset + chunk.Length, chunkLength - chunk.Length);
+					ResetData(swapChunk.Offset + chunk.Length, goalLength - chunk.Length);
 				}
 
 				(chunk.Offset, swapChunk.Offset) = (swapChunk.Offset, chunk.Offset);
-				chunk.Length = chunkLength;
+				chunk.Length = goalLength;
 
 				swapChunk.NextFreeId = ~ChunkFreeLists[orignialFreeList];
 				ChunkFreeLists[orignialFreeList] = swapId;
@@ -148,29 +169,36 @@ namespace Massive
 				ChunkFreeLists[orignialFreeList] = swapId;
 
 				var offset = UsedSpace;
-				EnsureDataCapacity(offset + chunkLength);
-				UsedSpace += chunkLength;
+				EnsureDataCapacity(offset + goalLength);
+				UsedSpace += goalLength;
 
-				CopyData(chunk.Offset, offset, MathUtils.Min(chunk.Length, chunkLength));
-				if (chunkLength > chunk.Length)
+				CopyData(chunk.Offset, offset, MathUtils.Min(chunk.Length, goalLength));
+				if (goalLength > chunk.Length)
 				{
-					ResetData(offset + chunk.Length, chunkLength - chunk.Length);
+					ResetData(offset + chunk.Length, goalLength - chunk.Length);
 				}
 
 				chunk.Offset = offset;
-				chunk.Length = chunkLength;
+				chunk.Length = goalLength;
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref readonly Chunk GetChunk(ChunkId chunkId)
 		{
-			if (!IsValid(chunkId))
+			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				ChunkUnknownException.Throw(chunkId);
 			}
 
-			return ref Chunks[chunkId.Id];
+			ref var chunk = ref Chunks[chunkId.Id];
+
+			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
+			{
+				ChunkUnknownException.Throw(chunkId);
+			}
+
+			return ref chunk;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
