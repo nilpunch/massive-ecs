@@ -10,30 +10,32 @@ namespace Massive
 		public int Id
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => IdWithOffset - Constants.IdOffset;
-		}
-
-		public int IdWithOffset
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => (int)IdAndVersion;
 		}
 
+		/// <summary>
+		/// Entities with version 0 are invalid and counted as dead.
+		/// </summary>
 		public uint Version
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => (uint)(IdAndVersion >> 32);
 		}
 
+		private Entity(long idAndVersion)
+		{
+			IdAndVersion = idAndVersion;
+		}
+
 		public Entity(int id, uint version)
 		{
-			IdAndVersion = (uint)(id + Constants.IdOffset) | ((long)version << 32);
+			IdAndVersion = (uint)id | ((long)version << 32);
 		}
 
 		public static Entity Dead
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new Entity(0, 0);
+			get => new Entity(0);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

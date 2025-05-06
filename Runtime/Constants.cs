@@ -6,6 +6,5 @@
 		public const int DefaultFramesCapacity = 121;
 
 		public const int InvalidId = -1;
-		public const int IdOffset = -InvalidId;
 	}
 }

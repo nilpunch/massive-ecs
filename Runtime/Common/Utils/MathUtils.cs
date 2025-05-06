@@ -135,6 +135,22 @@ namespace Massive
 			}
 		}
 
+		/// <summary>
+		/// Increments and wraps the value to 1 instead of 0 on overflow.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void IncrementWrapTo1(ref uint x)
+		{
+			unchecked
+			{
+				++x;
+				if (x == 0)
+				{
+					x = 1;
+				}
+			}
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Max(int a, int b)
 		{

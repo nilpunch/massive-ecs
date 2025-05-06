@@ -118,8 +118,8 @@ namespace Massive
 			}
 			else
 			{
-				entity = new Entity(UsedIds, 0);
-				AssignEntity(UsedIds, 0, Count);
+				entity = new Entity(UsedIds, 1U);
+				AssignEntity(UsedIds, 1U, Count);
 				UsedIds += 1;
 				Count += 1;
 			}
@@ -150,13 +150,14 @@ namespace Massive
 			{
 				Count -= 1;
 				var version = Versions[index];
+				MathUtils.IncrementWrapTo1(ref version);
 				AssignEntity(Packed[Count], Versions[Count], index);
-				AssignEntity(id, unchecked(version + 1), Count);
+				AssignEntity(id, version, Count);
 			}
 			else
 			{
 				Packed[index] = ~NextHoleId;
-				unchecked { Versions[index] += 1; }
+				MathUtils.IncrementWrapTo1(ref Versions[index]);
 				NextHoleId = id;
 			}
 		}
@@ -191,7 +192,7 @@ namespace Massive
 
 			for (var i = 0; i < needToCreate; i++)
 			{
-				AssignEntity(UsedIds, 0, Count);
+				AssignEntity(UsedIds, 1U, Count);
 				UsedIds += 1;
 				Count += 1;
 				AfterCreated?.Invoke(UsedIds - 1);
@@ -210,7 +211,7 @@ namespace Massive
 				{
 					var id = Packed[i];
 					BeforeDestroyed?.Invoke(id);
-					unchecked { Versions[i] += 1; }
+					MathUtils.IncrementWrapTo1(ref Versions[i]);
 					Count -= 1;
 				}
 			}
@@ -222,7 +223,7 @@ namespace Massive
 					if (id >= 0)
 					{
 						BeforeDestroyed?.Invoke(id);
-						unchecked { Versions[i] += 1; }
+						MathUtils.IncrementWrapTo1(ref Versions[i]);
 					}
 					Count -= 1;
 				}
@@ -291,6 +292,10 @@ namespace Massive
 		{
 			Packed = Packed.Resize(capacity);
 			Versions = Versions.Resize(capacity);
+			if (capacity > PackedCapacity)
+			{
+				Array.Fill(Versions, 1U, PackedCapacity, capacity - PackedCapacity);
+			}
 			PackedCapacity = capacity;
 		}
 
@@ -377,6 +382,10 @@ namespace Massive
 
 			Array.Copy(Packed, other.Packed, UsedIds);
 			Array.Copy(Versions, other.Versions, UsedIds);
+			if (UsedIds < other.UsedIds)
+			{
+				Array.Fill(other.Versions, 1U, UsedIds, other.UsedIds - UsedIds);
+			}
 			Array.Copy(Sparse, other.Sparse, UsedIds);
 
 			other.CurrentState = CurrentState;

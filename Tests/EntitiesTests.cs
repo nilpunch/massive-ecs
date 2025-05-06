@@ -169,7 +169,7 @@ namespace Massive.Tests
 			var createdIdentifier = entities.Create();
 
 			Assert.AreEqual(id, createdIdentifier.Id);
-			Assert.AreEqual(1, createdIdentifier.Version);
+			Assert.AreEqual(2, createdIdentifier.Version);
 		}
 		
 		[TestCase(0)]
@@ -215,7 +215,7 @@ namespace Massive.Tests
 			var createdEntity = entities.Create();
 
 			Assert.LessOrEqual(createdEntity.Id, id);
-			Assert.AreEqual(1, createdEntity.Version);
+			Assert.AreEqual(2, createdEntity.Version);
 		}
 
 		[TestCase(0)]
@@ -256,6 +256,16 @@ namespace Massive.Tests
 			var distinctIds = created.Distinct().Count();
 
 			Assert.AreEqual(createAmount, distinctIds);
+		}
+
+		[Test]
+		public void EntityDead_ShouldAlwaysBeDead()
+		{
+			var entities = new Entities();
+
+			entities.CreateMany(10);
+
+			Assert.IsFalse(entities.IsAlive(Entity.Dead));
 		}
 	}
 }
