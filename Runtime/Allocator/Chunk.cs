@@ -2,7 +2,7 @@
 
 namespace Massive
 {
-	[StructLayout(LayoutKind.Explicit, Size = 12)]
+	[StructLayout(LayoutKind.Explicit, Size = 16)]
 	public struct Chunk
 	{
 		[FieldOffset(0)] public int Offset;
@@ -21,5 +21,10 @@ namespace Massive
 		/// Chunks with version 0 are invalid.
 		/// </summary>
 		[FieldOffset(8)] public uint Version;
+
+		/// <summary>
+		/// Chunk that will be dealloced when this chunk is dealloced.
+		/// </summary>
+		[FieldOffset(12)] public int ChildChunkId;
 	}
 }

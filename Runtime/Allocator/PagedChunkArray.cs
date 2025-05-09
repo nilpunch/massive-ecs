@@ -6,7 +6,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class ChunkPagedArray : IPagedArray
+	public class PagedChunkArray : IPagedArray
 	{
 		public Chunk[][] Pages { get; private set; } = Array.Empty<Chunk[]>();
 		public int PagesCapacity { get; private set; }
@@ -14,11 +14,11 @@ namespace Massive
 		public int PageSize { get; }
 		public int PageSizePower { get; }
 
-		public ChunkPagedArray(int pageSize = Constants.DefaultPageSize)
+		public PagedChunkArray(int pageSize = Constants.DefaultPageSize)
 		{
 			if (!MathUtils.IsPowerOfTwo(pageSize))
 			{
-				throw new Exception($"{MassiveAssert.Library} Page size must be power of two! Type:{typeof(ChunkPagedArray).GetGenericName()}.");
+				throw new Exception($"{MassiveAssert.Library} Page size must be power of two! Type:{typeof(PagedChunkArray).GetGenericName()}.");
 			}
 
 			PageSize = pageSize;

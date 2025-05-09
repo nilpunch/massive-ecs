@@ -13,7 +13,7 @@ namespace Massive
 
 		public WorkableList(ListHandle<T> list, ListAllocator<T> allocator)
 		{
-			_items = list.Items.WorkWith(allocator.Items);
+			_items = list.Items.In(allocator.Items);
 			_count = list.Count.WorkWith(allocator.Count);
 		}
 

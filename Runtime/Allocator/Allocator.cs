@@ -11,7 +11,7 @@ namespace Massive
 		public const int MaxPower = sizeof(int) * 8;
 		public const int EndChunkId = int.MaxValue;
 
-		public ChunkPagedArray Chunks { get; } = new ChunkPagedArray();
+		public PagedChunkArray Chunks { get; } = new PagedChunkArray();
 
 		public int ChunkCount { get; protected set; }
 
@@ -39,6 +39,7 @@ namespace Massive
 			var chunkId = ChunkFreeLists[freeList];
 			if (chunkId != EndChunkId)
 			{
+				// Reuse existing free chunk.
 				ref var chunk = ref Chunks[chunkId];
 				ChunkFreeLists[freeList] = ~chunk.NextFreeId;
 				chunk.Length = chunkLength;
@@ -47,6 +48,7 @@ namespace Massive
 			}
 			else
 			{
+				// Create new chunk.
 				chunkId = ChunkCount;
 				Chunks.EnsurePageAt(chunkId);
 				ChunkCount += 1;
@@ -212,6 +214,22 @@ namespace Massive
 			ref readonly var chunk = ref Chunks[chunkId.Id];
 
 			return chunk.Length >= 0 && chunk.Version == chunkId.Version;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Reset()
+		{
+			UsedSpace = 0;
+
+			var validChunk = default(Chunk);
+			validChunk.Version = 1U;
+			foreach (var page in new PageSequence(Chunks.PageSize, ChunkCount))
+			{
+				Array.Fill(Chunks.Pages[page.Index], validChunk, 0, page.Length);
+			}
+
+			ChunkCount = 0;
+			Array.Fill(ChunkFreeLists, EndChunkId);
 		}
 
 		protected abstract void EnsureDataCapacity(int capacity);

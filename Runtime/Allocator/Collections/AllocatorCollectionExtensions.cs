@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Massive
 {
 	public static class AllocatorCollectionExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableChunk<T> AllocChunk<T>(this Allocator<T> allocator, int length = 0)
-		{
-			return new WorkableChunk<T>(allocator.Alloc(length), allocator);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableVar<T> AllocVar<T>(this Allocator<T> allocator)
 		{
 			return new WorkableVar<T>(allocator.Alloc(1), allocator);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static WorkableChunk<T> AllocChunk<T>(this Allocator<T> allocator, int length = 0)
+		{
+			return new WorkableChunk<T>(allocator.Alloc(length), allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -24,6 +23,18 @@ namespace Massive
 				new ChunkHandle<T>(allocator.Items.Alloc(capacity)),
 				new VarHandle<int>(allocator.Count.Alloc(1))),
 				allocator);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void Free<T>(this Allocator<T> allocator, VarHandle<T> handle)
+		{
+			allocator.Free(handle.ChunkId);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void Free<T>(this Allocator<T> allocator, ChunkHandle<T> handle)
+		{
+			allocator.Free(handle.ChunkId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -12,13 +12,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableChunk<T> WorkWith(World world)
-		{
-			return new WorkableChunk<T>(ChunkId, world.Allocator<T>());
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableChunk<T> WorkWith(Allocator<T> allocator)
+		public WorkableChunk<T> In(Allocator<T> allocator)
 		{
 			return new WorkableChunk<T>(ChunkId, allocator);
 		}

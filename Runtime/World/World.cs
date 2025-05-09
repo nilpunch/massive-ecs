@@ -10,6 +10,7 @@ namespace Massive
 
 		public SetRegistry SetRegistry { get; }
 		public FilterRegistry FilterRegistry { get; }
+		public AllocatorRegistry AllocatorRegistry { get; }
 
 		public WorldConfig Config { get; }
 
@@ -23,6 +24,7 @@ namespace Massive
 			Entities = new Entities();
 			SetRegistry = new SetRegistry(new SetFactory(worldConfig));
 			FilterRegistry = new FilterRegistry(SetRegistry);
+			AllocatorRegistry = new AllocatorRegistry();
 			Config = worldConfig;
 
 			var allSets = SetRegistry.AllSets;

@@ -1,0 +1,158 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
+
+namespace Massive
+{
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	public class AllocatorRegistry
+	{
+		private Dictionary<string, Allocator> AllocatorsByIdentifiers { get; } = new Dictionary<string, Allocator>();
+
+		private FastList<int> Hashes { get; } = new FastList<int>();
+
+		private FastList<string> Identifiers { get; } = new FastList<string>();
+
+		private FastList<AllocatorCloner> Cloners { get; } = new FastList<AllocatorCloner>();
+
+		public FastList<Allocator> AllAllocators { get; } = new FastList<Allocator>();
+
+		public Allocator[] Lookup { get; private set; } = Array.Empty<Allocator>();
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Allocator GetExisting(string allocatorId)
+		{
+			if (AllocatorsByIdentifiers.TryGetValue(allocatorId, out var allocator))
+			{
+				return allocator;
+			}
+
+			return null;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Allocator Get<T>()
+		{
+			var info = TypeId<T>.Info;
+
+			EnsureLookupAt(info.Index);
+			var candidate = Lookup[info.Index];
+
+			if (candidate != null)
+			{
+				return candidate;
+			}
+
+			var allocator = new Allocator<T>();
+			var cloner = new AllocatorCloner<T>(allocator);
+
+			Insert(info.FullName, allocator, cloner);
+			Lookup[info.Index] = allocator;
+
+			return allocator;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Allocator GetReflected(Type allocatorType)
+		{
+			if (TypeId.TryGetInfo(allocatorType, out var info))
+			{
+				EnsureLookupAt(info.Index);
+				var candidate = Lookup[info.Index];
+
+				if (candidate != null)
+				{
+					return candidate;
+				}
+			}
+
+			var createMethod = typeof(AllocatorRegistry).GetMethod(nameof(Get));
+			var genericMethod = createMethod?.MakeGenericMethod(allocatorType);
+			return (Allocator)genericMethod?.Invoke(this, new object[] { });
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsureLookupAt(int index)
+		{
+			if (index >= Lookup.Length)
+			{
+				Lookup = Lookup.Resize(MathUtils.NextPowerOf2(index + 1));
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Insert(string allocatorId, Allocator allocator, AllocatorCloner cloner)
+		{
+			// Maintain items sorted.
+			var itemIndex = Identifiers.BinarySearch(allocatorId);
+			if (itemIndex >= 0)
+			{
+				throw new Exception("Trying to insert already existing item.");
+			}
+			else
+			{
+				var insertionIndex = ~itemIndex;
+				Identifiers.Insert(insertionIndex, allocatorId);
+				AllAllocators.Insert(insertionIndex, allocator);
+				Cloners.Insert(insertionIndex, cloner);
+				Hashes.Insert(insertionIndex, allocatorId.GetHashCode());
+				AllocatorsByIdentifiers.Add(allocatorId, allocator);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(Allocator allocator)
+		{
+			return Array.IndexOf(Lookup, allocator);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Type TypeOf(Allocator allocator)
+		{
+			return TypeId.GetTypeByIndex(IndexOf(allocator));
+		}
+
+		/// <summary>
+		/// Copies all allocators from this registry into the specified one.
+		/// Clears allocators in the target registry that are not present in the source.
+		/// </summary>
+		/// <remarks>
+		/// Throws if the allocator factories are incompatible.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(AllocatorRegistry other)
+		{
+			// Copy present allocators.
+			foreach (var cloner in Cloners)
+			{
+				cloner.CopyTo(other);
+			}
+
+			// Reset other allocators to initial state.
+			var hashes = Hashes;
+			var otherHashes = other.Hashes;
+			var otherAllocators = other.AllAllocators;
+
+			if (hashes.Count == otherHashes.Count)
+			{
+				// Skip resetting if target has exactly the same allocators.
+				return;
+			}
+
+			var index = 0;
+			for (var otherIndex = 0; otherIndex < otherAllocators.Count; otherIndex++)
+			{
+				if (index >= hashes.Count || otherHashes[otherIndex] != hashes[index])
+				{
+					otherAllocators[otherIndex].Reset();
+				}
+				else
+				{
+					index++;
+				}
+			}
+		}
+	}
+}

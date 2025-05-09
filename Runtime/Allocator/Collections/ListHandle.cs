@@ -14,7 +14,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableList<T> WorkWith(ListAllocator<T> allocator)
+		public WorkableList<T> In(ListAllocator<T> allocator)
 		{
 			return new WorkableList<T>(this, allocator);
 		}

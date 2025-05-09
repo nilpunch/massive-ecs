@@ -23,8 +23,9 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Copies the contents of this world into the specified one.
-		/// Clears sets in the target world that are not present in the source.
+		/// Copies the contents of this world into the specified one.<br/>
+		/// Clears sets in the target world that are not present in the source.<br/>
+		/// Resets allocators in the target world that are not present in the source.
 		/// </summary>
 		/// <remarks>
 		/// Throws if the worlds have incompatible configs.
@@ -39,6 +40,9 @@ namespace Massive
 
 			// Sets.
 			world.SetRegistry.CopyTo(other.SetRegistry);
+
+			// Allocators.
+			world.AllocatorRegistry.CopyTo(other.AllocatorRegistry);
 		}
 	}
 }
