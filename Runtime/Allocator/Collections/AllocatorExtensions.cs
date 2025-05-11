@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public static class AllocatorCollectionExtensions
+	public static class AllocatorExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableVar<T> AllocVar<T>(this Allocator<T> allocator) where T : unmanaged
@@ -25,9 +25,9 @@ namespace Massive
 			var count = allocator.Count.Alloc(1, MemoryInit.Uninitialized);
 			allocator.Count.Data[allocator.Count.Chunks[count.Id].Offset] = 0;
 
-			return new WorkableList<T>(new ListHandle<T>(
-				new ChunkHandle<T>(allocator.Items.Alloc(capacity, MemoryInit.Uninitialized)),
-				new VarHandle<int>(count)),
+			return new WorkableList<T>(
+				allocator.Items.Alloc(capacity, MemoryInit.Uninitialized),
+				count,
 				allocator);
 		}
 
@@ -46,8 +46,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Free<T>(this ListAllocator<T> allocator, ListHandle<T> handle) where T : unmanaged
 		{
-			allocator.Items.Free(handle.Items.ChunkId);
-			allocator.Count.Free(handle.Count.ChunkId);
+			allocator.Items.Free(handle.Items);
+			allocator.Count.Free(handle.Count);
 		}
 	}
 }

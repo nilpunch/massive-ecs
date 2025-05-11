@@ -35,7 +35,7 @@ namespace Massive
 		{
 			return new ListAllocator<T>(world.Allocator<T>(), world.Allocator<int>());
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableVar<T> AllocVar<T>(this World world) where T : unmanaged
 		{
@@ -54,9 +54,9 @@ namespace Massive
 		public static WorkableList<T> AllocList<T>(this World world, int capacity = 0) where T : unmanaged
 		{
 			var allocator = world.ListAllocator<T>();
-			return new WorkableList<T>(new ListHandle<T>(
-					new ChunkHandle<T>(allocator.Items.Alloc(capacity)),
-					new VarHandle<int>(allocator.Count.Alloc(1))),
+			return new WorkableList<T>(
+				allocator.Items.Alloc(capacity),
+				allocator.Count.Alloc(1),
 				allocator);
 		}
 
@@ -78,8 +78,8 @@ namespace Massive
 		public static void Free<T>(this World world, ListHandle<T> handle) where T : unmanaged
 		{
 			var allocator = world.ListAllocator<T>();
-			allocator.Items.Free(handle.Items.ChunkId);
-			allocator.Count.Free(handle.Count.ChunkId);
+			allocator.Items.Free(handle.Items);
+			allocator.Count.Free(handle.Count);
 		}
 	}
 }

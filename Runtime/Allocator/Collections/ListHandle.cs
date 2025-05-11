@@ -7,10 +7,10 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct ListHandle<T> where T : unmanaged
 	{
-		public ChunkHandle<T> Items;
-		public VarHandle<int> Count;
+		public ChunkId Items;
+		public ChunkId Count;
 
-		public ListHandle(ChunkHandle<T> items, VarHandle<int> count)
+		public ListHandle(ChunkId items, ChunkId count)
 		{
 			Items = items;
 			Count = count;
@@ -19,7 +19,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableList<T> In(ListAllocator<T> allocator)
 		{
-			return new WorkableList<T>(this, allocator);
+			return new WorkableList<T>(Items, Count, allocator);
 		}
 
 		[UnityEngine.Scripting.Preserve]

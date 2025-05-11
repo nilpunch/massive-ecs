@@ -11,16 +11,22 @@ namespace Massive
 		private readonly WorkableChunk<T> _items;
 		private readonly WorkableVar<int> _count;
 
+		public WorkableList(ChunkId items, ChunkId count, ListAllocator<T> allocator)
+		{
+			_items = new WorkableChunk<T>(items, allocator.Items);
+			_count = new WorkableVar<int>(count, allocator.Count);
+		}
+
 		public WorkableList(ListHandle<T> list, ListAllocator<T> allocator)
 		{
-			_items = list.Items.In(allocator.Items);
-			_count = list.Count.In(allocator.Count);
+			_items = new WorkableChunk<T>(list.Items, allocator.Items);
+			_count = new WorkableVar<int>(list.Count, allocator.Count);
 		}
 
 		public ListHandle<T> Handle
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ListHandle<T>(_items.Handle, _count.Handle);
+			get => new ListHandle<T>(_items.ChunkId, _count.ChunkId);
 		}
 
 		public ref T this[int index]

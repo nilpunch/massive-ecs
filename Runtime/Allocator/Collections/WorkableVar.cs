@@ -7,25 +7,26 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorkableVar<T> where T : unmanaged
 	{
-		private readonly ChunkId _chunkId;
+		public readonly ChunkId ChunkId;
+
 		private readonly Allocator<T> _allocator;
 
 		public WorkableVar(ChunkId chunkId, Allocator<T> allocator)
 		{
-			_chunkId = chunkId;
+			ChunkId = chunkId;
 			_allocator = allocator;
 		}
 
 		public VarHandle<T> Handle
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new VarHandle<T>(_chunkId);
+			get => new VarHandle<T>(ChunkId);
 		}
 
 		public ref T Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref _allocator.Data[_allocator.Chunks[_chunkId.Id].Offset];
+			get => ref _allocator.Data[_allocator.Chunks[ChunkId.Id].Offset];
 		}
 	}
 }
