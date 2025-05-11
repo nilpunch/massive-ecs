@@ -6,7 +6,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly ref struct WorkableList<T>
+	public readonly struct WorkableList<T> where T : unmanaged
 	{
 		private readonly WorkableChunk<T> _items;
 		private readonly WorkableVar<int> _count;
@@ -14,7 +14,7 @@ namespace Massive
 		public WorkableList(ListHandle<T> list, ListAllocator<T> allocator)
 		{
 			_items = list.Items.In(allocator.Items);
-			_count = list.Count.WorkWith(allocator.Count);
+			_count = list.Count.In(allocator.Count);
 		}
 
 		public ListHandle<T> Handle
@@ -44,7 +44,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add(in T item)
+		public void Add(T item)
 		{
 			ref var count = ref _count.Value;
 			EnsureCapacityAt(count);
@@ -52,7 +52,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void InsertAt(int index, in T item)
+		public void Insert(int index, T item)
 		{
 			ref var count = ref _count.Value;
 			if (index > count)
@@ -95,6 +95,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(T item)
+		{
+			return _items.IndexOf(item, 0, Count);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
 			_count.Value = 0;
@@ -105,7 +111,7 @@ namespace Massive
 		{
 			if (index >= _items.Length)
 			{
-				_items.Resize(MathUtils.NextPowerOf2(index + 1));
+				_items.Resize(index + 1, MemoryInit.Uninitialized);
 			}
 		}
 

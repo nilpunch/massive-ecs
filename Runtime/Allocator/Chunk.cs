@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Massive
 {
-	[StructLayout(LayoutKind.Explicit, Size = 16)]
+	[StructLayout(LayoutKind.Explicit, Size = 12)]
 	public struct Chunk
 	{
 		[FieldOffset(0)] public int Offset;
@@ -22,9 +23,15 @@ namespace Massive
 		/// </summary>
 		[FieldOffset(8)] public uint Version;
 
-		/// <summary>
-		/// Chunk that will be dealloced when this chunk is dealloced.
-		/// </summary>
-		[FieldOffset(12)] public int ChildChunkId;
+		public static Chunk DefaultValid
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get
+			{
+				var chunk = default(Chunk);
+				chunk.Version = 1U;
+				return chunk;
+			}
+		}
 	}
 }

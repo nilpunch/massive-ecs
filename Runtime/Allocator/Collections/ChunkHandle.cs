@@ -1,8 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	public struct ChunkHandle<T>
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	public struct ChunkHandle<T> where T : unmanaged
 	{
 		public ChunkId ChunkId;
 

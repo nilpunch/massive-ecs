@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -9,7 +8,7 @@ namespace Massive
 	public static class WorldAllocatorExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Allocator<T> Allocator<T>(this World world)
+		public static Allocator<T> Allocator<T>(this World world) where T : unmanaged
 		{
 			var info = TypeId<T>.Info;
 			var allocatorRegistry = world.AllocatorRegistry;
@@ -22,7 +21,7 @@ namespace Massive
 				return (Allocator<T>)candidate;
 			}
 
-			var allocator = new Allocator<T>();
+			var allocator = new Allocator<T>(DefaultValueUtils.GetDefaultValueFor<T>());
 			var cloner = new AllocatorCloner<T>(allocator);
 
 			allocatorRegistry.Insert(info.FullName, allocator, cloner);
@@ -32,27 +31,27 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ListAllocator<T> ListAllocator<T>(this World world)
+		public static ListAllocator<T> ListAllocator<T>(this World world) where T : unmanaged
 		{
 			return new ListAllocator<T>(world.Allocator<T>(), world.Allocator<int>());
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableVar<T> AllocVar<T>(this World world)
+		public static WorkableVar<T> AllocVar<T>(this World world) where T : unmanaged
 		{
 			var allocator = world.Allocator<T>();
 			return new WorkableVar<T>(allocator.Alloc(1), allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableChunk<T> AllocChunk<T>(this World world, int length = 0)
+		public static WorkableChunk<T> AllocChunk<T>(this World world, int length = 0) where T : unmanaged
 		{
 			var allocator = world.Allocator<T>();
 			return new WorkableChunk<T>(allocator.Alloc(length), allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableList<T> AllocList<T>(this World world, int capacity = 0)
+		public static WorkableList<T> AllocList<T>(this World world, int capacity = 0) where T : unmanaged
 		{
 			var allocator = world.ListAllocator<T>();
 			return new WorkableList<T>(new ListHandle<T>(
@@ -62,21 +61,21 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free<T>(this World world, VarHandle<T> handle)
+		public static void Free<T>(this World world, VarHandle<T> handle) where T : unmanaged
 		{
 			var allocator = world.Allocator<T>();
 			allocator.Free(handle.ChunkId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free<T>(this World world, ChunkHandle<T> handle)
+		public static void Free<T>(this World world, ChunkHandle<T> handle) where T : unmanaged
 		{
 			var allocator = world.Allocator<T>();
 			allocator.Free(handle.ChunkId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free<T>(this World world, ListHandle<T> handle)
+		public static void Free<T>(this World world, ListHandle<T> handle) where T : unmanaged
 		{
 			var allocator = world.ListAllocator<T>();
 			allocator.Items.Free(handle.Items.ChunkId);

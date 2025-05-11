@@ -1,11 +1,15 @@
-﻿namespace Massive
+﻿using Unity.IL2CPP.CompilerServices;
+
+namespace Massive
 {
 	public abstract class AllocatorCloner
 	{
 		public abstract void CopyTo(AllocatorRegistry allocatorRegistry);
 	}
 
-	public sealed class AllocatorCloner<T> : AllocatorCloner
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	public sealed class AllocatorCloner<T> : AllocatorCloner where T : unmanaged
 	{
 		private readonly Allocator<T> _allocator;
 

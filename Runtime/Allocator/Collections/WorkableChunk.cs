@@ -6,21 +6,14 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly unsafe ref struct WorkableChunk<T>
+	public readonly struct WorkableChunk<T> where T : unmanaged
 	{
 		private readonly ChunkId _chunkId;
-		private readonly Chunk* _chunk;
 		private readonly Allocator<T> _allocator;
 
 		public WorkableChunk(ChunkId chunkId, Allocator<T> allocator)
 		{
 			_chunkId = chunkId;
-
-			fixed (Chunk* chunkPtr = &allocator.GetChunk(_chunkId))
-			{
-				_chunk = chunkPtr;
-			}
-
 			_allocator = allocator;
 		}
 
@@ -35,49 +28,66 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
-				if (index >= _chunk->Length)
+				if (index >= _allocator.Chunks[_chunkId.Id].Length)
 				{
 					throw new IndexOutOfRangeException();
 				}
 
-				return ref _allocator.Data[_chunk->Offset + index];
+				return ref _allocator.Data[_allocator.Chunks[_chunkId.Id].Offset + index];
 			}
 		}
 
 		public int Length
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _chunk->Length;
+			get => _allocator.Chunks[_chunkId.Id].Length;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Resize(int minimalLength)
+		public void Resize(int minimalLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
-			_allocator.Resize(_chunkId, minimalLength);
+			_allocator.Resize(_chunkId, minimalLength, memoryInit);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(T item)
+		{
+			return Array.IndexOf(_allocator.Data, item, _allocator.Chunks[_chunkId.Id].Offset, _allocator.Chunks[_chunkId.Id].Length);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(T item, int startIndex, int count)
+		{
+			if (startIndex + count >= _allocator.Chunks[_chunkId.Id].Offset + _allocator.Chunks[_chunkId.Id].Length)
+			{
+				return -1;
+			}
+
+			return Array.IndexOf(_allocator.Data, item, _allocator.Chunks[_chunkId.Id].Offset + startIndex, count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(int sourceIndex, WorkableChunk<T> destinationChunk, int destinationIndex, int length)
 		{
-			Array.Copy(_allocator.Data, _chunk->Offset + sourceIndex,
-				destinationChunk._allocator.Data, destinationChunk._chunk->Offset + destinationIndex,
+			Array.Copy(_allocator.Data, _allocator.Chunks[_chunkId.Id].Offset + sourceIndex,
+				destinationChunk._allocator.Data, destinationChunk._allocator.Chunks[_chunkId.Id].Offset + destinationIndex,
 				length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToSelf(int sourceIndex, int destinationIndex, int length)
 		{
-			Array.Copy(_allocator.Data, _chunk->Offset + sourceIndex,
-				_allocator.Data, _chunk->Offset + destinationIndex,
+			Array.Copy(_allocator.Data, _allocator.Chunks[_chunkId.Id].Offset + sourceIndex,
+				_allocator.Data, _allocator.Chunks[_chunkId.Id].Offset + destinationIndex,
 				length);
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureCapacityAt(int index)
+		public void EnsureCapacity(int capacity)
 		{
-			if (index >= _chunk->Length)
+			if (capacity > _allocator.Chunks[_chunkId.Id].Length)
 			{
-				_allocator.Resize(_chunkId, MathUtils.NextPowerOf2(index + 1));
+				_allocator.Resize(_chunkId, capacity);
 			}
 		}
 
@@ -93,15 +103,15 @@ namespace Massive
 			public Enumerator(WorkableChunk<T> list)
 			{
 				_data = list._allocator.Data;
-				_offset = list._chunk->Offset;
-				_length = list._chunk->Length;
+				_offset = list._allocator.Chunks[list._chunkId.Id].Offset;
+				_length = list._allocator.Chunks[list._chunkId.Id].Length;
 				_index = -1;
 			}
 
 			public Enumerator(WorkableChunk<T> list, int start, int length)
 			{
 				_data = list._allocator.Data;
-				_offset = list._chunk->Offset + start;
+				_offset = list._allocator.Chunks[list._chunkId.Id].Offset + start;
 				_length = length;
 				_index = -1;
 			}

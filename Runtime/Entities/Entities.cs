@@ -382,11 +382,12 @@ namespace Massive
 
 			Array.Copy(Packed, other.Packed, UsedIds);
 			Array.Copy(Versions, other.Versions, UsedIds);
+			Array.Copy(Sparse, other.Sparse, UsedIds);
+
 			if (UsedIds < other.UsedIds)
 			{
 				Array.Fill(other.Versions, 1U, UsedIds, other.UsedIds - UsedIds);
 			}
-			Array.Copy(Sparse, other.Sparse, UsedIds);
 
 			other.CurrentState = CurrentState;
 		}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Unity.IL2CPP.CompilerServices;
 
 // ReSharper disable all StaticMemberInGenericType
@@ -13,6 +14,7 @@ namespace Massive
 	{
 		private static readonly Dictionary<Type, TypeIdInfo> s_typeInfo = new Dictionary<Type, TypeIdInfo>();
 		private static Type[] s_types = Array.Empty<Type>();
+		private static int s_typeCounter;
 
 		public static TypeIdInfo GetInfo(Type type)
 		{
@@ -55,6 +57,11 @@ namespace Massive
 			}
 		}
 
+		internal static int IncrementTypeCounter()
+		{
+			return Interlocked.Increment(ref s_typeCounter);
+		}
+
 		internal static void Register(Type type, TypeIdInfo info)
 		{
 			s_typeInfo.Add(type, info);
@@ -70,14 +77,14 @@ namespace Massive
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public abstract class TypeId<T>
+	public static class TypeId<T>
 	{
 		public static readonly TypeIdInfo Info;
 
 		static TypeId()
 		{
 			var type = typeof(T);
-			var index = TypesCounter.Increment();
+			var index = TypeId.IncrementTypeCounter();
 			var typeName = type.GetFullGenericName();
 
 			var info = new TypeIdInfo(index, typeName);

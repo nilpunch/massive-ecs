@@ -5,21 +5,14 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly unsafe ref struct WorkableVar<T>
+	public readonly struct WorkableVar<T> where T : unmanaged
 	{
 		private readonly ChunkId _chunkId;
-		private readonly Chunk* _chunk;
 		private readonly Allocator<T> _allocator;
 
 		public WorkableVar(ChunkId chunkId, Allocator<T> allocator)
 		{
 			_chunkId = chunkId;
-
-			fixed (Chunk* chunkPtr = &allocator.GetChunk(_chunkId))
-			{
-				_chunk = chunkPtr;
-			}
-
 			_allocator = allocator;
 		}
 
@@ -32,7 +25,7 @@ namespace Massive
 		public ref T Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref _allocator.Data[_chunk->Offset];
+			get => ref _allocator.Data[_allocator.Chunks[_chunkId.Id].Offset];
 		}
 	}
 }

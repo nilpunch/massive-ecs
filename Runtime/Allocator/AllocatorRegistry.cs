@@ -33,9 +33,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Allocator Get<T>()
+		public Allocator Get<T>() where T : unmanaged
 		{
-			var info = TypeId<T>.Info;
+			var info = AllocatorTypeId<T>.Info;
 
 			EnsureLookupAt(info.Index);
 			var candidate = Lookup[info.Index];
@@ -45,7 +45,7 @@ namespace Massive
 				return candidate;
 			}
 
-			var allocator = new Allocator<T>();
+			var allocator = new Allocator<T>(DefaultValueUtils.GetDefaultValueFor<T>());
 			var cloner = new AllocatorCloner<T>(allocator);
 
 			Insert(info.FullName, allocator, cloner);
@@ -57,7 +57,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Allocator GetReflected(Type allocatorType)
 		{
-			if (TypeId.TryGetInfo(allocatorType, out var info))
+			if (AllocatorTypeId.TryGetInfo(allocatorType, out var info))
 			{
 				EnsureLookupAt(info.Index);
 				var candidate = Lookup[info.Index];
@@ -111,7 +111,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Type TypeOf(Allocator allocator)
 		{
-			return TypeId.GetTypeByIndex(IndexOf(allocator));
+			return AllocatorTypeId.GetTypeByIndex(IndexOf(allocator));
 		}
 
 		/// <summary>

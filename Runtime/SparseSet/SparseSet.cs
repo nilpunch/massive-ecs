@@ -170,6 +170,9 @@ namespace Massive
 			}
 
 			var index = Sparse[id];
+
+			DisposeDataAt(index);
+
 			if (Packing == Packing.Continuous)
 			{
 				// Swap with last.
@@ -200,6 +203,7 @@ namespace Massive
 				{
 					var id = Packed[i];
 					BeforeRemoved?.Invoke(id);
+					DisposeDataAt(i);
 					Sparse[id] = Constants.InvalidId;
 				}
 			}
@@ -211,6 +215,7 @@ namespace Massive
 					if (id >= 0)
 					{
 						BeforeRemoved?.Invoke(id);
+						DisposeDataAt(i);
 						Sparse[id] = Constants.InvalidId;
 					}
 				}
@@ -402,6 +407,13 @@ namespace Massive
 		/// Ensures data exists at the specified index and prepares it, if necessary.
 		/// </summary>
 		protected virtual void EnsureAndPrepareDataAt(int index)
+		{
+		}
+
+		/// <summary>
+		/// Disposes data at the specified index, if necessary.
+		/// </summary>
+		protected virtual void DisposeDataAt(int index)
 		{
 		}
 

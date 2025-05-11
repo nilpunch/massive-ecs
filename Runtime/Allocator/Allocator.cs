@@ -4,6 +4,21 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	public enum MemoryInit
+	{
+		/// <summary>
+		/// Fills data with default value on allocation.
+		/// </summary>
+		Clear,
+
+		/// <summary>
+		/// Uninitialized data can improve performance, but results in the contents of the array elements being undefined.
+		/// In performance sensitive code it can make sense to use <see cref="MemoryInit.Uninitialized"/>,
+		/// if you are writing to the entire array right after creating it without reading any of the elements first.
+		/// </summary>
+		Uninitialized,
+	}
+
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public abstract class Allocator
@@ -11,21 +26,27 @@ namespace Massive
 		public const int MaxPower = sizeof(int) * 8;
 		public const int EndChunkId = int.MaxValue;
 
-		public PagedChunkArray Chunks { get; } = new PagedChunkArray();
+		public Chunk[] Chunks { get; private set; } = Array.Empty<Chunk>();
 
-		public int ChunkCount { get; protected set; }
+		private int ChunkCapacity { get; set; }
+
+		public int ChunkCount { get; private set; }
 
 		public int[] ChunkFreeLists { get; } = new int[MaxPower + 1];
 
-		public int UsedSpace { get; protected set; }
+		public int UsedSpace { get; private set; }
 
 		public Allocator()
 		{
 			Array.Fill(ChunkFreeLists, EndChunkId);
 		}
 
+		public abstract Type ElementType { get; }
+
+		public abstract Array RawData { get; }
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ChunkId Alloc(int minimumLength)
+		public ChunkId Alloc(int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
 			if (minimumLength < 0)
 			{
@@ -43,14 +64,17 @@ namespace Massive
 				ref var chunk = ref Chunks[chunkId];
 				ChunkFreeLists[freeList] = ~chunk.NextFreeId;
 				chunk.Length = chunkLength;
-				ResetData(chunk.Offset, chunkLength);
+				if (chunkLength != 0 && memoryInit == MemoryInit.Clear)
+				{
+					ClearData(chunk.Offset, chunkLength);
+				}
 				return new ChunkId(chunkId, chunk.Version);
 			}
 			else
 			{
 				// Create new chunk.
 				chunkId = ChunkCount;
-				Chunks.EnsurePageAt(chunkId);
+				EnsureChunkAt(chunkId);
 				ChunkCount += 1;
 
 				var offset = UsedSpace;
@@ -60,57 +84,16 @@ namespace Massive
 				ref var chunk = ref Chunks[chunkId];
 				chunk.Offset = offset;
 				chunk.Length = chunkLength;
-				ResetData(offset, chunkLength);
+				if (chunkLength != 0 && memoryInit == MemoryInit.Clear)
+				{
+					ClearData(offset, chunkLength);
+				}
 				return new ChunkId(chunkId, chunk.Version);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool TryFree(ChunkId chunkId)
-		{
-			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
-			{
-				return false;
-			}
-
-			ref var chunk = ref Chunks[chunkId.Id];
-
-			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
-			{
-				return false;
-			}
-
-			var freeList = MathUtils.FastLog2(chunk.Length) + 1;
-			chunk.NextFreeId = ~ChunkFreeLists[freeList];
-			MathUtils.IncrementWrapTo1(ref chunk.Version);
-			ChunkFreeLists[freeList] = chunkId.Id;
-
-			return true;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Free(ChunkId chunkId)
-		{
-			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
-			{
-				ChunkUnknownException.Throw(chunkId);
-			}
-
-			ref var chunk = ref Chunks[chunkId.Id];
-
-			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
-			{
-				ChunkUnknownException.Throw(chunkId);
-			}
-
-			var freeList = MathUtils.FastLog2(chunk.Length) + 1;
-			chunk.NextFreeId = ~ChunkFreeLists[freeList];
-			MathUtils.IncrementWrapTo1(ref chunk.Version);
-			ChunkFreeLists[freeList] = chunkId.Id;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Resize(ChunkId chunkId, int minimumLength)
+		public void Resize(ChunkId chunkId, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
 			if (minimumLength < 0)
 			{
@@ -147,9 +130,9 @@ namespace Massive
 				ChunkFreeLists[swapFreeList] = ~swapChunk.NextFreeId;
 
 				CopyData(chunk.Offset, swapChunk.Offset, MathUtils.Min(chunk.Length, goalLength));
-				if (goalLength > chunk.Length)
+				if (goalLength > chunk.Length && memoryInit == MemoryInit.Clear)
 				{
-					ResetData(swapChunk.Offset + chunk.Length, goalLength - chunk.Length);
+					ClearData(swapChunk.Offset + chunk.Length, goalLength - chunk.Length);
 				}
 
 				(chunk.Offset, swapChunk.Offset) = (swapChunk.Offset, chunk.Offset);
@@ -162,7 +145,7 @@ namespace Massive
 			{
 				// Create new chunk to swap with current one.
 				swapId = ChunkCount;
-				Chunks.EnsurePageAt(swapId);
+				EnsureChunkAt(swapId);
 				ChunkCount += 1;
 
 				ref var swapChunk = ref Chunks[swapId];
@@ -175,9 +158,9 @@ namespace Massive
 				UsedSpace += goalLength;
 
 				CopyData(chunk.Offset, offset, MathUtils.Min(chunk.Length, goalLength));
-				if (goalLength > chunk.Length)
+				if (goalLength > chunk.Length && memoryInit == MemoryInit.Clear)
 				{
-					ResetData(offset + chunk.Length, goalLength - chunk.Length);
+					ClearData(offset + chunk.Length, goalLength - chunk.Length);
 				}
 
 				chunk.Offset = offset;
@@ -186,7 +169,51 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref readonly Chunk GetChunk(ChunkId chunkId)
+		public void Free(ChunkId chunkId)
+		{
+			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
+			{
+				ChunkUnknownException.Throw(chunkId);
+			}
+
+			ref var chunk = ref Chunks[chunkId.Id];
+
+			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
+			{
+				ChunkUnknownException.Throw(chunkId);
+			}
+
+			var freeList = MathUtils.FastLog2(chunk.Length) + 1;
+			chunk.NextFreeId = ~ChunkFreeLists[freeList];
+			MathUtils.IncrementWrapTo1(ref chunk.Version);
+			ChunkFreeLists[freeList] = chunkId.Id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool TryFree(ChunkId chunkId)
+		{
+			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
+			{
+				return false;
+			}
+
+			ref var chunk = ref Chunks[chunkId.Id];
+
+			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
+			{
+				return false;
+			}
+
+			var freeList = MathUtils.FastLog2(chunk.Length) + 1;
+			chunk.NextFreeId = ~ChunkFreeLists[freeList];
+			MathUtils.IncrementWrapTo1(ref chunk.Version);
+			ChunkFreeLists[freeList] = chunkId.Id;
+
+			return true;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ref Chunk GetChunk(ChunkId chunkId)
 		{
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
@@ -204,14 +231,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsValid(ChunkId chunkId)
+		public bool IsAllocated(ChunkId chunkId)
 		{
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				return false;
 			}
 
-			ref readonly var chunk = ref Chunks[chunkId.Id];
+			ref var chunk = ref Chunks[chunkId.Id];
 
 			return chunk.Length >= 0 && chunk.Version == chunkId.Version;
 		}
@@ -221,33 +248,61 @@ namespace Massive
 		{
 			UsedSpace = 0;
 
-			var validChunk = default(Chunk);
-			validChunk.Version = 1U;
-			foreach (var page in new PageSequence(Chunks.PageSize, ChunkCount))
-			{
-				Array.Fill(Chunks.Pages[page.Index], validChunk, 0, page.Length);
-			}
+			Array.Fill(Chunks, Chunk.DefaultValid, 0, ChunkCount);
 
 			ChunkCount = 0;
 			Array.Fill(ChunkFreeLists, EndChunkId);
 		}
 
-		protected abstract void EnsureDataCapacity(int capacity);
+		public void EnsureChunkAt(int index)
+		{
+			if (index >= ChunkCapacity)
+			{
+				var newCapacity = MathUtils.NextPowerOf2(index + 1);
+
+				Chunks = Chunks.Resize(newCapacity);
+				if (newCapacity > ChunkCapacity)
+				{
+					Array.Fill(Chunks, Chunk.DefaultValid, ChunkCapacity, newCapacity - ChunkCapacity);
+				}
+
+				ChunkCapacity = newCapacity;
+			}
+		}
+
+		public void SetState(int chunksCount, int usedSpace)
+		{
+			ChunkCount = chunksCount;
+			UsedSpace = usedSpace;
+		}
+
+		public abstract void EnsureDataCapacity(int capacity);
 
 		protected abstract void CopyData(int source, int destination, int length);
 
-		protected abstract void ResetData(int start, int length);
+		protected abstract void ClearData(int start, int length);
 	}
 
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public sealed class Allocator<T> : Allocator
+	public sealed class Allocator<T> : Allocator where T : unmanaged
 	{
+		public T DefaultValue { get; }
+
 		public T[] Data { get; private set; } = Array.Empty<T>();
 
-		public int DataCapacity { get; private set; }
+		private int DataCapacity { get; set; }
 
-		protected override void EnsureDataCapacity(int capacity)
+		public override Type ElementType => typeof(T);
+
+		public override Array RawData => Data;
+
+		public Allocator(T defaultValue = default)
+		{
+			DefaultValue = defaultValue;
+		}
+
+		public override void EnsureDataCapacity(int capacity)
 		{
 			if (capacity > DataCapacity)
 			{
@@ -261,11 +316,12 @@ namespace Massive
 			Array.Copy(Data, source, Data, destination, length);
 		}
 
-		protected override void ResetData(int start, int length)
+		protected override void ClearData(int start, int length)
 		{
-			Array.Fill(Data, default, start, length);
+			Array.Fill(Data, DefaultValue, start, length);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Allocator<T> Clone()
 		{
 			var clone = new Allocator<T>();
@@ -273,29 +329,21 @@ namespace Massive
 			return clone;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Allocator<T> other)
 		{
-			MassiveAssert.EqualPageSize(Chunks, other.Chunks);
-
 			other.EnsureDataCapacity(UsedSpace);
 
-			Array.Copy(Data, other.Data, UsedSpace);
+			Array.Copy(Chunks, other.Chunks, ChunkCount);
 			Array.Copy(ChunkFreeLists, other.ChunkFreeLists, MaxPower + 1);
-			other.ChunkCount = ChunkCount;
-			other.UsedSpace = UsedSpace;
+			Array.Copy(Data, other.Data, UsedSpace);
 
-			var sourceChunks = Chunks;
-			var destinationChunks = other.Chunks;
-
-			foreach (var page in new PageSequence(sourceChunks.PageSize, ChunkCount))
+			if (ChunkCount < other.ChunkCount)
 			{
-				destinationChunks.EnsurePage(page.Index);
-
-				var sourcePage = sourceChunks.Pages[page.Index];
-				var destinationPage = destinationChunks.Pages[page.Index];
-
-				Array.Copy(sourcePage, destinationPage, page.Length);
+				Array.Fill(other.Chunks, Chunk.DefaultValid, ChunkCount, other.ChunkCount - ChunkCount);
 			}
+
+			other.SetState(ChunkCount, UsedSpace);
 		}
 	}
 }

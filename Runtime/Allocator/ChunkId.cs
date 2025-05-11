@@ -2,9 +2,12 @@
 
 namespace Massive
 {
-	public readonly struct ChunkId
+	public struct ChunkId
 	{
-		public readonly long IdAndVersion;
+		/// <summary>
+		/// 0 counted as invalid.
+		/// </summary>
+		public long IdAndVersion;
 
 		public int Id
 		{
@@ -35,6 +38,12 @@ namespace Massive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => new ChunkId(0);
+		}
+
+		public bool IsValid
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => IdAndVersion > 0;
 		}
 	}
 }

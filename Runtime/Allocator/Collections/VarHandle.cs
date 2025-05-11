@@ -1,8 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	public struct VarHandle<T>
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	public struct VarHandle<T> where T : unmanaged
 	{
 		public ChunkId ChunkId;
 
@@ -12,7 +15,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableVar<T> WorkWith(Allocator<T> allocator)
+		public WorkableVar<T> In(Allocator<T> allocator)
 		{
 			return new WorkableVar<T>(ChunkId, allocator);
 		}
