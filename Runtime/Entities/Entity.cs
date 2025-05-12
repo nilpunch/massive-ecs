@@ -5,12 +5,16 @@ namespace Massive
 {
 	public readonly struct Entity : IEquatable<Entity>
 	{
-		public readonly long IdAndVersion;
+		/// <summary>
+		/// 0 counted as invalid.<br/>
+		/// [ Version: 32 bits | ID: 32 bits ]
+		/// </summary>
+		public readonly long VersionAndId;
 
 		public int Id
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => (int)IdAndVersion;
+			get => (int)VersionAndId;
 		}
 
 		/// <summary>
@@ -19,17 +23,17 @@ namespace Massive
 		public uint Version
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => (uint)(IdAndVersion >> 32);
+			get => (uint)(VersionAndId >> 32);
 		}
 
-		private Entity(long idAndVersion)
+		private Entity(long versionAndId)
 		{
-			IdAndVersion = idAndVersion;
+			VersionAndId = versionAndId;
 		}
 
 		public Entity(int id, uint version)
 		{
-			IdAndVersion = (uint)id | ((long)version << 32);
+			VersionAndId = (uint)id | ((long)version << 32);
 		}
 
 		public static Entity Dead
@@ -53,7 +57,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Equals(Entity other)
 		{
-			return IdAndVersion == other.IdAndVersion;
+			return VersionAndId == other.VersionAndId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -65,7 +69,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override int GetHashCode()
 		{
-			return IdAndVersion.GetHashCode();
+			return VersionAndId.GetHashCode();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

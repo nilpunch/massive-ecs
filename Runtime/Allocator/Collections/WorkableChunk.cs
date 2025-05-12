@@ -14,6 +14,9 @@ namespace Massive
 
 		public WorkableChunk(ChunkId chunkId, Allocator<T> allocator)
 		{
+			// Assert.
+			allocator.GetChunk(chunkId);
+
 			ChunkId = chunkId;
 			_allocator = allocator;
 		}

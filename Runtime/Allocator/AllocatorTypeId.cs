@@ -11,11 +11,11 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public static class AllocatorTypeId
 	{
-		private static readonly Dictionary<Type, TypeIdInfo> s_typeInfo = new Dictionary<Type, TypeIdInfo>();
+		private static readonly Dictionary<Type, AllocatorTypeIdInfo> s_typeInfo = new Dictionary<Type, AllocatorTypeIdInfo>();
 		private static Type[] s_types = Array.Empty<Type>();
-		private static int s_typeCounter;
+		private static int s_typeCounter = -1;
 
-		public static TypeIdInfo GetInfo(Type type)
+		public static AllocatorTypeIdInfo GetInfo(Type type)
 		{
 			if (!s_typeInfo.TryGetValue(type, out var typeIdInfo))
 			{
@@ -26,7 +26,7 @@ namespace Massive
 			return typeIdInfo;
 		}
 
-		public static bool TryGetInfo(Type type, out TypeIdInfo info)
+		public static bool TryGetInfo(Type type, out AllocatorTypeIdInfo info)
 		{
 			return s_typeInfo.TryGetValue(type, out info);
 		}
@@ -56,12 +56,15 @@ namespace Massive
 			}
 		}
 
-		internal static int IncrementTypeCounter()
+		internal static ushort IncrementTypeCounter()
 		{
-			return Interlocked.Increment(ref s_typeCounter);
+			checked
+			{
+				return (ushort)Interlocked.Increment(ref s_typeCounter);
+			}
 		}
 
-		internal static void Register(Type type, TypeIdInfo info)
+		internal static void Register(Type type, AllocatorTypeIdInfo info)
 		{
 			s_typeInfo.Add(type, info);
 
@@ -78,7 +81,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public static class AllocatorTypeId<T> where T : unmanaged
 	{
-		public static readonly TypeIdInfo Info;
+		public static readonly AllocatorTypeIdInfo Info;
 
 		static AllocatorTypeId()
 		{
@@ -86,11 +89,25 @@ namespace Massive
 			var index = AllocatorTypeId.IncrementTypeCounter();
 			var typeName = type.GetFullGenericName();
 
-			var info = new TypeIdInfo(index, typeName);
+			var info = new AllocatorTypeIdInfo(index, typeName);
 
 			Info = info;
 
 			AllocatorTypeId.Register(type, info);
+		}
+	}
+
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	public readonly struct AllocatorTypeIdInfo
+	{
+		public readonly ushort Index;
+		public readonly string FullName;
+
+		public AllocatorTypeIdInfo(ushort index, string fullName)
+		{
+			Index = index;
+			FullName = fullName;
 		}
 	}
 }

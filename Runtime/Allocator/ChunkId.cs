@@ -2,36 +2,44 @@
 
 namespace Massive
 {
-	public struct ChunkId
+	public readonly struct ChunkId
 	{
 		/// <summary>
 		/// 0 counted as invalid.
+		/// [ Allocator: 16 bits | Version: 16 bits | ID: 32 bits ]
 		/// </summary>
-		public long IdAndVersion;
+		public readonly long AllocatorVersionId;
 
 		public int Id
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => (int)IdAndVersion;
+			get => (int)AllocatorVersionId;
 		}
 
 		/// <summary>
 		/// Chunks with version 0 are invalid.
 		/// </summary>
-		public uint Version
+		public ushort Version
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => (uint)(IdAndVersion >> 32);
+			get => (ushort)(AllocatorVersionId >> 32);
 		}
 
-		private ChunkId(long idAndVersion)
+		public ushort Allocator
 		{
-			IdAndVersion = idAndVersion;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => (ushort)(AllocatorVersionId >> 48);
 		}
 
-		public ChunkId(int id, uint version)
+		private ChunkId(long allocatorVersionId)
 		{
-			IdAndVersion = (uint)id | ((long)version << 32);
+			AllocatorVersionId = allocatorVersionId;
+		}
+
+		/// [ Allocator: 16 bits | Version: 16 bits | ID: 32 bits ]
+		public ChunkId(int id, ushort version, ushort allocator)
+		{
+			AllocatorVersionId = (uint)id | ((long)version << 32) | ((long)allocator << 48);
 		}
 
 		public static ChunkId Invalid
@@ -43,7 +51,7 @@ namespace Massive
 		public bool IsValid
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => IdAndVersion > 0;
+			get => AllocatorVersionId > 0;
 		}
 	}
 }

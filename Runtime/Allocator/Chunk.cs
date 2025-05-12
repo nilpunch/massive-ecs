@@ -21,7 +21,7 @@ namespace Massive
 		/// <summary>
 		/// Chunks with version 0 are invalid.
 		/// </summary>
-		[FieldOffset(8)] public uint Version;
+		[FieldOffset(8)] public ushort Version;
 
 		public static Chunk DefaultValid
 		{
@@ -29,7 +29,7 @@ namespace Massive
 			get
 			{
 				var chunk = default(Chunk);
-				chunk.Version = 1U;
+				chunk.Version = 1;
 				return chunk;
 			}
 		}

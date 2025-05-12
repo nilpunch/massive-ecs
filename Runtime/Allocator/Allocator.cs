@@ -23,8 +23,10 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public abstract class Allocator
 	{
-		public const int MaxPower = sizeof(int) * 8;
+		protected const int FreeListsLength = 1 + sizeof(int) * 8;
 		public const int EndChunkId = int.MaxValue;
+
+		public ushort AllocatorId { get; }
 
 		public Chunk[] Chunks { get; private set; } = Array.Empty<Chunk>();
 
@@ -32,12 +34,13 @@ namespace Massive
 
 		public int ChunkCount { get; private set; }
 
-		public int[] ChunkFreeLists { get; } = new int[MaxPower + 1];
+		public int[] ChunkFreeLists { get; } = new int[FreeListsLength];
 
 		public int UsedSpace { get; private set; }
 
-		public Allocator()
+		protected Allocator(ushort allocatorId)
 		{
+			AllocatorId = allocatorId;
 			Array.Fill(ChunkFreeLists, EndChunkId);
 		}
 
@@ -54,7 +57,6 @@ namespace Massive
 			}
 
 			var chunkLength = MathUtils.NextPowerOf2(minimumLength);
-
 			var freeList = MathUtils.FastLog2(chunkLength) + 1;
 
 			var chunkId = ChunkFreeLists[freeList];
@@ -68,7 +70,7 @@ namespace Massive
 				{
 					ClearData(chunk.Offset, chunkLength);
 				}
-				return new ChunkId(chunkId, chunk.Version);
+				return new ChunkId(chunkId, chunk.Version, AllocatorId);
 			}
 			else
 			{
@@ -88,13 +90,18 @@ namespace Massive
 				{
 					ClearData(offset, chunkLength);
 				}
-				return new ChunkId(chunkId, chunk.Version);
+				return new ChunkId(chunkId, chunk.Version, AllocatorId);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Resize(ChunkId chunkId, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
+			if (chunkId.Allocator != AllocatorId)
+			{
+				ChunkFromOtherAllocatorException.Throw(chunkId);
+			}
+
 			if (minimumLength < 0)
 			{
 				InvalidLengthException.Throw(minimumLength);
@@ -112,15 +119,15 @@ namespace Massive
 				ChunkUnknownException.Throw(chunkId);
 			}
 
-			var goalLength = MathUtils.NextPowerOf2(minimumLength);
+			var newLength = MathUtils.NextPowerOf2(minimumLength);
 
-			if (chunk.Length == goalLength)
+			if (chunk.Length == newLength)
 			{
 				return;
 			}
 
 			var orignialFreeList = MathUtils.FastLog2(chunk.Length) + 1;
-			var swapFreeList = MathUtils.FastLog2(goalLength) + 1;
+			var swapFreeList = MathUtils.FastLog2(newLength) + 1;
 
 			var swapId = ChunkFreeLists[swapFreeList];
 			if (swapId != EndChunkId)
@@ -129,14 +136,14 @@ namespace Massive
 				ref var swapChunk = ref Chunks[swapId];
 				ChunkFreeLists[swapFreeList] = ~swapChunk.NextFreeId;
 
-				CopyData(chunk.Offset, swapChunk.Offset, MathUtils.Min(chunk.Length, goalLength));
-				if (goalLength > chunk.Length && memoryInit == MemoryInit.Clear)
+				CopyData(chunk.Offset, swapChunk.Offset, MathUtils.Min(chunk.Length, newLength));
+				if (newLength > chunk.Length && memoryInit == MemoryInit.Clear)
 				{
-					ClearData(swapChunk.Offset + chunk.Length, goalLength - chunk.Length);
+					ClearData(swapChunk.Offset + chunk.Length, newLength - chunk.Length);
 				}
 
 				(chunk.Offset, swapChunk.Offset) = (swapChunk.Offset, chunk.Offset);
-				chunk.Length = goalLength;
+				chunk.Length = newLength;
 
 				swapChunk.NextFreeId = ~ChunkFreeLists[orignialFreeList];
 				ChunkFreeLists[orignialFreeList] = swapId;
@@ -154,23 +161,28 @@ namespace Massive
 				ChunkFreeLists[orignialFreeList] = swapId;
 
 				var offset = UsedSpace;
-				EnsureDataCapacity(offset + goalLength);
-				UsedSpace += goalLength;
+				EnsureDataCapacity(offset + newLength);
+				UsedSpace += newLength;
 
-				CopyData(chunk.Offset, offset, MathUtils.Min(chunk.Length, goalLength));
-				if (goalLength > chunk.Length && memoryInit == MemoryInit.Clear)
+				CopyData(chunk.Offset, offset, MathUtils.Min(chunk.Length, newLength));
+				if (newLength > chunk.Length && memoryInit == MemoryInit.Clear)
 				{
-					ClearData(offset + chunk.Length, goalLength - chunk.Length);
+					ClearData(offset + chunk.Length, newLength - chunk.Length);
 				}
 
 				chunk.Offset = offset;
-				chunk.Length = goalLength;
+				chunk.Length = newLength;
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free(ChunkId chunkId)
 		{
+			if (chunkId.Allocator != AllocatorId)
+			{
+				ChunkFromOtherAllocatorException.Throw(chunkId);
+			}
+
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				ChunkUnknownException.Throw(chunkId);
@@ -192,6 +204,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryFree(ChunkId chunkId)
 		{
+			if (chunkId.Allocator != AllocatorId)
+			{
+				ChunkFromOtherAllocatorException.Throw(chunkId);
+			}
+
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				return false;
@@ -215,6 +232,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref Chunk GetChunk(ChunkId chunkId)
 		{
+			if (chunkId.Allocator != AllocatorId)
+			{
+				ChunkFromOtherAllocatorException.Throw(chunkId);
+			}
+
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				ChunkUnknownException.Throw(chunkId);
@@ -233,6 +255,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAllocated(ChunkId chunkId)
 		{
+			if (chunkId.Allocator != AllocatorId)
+			{
+				ChunkFromOtherAllocatorException.Throw(chunkId);
+			}
+
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				return false;
@@ -298,6 +325,7 @@ namespace Massive
 		public override Array RawData => Data;
 
 		public Allocator(T defaultValue = default)
+			: base(AllocatorTypeId<T>.Info.Index)
 		{
 			DefaultValue = defaultValue;
 		}
@@ -335,7 +363,7 @@ namespace Massive
 			other.EnsureDataCapacity(UsedSpace);
 
 			Array.Copy(Chunks, other.Chunks, ChunkCount);
-			Array.Copy(ChunkFreeLists, other.ChunkFreeLists, MaxPower + 1);
+			Array.Copy(ChunkFreeLists, other.ChunkFreeLists, FreeListsLength);
 			Array.Copy(Data, other.Data, UsedSpace);
 
 			if (ChunkCount < other.ChunkCount)
