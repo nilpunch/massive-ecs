@@ -14,7 +14,7 @@ namespace Massive
 		{
 			throw new ChunkFromOtherAllocatorException(
 				$"{MassiveAssert.Library} Chunk with id:{chunkId.Id} v:{chunkId.Version} is from another allocator of type " +
-				$"{AllocatorTypeId.GetTypeByIndex(chunkId.Allocator).GetGenericName()}.");
+				$"{AllocatorTypeId.GetTypeByIndex(chunkId.AllocatorTypeId).GetGenericName()}.");
 		}
 	}
 }

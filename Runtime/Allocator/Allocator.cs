@@ -26,7 +26,7 @@ namespace Massive
 		protected const int FreeListsLength = 1 + sizeof(int) * 8;
 		public const int EndChunkId = int.MaxValue;
 
-		public ushort AllocatorId { get; }
+		public ushort AllocatorTypeId { get; }
 
 		public Chunk[] Chunks { get; private set; } = Array.Empty<Chunk>();
 
@@ -38,9 +38,9 @@ namespace Massive
 
 		public int UsedSpace { get; private set; }
 
-		protected Allocator(ushort allocatorId)
+		protected Allocator(ushort allocatorTypeId)
 		{
-			AllocatorId = allocatorId;
+			AllocatorTypeId = allocatorTypeId;
 			Array.Fill(ChunkFreeLists, EndChunkId);
 		}
 
@@ -70,7 +70,7 @@ namespace Massive
 				{
 					ClearData(chunk.Offset, chunkLength);
 				}
-				return new ChunkId(chunkId, chunk.Version, AllocatorId);
+				return new ChunkId(chunkId, chunk.Version, AllocatorTypeId);
 			}
 			else
 			{
@@ -90,14 +90,14 @@ namespace Massive
 				{
 					ClearData(offset, chunkLength);
 				}
-				return new ChunkId(chunkId, chunk.Version, AllocatorId);
+				return new ChunkId(chunkId, chunk.Version, AllocatorTypeId);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Resize(ChunkId chunkId, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
-			if (chunkId.Allocator != AllocatorId)
+			if (chunkId.AllocatorTypeId != AllocatorTypeId)
 			{
 				ChunkFromOtherAllocatorException.Throw(chunkId);
 			}
@@ -162,6 +162,7 @@ namespace Massive
 
 				var offset = UsedSpace;
 				EnsureDataCapacity(offset + newLength);
+				chunk = ref Chunks[chunkId.Id]; // Revalidate reference after resize.
 				UsedSpace += newLength;
 
 				CopyData(chunk.Offset, offset, MathUtils.Min(chunk.Length, newLength));
@@ -178,7 +179,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free(ChunkId chunkId)
 		{
-			if (chunkId.Allocator != AllocatorId)
+			if (chunkId.AllocatorTypeId != AllocatorTypeId)
 			{
 				ChunkFromOtherAllocatorException.Throw(chunkId);
 			}
@@ -204,7 +205,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryFree(ChunkId chunkId)
 		{
-			if (chunkId.Allocator != AllocatorId)
+			if (chunkId.AllocatorTypeId != AllocatorTypeId)
 			{
 				ChunkFromOtherAllocatorException.Throw(chunkId);
 			}
@@ -232,7 +233,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref Chunk GetChunk(ChunkId chunkId)
 		{
-			if (chunkId.Allocator != AllocatorId)
+			if (chunkId.AllocatorTypeId != AllocatorTypeId)
 			{
 				ChunkFromOtherAllocatorException.Throw(chunkId);
 			}
@@ -255,7 +256,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAllocated(ChunkId chunkId)
 		{
-			if (chunkId.Allocator != AllocatorId)
+			if (chunkId.AllocatorTypeId != AllocatorTypeId)
 			{
 				ChunkFromOtherAllocatorException.Throw(chunkId);
 			}

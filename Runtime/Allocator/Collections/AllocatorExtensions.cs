@@ -20,18 +20,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableList<T> AllocList<T>(this ListAllocator<T> allocator, int capacity = 0) where T : unmanaged
-		{
-			var count = allocator.Count.Alloc(1, MemoryInit.Uninitialized);
-			allocator.Count.Data[allocator.Count.Chunks[count.Id].Offset] = 0;
-
-			return new WorkableList<T>(
-				allocator.Items.Alloc(capacity, MemoryInit.Uninitialized),
-				count,
-				allocator);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Free<T>(this Allocator<T> allocator, VarHandle<T> handle) where T : unmanaged
 		{
 			allocator.Free(handle.ChunkId);
@@ -41,13 +29,6 @@ namespace Massive
 		public static void Free<T>(this Allocator<T> allocator, ChunkHandle<T> handle) where T : unmanaged
 		{
 			allocator.Free(handle.ChunkId);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free<T>(this ListAllocator<T> allocator, ListHandle<T> handle) where T : unmanaged
-		{
-			allocator.Items.Free(handle.Items);
-			allocator.Count.Free(handle.Count);
 		}
 	}
 }

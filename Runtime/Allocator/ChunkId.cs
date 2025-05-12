@@ -6,7 +6,7 @@ namespace Massive
 	{
 		/// <summary>
 		/// 0 counted as invalid.
-		/// [ Allocator: 16 bits | Version: 16 bits | ID: 32 bits ]
+		/// [ AllocatorTypeId: 16 bits | Version: 16 bits | ID: 32 bits ]
 		/// </summary>
 		public readonly long AllocatorVersionId;
 
@@ -25,7 +25,7 @@ namespace Massive
 			get => (ushort)(AllocatorVersionId >> 32);
 		}
 
-		public ushort Allocator
+		public ushort AllocatorTypeId
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => (ushort)(AllocatorVersionId >> 48);
@@ -36,10 +36,10 @@ namespace Massive
 			AllocatorVersionId = allocatorVersionId;
 		}
 
-		/// [ Allocator: 16 bits | Version: 16 bits | ID: 32 bits ]
-		public ChunkId(int id, ushort version, ushort allocator)
+		/// [ AllocatorTypeId: 16 bits | Version: 16 bits | ID: 32 bits ]
+		public ChunkId(int id, ushort version, ushort allocatorTypeId)
 		{
-			AllocatorVersionId = (uint)id | ((long)version << 32) | ((long)allocator << 48);
+			AllocatorVersionId = (uint)id | ((long)version << 32) | ((long)allocatorTypeId << 48);
 		}
 
 		public static ChunkId Invalid

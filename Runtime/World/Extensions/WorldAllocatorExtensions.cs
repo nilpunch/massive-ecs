@@ -10,7 +10,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Allocator<T> Allocator<T>(this World world) where T : unmanaged
 		{
-			var info = TypeId<T>.Info;
+			var info = AllocatorTypeId<T>.Info;
 			var allocatorRegistry = world.AllocatorRegistry;
 
 			allocatorRegistry.EnsureLookupAt(info.Index);

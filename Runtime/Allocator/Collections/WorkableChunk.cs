@@ -95,7 +95,11 @@ namespace Massive
 			}
 		}
 
-		public Enumerator GetEnumerator() => new Enumerator(this);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Enumerator GetEnumerator()
+		{
+			return new Enumerator(this);
+		}
 
 		public struct Enumerator
 		{
@@ -120,9 +124,17 @@ namespace Massive
 				_index = -1;
 			}
 
-			public bool MoveNext() => ++_index < _length;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool MoveNext()
+			{
+				return ++_index < _length;
+			}
 
-			public ref T Current => ref _data[_offset + _index];
+			public ref T Current
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => ref _data[_offset + _index];
+			}
 		}
 	}
 }

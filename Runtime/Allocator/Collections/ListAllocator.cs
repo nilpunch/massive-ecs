@@ -1,4 +1,5 @@
-﻿using Unity.IL2CPP.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
@@ -16,6 +17,25 @@ namespace Massive
 		{
 			Items = items;
 			Count = count;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public WorkableList<T> AllocList(int capacity = 0)
+		{
+			var count = Count.Alloc(1, MemoryInit.Uninitialized);
+			Count.Data[Count.Chunks[count.Id].Offset] = 0;
+
+			return new WorkableList<T>(
+				Items.Alloc(capacity, MemoryInit.Uninitialized),
+				count,
+				this);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Free(ListHandle<T> handle)
+		{
+			Items.Free(handle.Items);
+			Count.Free(handle.Count);
 		}
 	}
 }

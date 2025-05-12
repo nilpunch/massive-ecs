@@ -121,6 +121,10 @@ namespace Massive
 			}
 		}
 
-		public WorkableChunk<T>.Enumerator GetEnumerator() => new WorkableChunk<T>.Enumerator(_items, 0, Count);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public WorkableChunk<T>.Enumerator GetEnumerator()
+		{
+			return new WorkableChunk<T>.Enumerator(_items, 0, Count);
+		}
 	}
 }
