@@ -1,5 +1,23 @@
 # Changelog
 
+## 20.0.2-alpha - April 27, 2025
+
+## Added
+
+- `Allocator`, enabling fast rollbacks and serialization for collections inside components,
+  and allowing external tools to plug directly into the data pipeline of the `World`.
+
+## Changed
+
+- Renamed data sets based on their usage:
+  - Renamed `ResettingDataSet` to `UnmanagedDataSet`.
+  - Renamed `SwappingDataSet` to `ManagedDataSet`.
+- Renamed `Assert` to `MassiveAssert`.
+- Reworked `default(Entity)` behaviour:
+  - Entity ID is now stored without offset.
+  - Alive entities start with version 1.
+  - Entities with version 0 are now considered dead.
+
 ## 20.0.1-alpha - April 27, 2025
 
 ## Fixed
