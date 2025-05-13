@@ -21,7 +21,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Track(int id, ChunkId chunkId)
 		{
-			EnsureHeadAt(id);
+			EnsureTrackerHeadAt(id);
 
 			ref var head = ref Heads[id];
 
@@ -34,7 +34,7 @@ namespace Massive
 			else
 			{
 				index = UsedAllocations++;
-				EnsureAllocationAt(index);
+				EnsureTrackerAllocationAt(index);
 			}
 
 			ref var allocation = ref Allocations[index];
@@ -84,8 +84,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTrackerTo(AllocatorRegistry other)
 		{
-			other.EnsureAllocationAt(UsedAllocations - 1);
-			other.EnsureHeadAt(UsedHeads - 1);
+			other.EnsureTrackerAllocationAt(UsedAllocations - 1);
+			other.EnsureTrackerHeadAt(UsedHeads - 1);
 
 			Array.Copy(Allocations, other.Allocations, UsedAllocations);
 			Array.Copy(Heads, other.Heads, UsedHeads);
@@ -99,7 +99,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureHeadAt(int index)
+		public void EnsureTrackerHeadAt(int index)
 		{
 			if (index >= HeadCapacity)
 			{
@@ -112,7 +112,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureAllocationAt(int index)
+		public void EnsureTrackerAllocationAt(int index)
 		{
 			if (index >= AllocationsCapacity)
 			{
