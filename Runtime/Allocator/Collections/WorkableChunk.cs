@@ -21,6 +21,12 @@ namespace Massive
 			_allocator = allocator;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator ChunkId(WorkableChunk<T> chunk)
+		{
+			return chunk.ChunkId;
+		}
+
 		public ChunkHandle<T> Handle
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -18,17 +18,5 @@ namespace Massive
 		{
 			return new WorkableChunk<T>(allocator.Alloc(length), allocator);
 		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free<T>(this Allocator<T> allocator, VarHandle<T> handle) where T : unmanaged
-		{
-			allocator.Free(handle.ChunkId);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free<T>(this Allocator<T> allocator, ChunkHandle<T> handle) where T : unmanaged
-		{
-			allocator.Free(handle.ChunkId);
-		}
 	}
 }

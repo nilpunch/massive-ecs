@@ -22,10 +22,17 @@ namespace Massive
 			return new WorkableList<T>(Items, Count, allocator);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator ListChunkIds(ListHandle<T> handle)
+		{
+			return new ListChunkIds(handle.Items, handle.Count);
+		}
+
 		[UnityEngine.Scripting.Preserve]
 		private static void ReflectionSupportForAOT()
 		{
 			_ = new Allocator<T>();
+			_ = new Allocator<int>();
 		}
 	}
 }

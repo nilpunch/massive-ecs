@@ -274,15 +274,14 @@ namespace Massive
 				var newCapacity = MathUtils.NextPowerOf2(index + 1);
 
 				Chunks = Chunks.Resize(newCapacity);
-				if (newCapacity > ChunkCapacity)
-				{
-					Array.Fill(Chunks, Chunk.DefaultValid, ChunkCapacity, newCapacity - ChunkCapacity);
-				}
-
+				Array.Fill(Chunks, Chunk.DefaultValid, ChunkCapacity, newCapacity - ChunkCapacity);
 				ChunkCapacity = newCapacity;
 			}
 		}
 
+		/// <summary>
+		/// Sets the current state for serialization or rollback purposes.
+		/// </summary>
 		public void SetState(int chunksCount, int usedSpace)
 		{
 			ChunkCount = chunksCount;

@@ -28,10 +28,12 @@ namespace Massive
 			Config = worldConfig;
 
 			var allSets = SetRegistry.AllSets;
-			Entities.BeforeDestroyed += RemoveFromAllSets;
+			Entities.BeforeDestroyed += RemoveFromAll;
 
-			void RemoveFromAllSets(int entityId)
+			void RemoveFromAll(int entityId)
 			{
+				AllocatorRegistry.Free(entityId);
+
 				var setCount = allSets.Count;
 				var sets = allSets.Items;
 				for (var i = setCount - 1; i >= 0; i--)

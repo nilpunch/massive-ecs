@@ -20,6 +20,12 @@ namespace Massive
 			return new WorkableVar<T>(ChunkId, allocator);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator ChunkId(VarHandle<T> handle)
+		{
+			return handle.ChunkId;
+		}
+
 		[UnityEngine.Scripting.Preserve]
 		private static void ReflectionSupportForAOT()
 		{

@@ -23,6 +23,12 @@ namespace Massive
 			_count = new WorkableVar<int>(list.Count, allocator.Count);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator ListChunkIds(WorkableList<T> list)
+		{
+			return new ListChunkIds(list._items.ChunkId, list._count.ChunkId);
+		}
+
 		public ListHandle<T> Handle
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]

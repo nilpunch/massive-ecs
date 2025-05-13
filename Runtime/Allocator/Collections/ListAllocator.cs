@@ -32,10 +32,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Free(ListHandle<T> handle)
+		public void Free(ListChunkIds listChunkIds)
 		{
-			Items.Free(handle.Items);
-			Count.Free(handle.Count);
+			Items.Free(listChunkIds.Items);
+			Count.Free(listChunkIds.Count);
 		}
 	}
 }

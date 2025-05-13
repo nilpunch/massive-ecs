@@ -7,7 +7,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class AllocatorRegistry
+	public partial class AllocatorRegistry
 	{
 		private Dictionary<string, Allocator> AllocatorsByIdentifiers { get; } = new Dictionary<string, Allocator>();
 
@@ -124,6 +124,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(AllocatorRegistry other)
 		{
+			// Copy tracker.
+			CopyTrackerTo(other);
+
 			// Copy present allocators.
 			foreach (var cloner in Cloners)
 			{
