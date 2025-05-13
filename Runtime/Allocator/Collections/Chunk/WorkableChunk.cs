@@ -27,10 +27,10 @@ namespace Massive
 			return chunk.ChunkId;
 		}
 
-		public ChunkHandle<T> Handle
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator ChunkHandle<T>(WorkableChunk<T> chunk)
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ChunkHandle<T>(ChunkId);
+			return new ChunkHandle<T>(chunk.ChunkId);
 		}
 
 		public ref T this[int index]

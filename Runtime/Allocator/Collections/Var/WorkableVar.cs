@@ -26,10 +26,10 @@ namespace Massive
 			return var.ChunkId;
 		}
 
-		public VarHandle<T> Handle
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator VarHandle<T>(WorkableVar<T> chunk)
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new VarHandle<T>(ChunkId);
+			return new VarHandle<T>(chunk.ChunkId);
 		}
 
 		public ref T Value

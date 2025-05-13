@@ -31,6 +31,41 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AutoAllocator<T> AutoAllocator<T>(this World world) where T : unmanaged
+		{
+			var info = AllocatorTypeId<T>.Info;
+			var allocatorRegistry = world.AllocatorRegistry;
+
+			allocatorRegistry.EnsureLookupAt(info.Index);
+			var candidate = allocatorRegistry.Lookup[info.Index];
+
+			if (candidate != null)
+			{
+				return new AutoAllocator<T>((Allocator<T>)candidate, allocatorRegistry);
+			}
+
+			var allocator = new Allocator<T>(DefaultValueUtils.GetDefaultValueFor<T>());
+			var cloner = new AllocatorCloner<T>(allocator);
+
+			allocatorRegistry.Insert(info.FullName, allocator, cloner);
+			allocatorRegistry.Lookup[info.Index] = allocator;
+
+			return new AutoAllocator<T>(allocator, allocatorRegistry);
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static ListAllocator<T> ListAllocator<T>(this World world) where T : unmanaged
+		{
+			return new ListAllocator<T>(world.Allocator<T>(), world.Allocator<int>());
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AutoListAllocator<T> AutoListAllocator<T>(this World world) where T : unmanaged
+		{
+			return new AutoListAllocator<T>(world.Allocator<T>(), world.Allocator<int>(), world.AllocatorRegistry);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void AutoFree(this World world, int id, ChunkId chunkId)
 		{
 			world.AllocatorRegistry.Track(id, chunkId);
@@ -41,12 +76,6 @@ namespace Massive
 		{
 			world.AllocatorRegistry.Track(id, listChunkIds.Items);
 			world.AllocatorRegistry.Track(id, listChunkIds.Count);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ListAllocator<T> ListAllocator<T>(this World world) where T : unmanaged
-		{
-			return new ListAllocator<T>(world.Allocator<T>(), world.Allocator<int>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -67,6 +96,12 @@ namespace Massive
 		public static WorkableList<T> AllocList<T>(this World world, int capacity = 0) where T : unmanaged
 		{
 			return world.ListAllocator<T>().AllocList();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static WorkableList<T> AllocAutoList<T>(this World world, int id, int capacity = 0) where T : unmanaged
+		{
+			return world.AutoListAllocator<T>().AllocAutoList(id, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

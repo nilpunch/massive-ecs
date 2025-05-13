@@ -11,6 +11,12 @@ namespace Massive
 		private readonly WorkableChunk<T> _items;
 		private readonly WorkableVar<int> _count;
 
+		public WorkableList(ChunkId items, ChunkId count, Allocator<T> itemsAllocator, Allocator<int> countAllocator)
+		{
+			_items = new WorkableChunk<T>(items, itemsAllocator);
+			_count = new WorkableVar<int>(count, countAllocator);
+		}
+
 		public WorkableList(ChunkId items, ChunkId count, ListAllocator<T> allocator)
 		{
 			_items = new WorkableChunk<T>(items, allocator.Items);
@@ -29,10 +35,10 @@ namespace Massive
 			return new ListChunkIds(list._items.ChunkId, list._count.ChunkId);
 		}
 
-		public ListHandle<T> Handle
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator ListHandle<T>(WorkableList<T> list)
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ListHandle<T>(_items.ChunkId, _count.ChunkId);
+			return new ListHandle<T>(list._items.ChunkId, list._count.ChunkId);
 		}
 
 		public ref T this[int index]

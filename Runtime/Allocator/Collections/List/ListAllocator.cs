@@ -22,13 +22,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableList<T> AllocList(int capacity = 0)
 		{
+			var items = Items.Alloc(capacity, MemoryInit.Uninitialized);
+
 			var count = Count.Alloc(1, MemoryInit.Uninitialized);
 			Count.Data[Count.Chunks[count.Id].Offset] = 0;
 
-			return new WorkableList<T>(
-				Items.Alloc(capacity, MemoryInit.Uninitialized),
-				count,
-				this);
+			return new WorkableList<T>(items, count, Items, Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

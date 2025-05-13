@@ -6,9 +6,12 @@
 
 		public int Health;
 
-		public Character(int maxHealth)
+		public ListHandle<Entity> Bullets;
+
+		public Character(int maxHealth, ListHandle<Entity> bullets)
 		{
 			MaxHealth = maxHealth;
+			Bullets = bullets;
 			Health = MaxHealth;
 		}
 	}

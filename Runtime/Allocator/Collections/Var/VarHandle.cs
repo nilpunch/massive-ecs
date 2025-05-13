@@ -5,9 +5,9 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public struct VarHandle<T> where T : unmanaged
+	public readonly struct VarHandle<T> where T : unmanaged
 	{
-		public ChunkId ChunkId;
+		public readonly ChunkId ChunkId;
 
 		public VarHandle(ChunkId chunkId)
 		{
@@ -15,9 +15,21 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public WorkableVar<T> In(World world)
+		{
+			return new WorkableVar<T>(ChunkId, (Allocator<T>)world.AllocatorRegistry.Lookup[ChunkId.AllocatorTypeId]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableVar<T> In(Allocator<T> allocator)
 		{
 			return new WorkableVar<T>(ChunkId, allocator);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public WorkableVar<T> In(AutoAllocator<T> allocator)
+		{
+			return new WorkableVar<T>(ChunkId, allocator.Allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

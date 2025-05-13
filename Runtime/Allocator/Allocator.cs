@@ -29,10 +29,6 @@ namespace Massive
 			Array.Fill(ChunkFreeLists, EndChunkId);
 		}
 
-		public abstract Type ElementType { get; }
-
-		public abstract Array RawData { get; }
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ChunkId Alloc(int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
@@ -259,14 +255,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Reset()
 		{
-			UsedSpace = 0;
-
+			Array.Fill(ChunkFreeLists, EndChunkId);
 			Array.Fill(Chunks, Chunk.DefaultValid, 0, ChunkCount);
 
+			UsedSpace = 0;
 			ChunkCount = 0;
-			Array.Fill(ChunkFreeLists, EndChunkId);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureChunkAt(int index)
 		{
 			if (index >= ChunkCapacity)
@@ -282,11 +278,16 @@ namespace Massive
 		/// <summary>
 		/// Sets the current state for serialization or rollback purposes.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetState(int chunksCount, int usedSpace)
 		{
 			ChunkCount = chunksCount;
 			UsedSpace = usedSpace;
 		}
+
+		public abstract Type ElementType { get; }
+
+		public abstract Array RawData { get; }
 
 		public abstract void EnsureDataCapacity(int capacity);
 
@@ -304,10 +305,6 @@ namespace Massive
 		public T[] Data { get; private set; } = Array.Empty<T>();
 
 		private int DataCapacity { get; set; }
-
-		public override Type ElementType => typeof(T);
-
-		public override Array RawData => Data;
 
 		public Allocator(T defaultValue = default)
 			: base(AllocatorTypeId<T>.Info.Index)
@@ -333,6 +330,10 @@ namespace Massive
 		{
 			Array.Fill(Data, DefaultValue, start, length);
 		}
+
+		public override Type ElementType => typeof(T);
+
+		public override Array RawData => Data;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Allocator<T> Clone()

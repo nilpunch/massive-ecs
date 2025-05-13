@@ -8,15 +8,17 @@ namespace Massive
 	public static class AllocatorExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableVar<T> AllocVar<T>(this Allocator<T> allocator) where T : unmanaged
+		public static WorkableVar<T> AllocVar<T>(this Allocator<T> allocator, T value = default) where T : unmanaged
 		{
-			return new WorkableVar<T>(allocator.Alloc(1), allocator);
+			var chunkId = allocator.Alloc(1);
+			allocator.Data[allocator.Chunks[chunkId.Id].Offset] = value;
+			return new WorkableVar<T>(chunkId, allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableChunk<T> AllocChunk<T>(this Allocator<T> allocator, int length = 0) where T : unmanaged
+		public static WorkableChunk<T> AllocChunk<T>(this Allocator<T> allocator, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
-			return new WorkableChunk<T>(allocator.Alloc(length), allocator);
+			return new WorkableChunk<T>(allocator.Alloc(minimumLength, memoryInit), allocator);
 		}
 	}
 }

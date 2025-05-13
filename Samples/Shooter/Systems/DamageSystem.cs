@@ -31,25 +31,23 @@
 						if (character.Health <= 0)
 						{
 							world.Set(characterId, new Dead());
-							DestroyCharacterBullets(characterId);
+							DestroyCharacterBullets(ref character);
 							break;
 						}
 					}
 				}
 			}
 
-			void DestroyCharacterBullets(int characterId)
+			void DestroyCharacterBullets(ref Character character)
 			{
-				world.View().Exclude<Dead>().ForEach((characterId, world),
-					static (int bulletId, ref Bullet bullet, (int CharacterId, World World) args) =>
-					{
-						var (characterId, world) = args;
+				var characterBullets = character.Bullets.In(world);
 
-						if (bullet.Owner == world.GetEntity(characterId))
-						{
-							world.Add<Dead>(bulletId);
-						}
-					});
+				foreach (var bullet in characterBullets)
+				{
+					world.Add<Dead>(bullet);
+				}
+
+				characterBullets.Clear();
 			}
 
 			bool IsCollided(int firstId, int secondId)

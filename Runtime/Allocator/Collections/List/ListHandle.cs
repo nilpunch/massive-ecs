@@ -5,10 +5,10 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public struct ListHandle<T> where T : unmanaged
+	public readonly struct ListHandle<T> where T : unmanaged
 	{
-		public ChunkId Items;
-		public ChunkId Count;
+		public readonly ChunkId Items;
+		public readonly ChunkId Count;
 
 		public ListHandle(ChunkId items, ChunkId count)
 		{
@@ -17,9 +17,23 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public WorkableList<T> In(World world)
+		{
+			return new WorkableList<T>(Items, Count,
+				(Allocator<T>)world.AllocatorRegistry.Lookup[Items.AllocatorTypeId],
+				(Allocator<int>)world.AllocatorRegistry.Lookup[Count.AllocatorTypeId]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableList<T> In(ListAllocator<T> allocator)
 		{
-			return new WorkableList<T>(Items, Count, allocator);
+			return new WorkableList<T>(Items, Count, allocator.Items, allocator.Count);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public WorkableList<T> In(AutoListAllocator<T> allocator)
+		{
+			return new WorkableList<T>(Items, Count, allocator.Items, allocator.Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
