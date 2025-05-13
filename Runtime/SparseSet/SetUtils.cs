@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -124,13 +125,15 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int GetUnorderedHashCode(SparseSet[] sets, SetRegistry setRegistry)
+		public static int GetOrderedHashCode(SparseSet[] sets, SetRegistry setRegistry)
 		{
-			var hash = 0;
+			var hash = 17;
 			for (var i = 0; i < sets.Length; i++)
 			{
-				hash ^= setRegistry.IndexOf(sets[i]);
+				var index = setRegistry.IndexOf(sets[i]) + 1; // Avoid zero.
+				hash = unchecked(hash * 31 + index);
 			}
+
 			return hash;
 		}
 	}

@@ -54,8 +54,12 @@ namespace Massive
 			MassiveAssert.ContainsDuplicates(included, "Included contains duplicate sets!");
 			MassiveAssert.ContainsDuplicates(excluded, "Excluded contains duplicate sets!");
 
-			var includeCode = SetUtils.GetUnorderedHashCode(included, _setRegistry);
-			var excludeCode = SetUtils.GetUnorderedHashCode(excluded, _setRegistry);
+			SparseSetComparer.Registry = _setRegistry;
+			Array.Sort(included, SparseSetComparer.ByRegistryIndex);
+			Array.Sort(excluded, SparseSetComparer.ByRegistryIndex);
+
+			var includeCode = SetUtils.GetOrderedHashCode(included, _setRegistry);
+			var excludeCode = SetUtils.GetOrderedHashCode(excluded, _setRegistry);
 			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
 
 			if (_codeLookup.TryGetValue(fullCode, out var filter))
@@ -68,6 +72,18 @@ namespace Massive
 				: Empty;
 			_codeLookup.Add(fullCode, filter);
 			return filter;
+		}
+
+		private static class SparseSetComparer
+		{
+			public static SetRegistry Registry;
+
+			public static readonly Comparison<SparseSet> ByRegistryIndex = Compare;
+
+			private static int Compare(SparseSet a, SparseSet b)
+			{
+				return Registry.IndexOf(a).CompareTo(Registry.IndexOf(b));
+			}
 		}
 	}
 }
