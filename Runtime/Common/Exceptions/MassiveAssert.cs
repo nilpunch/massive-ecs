@@ -15,67 +15,6 @@ namespace Massive
 
 		[Conditional(Symbol)]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void That(bool condition, string message)
-		{
-			if (!condition)
-			{
-				throw new Exception(message);
-			}
-		}
-
-		[Conditional(Symbol)]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void NonNegative(int value)
-		{
-			if (value < 0)
-			{
-				throw new Exception($"{Library} Provided argument:{value} is negative.");
-			}
-		}
-
-		[Conditional(Symbol)]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void PowerOfTwo(int value)
-		{
-			if (!MathUtils.IsPowerOfTwo(value))
-			{
-				throw new Exception($"{Library} Provided argument:{value} is not power of two.");
-			}
-		}
-
-		[Conditional(Symbol)]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void TypeHasData<T>(World world, string suggestion)
-		{
-			if (!(world.SparseSet<T>() is DataSet<T>))
-			{
-				throw new Exception($"{Library} The type {typeof(T).GetFullGenericName()} has no associated data! " +
-					$"{suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
-			}
-		}
-
-		[Conditional(Symbol)]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void TypeHasData(SparseSet sparseSet, Type type, string suggestion)
-		{
-			if (!(sparseSet is IDataSet))
-			{
-				throw new Exception($"{Library} The type {type.GetFullGenericName()} has no associated data! {suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
-			}
-		}
-
-		[Conditional(Symbol)]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Has(SparseSet set, int id)
-		{
-			if (!set.Has(id))
-			{
-				throw new Exception($"{Library} The id:{id} is not added.");
-			}
-		}
-
-		[Conditional(Symbol)]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void HasPacked(SparseSet set, int index)
 		{
 			if (!set.HasPacked(index))

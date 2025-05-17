@@ -32,10 +32,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ChunkId Alloc(int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
-			if (minimumLength < 0)
-			{
-				InvalidLengthException.Throw(minimumLength);
-			}
+			NegativeArgumentException.ThrowIfNegative(minimumLength);
 
 			var chunkLength = MathUtils.NextPowerOf2(minimumLength);
 			var freeList = MathUtils.FastLog2(chunkLength) + 1;
@@ -78,27 +75,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Resize(ChunkId chunkId, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
-			if (chunkId.AllocatorTypeId != AllocatorTypeId)
-			{
-				ChunkFromOtherAllocatorException.Throw(chunkId);
-			}
-
-			if (minimumLength < 0)
-			{
-				InvalidLengthException.Throw(minimumLength);
-			}
-
-			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
-			{
-				ChunkUnknownException.Throw(chunkId);
-			}
+			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
+			ChunkNotFoundException.ThrowIfNotInCountRange(this, chunkId);
 
 			ref var chunk = ref Chunks[chunkId.Id];
 
-			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
-			{
-				ChunkUnknownException.Throw(chunkId);
-			}
+			ChunkNotFoundException.ThrowIfDeallocated(chunk, chunkId);
 
 			var newLength = MathUtils.NextPowerOf2(minimumLength);
 
@@ -160,22 +142,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free(ChunkId chunkId)
 		{
-			if (chunkId.AllocatorTypeId != AllocatorTypeId)
-			{
-				ChunkFromOtherAllocatorException.Throw(chunkId);
-			}
-
-			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
-			{
-				ChunkUnknownException.Throw(chunkId);
-			}
+			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
+			ChunkNotFoundException.ThrowIfNotInCountRange(this, chunkId);
 
 			ref var chunk = ref Chunks[chunkId.Id];
 
-			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
-			{
-				ChunkUnknownException.Throw(chunkId);
-			}
+			ChunkNotFoundException.ThrowIfDeallocated(chunk, chunkId);
 
 			var freeList = MathUtils.FastLog2(chunk.Length) + 1;
 			chunk.NextFreeId = ~ChunkFreeLists[freeList];
@@ -186,10 +158,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryFree(ChunkId chunkId)
 		{
-			if (chunkId.AllocatorTypeId != AllocatorTypeId)
-			{
-				ChunkFromOtherAllocatorException.Throw(chunkId);
-			}
+			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
 
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
@@ -214,22 +183,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref Chunk GetChunk(ChunkId chunkId)
 		{
-			if (chunkId.AllocatorTypeId != AllocatorTypeId)
-			{
-				ChunkFromOtherAllocatorException.Throw(chunkId);
-			}
-
-			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
-			{
-				ChunkUnknownException.Throw(chunkId);
-			}
+			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
+			ChunkNotFoundException.ThrowIfNotInCountRange(this, chunkId);
 
 			ref var chunk = ref Chunks[chunkId.Id];
 
-			if (chunk.Length < 0 || chunk.Version != chunkId.Version)
-			{
-				ChunkUnknownException.Throw(chunkId);
-			}
+			ChunkNotFoundException.ThrowIfDeallocated(chunk, chunkId);
 
 			return ref chunk;
 		}
@@ -237,10 +196,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAllocated(ChunkId chunkId)
 		{
-			if (chunkId.AllocatorTypeId != AllocatorTypeId)
-			{
-				ChunkFromOtherAllocatorException.Throw(chunkId);
-			}
+			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
 
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{

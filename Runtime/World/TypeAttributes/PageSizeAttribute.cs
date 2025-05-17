@@ -3,7 +3,7 @@ using System;
 namespace Massive
 {
 	/// <summary>
-	/// Overrides page size for the data set of this type.
+	/// Overrides page size for the data set of this component.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface | AttributeTargets.Enum | AttributeTargets.Delegate)]
 	public class PageSizeAttribute : Attribute

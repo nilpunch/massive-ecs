@@ -102,7 +102,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Add(int id)
 		{
-			MassiveAssert.NonNegative(id);
+			NegativeArgumentException.ThrowIfNegative(id);
 
 			EnsureSparseAt(id);
 
@@ -150,7 +150,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(int id)
 		{
-			MassiveAssert.NonNegative(id);
+			NegativeArgumentException.ThrowIfNegative(id);
 
 			// If ID is not added, nothing to be done.
 			if (id >= SparseCapacity || Sparse[id] == Constants.InvalidId)

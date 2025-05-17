@@ -2,6 +2,7 @@
 #define MASSIVE_ASSERT
 #endif
 
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -44,12 +45,12 @@ namespace Massive
 
 			if (candidate != null)
 			{
-				MassiveAssert.TypeHasData(candidate, typeof(T), SuggestionMessage.UseSparseSetMethodWithEmptyTypes);
+				EmptyComponentException.ThrowIfHasNoData(candidate, typeof(T), DataAccessContext.WorldDataSet);
 				return (DataSet<T>)candidate;
 			}
 
 			var (set, cloner) = sets.SetFactory.CreateAppropriateSet<T>();
-			MassiveAssert.TypeHasData(set, typeof(T), SuggestionMessage.UseSparseSetMethodWithEmptyTypes);
+			EmptyComponentException.ThrowIfHasNoData(set, typeof(T), DataAccessContext.WorldDataSet);
 
 			sets.Insert(info.FullName, set, cloner);
 			sets.Lookup[info.Index] = set;

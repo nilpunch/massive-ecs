@@ -34,7 +34,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			MassiveAssert.Has(this, id);
+			InvalidGetOperationException.ThrowIfNotAdded(this, id);
 
 			return ref Data[Sparse[id]];
 		}
@@ -45,7 +45,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set(int id, T data)
 		{
-			MassiveAssert.NonNegative(id);
+			NegativeArgumentException.ThrowIfNegative(id);
 
 			EnsureSparseAt(id);
 

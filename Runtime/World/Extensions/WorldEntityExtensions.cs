@@ -162,14 +162,18 @@ namespace Massive
 		/// </summary>
 		/// <remarks>
 		/// Throws if the entity is not alive,
-		/// or if the type has no associated data set.
+		/// or if the component has no associated data set.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this World world, Entity entity)
 		{
-			MassiveAssert.IsAlive(world, entity);
+			InvalidGetOperationException.ThrowIfEntityDead(world.Entities, entity);
 
-			var dataSet = world.DataSet<T>();
+			var sparseSet = world.SparseSet<T>();
+
+			EmptyComponentException.ThrowIfHasNoData(sparseSet, typeof(T), DataAccessContext.WorldGet);
+
+			var dataSet = (DataSet<T>)sparseSet;
 
 			return ref dataSet.Get(entity.Id);
 		}

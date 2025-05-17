@@ -51,7 +51,7 @@ namespace Massive
 		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			MassiveAssert.TypeHasData<T>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			EmptyComponentException.ThrowIfHasNoData<T>(World, DataAccessContext.View);
 
 			var dataSet = World.DataSet<T>();
 
@@ -88,8 +88,8 @@ namespace Massive
 		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			MassiveAssert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			MassiveAssert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			EmptyComponentException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			EmptyComponentException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
@@ -158,9 +158,9 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			MassiveAssert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			MassiveAssert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			MassiveAssert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			EmptyComponentException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			EmptyComponentException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			EmptyComponentException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
@@ -259,10 +259,10 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			MassiveAssert.TypeHasData<T1>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			MassiveAssert.TypeHasData<T2>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			MassiveAssert.TypeHasData<T3>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
-			MassiveAssert.TypeHasData<T4>(World, SuggestionMessage.DontUseViewsWithEmptyTypes);
+			EmptyComponentException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			EmptyComponentException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			EmptyComponentException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
+			EmptyComponentException.ThrowIfHasNoData<T4>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();

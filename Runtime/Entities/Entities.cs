@@ -134,7 +134,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Destroy(int id)
 		{
-			MassiveAssert.NonNegative(id);
+			NegativeArgumentException.ThrowIfNegative(id);
 
 			// If entity is not alive, nothing to be done.
 			if (id >= UsedIds || Sparse[id] >= Count || Packed[Sparse[id]] != id)
@@ -168,7 +168,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CreateMany(int amount)
 		{
-			MassiveAssert.NonNegative(amount);
+			NegativeArgumentException.ThrowIfNegative(amount);
 
 			var needToCreate = amount;
 			EnsureCapacityAt(needToCreate + Count);
