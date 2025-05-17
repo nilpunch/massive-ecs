@@ -33,7 +33,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void CopyTo(this World world, World other)
 		{
-			MassiveAssert.CompatibleConfigs(world, other);
+			IncompatibleConfigsException.ThrowIfIncompatible(world, other);
 
 			// Entities.
 			world.Entities.CopyTo(other.Entities);

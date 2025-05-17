@@ -128,18 +128,24 @@ namespace Massive
 			return entity;
 		}
 
+		/// <summary>
+		/// Destroys any alive entity with this ID. If the entity is already not alive, no action is performed.
+		/// </summary>
+		/// <returns>
+		/// True if the entity was destroyed; false if it was already not alive.
+		/// </returns>
 		/// <remarks>
 		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Destroy(int id)
+		public bool Destroy(int id)
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
 			// If entity is not alive, nothing to be done.
 			if (id >= UsedIds || Sparse[id] >= Count || Packed[Sparse[id]] != id)
 			{
-				return;
+				return false;
 			}
 
 			BeforeDestroyed?.Invoke(id);
@@ -160,6 +166,8 @@ namespace Massive
 				MathUtils.IncrementWrapTo1(ref Versions[index]);
 				NextHoleId = id;
 			}
+
+			return true;
 		}
 
 		/// <remarks>
@@ -246,7 +254,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity GetEntity(int id)
 		{
-			MassiveAssert.IsAlive(this, id);
+			EntityNotAliveException.ThrowIfEntityDead(this, id);
 
 			return new Entity(id, Versions[Sparse[id]]);
 		}

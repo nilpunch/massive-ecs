@@ -120,7 +120,7 @@ namespace Massive
 				NextHole = ~Packed[index];
 				PrepareDataAt(index);
 			}
-			else // if (Packing == Packing.Continuous || Packing == Packing.WithPersistentHoles)
+			else // Packing.Continuous || Packing.WithPersistentHoles
 			{
 				// Append to the end.
 				index = Count;
@@ -158,16 +158,7 @@ namespace Massive
 				return false;
 			}
 
-			if (BeforeRemoved is not null)
-			{
-				BeforeRemoved.Invoke(id);
-
-				// Check if ID was removed in a callback.
-				if (Sparse[id] == Constants.InvalidId)
-				{
-					return true;
-				}
-			}
+			BeforeRemoved?.Invoke(id);
 
 			var index = Sparse[id];
 
@@ -177,7 +168,7 @@ namespace Massive
 				Count -= 1;
 				MoveAt(Count, index);
 			}
-			else // if (Packing == Packing.WithHoles || Packing == Packing.WithPersistentHoles)
+			else // Packing.WithHoles || Packing.WithPersistentHoles
 			{
 				// Create a hole.
 				Packed[index] = ~NextHole;
@@ -359,8 +350,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SwapAt(int first, int second)
 		{
-			MassiveAssert.HasPacked(this, first);
-			MassiveAssert.HasPacked(this, second);
+			InvalidIndexException.ThrowIfNotPacked(this, first);
+			InvalidIndexException.ThrowIfNotPacked(this, second);
 
 			var firstId = Packed[first];
 			var secondId = Packed[second];

@@ -130,7 +130,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Sets other)
 		{
-			MassiveAssert.CompatibleConfigs(SetFactory, other.SetFactory);
+			IncompatibleConfigsException.ThrowIfIncompatible(SetFactory, other.SetFactory);
 
 			// Copy present sets.
 			foreach (var cloner in Cloners)

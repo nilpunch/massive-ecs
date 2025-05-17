@@ -68,11 +68,11 @@ namespace Massive
 		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			EmptyComponentException.ThrowIfHasNoData<T>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T>(World, DataAccessContext.View);
 
 			var dataSet = World.DataSet<T>();
 
-			ThrowIfCantInclude(dataSet);
+			ConflictingFilterException.ThrowIfCantInclude<T>(Filter, dataSet);
 
 			var data = dataSet.Data;
 
@@ -132,14 +132,14 @@ namespace Massive
 		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			EmptyComponentException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
 
-			ThrowIfCantInclude(dataSet1);
-			ThrowIfCantInclude(dataSet2);
+			ConflictingFilterException.ThrowIfCantInclude<T1>(Filter, dataSet1);
+			ConflictingFilterException.ThrowIfCantInclude<T2>(Filter, dataSet2);
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -229,17 +229,17 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			EmptyComponentException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
 			var dataSet3 = World.DataSet<T3>();
 
-			ThrowIfCantInclude(dataSet1);
-			ThrowIfCantInclude(dataSet2);
-			ThrowIfCantInclude(dataSet3);
+			ConflictingFilterException.ThrowIfCantInclude<T1>(Filter, dataSet1);
+			ConflictingFilterException.ThrowIfCantInclude<T2>(Filter, dataSet2);
+			ConflictingFilterException.ThrowIfCantInclude<T3>(Filter, dataSet3);
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -362,20 +362,20 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			EmptyComponentException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T4>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T4>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
 			var dataSet3 = World.DataSet<T3>();
 			var dataSet4 = World.DataSet<T4>();
 
-			ThrowIfCantInclude(dataSet1);
-			ThrowIfCantInclude(dataSet2);
-			ThrowIfCantInclude(dataSet3);
-			ThrowIfCantInclude(dataSet4);
+			ConflictingFilterException.ThrowIfCantInclude<T1>(Filter, dataSet1);
+			ConflictingFilterException.ThrowIfCantInclude<T2>(Filter, dataSet2);
+			ConflictingFilterException.ThrowIfCantInclude<T3>(Filter, dataSet3);
+			ConflictingFilterException.ThrowIfCantInclude<T4>(Filter, dataSet4);
 
 			var data1 = dataSet1.Data;
 			var data2 = dataSet2.Data;
@@ -539,15 +539,6 @@ namespace Massive
 			{
 				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
 				return new PackedFilterEnumerator(minimalSet, Filter.ReduceIncluded(minimalSet), PackingWhenIterating);
-			}
-		}
-
-		[Conditional(MassiveAssert.Symbol)]
-		private void ThrowIfCantInclude(SparseSet sparseSet)
-		{
-			if (Filter.Excluded.Contains(sparseSet))
-			{
-				throw new Exception($"Conflicting exclude filter and {sparseSet.GetType().GetGenericName()}!");
 			}
 		}
 	}

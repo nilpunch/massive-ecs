@@ -16,10 +16,7 @@ namespace Massive
 
 		public PagedArray(int pageSize = Constants.DefaultPageSize)
 		{
-			if (!MathUtils.IsPowerOfTwo(pageSize))
-			{
-				throw new Exception($"{MassiveAssert.Library} Page size must be power of two! Type:{typeof(PagedArray<T>).GetGenericName()}.");
-			}
+			InvalidPageSizeException.ThrowIfNotPowerOf2<T>(pageSize);
 
 			PageSize = pageSize;
 			PageSizePower = MathUtils.FastLog2(pageSize);

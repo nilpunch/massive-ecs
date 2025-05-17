@@ -25,7 +25,7 @@ namespace Massive
 		{
 			if (!entities.IsAlive(entity))
 			{
-				throw new InvalidGetOperationException($"You are trying to get component from the dead entity {entity}.");
+				throw new InvalidGetOperationException($"You are trying to get a component from the dead entity {entity}.");
 			}
 		}
 
@@ -35,7 +35,7 @@ namespace Massive
 		{
 			if (!entities.IsAlive(entityId))
 			{
-				throw new InvalidGetOperationException($"You are trying to get component from the dead entity with id:{entityId}.");
+				throw new InvalidGetOperationException($"You are trying to get a component from the dead entity with id:{entityId}.");
 			}
 		}
 	}

@@ -51,7 +51,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this World world, int id)
 		{
-			MassiveAssert.IsAlive(world, id);
+			InvalidCloneOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			var cloneId = world.Create();
 
@@ -76,15 +76,13 @@ namespace Massive
 		/// <summary>
 		/// Destroys any alive entity with this ID.
 		/// </summary>
-		/// <remarks>
-		/// Throws if the entity with this ID is not alive.
-		/// </remarks>
+		/// <returns>
+		/// True if the entity was destroyed; false if it was already not alive.
+		/// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Destroy(this World world, int id)
+		public static bool Destroy(this World world, int id)
 		{
-			MassiveAssert.IsAlive(world, id);
-
-			world.Entities.Destroy(id);
+			return world.Entities.Destroy(id);
 		}
 
 		/// <summary>
@@ -100,19 +98,21 @@ namespace Massive
 		/// Adds a component to the entity with this ID and sets its data.
 		/// </summary>
 		/// <remarks>
-		/// Throws if the entity with this ID is not alive.
+		/// Throws if the entity with this ID is not alive,
+		/// or if the component has no associated data set.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set<T>(this World world, int id, T data)
 		{
-			MassiveAssert.IsAlive(world, id);
+			InvalidSetOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var set = world.SparseSet<T>();
-			set.Add(id);
-			if (set is DataSet<T> dataSet)
-			{
-				dataSet.Get(id) = data;
-			}
+			var sparseSet = world.SparseSet<T>();
+
+			NoDataException.ThrowIfHasNoData(sparseSet, typeof(T), DataAccessContext.WorldSet);
+
+			var dataSet = (DataSet<T>)sparseSet;
+
+			dataSet.Set(id, data);
 		}
 
 		/// <summary>
@@ -127,7 +127,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Add<T>(this World world, int id)
 		{
-			MassiveAssert.IsAlive(world, id);
+			InvalidAddOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			return world.SparseSet<T>().Add(id);
 		}
@@ -144,7 +144,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Remove<T>(this World world, int id)
 		{
-			MassiveAssert.IsAlive(world, id);
+			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			return world.SparseSet<T>().Remove(id);
 		}
@@ -158,7 +158,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this World world, int id)
 		{
-			MassiveAssert.IsAlive(world, id);
+			InvalidHasOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			return world.SparseSet<T>().Has(id);
 		}
@@ -177,7 +177,7 @@ namespace Massive
 
 			var sparseSet = world.SparseSet<T>();
 
-			EmptyComponentException.ThrowIfHasNoData(sparseSet, typeof(T), DataAccessContext.WorldGet);
+			NoDataException.ThrowIfHasNoData(sparseSet, typeof(T), DataAccessContext.WorldGet);
 
 			var dataSet = (DataSet<T>)sparseSet;
 

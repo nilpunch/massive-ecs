@@ -28,7 +28,7 @@ namespace Massive
 
 		public Filter(SparseSet[] included, SparseSet[] excluded)
 		{
-			MassiveAssert.NoConflictsInFilter(included, excluded);
+			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
 
 			Included = included;
 			Excluded = excluded;

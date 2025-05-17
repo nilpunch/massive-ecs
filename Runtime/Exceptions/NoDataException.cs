@@ -9,11 +9,12 @@ namespace Massive
 		View,
 		WorldDataSet,
 		WorldGet,
+		WorldSet,
 	}
 
-	public class EmptyComponentException : MassiveException
+	public class NoDataException : MassiveException
 	{
-		private EmptyComponentException(string message) : base(message)
+		private NoDataException(string message) : base(message)
 		{
 		}
 
@@ -28,10 +29,11 @@ namespace Massive
 					DataAccessContext.View => "Don't use empty components as generic arguments in ForEach(ref T ...) methods",
 					DataAccessContext.WorldDataSet => "Use " + nameof(WorldSetExtensions.SparseSet) + "<T>() method for empty components instead",
 					DataAccessContext.WorldGet => "Don't use" + nameof(WorldIdExtensions.Get) + "<T>() method with empty components",
+					DataAccessContext.WorldSet => "Don't use" + nameof(WorldIdExtensions.Set) + "<T>() method with empty components",
 					_ => throw new ArgumentOutOfRangeException(nameof(context), context, null)
 				};
 
-				throw new EmptyComponentException($"The component {typeof(T).GetFullGenericName()} has no associated data! " +
+				throw new NoDataException($"The component {typeof(T).GetFullGenericName()} has no associated data! " +
 					$"{suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
 			}
 		}
@@ -47,10 +49,11 @@ namespace Massive
 					DataAccessContext.View => "Don't use empty components as generic arguments in ForEach(ref T ...) methods",
 					DataAccessContext.WorldDataSet => "Use " + nameof(WorldSetExtensions.SparseSet) + "<T>() method for empty components instead",
 					DataAccessContext.WorldGet => "Don't use" + nameof(WorldIdExtensions.Get) + "<T>() method with empty components",
+					DataAccessContext.WorldSet => "Don't use" + nameof(WorldIdExtensions.Set) + "<T>() method with empty components",
 					_ => throw new ArgumentOutOfRangeException(nameof(context), context, null)
 				};
 
-				throw new EmptyComponentException($"The component {type.GetFullGenericName()} has no associated data! " +
+				throw new NoDataException($"The component {type.GetFullGenericName()} has no associated data! " +
 					$"{suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
 			}
 		}

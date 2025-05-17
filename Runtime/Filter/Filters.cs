@@ -50,9 +50,9 @@ namespace Massive
 			included ??= Array.Empty<SparseSet>();
 			excluded ??= Array.Empty<SparseSet>();
 
-			MassiveAssert.NoConflictsInFilter(included, excluded);
-			MassiveAssert.ContainsDuplicates(included, "Included contains duplicate sets!");
-			MassiveAssert.ContainsDuplicates(excluded, "Excluded contains duplicate sets!");
+			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
+			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Include);
+			ConflictingFilterException.ThrowIfHasDuplicates(excluded, ConflictingFilterException.FilterType.Exclude);
 
 			SparseSetComparer.Registry = _sets;
 			Array.Sort(included, SparseSetComparer.ByRegistryIndex);

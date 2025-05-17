@@ -63,7 +63,7 @@ namespace Massive
 				index = NextHole;
 				NextHole = ~Packed[index];
 			}
-			else // if (Packing == Packing.Continuous || Packing == Packing.WithPersistentHoles)
+			else // Packing.Continuous || Packing.WithPersistentHoles
 			{
 				// Append to the end.
 				index = Count;
@@ -93,8 +93,8 @@ namespace Massive
 		/// </summary>
 		public override void SwapDataAt(int first, int second)
 		{
-			MassiveAssert.HasPacked(this, first);
-			MassiveAssert.HasPacked(this, second);
+			InvalidIndexException.ThrowIfNotPacked(this, first);
+			InvalidIndexException.ThrowIfNotPacked(this, second);
 
 			Data.Swap(first, second);
 		}
@@ -104,8 +104,8 @@ namespace Massive
 		/// </summary>
 		public override void CopyDataAt(int source, int destination)
 		{
-			MassiveAssert.HasPacked(this, source);
-			MassiveAssert.HasPacked(this, destination);
+			InvalidIndexException.ThrowIfNotPacked(this, source);
+			InvalidIndexException.ThrowIfNotPacked(this, destination);
 
 			Data[destination] = Data[source];
 		}
@@ -143,7 +143,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(DataSet<T> other)
 		{
-			MassiveAssert.EqualPageSize(Data, other.Data);
+			IncompatiblePageSizeException.ThrowIfIncompatible(Data, other.Data);
 
 			CopySparseTo(other);
 

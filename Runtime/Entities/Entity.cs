@@ -75,7 +75,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override string ToString()
 		{
-			return $"Entity(id:{Id} v:{Version})";
+			return $"(id:{Id} v:{Version})";
 		}
 	}
 }

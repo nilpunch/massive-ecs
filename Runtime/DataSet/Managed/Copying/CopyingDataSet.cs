@@ -44,7 +44,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToCopyable(DataSet<T> other)
 		{
-			MassiveAssert.EqualPageSize(Data, other.Data);
+			IncompatiblePageSizeException.ThrowIfIncompatible(Data, other.Data);
 
 			CopySparseTo(other);
 

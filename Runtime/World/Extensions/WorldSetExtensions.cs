@@ -45,12 +45,12 @@ namespace Massive
 
 			if (candidate != null)
 			{
-				EmptyComponentException.ThrowIfHasNoData(candidate, typeof(T), DataAccessContext.WorldDataSet);
+				NoDataException.ThrowIfHasNoData(candidate, typeof(T), DataAccessContext.WorldDataSet);
 				return (DataSet<T>)candidate;
 			}
 
 			var (set, cloner) = sets.SetFactory.CreateAppropriateSet<T>();
-			EmptyComponentException.ThrowIfHasNoData(set, typeof(T), DataAccessContext.WorldDataSet);
+			NoDataException.ThrowIfHasNoData(set, typeof(T), DataAccessContext.WorldDataSet);
 
 			sets.Insert(info.FullName, set, cloner);
 			sets.Lookup[info.Index] = set;

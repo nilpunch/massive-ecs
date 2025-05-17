@@ -51,7 +51,7 @@ namespace Massive
 		public void ForEach<TAction, T>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			EmptyComponentException.ThrowIfHasNoData<T>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T>(World, DataAccessContext.View);
 
 			var dataSet = World.DataSet<T>();
 
@@ -88,8 +88,8 @@ namespace Massive
 		public void ForEach<TAction, T1, T2>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			EmptyComponentException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
@@ -158,9 +158,9 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			EmptyComponentException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
@@ -259,10 +259,10 @@ namespace Massive
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			EmptyComponentException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
-			EmptyComponentException.ThrowIfHasNoData<T4>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T4>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();

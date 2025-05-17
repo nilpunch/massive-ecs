@@ -25,7 +25,7 @@ namespace Massive
 
 			if (Excluded.Contains(set))
 			{
-				throw new Exception("Conflict with excluded!");
+				throw new Exception("Conflict with excluded.");
 			}
 
 			if (Included.Contains(set))
@@ -52,7 +52,7 @@ namespace Massive
 
 			if (Included.Contains(set))
 			{
-				throw new Exception("Conflict with included!");
+				throw new Exception("Conflict with included.");
 			}
 
 			if (Excluded.Contains(set))
