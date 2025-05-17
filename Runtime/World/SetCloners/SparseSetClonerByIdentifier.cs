@@ -15,14 +15,14 @@ namespace Massive
 			_setId = setId;
 		}
 
-		public override void CopyTo(SetRegistry setRegistry)
+		public override void CopyTo(Sets sets)
 		{
-			var destination = setRegistry.GetExisting(_setId);
+			var destination = sets.GetExisting(_setId);
 
 			if (destination == null)
 			{
 				var clone = _sparseSet.CloneSparse();
-				setRegistry.Insert(_setId, clone, new SparseSetClonerByIdentifier(clone, _setId));
+				sets.Insert(_setId, clone, new SparseSetClonerByIdentifier(clone, _setId));
 			}
 			else
 			{

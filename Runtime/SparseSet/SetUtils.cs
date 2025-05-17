@@ -125,12 +125,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int GetOrderedHashCode(SparseSet[] sets, SetRegistry setRegistry)
+		public static int GetOrderedHashCode(SparseSet[] orderedSets, Sets sets)
 		{
 			var hash = 17;
-			for (var i = 0; i < sets.Length; i++)
+			for (var i = 0; i < orderedSets.Length; i++)
 			{
-				var index = setRegistry.IndexOf(sets[i]) + 1; // Avoid zero.
+				var index = sets.IndexOf(orderedSets[i]) + 1; // Avoid zero.
 				hash = unchecked(hash * 31 + index);
 			}
 

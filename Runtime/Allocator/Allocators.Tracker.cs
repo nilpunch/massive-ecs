@@ -6,7 +6,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public partial class AllocatorRegistry
+	public partial class Allocators
 	{
 		public Allocation[] Allocations { get; private set; } = Array.Empty<Allocation>();
 		private int AllocationsCapacity { get; set; }
@@ -82,7 +82,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTrackerTo(AllocatorRegistry other)
+		public void CopyTrackerTo(Allocators other)
 		{
 			other.EnsureTrackerAllocationAt(UsedAllocations - 1);
 			other.EnsureTrackerHeadAt(UsedHeads - 1);

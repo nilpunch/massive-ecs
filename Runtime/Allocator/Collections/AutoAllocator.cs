@@ -8,9 +8,9 @@ namespace Massive
 	public struct AutoAllocator<T> where T : unmanaged
 	{
 		public Allocator<T> Allocator;
-		public AllocatorRegistry Registry;
+		public Allocators Registry;
 
-		public AutoAllocator(Allocator<T> allocator, AllocatorRegistry registry)
+		public AutoAllocator(Allocator<T> allocator, Allocators registry)
 		{
 			Allocator = allocator;
 			Registry = registry;

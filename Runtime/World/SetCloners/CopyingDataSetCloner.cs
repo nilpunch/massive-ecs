@@ -13,9 +13,9 @@ namespace Massive
 			_dataSet = dataSet;
 		}
 
-		public override void CopyTo(SetRegistry setRegistry)
+		public override void CopyTo(Sets sets)
 		{
-			_dataSet.CopyToCopyable((DataSet<T>)setRegistry.Get<T>());
+			_dataSet.CopyToCopyable((DataSet<T>)sets.Get<T>());
 		}
 	}
 }

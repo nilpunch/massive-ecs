@@ -11,17 +11,17 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class FilterRegistry
+	public class Filters
 	{
 		private readonly GenericLookup<Filter> _filterLookup = new GenericLookup<Filter>();
 		private readonly Dictionary<int, Filter> _codeLookup = new Dictionary<int, Filter>();
-		private readonly SetRegistry _setRegistry;
+		private readonly Sets _sets;
 
 		public Filter Empty { get; } = new Filter();
 
-		public FilterRegistry(SetRegistry setRegistry)
+		public Filters(Sets sets)
 		{
-			_setRegistry = setRegistry;
+			_sets = sets;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -33,8 +33,8 @@ namespace Massive
 
 			if (filter == null)
 			{
-				var included = new TInclude().Select(_setRegistry);
-				var excluded = new TExclude().Select(_setRegistry);
+				var included = new TInclude().Select(_sets);
+				var excluded = new TExclude().Select(_sets);
 
 				filter = Get(included, excluded);
 
@@ -54,12 +54,12 @@ namespace Massive
 			MassiveAssert.ContainsDuplicates(included, "Included contains duplicate sets!");
 			MassiveAssert.ContainsDuplicates(excluded, "Excluded contains duplicate sets!");
 
-			SparseSetComparer.Registry = _setRegistry;
+			SparseSetComparer.Registry = _sets;
 			Array.Sort(included, SparseSetComparer.ByRegistryIndex);
 			Array.Sort(excluded, SparseSetComparer.ByRegistryIndex);
 
-			var includeCode = SetUtils.GetOrderedHashCode(included, _setRegistry);
-			var excludeCode = SetUtils.GetOrderedHashCode(excluded, _setRegistry);
+			var includeCode = SetUtils.GetOrderedHashCode(included, _sets);
+			var excludeCode = SetUtils.GetOrderedHashCode(excluded, _sets);
 			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
 
 			if (_codeLookup.TryGetValue(fullCode, out var filter))
@@ -76,7 +76,7 @@ namespace Massive
 
 		private static class SparseSetComparer
 		{
-			public static SetRegistry Registry;
+			public static Sets Registry;
 
 			public static readonly Comparison<SparseSet> ByRegistryIndex = Compare;
 

@@ -7,7 +7,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class SetRegistry
+	public class Sets
 	{
 		private Dictionary<string, SparseSet> SetsByIdentifiers { get; } = new Dictionary<string, SparseSet>();
 
@@ -23,7 +23,7 @@ namespace Massive
 
 		public SetFactory SetFactory { get; }
 
-		public SetRegistry(SetFactory setFactory)
+		public Sets(SetFactory setFactory)
 		{
 			SetFactory = setFactory;
 		}
@@ -74,7 +74,7 @@ namespace Massive
 				}
 			}
 
-			var createMethod = typeof(SetRegistry).GetMethod(nameof(Get));
+			var createMethod = typeof(Sets).GetMethod(nameof(Get));
 			var genericMethod = createMethod?.MakeGenericMethod(setType);
 			return (SparseSet)genericMethod?.Invoke(this, new object[] { });
 		}
@@ -128,7 +128,7 @@ namespace Massive
 		/// Throws if the set factories are incompatible.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(SetRegistry other)
+		public void CopyTo(Sets other)
 		{
 			MassiveAssert.CompatibleConfigs(SetFactory, other.SetFactory);
 

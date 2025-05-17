@@ -7,7 +7,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public partial class AllocatorRegistry
+	public partial class Allocators
 	{
 		private Dictionary<string, Allocator> AllocatorsByIdentifiers { get; } = new Dictionary<string, Allocator>();
 
@@ -68,7 +68,7 @@ namespace Massive
 				}
 			}
 
-			var createMethod = typeof(AllocatorRegistry).GetMethod(nameof(Get));
+			var createMethod = typeof(Allocators).GetMethod(nameof(Get));
 			var genericMethod = createMethod?.MakeGenericMethod(allocatorType);
 			return (Allocator)genericMethod?.Invoke(this, new object[] { });
 		}
@@ -122,7 +122,7 @@ namespace Massive
 		/// Throws if the allocator factories are incompatible.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(AllocatorRegistry other)
+		public void CopyTo(Allocators other)
 		{
 			// Copy tracker.
 			CopyTrackerTo(other);

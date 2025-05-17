@@ -9,9 +9,9 @@ namespace Massive
 	{
 		public readonly Allocator<T> Items;
 		public readonly Allocator<int> Count;
-		public readonly AllocatorRegistry Registry;
+		public readonly Allocators Registry;
 
-		public AutoListAllocator(Allocator<T> items, Allocator<int> count, AllocatorRegistry registry)
+		public AutoListAllocator(Allocator<T> items, Allocator<int> count, Allocators registry)
 		{
 			Items = items;
 			Count = count;

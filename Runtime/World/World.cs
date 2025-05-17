@@ -8,9 +8,9 @@ namespace Massive
 	{
 		public Entities Entities { get; }
 
-		public SetRegistry SetRegistry { get; }
-		public FilterRegistry FilterRegistry { get; }
-		public AllocatorRegistry AllocatorRegistry { get; }
+		public Sets Sets { get; }
+		public Filters Filters { get; }
+		public Allocators Allocators { get; }
 
 		public WorldConfig Config { get; }
 
@@ -22,17 +22,17 @@ namespace Massive
 		public World(WorldConfig worldConfig)
 		{
 			Entities = new Entities();
-			SetRegistry = new SetRegistry(new SetFactory(worldConfig));
-			FilterRegistry = new FilterRegistry(SetRegistry);
-			AllocatorRegistry = new AllocatorRegistry();
+			Sets = new Sets(new SetFactory(worldConfig));
+			Filters = new Filters(Sets);
+			Allocators = new Allocators();
 			Config = worldConfig;
 
-			var allSets = SetRegistry.AllSets;
+			var allSets = Sets.AllSets;
 			Entities.BeforeDestroyed += RemoveFromAll;
 
 			void RemoveFromAll(int entityId)
 			{
-				AllocatorRegistry.Free(entityId);
+				Allocators.Free(entityId);
 
 				var setCount = allSets.Count;
 				var sets = allSets.Items;

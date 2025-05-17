@@ -13,9 +13,9 @@ namespace Massive
 			_sparseSet = sparseSet;
 		}
 
-		public override void CopyTo(SetRegistry setRegistry)
+		public override void CopyTo(Sets sets)
 		{
-			_sparseSet.CopySparseTo(setRegistry.Get<T>());
+			_sparseSet.CopySparseTo(sets.Get<T>());
 		}
 	}
 }

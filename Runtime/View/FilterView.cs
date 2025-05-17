@@ -22,7 +22,7 @@ namespace Massive
 		{
 			World = world;
 			PackingWhenIterating = packingWhenIterating;
-			Filter = filter ?? world.FilterRegistry.Empty;
+			Filter = filter ?? world.Filters.Empty;
 		}
 
 		public void ForEach<TAction>(ref TAction action)

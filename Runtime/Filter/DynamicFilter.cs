@@ -7,21 +7,21 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class DynamicFilter : Filter
 	{
-		public SetRegistry SetRegistry { get; }
+		public Sets Sets { get; }
 
 		public DynamicFilter(World world) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
 		{
-			SetRegistry = world.SetRegistry;
+			Sets = world.Sets;
 		}
 
-		public DynamicFilter(SetRegistry setRegistry) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
+		public DynamicFilter(Sets sets) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
 		{
-			SetRegistry = setRegistry;
+			Sets = sets;
 		}
 
 		public DynamicFilter Include<T>()
 		{
-			var set = SetRegistry.Get<T>();
+			var set = Sets.Get<T>();
 
 			if (Excluded.Contains(set))
 			{
@@ -48,7 +48,7 @@ namespace Massive
 
 		public DynamicFilter Exclude<T>()
 		{
-			var set = SetRegistry.Get<T>();
+			var set = Sets.Get<T>();
 
 			if (Included.Contains(set))
 			{

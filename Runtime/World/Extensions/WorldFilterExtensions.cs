@@ -11,7 +11,7 @@ namespace Massive
 		public static Filter Filter<TInclude>(this World world)
 			where TInclude : IIncludeSelector, new()
 		{
-			return world.FilterRegistry.Get<TInclude, None>();
+			return world.Filters.Get<TInclude, None>();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -19,7 +19,7 @@ namespace Massive
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
-			return world.FilterRegistry.Get<TInclude, TExclude>();
+			return world.Filters.Get<TInclude, TExclude>();
 		}
 	}
 }

@@ -4,7 +4,7 @@ namespace Massive
 {
 	public abstract class AllocatorCloner
 	{
-		public abstract void CopyTo(AllocatorRegistry allocatorRegistry);
+		public abstract void CopyTo(Allocators allocators);
 	}
 
 	[Il2CppSetOption(Option.NullChecks, false)]
@@ -18,9 +18,9 @@ namespace Massive
 			_allocator = allocator;
 		}
 
-		public override void CopyTo(AllocatorRegistry allocatorRegistry)
+		public override void CopyTo(Allocators allocators)
 		{
-			_allocator.CopyTo((Allocator<T>)allocatorRegistry.Get<T>());
+			_allocator.CopyTo((Allocator<T>)allocators.Get<T>());
 		}
 	}
 }

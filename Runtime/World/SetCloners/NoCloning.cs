@@ -2,7 +2,7 @@
 {
 	public class NoCloning : SetCloner
 	{
-		public override void CopyTo(SetRegistry setRegistry)
+		public override void CopyTo(Sets sets)
 		{
 		}
 	}

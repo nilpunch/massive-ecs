@@ -39,10 +39,10 @@ namespace Massive
 			world.Entities.CopyTo(other.Entities);
 
 			// Sets.
-			world.SetRegistry.CopyTo(other.SetRegistry);
+			world.Sets.CopyTo(other.Sets);
 
 			// Allocators.
-			world.AllocatorRegistry.CopyTo(other.AllocatorRegistry);
+			world.Allocators.CopyTo(other.Allocators);
 		}
 	}
 }

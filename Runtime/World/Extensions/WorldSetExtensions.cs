@@ -15,20 +15,20 @@ namespace Massive
 		public static SparseSet SparseSet<T>(this World world)
 		{
 			var info = TypeId<T>.Info;
-			var setRegistry = world.SetRegistry;
+			var sets = world.Sets;
 
-			setRegistry.EnsureLookupAt(info.Index);
-			var candidate = setRegistry.Lookup[info.Index];
+			sets.EnsureLookupAt(info.Index);
+			var candidate = sets.Lookup[info.Index];
 
 			if (candidate != null)
 			{
 				return candidate;
 			}
 
-			var (set, cloner) = setRegistry.SetFactory.CreateAppropriateSet<T>();
+			var (set, cloner) = sets.SetFactory.CreateAppropriateSet<T>();
 
-			setRegistry.Insert(info.FullName, set, cloner);
-			setRegistry.Lookup[info.Index] = set;
+			sets.Insert(info.FullName, set, cloner);
+			sets.Lookup[info.Index] = set;
 
 			return set;
 		}
@@ -37,10 +37,10 @@ namespace Massive
 		public static DataSet<T> DataSet<T>(this World world)
 		{
 			var info = TypeId<T>.Info;
-			var setRegistry = world.SetRegistry;
+			var sets = world.Sets;
 
-			setRegistry.EnsureLookupAt(info.Index);
-			var candidate = setRegistry.Lookup[info.Index];
+			sets.EnsureLookupAt(info.Index);
+			var candidate = sets.Lookup[info.Index];
 
 			if (candidate != null)
 			{
@@ -48,11 +48,11 @@ namespace Massive
 				return (DataSet<T>)candidate;
 			}
 
-			var (set, cloner) = setRegistry.SetFactory.CreateAppropriateSet<T>();
+			var (set, cloner) = sets.SetFactory.CreateAppropriateSet<T>();
 			MassiveAssert.TypeHasData(set, typeof(T), SuggestionMessage.UseSparseSetMethodWithEmptyTypes);
 
-			setRegistry.Insert(info.FullName, set, cloner);
-			setRegistry.Lookup[info.Index] = set;
+			sets.Insert(info.FullName, set, cloner);
+			sets.Lookup[info.Index] = set;
 
 			return (DataSet<T>)set;
 		}

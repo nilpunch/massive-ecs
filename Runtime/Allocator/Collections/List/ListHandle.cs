@@ -20,8 +20,8 @@ namespace Massive
 		public WorkableList<T> In(World world)
 		{
 			return new WorkableList<T>(Items, Count,
-				(Allocator<T>)world.AllocatorRegistry.Lookup[Items.AllocatorTypeId],
-				(Allocator<int>)world.AllocatorRegistry.Lookup[Count.AllocatorTypeId]);
+				(Allocator<T>)world.Allocators.Lookup[Items.AllocatorTypeId],
+				(Allocator<int>)world.Allocators.Lookup[Count.AllocatorTypeId]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
