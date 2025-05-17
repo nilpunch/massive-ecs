@@ -56,7 +56,27 @@ namespace Massive
 		{
 			if (filter.Excluded.Contains(sparseSet))
 			{
-				throw new ConflictingFilterException($"You are trying include a type:{typeof(T).GetGenericName()} while filter want to exclude it.");
+				throw new ConflictingFilterException($"You are trying include a set of type:{typeof(T).GetGenericName()} while filter want to exclude it.");
+			}
+		}
+
+		[Conditional(Condition)]
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static void ThrowIfConflictWithIncluded(Filter filter, SparseSet sparseSet)
+		{
+			if (filter.Excluded.Contains(sparseSet))
+			{
+				throw new ConflictingFilterException("Conflict with excluded sets.");
+			}
+		}
+
+		[Conditional(Condition)]
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static void ThrowIfConflictWithExcluded(Filter filter, SparseSet sparseSet)
+		{
+			if (filter.Included.Contains(sparseSet))
+			{
+				throw new ConflictingFilterException("Conflict with included sets.");
 			}
 		}
 	}

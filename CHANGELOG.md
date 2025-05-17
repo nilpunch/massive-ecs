@@ -1,13 +1,24 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- `SetRegistry` renamed to `Sets`.
+- `FilterRegistry` renamed to `Filters`.
+- `AllocatorRegistry` renamed to `Allocators`.
+- `Destroy` no longer throws when called with a dead entity.
+- Replaced `MassiveAssert` with individual exceptions.
+- `World.Set` now throws if the component has no associated data.
+
 ## 20.0.2-alpha - April 27, 2025
 
-## Added
+### Added
 
 - `Allocator`, enabling fast rollbacks and serialization for collections inside components,
   and allowing external tools to plug directly into the data pipeline of the `World`.
 
-## Changed
+### Changed
 
 - Renamed data sets based on their usage:
   - Renamed `ResettingDataSet` to `UnmanagedDataSet`.
@@ -20,7 +31,7 @@
 
 ## 20.0.1-alpha - April 27, 2025
 
-## Fixed
+### Fixed
 
 - `View` and `FilterView` sometimes choose and use not optimal minimal set.
 

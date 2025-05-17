@@ -23,10 +23,7 @@ namespace Massive
 		{
 			var set = Sets.Get<T>();
 
-			if (Excluded.Contains(set))
-			{
-				throw new Exception("Conflict with excluded.");
-			}
+			ConflictingFilterException.ThrowIfConflictWithExcluded(this, set);
 
 			if (Included.Contains(set))
 			{
@@ -50,10 +47,7 @@ namespace Massive
 		{
 			var set = Sets.Get<T>();
 
-			if (Included.Contains(set))
-			{
-				throw new Exception("Conflict with included.");
-			}
+			ConflictingFilterException.ThrowIfConflictWithIncluded(this, set);
 
 			if (Excluded.Contains(set))
 			{
