@@ -2,7 +2,6 @@
 #define MASSIVE_ASSERT
 #endif
 
-using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 

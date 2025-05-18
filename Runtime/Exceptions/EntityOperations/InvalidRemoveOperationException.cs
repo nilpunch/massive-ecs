@@ -1,4 +1,8 @@
-﻿using System.Diagnostics;
+﻿#if !MASSIVE_DISABLE_ASSERT
+#define MASSIVE_ASSERT
+#endif
+
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Massive
