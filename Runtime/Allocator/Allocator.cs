@@ -122,6 +122,8 @@ namespace Massive
 				EnsureChunkAt(swapId);
 				ChunkCount += 1;
 
+				chunk = ref Chunks[chunkId.Id]; // Revalidate reference after resize.
+
 				ref var swapChunk = ref Chunks[swapId];
 				swapChunk.Offset = chunk.Offset;
 				swapChunk.NextFreeId = ~ChunkFreeLists[orignialFreeList];
@@ -129,7 +131,6 @@ namespace Massive
 
 				var offset = UsedSpace;
 				EnsureDataCapacity(offset + newLength);
-				chunk = ref Chunks[chunkId.Id]; // Revalidate reference after resize.
 				UsedSpace += newLength;
 
 				CopyData(chunk.Offset, offset, MathUtils.Min(chunk.Length, newLength));
