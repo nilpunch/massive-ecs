@@ -51,7 +51,7 @@ namespace Massive
 			}
 			catch
 			{
-				throw new Exception(
+				MassiveException.Throw(
 					$"The type identifier for {type} has been stripped from the build.\n" +
 					"Ensure that the type is used in your codebase as a generic argument with the library API.");
 			}

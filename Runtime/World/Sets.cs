@@ -95,7 +95,7 @@ namespace Massive
 			var itemIndex = Identifiers.BinarySearch(setId);
 			if (itemIndex >= 0)
 			{
-				throw new Exception("Trying to insert already existing item.");
+				MassiveException.Throw($"You are trying to insert already existing item:{setId}.");
 			}
 			else
 			{

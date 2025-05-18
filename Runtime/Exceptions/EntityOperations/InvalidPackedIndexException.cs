@@ -3,9 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	public class InvalidIndexException : MassiveException
+	public class InvalidPackedIndexException : MassiveException
 	{
-		private InvalidIndexException(string message) : base(message)
+		private InvalidPackedIndexException(string message) : base(message)
 		{
 		}
 
@@ -15,7 +15,7 @@ namespace Massive
 		{
 			if (!set.HasPacked(index))
 			{
-				throw new InvalidIndexException($"The packed index:{index} is not present in set.");
+				throw new InvalidPackedIndexException($"The packed index:{index} is not present in set.");
 			}
 		}
 	}

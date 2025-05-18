@@ -350,8 +350,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SwapAt(int first, int second)
 		{
-			InvalidIndexException.ThrowIfNotPacked(this, first);
-			InvalidIndexException.ThrowIfNotPacked(this, second);
+			InvalidPackedIndexException.ThrowIfNotPacked(this, first);
+			InvalidPackedIndexException.ThrowIfNotPacked(this, second);
 
 			var firstId = Packed[first];
 			var secondId = Packed[second];

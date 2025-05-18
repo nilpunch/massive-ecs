@@ -93,8 +93,8 @@ namespace Massive
 		/// </summary>
 		public override void SwapDataAt(int first, int second)
 		{
-			InvalidIndexException.ThrowIfNotPacked(this, first);
-			InvalidIndexException.ThrowIfNotPacked(this, second);
+			InvalidPackedIndexException.ThrowIfNotPacked(this, first);
+			InvalidPackedIndexException.ThrowIfNotPacked(this, second);
 
 			Data.Swap(first, second);
 		}
@@ -104,8 +104,8 @@ namespace Massive
 		/// </summary>
 		public override void CopyDataAt(int source, int destination)
 		{
-			InvalidIndexException.ThrowIfNotPacked(this, source);
-			InvalidIndexException.ThrowIfNotPacked(this, destination);
+			InvalidPackedIndexException.ThrowIfNotPacked(this, source);
+			InvalidPackedIndexException.ThrowIfNotPacked(this, destination);
 
 			Data[destination] = Data[source];
 		}

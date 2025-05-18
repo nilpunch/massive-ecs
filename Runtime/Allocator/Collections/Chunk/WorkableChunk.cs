@@ -38,10 +38,7 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
-				if (index >= _allocator.Chunks[ChunkId.Id].Length)
-				{
-					throw new IndexOutOfRangeException();
-				}
+				AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, _allocator.Chunks[ChunkId.Id].Length);
 
 				return ref _allocator.Data[_allocator.Chunks[ChunkId.Id].Offset + index];
 			}
@@ -51,6 +48,12 @@ namespace Massive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _allocator.Chunks[ChunkId.Id].Length;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ref T GetAtUnchecked(int index)
+		{
+			return ref _allocator.Data[_allocator.Chunks[ChunkId.Id].Offset + index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

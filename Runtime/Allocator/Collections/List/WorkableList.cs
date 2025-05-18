@@ -46,12 +46,9 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
-				if (index >= Count)
-				{
-					throw new IndexOutOfRangeException();
-				}
+				AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, _count.Value);
 
-				return ref _items[index];
+				return ref _items.GetAtUnchecked(index);
 			}
 		}
 
@@ -73,10 +70,7 @@ namespace Massive
 		public void Insert(int index, T item)
 		{
 			ref var count = ref _count.Value;
-			if (index > count)
-			{
-				throw new IndexOutOfRangeException();
-			}
+			AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeInclusive(index, count);
 
 			EnsureCapacityAt(count);
 
@@ -89,10 +83,7 @@ namespace Massive
 		public void RemoveAt(int index)
 		{
 			ref var count = ref _count.Value;
-			if (index >= count)
-			{
-				throw new IndexOutOfRangeException();
-			}
+			AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, count);
 
 			count--;
 			_items.CopyToSelf(index + 1, index, count - index);
@@ -102,10 +93,7 @@ namespace Massive
 		public void RemoveAtSwap(int index)
 		{
 			ref var count = ref _count.Value;
-			if (index >= count)
-			{
-				throw new IndexOutOfRangeException();
-			}
+			AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, count);
 
 			count--;
 			var lastIndex = count;
