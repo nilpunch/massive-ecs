@@ -20,8 +20,8 @@ namespace Massive
 		public WorkableList<T> In(World world)
 		{
 			return new WorkableList<T>(Items, Count,
-				(Allocator<T>)world.Allocators.Lookup[Items.AllocatorTypeId],
-				(Allocator<int>)world.Allocators.Lookup[Count.AllocatorTypeId]);
+				(Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index],
+				(Allocator<int>)world.Allocators.Lookup[AllocatorId<int>.Index]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -31,15 +31,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableList<T> In(AutoListAllocator<T> allocator)
-		{
-			return new WorkableList<T>(Items, Count, allocator.Items, allocator.Count);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static implicit operator ListChunkIds(ListHandle<T> handle)
 		{
-			return new ListChunkIds(handle.Items, handle.Count);
+			return new ListChunkIds(handle.Items, handle.Count, AllocatorId<T>.Index);
 		}
 
 		[UnityEngine.Scripting.Preserve]

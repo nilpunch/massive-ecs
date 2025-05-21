@@ -23,7 +23,7 @@ namespace Massive
 		public int UsedHeads { get; set; }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Track(int id, ChunkId chunkId)
+		public void Track(int id, ChunkId chunkId, int allocatorId)
 		{
 			EnsureTrackerHeadAt(id);
 
@@ -44,6 +44,7 @@ namespace Massive
 			ref var allocation = ref Allocations[index];
 			allocation.ChunkId = chunkId;
 			allocation.NextAllocation = head;
+			allocation.AllocatorId = allocatorId;
 
 			head = index;
 
@@ -62,7 +63,7 @@ namespace Massive
 			while (index != Constants.InvalidId)
 			{
 				ref var allocation = ref Allocations[index];
-				Lookup[allocation.ChunkId.AllocatorTypeId].TryFree(allocation.ChunkId);
+				Lookup[allocation.AllocatorId].TryFree(allocation.ChunkId);
 
 				var next = allocation.NextAllocation;
 				allocation.NextAllocation = NextFreeAllocation;
@@ -128,6 +129,11 @@ namespace Massive
 		public struct Allocation
 		{
 			public ChunkId ChunkId;
+
+			/// <summary>
+			/// Non-deterministic.
+			/// </summary>
+			public int AllocatorId;
 
 			/// <summary>
 			/// Next free or next allocation in list.

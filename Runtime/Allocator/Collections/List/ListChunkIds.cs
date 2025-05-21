@@ -1,14 +1,17 @@
 ﻿namespace Massive
 {
-	public struct ListChunkIds
+	public readonly ref struct ListChunkIds
 	{
-		public ChunkId Items;
-		public ChunkId Count;
+		public readonly ChunkId Items;
+		public readonly ChunkId Count;
 
-		public ListChunkIds(ChunkId items, ChunkId count)
+		public readonly int ItemsId;
+
+		public ListChunkIds(ChunkId items, ChunkId count, int itemsId)
 		{
 			Items = items;
 			Count = count;
+			ItemsId = itemsId;
 		}
 	}
 }

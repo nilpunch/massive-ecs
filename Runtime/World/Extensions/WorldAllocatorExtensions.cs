@@ -10,7 +10,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Allocator<T> Allocator<T>(this World world) where T : unmanaged
 		{
-			var info = AllocatorTypeId<T>.Info;
+			var info = AllocatorId<T>.Info;
 			var allocators = world.Allocators;
 
 			allocators.EnsureLookupAt(info.Index);
@@ -33,7 +33,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AutoAllocator<T> AutoAllocator<T>(this World world) where T : unmanaged
 		{
-			var info = AllocatorTypeId<T>.Info;
+			var info = AllocatorId<T>.Info;
 			var allocatorRegistry = world.Allocators;
 
 			allocatorRegistry.EnsureLookupAt(info.Index);
@@ -52,30 +52,24 @@ namespace Massive
 
 			return new AutoAllocator<T>(allocator, allocatorRegistry);
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ListAllocator<T> ListAllocator<T>(this World world) where T : unmanaged
 		{
-			return new ListAllocator<T>(world.Allocator<T>(), world.Allocator<int>());
+			return new ListAllocator<T>(world.Allocators);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static AutoListAllocator<T> AutoListAllocator<T>(this World world) where T : unmanaged
+		public static void AutoFree(this World world, int id, AllocatorChunkId allocatorChunkId)
 		{
-			return new AutoListAllocator<T>(world.Allocator<T>(), world.Allocator<int>(), world.Allocators);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void AutoFree(this World world, int id, ChunkId chunkId)
-		{
-			world.Allocators.Track(id, chunkId);
+			world.Allocators.Track(id, allocatorChunkId.ChunkId, allocatorChunkId.AllocatorId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void AutoFree(this World world, int id, ListChunkIds listChunkIds)
 		{
-			world.Allocators.Track(id, listChunkIds.Items);
-			world.Allocators.Track(id, listChunkIds.Count);
+			world.Allocators.Track(id, listChunkIds.Items, listChunkIds.ItemsId);
+			world.Allocators.Track(id, listChunkIds.Count, world.Allocators.IntId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -101,20 +95,20 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableList<T> AllocAutoList<T>(this World world, int id, int capacity = 0) where T : unmanaged
 		{
-			return world.AutoListAllocator<T>().AllocAutoList(id, capacity);
+			return world.ListAllocator<T>().AllocAutoList(id, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free(this World world, ChunkId chunkId)
+		public static void Free(this World world, AllocatorChunkId allocatorChunkId)
 		{
-			world.Allocators.Lookup[chunkId.AllocatorTypeId].Free(chunkId);
+			world.Allocators.Lookup[allocatorChunkId.AllocatorId].Free(allocatorChunkId.ChunkId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Free(this World world, ListChunkIds listChunkIds)
 		{
-			world.Allocators.Lookup[listChunkIds.Items.AllocatorTypeId].Free(listChunkIds.Items);
-			world.Allocators.Lookup[listChunkIds.Count.AllocatorTypeId].Free(listChunkIds.Count);
+			world.Allocators.Lookup[listChunkIds.ItemsId].Free(listChunkIds.Items);
+			world.Allocators.Lookup[world.Allocators.IntId].Free(listChunkIds.Count);
 		}
 	}
 }

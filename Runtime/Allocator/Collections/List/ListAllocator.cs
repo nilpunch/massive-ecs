@@ -3,20 +3,23 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	/// <summary>
-	/// Wrapper for all allocator required for list to work.
-	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct ListAllocator<T> where T : unmanaged
 	{
 		public readonly Allocator<T> Items;
 		public readonly Allocator<int> Count;
+		public readonly Allocators Allocators;
+		public readonly int ItemsTypeId;
+		public readonly int CountTypeId;
 
-		public ListAllocator(Allocator<T> items, Allocator<int> count)
+		public ListAllocator(Allocators allocators)
 		{
-			Items = items;
-			Count = count;
+			Allocators = allocators;
+			Items = (Allocator<T>)allocators.Get<T>();
+			ItemsTypeId = AllocatorId<T>.Index;
+			Count = allocators.IntAllocator;
+			CountTypeId = allocators.IntId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -31,10 +34,17 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Free(ListChunkIds listChunkIds)
+		public WorkableList<T> AllocAutoList(int id, int capacity = 0)
 		{
-			Items.Free(listChunkIds.Items);
-			Count.Free(listChunkIds.Count);
+			var items = Items.Alloc(capacity, MemoryInit.Uninitialized);
+
+			var count = Count.Alloc(1, MemoryInit.Uninitialized);
+			Count.Data[Count.Chunks[count.Id].Offset] = 0;
+
+			Allocators.Track(id, items, ItemsTypeId);
+			Allocators.Track(id, count, CountTypeId);
+
+			return new WorkableList<T>(items, count, Items, Count);
 		}
 	}
 }

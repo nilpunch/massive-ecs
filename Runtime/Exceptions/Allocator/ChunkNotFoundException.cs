@@ -32,17 +32,5 @@ namespace Massive
 				throw new ChunkNotFoundException($"Chunk with id:{chunkId.Id} v:{chunkId.Version} not found.");
 			}
 		}
-
-		[Conditional(Condition)]
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfFromOtherAllocator(Allocator allocator, ChunkId chunkId)
-		{
-			if (allocator.AllocatorTypeId != chunkId.AllocatorTypeId)
-			{
-				throw new ChunkNotFoundException(
-					$"Chunk with id:{chunkId.Id} v:{chunkId.Version} is from allocator of different type " +
-					$"{AllocatorTypeId.GetTypeByIndex(chunkId.AllocatorTypeId).GetGenericName()}.");
-			}
-		}
 	}
 }

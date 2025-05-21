@@ -39,7 +39,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Allocator Get<T>() where T : unmanaged
 		{
-			var info = AllocatorTypeId<T>.Info;
+			var info = AllocatorId<T>.Info;
 
 			EnsureLookupAt(info.Index);
 			var candidate = Lookup[info.Index];
@@ -61,7 +61,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Allocator GetReflected(Type allocatorType)
 		{
-			if (AllocatorTypeId.TryGetInfo(allocatorType, out var info))
+			if (AllocatorId.TryGetInfo(allocatorType, out var info))
 			{
 				EnsureLookupAt(info.Index);
 				var candidate = Lookup[info.Index];
@@ -115,7 +115,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Type TypeOf(Allocator allocator)
 		{
-			return AllocatorTypeId.GetTypeByIndex(IndexOf(allocator));
+			return AllocatorId.GetTypeByIndex(IndexOf(allocator));
 		}
 
 		/// <summary>

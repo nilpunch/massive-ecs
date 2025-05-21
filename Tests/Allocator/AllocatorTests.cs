@@ -78,7 +78,7 @@ namespace Massive.Tests
 			foreach (var head in _allocator.ChunkFreeLists)
 			{
 				var current = head;
-				while (current != Allocator.EndChunkId)
+				while (current != Allocator.FreeListEndId)
 				{
 					freelistCount++;
 					current = ~_allocator.Chunks[current].NextFreeId;
@@ -91,12 +91,12 @@ namespace Massive.Tests
 		[Test]
 		public void FreelistShouldHaveCorrectTailCount()
 		{
-			var usedFreeLists = _allocator.ChunkFreeLists.Count(h => h != Allocator.EndChunkId);
+			var usedFreeLists = _allocator.ChunkFreeLists.Count(h => h != Allocator.FreeListEndId);
 
 			var tailCount = 0;
 			for (var i = 0; i < _allocator.ChunkCount; i++)
 			{
-				if (_allocator.Chunks[i].NextFreeId == ~Allocator.EndChunkId)
+				if (_allocator.Chunks[i].NextFreeId == ~Allocator.FreeListEndId)
 					tailCount++;
 			}
 

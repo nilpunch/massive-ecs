@@ -13,9 +13,7 @@ namespace Massive
 	public abstract class Allocator
 	{
 		protected const int FreeListsLength = 1 + sizeof(int) * 8;
-		public const int EndChunkId = int.MaxValue;
-
-		public ushort AllocatorTypeId { get; }
+		public const int FreeListEndId = int.MaxValue;
 
 		public Chunk[] Chunks { get; private set; } = Array.Empty<Chunk>();
 
@@ -27,10 +25,9 @@ namespace Massive
 
 		public int UsedSpace { get; private set; }
 
-		protected Allocator(ushort allocatorTypeId)
+		protected Allocator()
 		{
-			AllocatorTypeId = allocatorTypeId;
-			Array.Fill(ChunkFreeLists, EndChunkId);
+			Array.Fill(ChunkFreeLists, FreeListEndId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -42,7 +39,7 @@ namespace Massive
 			var freeList = MathUtils.FastLog2(chunkLength) + 1;
 
 			var chunkId = ChunkFreeLists[freeList];
-			if (chunkId != EndChunkId)
+			if (chunkId != FreeListEndId)
 			{
 				// Reuse existing free chunk.
 				ref var chunk = ref Chunks[chunkId];
@@ -52,7 +49,7 @@ namespace Massive
 				{
 					ClearData(chunk.Offset, chunkLength);
 				}
-				return new ChunkId(chunkId, chunk.Version, AllocatorTypeId);
+				return new ChunkId(chunkId, chunk.Version);
 			}
 			else
 			{
@@ -72,14 +69,13 @@ namespace Massive
 				{
 					ClearData(offset, chunkLength);
 				}
-				return new ChunkId(chunkId, chunk.Version, AllocatorTypeId);
+				return new ChunkId(chunkId, chunk.Version);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Resize(ChunkId chunkId, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
-			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
 			ChunkNotFoundException.ThrowIfNotInCountRange(this, chunkId);
 
 			ref var chunk = ref Chunks[chunkId.Id];
@@ -97,7 +93,7 @@ namespace Massive
 			var swapFreeList = MathUtils.FastLog2(newLength) + 1;
 
 			var swapId = ChunkFreeLists[swapFreeList];
-			if (swapId != EndChunkId)
+			if (swapId != FreeListEndId)
 			{
 				// Swap with existing free chunk of equal size.
 				ref var swapChunk = ref Chunks[swapId];
@@ -147,7 +143,6 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free(ChunkId chunkId)
 		{
-			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
 			ChunkNotFoundException.ThrowIfNotInCountRange(this, chunkId);
 
 			ref var chunk = ref Chunks[chunkId.Id];
@@ -163,8 +158,6 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TryFree(ChunkId chunkId)
 		{
-			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
-
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				return false;
@@ -188,7 +181,6 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref Chunk GetChunk(ChunkId chunkId)
 		{
-			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
 			ChunkNotFoundException.ThrowIfNotInCountRange(this, chunkId);
 
 			ref var chunk = ref Chunks[chunkId.Id];
@@ -201,8 +193,6 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAllocated(ChunkId chunkId)
 		{
-			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, chunkId);
-
 			if (chunkId.Id < 0 || chunkId.Id >= ChunkCount)
 			{
 				return false;
@@ -216,7 +206,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Reset()
 		{
-			Array.Fill(ChunkFreeLists, EndChunkId);
+			Array.Fill(ChunkFreeLists, FreeListEndId);
 			Array.Fill(Chunks, Chunk.DefaultValid, 0, ChunkCount);
 
 			UsedSpace = 0;
@@ -268,7 +258,6 @@ namespace Massive
 		private int DataCapacity { get; set; }
 
 		public Allocator(T defaultValue = default)
-			: base(AllocatorTypeId<T>.Info.Index)
 		{
 			DefaultValue = defaultValue;
 		}

@@ -17,7 +17,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableChunk<T> In(World world)
 		{
-			return new WorkableChunk<T>(ChunkId, (Allocator<T>)world.Allocators.Lookup[ChunkId.AllocatorTypeId]);
+			return new WorkableChunk<T>(ChunkId, (Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

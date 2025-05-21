@@ -1,0 +1,14 @@
+﻿namespace Massive
+{
+	public readonly ref struct AllocatorChunkId
+	{
+		public readonly ChunkId ChunkId;
+		public readonly int AllocatorId;
+
+		public AllocatorChunkId(ChunkId chunkId, int allocatorId)
+		{
+			ChunkId = chunkId;
+			AllocatorId = allocatorId;
+		}
+	}
+}

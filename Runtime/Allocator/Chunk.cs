@@ -21,7 +21,7 @@ namespace Massive
 		/// <summary>
 		/// Chunks with version 0 are invalid.
 		/// </summary>
-		[FieldOffset(8)] public ushort Version;
+		[FieldOffset(8)] public uint Version;
 
 		public static Chunk DefaultValid
 		{

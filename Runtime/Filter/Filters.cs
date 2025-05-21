@@ -16,12 +16,14 @@ namespace Massive
 		private readonly GenericLookup<Filter> _filterLookup = new GenericLookup<Filter>();
 		private readonly Dictionary<int, Filter> _codeLookup = new Dictionary<int, Filter>();
 		private readonly Sets _sets;
+		private readonly SparseSetComparer _sparseSetComparer;
 
 		public Filter Empty { get; } = new Filter();
 
 		public Filters(Sets sets)
 		{
 			_sets = sets;
+			_sparseSetComparer = new SparseSetComparer(_sets);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -54,9 +56,8 @@ namespace Massive
 			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Include);
 			ConflictingFilterException.ThrowIfHasDuplicates(excluded, ConflictingFilterException.FilterType.Exclude);
 
-			SparseSetComparer.Registry = _sets;
-			Array.Sort(included, SparseSetComparer.ByRegistryIndex);
-			Array.Sort(excluded, SparseSetComparer.ByRegistryIndex);
+			Array.Sort(included, _sparseSetComparer.ByRegistryIndex);
+			Array.Sort(excluded, _sparseSetComparer.ByRegistryIndex);
 
 			var includeCode = SetUtils.GetOrderedHashCode(included, _sets);
 			var excludeCode = SetUtils.GetOrderedHashCode(excluded, _sets);
@@ -74,15 +75,20 @@ namespace Massive
 			return filter;
 		}
 
-		private static class SparseSetComparer
+		private class SparseSetComparer
 		{
-			public static Sets Registry;
+			public Sets Sets;
+			public readonly Comparison<SparseSet> ByRegistryIndex;
 
-			public static readonly Comparison<SparseSet> ByRegistryIndex = Compare;
-
-			private static int Compare(SparseSet a, SparseSet b)
+			public SparseSetComparer(Sets sets)
 			{
-				return Registry.IndexOf(a).CompareTo(Registry.IndexOf(b));
+				Sets = sets;
+				ByRegistryIndex = Compare;
+			}
+
+			private int Compare(SparseSet a, SparseSet b)
+			{
+				return Sets.IndexOf(a).CompareTo(Sets.IndexOf(b));
 			}
 		}
 	}
