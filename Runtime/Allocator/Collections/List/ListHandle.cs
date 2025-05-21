@@ -31,9 +31,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ListChunkIds(ListHandle<T> handle)
+		public static implicit operator AllocatorListIds(ListHandle<T> handle)
 		{
-			return new ListChunkIds(handle.Items, handle.Count, AllocatorId<T>.Index);
+			return new AllocatorListIds(handle.Items, handle.Count, AllocatorId<T>.Index);
 		}
 
 		[UnityEngine.Scripting.Preserve]

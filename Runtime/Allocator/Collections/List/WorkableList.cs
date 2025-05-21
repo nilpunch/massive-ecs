@@ -21,9 +21,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ListChunkIds(WorkableList<T> list)
+		public static implicit operator AllocatorListIds(WorkableList<T> list)
 		{
-			return new ListChunkIds(list._items.ChunkId, list._count.ChunkId, list._items.Allocator.AllocatorId);
+			return new AllocatorListIds(list._items.ChunkId, list._count.ChunkId, list._items.Allocator.AllocatorId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

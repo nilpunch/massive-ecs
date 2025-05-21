@@ -66,10 +66,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void AutoFree(this World world, int id, ListChunkIds listChunkIds)
+		public static void AutoFree(this World world, int id, AllocatorListIds allocatorListIds)
 		{
-			world.Allocators.Track(id, listChunkIds.Items, listChunkIds.ItemsId);
-			world.Allocators.Track(id, listChunkIds.Count, world.Allocators.IntId);
+			world.Allocators.Track(id, allocatorListIds.Items, allocatorListIds.ItemsId);
+			world.Allocators.Track(id, allocatorListIds.Count, world.Allocators.IntId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -105,10 +105,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free(this World world, ListChunkIds listChunkIds)
+		public static void Free(this World world, AllocatorListIds allocatorListIds)
 		{
-			world.Allocators.Lookup[listChunkIds.ItemsId].Free(listChunkIds.Items);
-			world.Allocators.Lookup[world.Allocators.IntId].Free(listChunkIds.Count);
+			world.Allocators.Lookup[allocatorListIds.ItemsId].Free(allocatorListIds.Items);
+			world.Allocators.Lookup[world.Allocators.IntId].Free(allocatorListIds.Count);
 		}
 	}
 }
