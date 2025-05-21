@@ -55,7 +55,8 @@ namespace Massive
 		public static readonly AllocatorIdInfo Info;
 
 		/// <summary>
-		/// Non-deterministic, don't store in simulation state. Used for lookups.
+		/// Non-deterministic, used for lookups.<br/>
+		/// Don't store it in simulation.
 		/// </summary>
 		public static readonly int Index;
 
@@ -82,7 +83,8 @@ namespace Massive
 	public readonly struct AllocatorIdInfo
 	{
 		/// <summary>
-		/// Non-deterministic, don't store in simulation state. Used for lookups.
+		/// Non-deterministic, used for lookups.<br/>
+		/// Don't store it in simulation.
 		/// </summary>
 		public readonly int Index;
 

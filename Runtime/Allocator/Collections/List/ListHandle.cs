@@ -21,7 +21,7 @@ namespace Massive
 		{
 			return new WorkableList<T>(Items, Count,
 				(Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index],
-				(Allocator<int>)world.Allocators.Lookup[AllocatorId<int>.Index]);
+				world.Allocators.IntAllocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

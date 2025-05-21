@@ -20,22 +20,10 @@ namespace Massive
 			_count = new WorkableVar<int>(count, countAllocator);
 		}
 
-		public WorkableList(ChunkId items, ChunkId count, ListAllocator<T> allocator)
-		{
-			_items = new WorkableChunk<T>(items, allocator.Items);
-			_count = new WorkableVar<int>(count, allocator.Count);
-		}
-
-		public WorkableList(ListHandle<T> list, ListAllocator<T> allocator)
-		{
-			_items = new WorkableChunk<T>(list.Items, allocator.Items);
-			_count = new WorkableVar<int>(list.Count, allocator.Count);
-		}
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static implicit operator ListChunkIds(WorkableList<T> list)
 		{
-			return new ListChunkIds(list._items.ChunkId, list._count.ChunkId, AllocatorId<T>.Index);
+			return new ListChunkIds(list._items.ChunkId, list._count.ChunkId, list._items.Allocator.AllocatorId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -15,6 +15,12 @@ namespace Massive
 		protected const int FreeListsLength = 1 + sizeof(int) * 8;
 		public const int FreeListEndId = int.MaxValue;
 
+		/// <summary>
+		/// Non-deterministic, used for lookups.<br/>
+		/// Don't store it in simulation.
+		/// </summary>
+		public int AllocatorId { get; }
+
 		public Chunk[] Chunks { get; private set; } = Array.Empty<Chunk>();
 
 		private int ChunkCapacity { get; set; }
@@ -25,8 +31,9 @@ namespace Massive
 
 		public int UsedSpace { get; private set; }
 
-		protected Allocator()
+		protected Allocator(int allocatorId)
 		{
+			AllocatorId = allocatorId;
 			Array.Fill(ChunkFreeLists, FreeListEndId);
 		}
 
@@ -258,6 +265,7 @@ namespace Massive
 		private int DataCapacity { get; set; }
 
 		public Allocator(T defaultValue = default)
+			: base(AllocatorId<T>.Index)
 		{
 			DefaultValue = defaultValue;
 		}

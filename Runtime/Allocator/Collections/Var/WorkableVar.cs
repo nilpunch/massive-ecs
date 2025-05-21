@@ -9,7 +9,7 @@ namespace Massive
 	{
 		public readonly ChunkId ChunkId;
 
-		private readonly Allocator<T> _allocator;
+		public readonly Allocator<T> Allocator;
 
 		public WorkableVar(ChunkId chunkId, Allocator<T> allocator)
 		{
@@ -17,13 +17,13 @@ namespace Massive
 			allocator.GetChunk(chunkId);
 
 			ChunkId = chunkId;
-			_allocator = allocator;
+			Allocator = allocator;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ChunkId(WorkableVar<T> var)
+		public static implicit operator AllocatorChunkId(WorkableVar<T> var)
 		{
-			return var.ChunkId;
+			return new AllocatorChunkId(var.ChunkId, var.Allocator.AllocatorId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -35,7 +35,7 @@ namespace Massive
 		public ref T Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref _allocator.Data[_allocator.Chunks[ChunkId.Id].Offset];
+			get => ref Allocator.Data[Allocator.Chunks[ChunkId.Id].Offset];
 		}
 	}
 }

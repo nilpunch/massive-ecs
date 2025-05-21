@@ -131,7 +131,8 @@ namespace Massive
 			public ChunkId ChunkId;
 
 			/// <summary>
-			/// Non-deterministic.
+			/// Non-deterministic, used for lookups.<br/>
+			/// Don't store it in simulation.
 			/// </summary>
 			public int AllocatorId;
 
