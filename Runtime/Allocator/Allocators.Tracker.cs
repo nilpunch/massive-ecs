@@ -23,7 +23,13 @@ namespace Massive
 		public int UsedHeads { get; set; }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Track(int id, ChunkId chunkId, int allocatorId)
+		public void TrackAllocation(int id, AllocatorChunkId allocatorChunkId)
+		{
+			TrackAllocation(id, allocatorChunkId.ChunkId, allocatorChunkId.AllocatorId);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void TrackAllocation(int id, ChunkId chunkId, int allocatorId)
 		{
 			EnsureTrackerHeadAt(id);
 

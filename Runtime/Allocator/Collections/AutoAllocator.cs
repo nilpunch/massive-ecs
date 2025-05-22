@@ -28,7 +28,7 @@ namespace Massive
 		public ChunkId AllocAuto(int id, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
 			var chunkId = Allocator.Alloc(minimumLength, memoryInit);
-			Registry.Track(id, chunkId, AllocatorId);
+			Registry.TrackAllocation(id, chunkId, AllocatorId);
 			return chunkId;
 		}
 
@@ -45,7 +45,7 @@ namespace Massive
 		{
 			var chunkId = Allocator.Alloc(1);
 			Allocator.Data[Allocator.Chunks[chunkId.Id].Offset] = value;
-			Registry.Track(id, chunkId, AllocatorId);
+			Registry.TrackAllocation(id, chunkId, AllocatorId);
 			return new WorkableVar<T>(chunkId, Allocator);
 		}
 
@@ -59,7 +59,7 @@ namespace Massive
 		public WorkableChunk<T> AllocAutoChunk(int id, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
 			var chunkId = Allocator.Alloc(minimumLength, memoryInit);
-			Registry.Track(id, chunkId, AllocatorId);
+			Registry.TrackAllocation(id, chunkId, AllocatorId);
 			return new WorkableChunk<T>(chunkId, Allocator);
 		}
 	}

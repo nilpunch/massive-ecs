@@ -41,8 +41,8 @@ namespace Massive
 			var count = Count.Alloc(1, MemoryInit.Uninitialized);
 			Count.Data[Count.Chunks[count.Id].Offset] = 0;
 
-			Allocators.Track(id, items, ItemsTypeId);
-			Allocators.Track(id, count, CountTypeId);
+			Allocators.TrackAllocation(id, items, ItemsTypeId);
+			Allocators.TrackAllocation(id, count, CountTypeId);
 
 			return new WorkableList<T>(items, count, Items, Count);
 		}

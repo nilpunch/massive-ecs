@@ -39,10 +39,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Allocator Get<T>() where T : unmanaged
 		{
-			var info = AllocatorId<T>.Info;
+			var allocatorId = AllocatorId<T>.Index;
 
-			EnsureLookupAt(info.Index);
-			var candidate = Lookup[info.Index];
+			EnsureLookupAt(allocatorId);
+			var candidate = Lookup[allocatorId];
 
 			if (candidate != null)
 			{
@@ -52,8 +52,8 @@ namespace Massive
 			var allocator = new Allocator<T>(DefaultValueUtils.GetDefaultValueFor<T>());
 			var cloner = new AllocatorCloner<T>(allocator);
 
-			Insert(info.FullName, allocator, cloner);
-			Lookup[info.Index] = allocator;
+			Insert(AllocatorId<T>.FullName, allocator, cloner);
+			Lookup[allocatorId] = allocator;
 
 			return allocator;
 		}

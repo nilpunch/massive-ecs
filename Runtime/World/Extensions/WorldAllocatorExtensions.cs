@@ -10,11 +10,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Allocator<T> Allocator<T>(this World world) where T : unmanaged
 		{
-			var info = AllocatorId<T>.Info;
+			var allocatorId = AllocatorId<T>.Index;
 			var allocators = world.Allocators;
 
-			allocators.EnsureLookupAt(info.Index);
-			var candidate = allocators.Lookup[info.Index];
+			allocators.EnsureLookupAt(allocatorId);
+			var candidate = allocators.Lookup[allocatorId];
 
 			if (candidate != null)
 			{
@@ -24,8 +24,8 @@ namespace Massive
 			var allocator = new Allocator<T>(DefaultValueUtils.GetDefaultValueFor<T>());
 			var cloner = new AllocatorCloner<T>(allocator);
 
-			allocators.Insert(info.FullName, allocator, cloner);
-			allocators.Lookup[info.Index] = allocator;
+			allocators.Insert(AllocatorId<T>.FullName, allocator, cloner);
+			allocators.Lookup[allocatorId] = allocator;
 
 			return allocator;
 		}
@@ -33,11 +33,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AutoAllocator<T> AutoAllocator<T>(this World world) where T : unmanaged
 		{
-			var info = AllocatorId<T>.Info;
+			var allocatorId = AllocatorId<T>.Index;
 			var allocatorRegistry = world.Allocators;
 
-			allocatorRegistry.EnsureLookupAt(info.Index);
-			var candidate = allocatorRegistry.Lookup[info.Index];
+			allocatorRegistry.EnsureLookupAt(allocatorId);
+			var candidate = allocatorRegistry.Lookup[allocatorId];
 
 			if (candidate != null)
 			{
@@ -47,8 +47,8 @@ namespace Massive
 			var allocator = new Allocator<T>(DefaultValueUtils.GetDefaultValueFor<T>());
 			var cloner = new AllocatorCloner<T>(allocator);
 
-			allocatorRegistry.Insert(info.FullName, allocator, cloner);
-			allocatorRegistry.Lookup[info.Index] = allocator;
+			allocatorRegistry.Insert(AllocatorId<T>.FullName, allocator, cloner);
+			allocatorRegistry.Lookup[allocatorId] = allocator;
 
 			return new AutoAllocator<T>(allocator, allocatorRegistry);
 		}
@@ -60,30 +60,27 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void AutoFree(this World world, int id, AllocatorChunkId allocatorChunkId)
+		public static WorkableVar<T> AllocVar<T>(this World world, T value = default) where T : unmanaged
 		{
-			world.Allocators.Track(id, allocatorChunkId.ChunkId, allocatorChunkId.AllocatorId);
+			return world.AutoAllocator<T>().AllocVar(value);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void AutoFree(this World world, int id, AllocatorListIds allocatorListIds)
+		public static WorkableVar<T> AllocAutoVar<T>(this World world, int id, T value = default) where T : unmanaged
 		{
-			world.Allocators.Track(id, allocatorListIds.Items, allocatorListIds.ItemsId);
-			world.Allocators.Track(id, allocatorListIds.Count, world.Allocators.IntId);
+			return world.AutoAllocator<T>().AllocAutoVar(id, value);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableVar<T> AllocVar<T>(this World world) where T : unmanaged
+		public static WorkableChunk<T> AllocChunk<T>(this World world, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
-			var allocator = world.Allocator<T>();
-			return new WorkableVar<T>(allocator.Alloc(1), allocator);
+			return world.AutoAllocator<T>().AllocChunk(minimumLength, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableChunk<T> AllocChunk<T>(this World world, int length = 0) where T : unmanaged
+		public static WorkableChunk<T> AllocAutoChunk<T>(this World world, int id, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
-			var allocator = world.Allocator<T>();
-			return new WorkableChunk<T>(allocator.Alloc(length), allocator);
+			return world.AutoAllocator<T>().AllocAutoChunk(id, minimumLength, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -105,10 +102,23 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free(this World world, AllocatorListIds allocatorListIds)
+		public static void Free(this World world, AllocatorListId allocatorListId)
 		{
-			world.Allocators.Lookup[allocatorListIds.ItemsId].Free(allocatorListIds.Items);
-			world.Allocators.Lookup[world.Allocators.IntId].Free(allocatorListIds.Count);
+			world.Allocators.Lookup[allocatorListId.ItemsId].Free(allocatorListId.Items);
+			world.Allocators.Lookup[world.Allocators.IntId].Free(allocatorListId.Count);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void AutoFree(this World world, int id, AllocatorChunkId allocatorChunkId)
+		{
+			world.Allocators.TrackAllocation(id, allocatorChunkId.ChunkId, allocatorChunkId.AllocatorId);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void AutoFree(this World world, int id, AllocatorListId allocatorListId)
+		{
+			world.Allocators.TrackAllocation(id, allocatorListId.Items, allocatorListId.ItemsId);
+			world.Allocators.TrackAllocation(id, allocatorListId.Count, world.Allocators.IntId);
 		}
 	}
 }

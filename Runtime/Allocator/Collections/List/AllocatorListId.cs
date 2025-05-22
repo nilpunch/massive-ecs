@@ -1,6 +1,6 @@
 ﻿namespace Massive
 {
-	public readonly ref struct AllocatorListIds
+	public readonly ref struct AllocatorListId
 	{
 		public readonly ChunkId Items;
 		public readonly ChunkId Count;
@@ -11,7 +11,7 @@
 		/// </summary>
 		public readonly int ItemsId;
 
-		public AllocatorListIds(ChunkId items, ChunkId count, int itemsId)
+		public AllocatorListId(ChunkId items, ChunkId count, int itemsId)
 		{
 			Items = items;
 			Count = count;

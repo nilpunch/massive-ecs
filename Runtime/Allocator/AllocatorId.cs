@@ -52,8 +52,6 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public static class AllocatorId<T> where T : unmanaged
 	{
-		public static readonly AllocatorIdInfo Info;
-
 		/// <summary>
 		/// Non-deterministic, used for lookups.<br/>
 		/// Don't store it in simulation.
@@ -68,13 +66,10 @@ namespace Massive
 			var index = AllocatorId.IncrementTypeCounter();
 			var typeName = type.GetFullGenericName();
 
-			var info = new AllocatorIdInfo(index, typeName);
-
-			Info = info;
 			Index = index;
 			FullName = typeName;
 
-			AllocatorId.Register(type, info);
+			AllocatorId.Register(type, new AllocatorIdInfo(index, typeName));
 		}
 	}
 
