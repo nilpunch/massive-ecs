@@ -35,7 +35,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableVar<T> AllocVar(T value = default)
 		{
-			var chunkId = Allocator.Alloc(1);
+			var chunkId = Allocator.Alloc(1, MemoryInit.Uninitialized);
 			Allocator.Data[Allocator.Chunks[chunkId.Id].Offset] = value;
 			return new WorkableVar<T>(chunkId, Allocator);
 		}
@@ -43,7 +43,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableVar<T> AllocAutoVar(int id, T value = default)
 		{
-			var chunkId = Allocator.Alloc(1);
+			var chunkId = Allocator.Alloc(1, MemoryInit.Uninitialized);
 			Allocator.Data[Allocator.Chunks[chunkId.Id].Offset] = value;
 			Registry.TrackAllocation(id, chunkId, AllocatorId);
 			return new WorkableVar<T>(chunkId, Allocator);

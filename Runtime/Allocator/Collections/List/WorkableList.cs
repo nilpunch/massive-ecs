@@ -9,7 +9,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct WorkableList<T> where T : unmanaged
+	public readonly ref struct WorkableList<T> where T : unmanaged
 	{
 		private readonly WorkableChunk<T> _items;
 		private readonly WorkableVar<int> _count;
