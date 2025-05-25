@@ -32,6 +32,13 @@ namespace Massive
 			return new ListHandle<T>(list._items.ChunkId, list._count.ChunkId);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Free()
+		{
+			_items.Free();
+			_count.Free();
+		}
+
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -55,6 +62,19 @@ namespace Massive
 			ref var count = ref _count.Value;
 			EnsureCapacityAt(count);
 			_items[count++] = item;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Remove(T item)
+		{
+			var index = IndexOf(item);
+			if (index >= 0)
+			{
+				RemoveAt(index);
+				return true;
+			}
+
+			return false;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

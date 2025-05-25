@@ -32,14 +32,14 @@ namespace Massive
 
 			void RemoveFromAll(int entityId)
 			{
-				Allocators.Free(entityId);
-
 				var setCount = allSets.Count;
 				var sets = allSets.Items;
 				for (var i = setCount - 1; i >= 0; i--)
 				{
 					sets[i].Remove(entityId);
 				}
+
+				Allocators.Free(entityId);
 			}
 		}
 	}

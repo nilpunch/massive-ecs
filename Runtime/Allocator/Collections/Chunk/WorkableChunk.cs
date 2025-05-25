@@ -37,6 +37,12 @@ namespace Massive
 			return new ChunkHandle<T>(chunk.ChunkId);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Free()
+		{
+			Allocator.Free(ChunkId);
+		}
+
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -75,12 +81,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item, int startIndex, int count)
 		{
-			if (startIndex + count >= Allocator.Chunks[ChunkId.Id].Offset + Allocator.Chunks[ChunkId.Id].Length)
+			var chunk = Allocator.Chunks[ChunkId.Id];
+
+			if (startIndex + count >= chunk.Offset + chunk.Length)
 			{
 				return -1;
 			}
 
-			return Array.IndexOf(Allocator.Data, item, Allocator.Chunks[ChunkId.Id].Offset + startIndex, count);
+			return Array.IndexOf(Allocator.Data, item, chunk.Offset + startIndex, count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

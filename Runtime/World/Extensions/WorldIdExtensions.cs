@@ -43,7 +43,8 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates a unique entity with components of another entity and returns the entity ID.
+		/// Creates a unique entity with components of another entity and returns the entity ID.<br/>
+		/// Makes shallow copy of each component.
 		/// </summary>
 		/// <remarks>
 		/// Throws if the entity with this ID is not alive.

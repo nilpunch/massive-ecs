@@ -55,7 +55,8 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Creates a unique entity with components of another entity.
+		/// Creates a unique entity with components of another entity.<br/>
+		/// Makes shallow copy of each component.
 		/// </summary>
 		/// <remarks>
 		/// Throws if the entity is not alive.

@@ -32,6 +32,12 @@ namespace Massive
 			return new VarHandle<T>(chunk.ChunkId);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Free()
+		{
+			Allocator.Free(ChunkId);
+		}
+
 		public ref T Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
