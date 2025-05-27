@@ -148,6 +148,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Free(AllocatorChunkId allocatorChunkId)
+		{
+			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, allocatorChunkId);
+
+			Free(allocatorChunkId.ChunkId);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free(ChunkId chunkId)
 		{
 			ChunkNotFoundException.ThrowIfNotInCountRange(this, chunkId);
@@ -160,6 +168,14 @@ namespace Massive
 			chunk.NextFreeId = ~ChunkFreeLists[freeList];
 			MathUtils.IncrementWrapTo1(ref chunk.Version);
 			ChunkFreeLists[freeList] = chunkId.Id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool TryFree(AllocatorChunkId allocatorChunkId)
+		{
+			ChunkNotFoundException.ThrowIfFromOtherAllocator(this, allocatorChunkId);
+
+			return TryFree(allocatorChunkId.ChunkId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -33,9 +33,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ChunkId(VarHandle<T> handle)
+		public static implicit operator AllocatorChunkId(VarHandle<T> handle)
 		{
-			return handle.ChunkId;
+			return new AllocatorChunkId(handle.ChunkId, AllocatorId<T>.Index);
 		}
 
 		[UnityEngine.Scripting.Preserve]

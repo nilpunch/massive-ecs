@@ -101,7 +101,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void RemoveAtSwap(int index)
+		public void RemoveAtSwapBack(int index)
 		{
 			ref var count = ref _count.Value;
 			AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, count);
