@@ -2,7 +2,7 @@
 
 <img align="right" width="180" height="180" src="https://github.com/user-attachments/assets/2a7bb2d3-75f1-43cd-8ac9-9ffb2edc0056" />
 
-`Massive` is a lightweight and easy-to-use library for game programming and more.  
+`Massive` is a fast and simple library for game programming and more.  
 Designed for use in games with deterministic prediction-rollback netcode.  
 Based on sparse sets. Inspired by [EnTT](https://github.com/skypjack/entt).
 
@@ -23,22 +23,29 @@ See minimum required Unity version in the `package.json` file.
 
 This is **a library**, not a framework. Thus, it does not try to take control of the user codebase or the main game loop.
 
+It’s organized as a set of loosely coupled containers that can be used in different ways.
+
 ### Entity Component System ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System))
 
-- Fast and simple.
-- No code generation.
-- No archetypes or bitsets.
-- Fully managed, no unsafe code.
+Design considerations:
+
+- Deterministic with lazy initialization.
+- Component definition is configuration — no extra boilerplate.
+- No deferred command execution — all changes apply immediately.
+- Minimal storage for fast saving. No archetypes or bitsets.
+- Fully managed — no unsafe code, no `Dispose()` methods.
 - Supports components of any type.
-- No allocations and minimal memory consumption.
-- No deferred command execution — all changes take effect immediately.
+- IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
+
+Features:
+
 - `Clone()` and `CopyTo(other)` methods for creating snapshots.  
   Ideal for implementing replays, undo/redo, or rollbacks.
 - Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for adaptive iteration over entities and components.
 - Fully stable storage (no reference invalidation) on demand:
   - Use the `Stable` attribute for components.
   - Or enable full stability for the entire world.
-- IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
+- `Allocator` lets you use collections inside components and easily integrate external tools in rollback pipeline.
 
 ### Rollbacks ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks))
 
@@ -72,7 +79,7 @@ var world = new World();
 
 // Create entities.
 var enemy = world.Create(); // Empty entity.
-var player = world.Create(new Player()); // With a component.
+var player = world.Create<Player>(); // With a component.
 
 // Add components.
 world.Add<Velocity>(player); // Adds component without initializing data.

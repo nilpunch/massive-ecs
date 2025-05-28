@@ -7,11 +7,11 @@
 - `SetRegistry` renamed to `Sets`.
 - `FilterRegistry` renamed to `Filters`.
 - `AllocatorRegistry` renamed to `Allocators`.
-- `Destroy` no longer throws when called with a dead entity.
+- `Destroy()` no longer throws when called with a dead entity.
 - Replaced `MassiveAssert` with individual exceptions.
-- `World.Set` now throws if the component has no associated data.
+- `World.Set()` now throws if the component has no associated data.
 
-## 20.0.2-alpha - April 27, 2025
+## 20.0.0-alpha.2 - April 27, 2025
 
 ### Added
 
@@ -29,7 +29,7 @@
   - Alive entities start with version 1.
   - Entities with version 0 are now considered dead.
 
-## 20.0.1-alpha - April 27, 2025
+## 20.0.0-alpha.1 - April 27, 2025
 
 ### Fixed
 
