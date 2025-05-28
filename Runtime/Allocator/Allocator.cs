@@ -60,10 +60,19 @@ namespace Massive
 			}
 			else
 			{
-				// Create new chunk.
-				chunkId = ChunkCount;
-				EnsureChunkAt(chunkId);
-				ChunkCount += 1;
+				if (ChunkFreeLists[0] != FreeListEndId)
+				{
+					// Reuse 0-length free chunk.
+					chunkId = ChunkFreeLists[0];
+					ChunkFreeLists[0] = ~Chunks[chunkId].NextFreeId;
+				}
+				else
+				{
+					// Create new chunk.
+					chunkId = ChunkCount;
+					EnsureChunkAt(chunkId);
+					ChunkCount += 1;
+				}
 
 				var offset = UsedSpace;
 				EnsureDataCapacity(offset + chunkLength);
@@ -96,7 +105,7 @@ namespace Massive
 				return;
 			}
 
-			var orignialFreeList = MathUtils.FastLog2(chunk.Length) + 1;
+			var originalFreeList = MathUtils.FastLog2(chunk.Length) + 1;
 			var swapFreeList = MathUtils.FastLog2(newLength) + 1;
 
 			var swapId = ChunkFreeLists[swapFreeList];
@@ -115,22 +124,30 @@ namespace Massive
 				(chunk.Offset, swapChunk.Offset) = (swapChunk.Offset, chunk.Offset);
 				chunk.Length = newLength;
 
-				swapChunk.NextFreeId = ~ChunkFreeLists[orignialFreeList];
-				ChunkFreeLists[orignialFreeList] = swapId;
+				swapChunk.NextFreeId = ~ChunkFreeLists[originalFreeList];
+				ChunkFreeLists[originalFreeList] = swapId;
 			}
 			else
 			{
-				// Create new chunk to swap with current one.
-				swapId = ChunkCount;
-				EnsureChunkAt(swapId);
-				ChunkCount += 1;
-
-				chunk = ref Chunks[chunkId.Id]; // Revalidate reference after resize.
+				if (ChunkFreeLists[0] != FreeListEndId)
+				{
+					// Reuse 0-length free chunk to swap with current one.
+					swapId = ChunkFreeLists[0];
+					ChunkFreeLists[0] = ~Chunks[swapId].NextFreeId;
+				}
+				else
+				{
+					// Create new chunk to swap with current one.
+					swapId = ChunkCount;
+					EnsureChunkAt(swapId);
+					ChunkCount += 1;
+					chunk = ref Chunks[chunkId.Id]; // Revalidate reference after resize.
+				}
 
 				ref var swapChunk = ref Chunks[swapId];
 				swapChunk.Offset = chunk.Offset;
-				swapChunk.NextFreeId = ~ChunkFreeLists[orignialFreeList];
-				ChunkFreeLists[orignialFreeList] = swapId;
+				swapChunk.NextFreeId = ~ChunkFreeLists[originalFreeList];
+				ChunkFreeLists[originalFreeList] = swapId;
 
 				var offset = UsedSpace;
 				EnsureDataCapacity(offset + newLength);
@@ -268,70 +285,5 @@ namespace Massive
 		protected abstract void CopyData(int source, int destination, int length);
 
 		protected abstract void ClearData(int start, int length);
-	}
-
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public sealed class Allocator<T> : Allocator where T : unmanaged
-	{
-		public T DefaultValue { get; }
-
-		public T[] Data { get; private set; } = Array.Empty<T>();
-
-		private int DataCapacity { get; set; }
-
-		public Allocator(T defaultValue = default)
-			: base(AllocatorId<T>.Index)
-		{
-			DefaultValue = defaultValue;
-		}
-
-		public override void EnsureDataCapacity(int capacity)
-		{
-			if (capacity > DataCapacity)
-			{
-				DataCapacity = MathUtils.NextPowerOf2(capacity);
-				Data = Data.Resize(DataCapacity);
-			}
-		}
-
-		protected override void CopyData(int source, int destination, int length)
-		{
-			Array.Copy(Data, source, Data, destination, length);
-		}
-
-		protected override void ClearData(int start, int length)
-		{
-			Array.Fill(Data, DefaultValue, start, length);
-		}
-
-		public override Type ElementType => typeof(T);
-
-		public override Array RawData => Data;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Allocator<T> Clone()
-		{
-			var clone = new Allocator<T>();
-			CopyTo(clone);
-			return clone;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(Allocator<T> other)
-		{
-			other.EnsureDataCapacity(UsedSpace);
-
-			Array.Copy(Chunks, other.Chunks, ChunkCount);
-			Array.Copy(ChunkFreeLists, other.ChunkFreeLists, FreeListsLength);
-			Array.Copy(Data, other.Data, UsedSpace);
-
-			if (ChunkCount < other.ChunkCount)
-			{
-				Array.Fill(other.Chunks, Chunk.DefaultValid, ChunkCount, other.ChunkCount - ChunkCount);
-			}
-
-			other.SetState(ChunkCount, UsedSpace);
-		}
 	}
 }
