@@ -10,13 +10,12 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly ref struct WorkableChunk<T> where T : unmanaged
+	public readonly ref struct WorkableArray<T> where T : unmanaged
 	{
 		public readonly ChunkId ChunkId;
-
 		public readonly Allocator<T> Allocator;
 
-		public WorkableChunk(ChunkId chunkId, Allocator<T> allocator)
+		public WorkableArray(ChunkId chunkId, Allocator<T> allocator)
 		{
 			// Assert.
 			allocator.GetChunk(chunkId);
@@ -26,15 +25,15 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator AllocatorChunkId(WorkableChunk<T> chunk)
+		public static implicit operator AllocatorChunkId(WorkableArray<T> array)
 		{
-			return new AllocatorChunkId(chunk.ChunkId, chunk.Allocator.AllocatorId);
+			return new AllocatorChunkId(array.ChunkId, array.Allocator.AllocatorId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ChunkHandle<T>(WorkableChunk<T> chunk)
+		public static implicit operator ArrayHandle<T>(WorkableArray<T> array)
 		{
-			return new ChunkHandle<T>(chunk.ChunkId);
+			return new ArrayHandle<T>(array.ChunkId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,10 +91,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(int sourceIndex, WorkableChunk<T> destinationChunk, int destinationIndex, int length)
+		public void CopyTo(int sourceIndex, WorkableArray<T> destinationArray, int destinationIndex, int length)
 		{
 			Array.Copy(Allocator.Data, Allocator.Chunks[ChunkId.Id].Offset + sourceIndex,
-				destinationChunk.Allocator.Data, destinationChunk.Allocator.Chunks[ChunkId.Id].Offset + destinationIndex,
+				destinationArray.Allocator.Data, destinationArray.Allocator.Chunks[ChunkId.Id].Offset + destinationIndex,
 				length);
 		}
 
@@ -129,7 +128,7 @@ namespace Massive
 			private readonly int _length;
 			private int _index;
 
-			public Enumerator(WorkableChunk<T> list)
+			public Enumerator(WorkableArray<T> list)
 			{
 				_data = list.Allocator.Data;
 				_offset = list.Allocator.Chunks[list.ChunkId.Id].Offset;
@@ -137,7 +136,7 @@ namespace Massive
 				_index = -1;
 			}
 
-			public Enumerator(WorkableChunk<T> list, int start, int length)
+			public Enumerator(WorkableArray<T> list, int start, int length)
 			{
 				_data = list.Allocator.Data;
 				_offset = list.Allocator.Chunks[list.ChunkId.Id].Offset + start;

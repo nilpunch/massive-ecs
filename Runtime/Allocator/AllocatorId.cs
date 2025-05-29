@@ -9,6 +9,32 @@ namespace Massive
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	public static class AllocatorId<T> where T : unmanaged
+	{
+		/// <summary>
+		/// Non-deterministic, used for lookups.<br/>
+		/// Don't store it in simulation.
+		/// </summary>
+		public static readonly int Index;
+
+		public static readonly string FullName;
+
+		static AllocatorId()
+		{
+			var type = typeof(T);
+			var index = AllocatorId.IncrementTypeCounter();
+			var typeName = type.GetFullGenericName();
+
+			Index = index;
+			FullName = typeName;
+
+			AllocatorId.Register(type, new AllocatorIdInfo(index, typeName));
+		}
+	}
+
+	[Il2CppEagerStaticClassConstruction]
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public static class AllocatorId
 	{
 		private static readonly Dictionary<Type, AllocatorIdInfo> s_typeInfo = new Dictionary<Type, AllocatorIdInfo>();
@@ -44,32 +70,6 @@ namespace Massive
 				Array.Resize(ref s_types, MathUtils.NextPowerOf2(info.Index + 1));
 			}
 			s_types[info.Index] = type;
-		}
-	}
-
-	[Il2CppEagerStaticClassConstruction]
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public static class AllocatorId<T> where T : unmanaged
-	{
-		/// <summary>
-		/// Non-deterministic, used for lookups.<br/>
-		/// Don't store it in simulation.
-		/// </summary>
-		public static readonly int Index;
-
-		public static readonly string FullName;
-
-		static AllocatorId()
-		{
-			var type = typeof(T);
-			var index = AllocatorId.IncrementTypeCounter();
-			var typeName = type.GetFullGenericName();
-
-			Index = index;
-			FullName = typeName;
-
-			AllocatorId.Register(type, new AllocatorIdInfo(index, typeName));
 		}
 	}
 

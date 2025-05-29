@@ -5,35 +5,35 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct ChunkHandle<T> where T : unmanaged
+	public readonly struct ArrayHandle<T> where T : unmanaged
 	{
 		public readonly ChunkId ChunkId;
 
-		public ChunkHandle(ChunkId chunkId)
+		public ArrayHandle(ChunkId chunkId)
 		{
 			ChunkId = chunkId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableChunk<T> In(World world)
+		public WorkableArray<T> In(World world)
 		{
-			return new WorkableChunk<T>(ChunkId, (Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index]);
+			return new WorkableArray<T>(ChunkId, (Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableChunk<T> In(Allocator<T> allocator)
+		public WorkableArray<T> In(Allocator<T> allocator)
 		{
-			return new WorkableChunk<T>(ChunkId, allocator);
+			return new WorkableArray<T>(ChunkId, allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableChunk<T> In(AutoAllocator<T> allocator)
+		public WorkableArray<T> In(AutoAllocator<T> allocator)
 		{
-			return new WorkableChunk<T>(ChunkId, allocator.Allocator);
+			return new WorkableArray<T>(ChunkId, allocator.Allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator AllocatorChunkId(ChunkHandle<T> handle)
+		public static implicit operator AllocatorChunkId(ArrayHandle<T> handle)
 		{
 			return new AllocatorChunkId(handle.ChunkId, AllocatorId<T>.Index);
 		}

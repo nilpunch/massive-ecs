@@ -2,11 +2,6 @@
 
 namespace Massive
 {
-	public abstract class AllocatorCloner
-	{
-		public abstract void CopyTo(Allocators allocators);
-	}
-
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public sealed class AllocatorCloner<T> : AllocatorCloner where T : unmanaged
@@ -22,5 +17,10 @@ namespace Massive
 		{
 			_allocator.CopyTo((Allocator<T>)allocators.Get<T>());
 		}
+	}
+
+	public abstract class AllocatorCloner
+	{
+		public abstract void CopyTo(Allocators allocators);
 	}
 }

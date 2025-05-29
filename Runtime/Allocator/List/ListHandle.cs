@@ -7,33 +7,33 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct ListHandle<T> where T : unmanaged
 	{
-		public readonly ChunkId Items;
-		public readonly ChunkId Count;
+		private readonly ChunkId _items;
+		private readonly ChunkId _count;
 
 		public ListHandle(ChunkId items, ChunkId count)
 		{
-			Items = items;
-			Count = count;
+			_items = items;
+			_count = count;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableList<T> In(World world)
 		{
-			return new WorkableList<T>(Items, Count,
+			return new WorkableList<T>(_items, _count,
 				(Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index],
 				world.Allocators.IntAllocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableList<T> In(ListAllocator<T> allocator)
+		public WorkableList<T> In(AutoAllocator<T> allocator)
 		{
-			return new WorkableList<T>(Items, Count, allocator.Items, allocator.Count);
+			return new WorkableList<T>(_items, _count, allocator.Allocator, allocator.Allocators.IntAllocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static implicit operator AllocatorListId(ListHandle<T> handle)
 		{
-			return new AllocatorListId(handle.Items, handle.Count, AllocatorId<T>.Index);
+			return new AllocatorListId(handle._items, handle._count, AllocatorId<T>.Index);
 		}
 
 		[UnityEngine.Scripting.Preserve]

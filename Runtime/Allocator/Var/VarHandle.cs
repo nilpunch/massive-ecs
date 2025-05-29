@@ -7,35 +7,35 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct VarHandle<T> where T : unmanaged
 	{
-		public readonly ChunkId ChunkId;
+		private readonly ChunkId _chunkId;
 
 		public VarHandle(ChunkId chunkId)
 		{
-			ChunkId = chunkId;
+			_chunkId = chunkId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableVar<T> In(World world)
 		{
-			return new WorkableVar<T>(ChunkId, (Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index]);
+			return new WorkableVar<T>(_chunkId, (Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableVar<T> In(Allocator<T> allocator)
 		{
-			return new WorkableVar<T>(ChunkId, allocator);
+			return new WorkableVar<T>(_chunkId, allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableVar<T> In(AutoAllocator<T> allocator)
 		{
-			return new WorkableVar<T>(ChunkId, allocator.Allocator);
+			return new WorkableVar<T>(_chunkId, allocator.Allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static implicit operator AllocatorChunkId(VarHandle<T> handle)
 		{
-			return new AllocatorChunkId(handle.ChunkId, AllocatorId<T>.Index);
+			return new AllocatorChunkId(handle._chunkId, AllocatorId<T>.Index);
 		}
 
 		[UnityEngine.Scripting.Preserve]

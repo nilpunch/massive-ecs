@@ -11,12 +11,12 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly ref struct WorkableList<T> where T : unmanaged
 	{
-		private readonly WorkableChunk<T> _items;
+		private readonly WorkableArray<T> _items;
 		private readonly WorkableVar<int> _count;
 
 		public WorkableList(ChunkId items, ChunkId count, Allocator<T> itemsAllocator, Allocator<int> countAllocator)
 		{
-			_items = new WorkableChunk<T>(items, itemsAllocator);
+			_items = new WorkableArray<T>(items, itemsAllocator);
 			_count = new WorkableVar<int>(count, countAllocator);
 		}
 
@@ -133,9 +133,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableChunk<T>.Enumerator GetEnumerator()
+		public WorkableArray<T>.Enumerator GetEnumerator()
 		{
-			return new WorkableChunk<T>.Enumerator(_items, 0, Count);
+			return new WorkableArray<T>.Enumerator(_items, 0, Count);
 		}
 	}
 }

@@ -8,7 +8,6 @@ namespace Massive
 	public readonly ref struct WorkableVar<T> where T : unmanaged
 	{
 		public readonly ChunkId ChunkId;
-
 		public readonly Allocator<T> Allocator;
 
 		public WorkableVar(ChunkId chunkId, Allocator<T> allocator)

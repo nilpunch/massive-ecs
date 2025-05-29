@@ -54,12 +54,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ListAllocator<T> ListAllocator<T>(this World world) where T : unmanaged
-		{
-			return new ListAllocator<T>(world.Allocators);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableVar<T> AllocVar<T>(this World world, T value = default) where T : unmanaged
 		{
 			return world.AutoAllocator<T>().AllocVar(value);
@@ -72,27 +66,27 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableChunk<T> AllocChunk<T>(this World world, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
+		public static WorkableArray<T> AllocArray<T>(this World world, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
-			return world.AutoAllocator<T>().AllocChunk(minimumLength, memoryInit);
+			return world.AutoAllocator<T>().AllocArray(minimumLength, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableChunk<T> AllocAutoChunk<T>(this World world, int id, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
+		public static WorkableArray<T> AllocAutoArray<T>(this World world, int id, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
-			return world.AutoAllocator<T>().AllocAutoChunk(id, minimumLength, memoryInit);
+			return world.AutoAllocator<T>().AllocAutoArray(id, minimumLength, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableList<T> AllocList<T>(this World world, int capacity = 0) where T : unmanaged
 		{
-			return world.ListAllocator<T>().AllocList();
+			return world.AutoAllocator<T>().AllocList(capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableList<T> AllocAutoList<T>(this World world, int id, int capacity = 0) where T : unmanaged
 		{
-			return world.ListAllocator<T>().AllocAutoList(id, capacity);
+			return world.AutoAllocator<T>().AllocAutoList(id, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -16,9 +16,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableChunk<T> AllocChunk<T>(this Allocator<T> allocator, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
+		public static WorkableArray<T> AllocArray<T>(this Allocator<T> allocator, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
-			return new WorkableChunk<T>(allocator.Alloc(minimumLength, memoryInit), allocator);
+			return new WorkableArray<T>(allocator.Alloc(minimumLength, memoryInit), allocator);
 		}
 	}
 }

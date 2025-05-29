@@ -3,26 +3,26 @@ namespace Massive.Samples.Basic
 	class PureAllocatorSample
 	{
 		Allocator<int> Allocator;
-		ChunkHandle<int> Values;
+		ArrayHandle<int> Values;
 
 		void Allocate()
 		{
 			Allocator = new Allocator<int>();
 
-			// Allocate an empty chunk (same as new int[0]).
-			var chunk = Allocator.AllocChunk(0);
+			// Allocate an empty array (same as new int[0]).
+			var array = Allocator.AllocArray(0);
 
-			// Store the chunk using a handle.
+			// Store the array using a handle.
 			// Handles are unmanaged and safe to store in simulation.
-			Values = chunk;
+			Values = array;
 		}
 
 		void Use()
 		{
-			// To access the chunk, combine the handle with the allocator.
+			// To access the array, combine the handle with the allocator.
 			var values = Values.In(Allocator);
 
-			// Resize the chunk whenever needed. The handle stays valid.
+			// Resize the array whenever needed. The handle stays valid.
 			values.Resize(2);
 
 			// Use it like a normal array: index, iterate, modify, copy.
@@ -36,7 +36,7 @@ namespace Massive.Samples.Basic
 
 		void Free()
 		{
-			// Free the chunk when you're done with it.
+			// Free the array when you're done with it.
 			Allocator.Free(Values);
 		}
 	}

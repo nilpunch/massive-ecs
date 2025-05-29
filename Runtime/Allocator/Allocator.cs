@@ -48,7 +48,7 @@ namespace Massive
 			var chunkId = ChunkFreeLists[freeList];
 			if (chunkId != FreeListEndId)
 			{
-				// Reuse existing free chunk.
+				// Reuse existing free chunk of equal size.
 				ref var chunk = ref Chunks[chunkId];
 				ChunkFreeLists[freeList] = ~chunk.NextFreeId;
 				chunk.Length = chunkLength;
