@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -11,7 +12,26 @@ namespace Massive
 		public static Filter Filter<TInclude>(this World world)
 			where TInclude : IIncludeSelector, new()
 		{
-			return world.Filters.Get<TInclude, None>();
+			var info = TypeId<Tuple<TInclude, None>>.Info;
+
+			var filters = world.Filters;
+
+			filters.EnsureLookupAt(info.Index);
+			var candidate = filters.Lookup[info.Index];
+
+			if (candidate != null)
+			{
+				return candidate;
+			}
+
+			var included = new TInclude().Select(world.Sets);
+			var excluded = Array.Empty<SparseSet>();
+
+			var filter = filters.Get(included, excluded);
+
+			filters.Lookup[info.Index] = filter;
+
+			return filter;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -19,7 +39,26 @@ namespace Massive
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
-			return world.Filters.Get<TInclude, TExclude>();
+			var info = TypeId<Tuple<TInclude, TExclude>>.Info;
+
+			var filters = world.Filters;
+
+			filters.EnsureLookupAt(info.Index);
+			var candidate = filters.Lookup[info.Index];
+
+			if (candidate != null)
+			{
+				return candidate;
+			}
+
+			var included = new TInclude().Select(world.Sets);
+			var excluded = new TExclude().Select(world.Sets);
+
+			var filter = filters.Get(included, excluded);
+
+			filters.Lookup[info.Index] = filter;
+
+			return filter;
 		}
 	}
 }

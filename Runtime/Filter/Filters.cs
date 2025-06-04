@@ -13,17 +13,19 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Filters
 	{
-		private readonly GenericLookup<Filter> _filterLookup = new GenericLookup<Filter>();
-		private readonly Dictionary<int, Filter> _codeLookup = new Dictionary<int, Filter>();
-		private readonly Sets _sets;
-		private readonly SparseSetComparer _sparseSetComparer;
+		private Sets Sets { get; }
+		private SetComparer Comparer { get; }
+
+		private Dictionary<int, Filter> CombinationLookup { get; } = new Dictionary<int, Filter>();
+
+		public Filter[] Lookup { get; private set; } = Array.Empty<Filter>();
 
 		public Filter Empty { get; } = new Filter();
 
 		public Filters(Sets sets)
 		{
-			_sets = sets;
-			_sparseSetComparer = new SparseSetComparer(_sets);
+			Sets = sets;
+			Comparer = new SetComparer(Sets);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -31,17 +33,22 @@ namespace Massive
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
-			var filter = _filterLookup.Find<Tuple<TInclude, TExclude>>();
+			var info = TypeId<Tuple<TInclude, TExclude>>.Info;
 
-			if (filter == null)
+			EnsureLookupAt(info.Index);
+			var candidate = Lookup[info.Index];
+
+			if (candidate != null)
 			{
-				var included = new TInclude().Select(_sets);
-				var excluded = new TExclude().Select(_sets);
-
-				filter = Get(included, excluded);
-
-				_filterLookup.Assign<Tuple<TInclude, TExclude>>(filter);
+				return candidate;
 			}
+
+			var included = new TInclude().Select(Sets);
+			var excluded = new TExclude().Select(Sets);
+
+			var filter = Get(included, excluded);
+
+			Lookup[info.Index] = filter;
 
 			return filter;
 		}
@@ -56,14 +63,14 @@ namespace Massive
 			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Include);
 			ConflictingFilterException.ThrowIfHasDuplicates(excluded, ConflictingFilterException.FilterType.Exclude);
 
-			Array.Sort(included, _sparseSetComparer.ByRegistryIndex);
-			Array.Sort(excluded, _sparseSetComparer.ByRegistryIndex);
+			Array.Sort(included, Comparer.ByIndex);
+			Array.Sort(excluded, Comparer.ByIndex);
 
-			var includeCode = SetUtils.GetOrderedHashCode(included, _sets);
-			var excludeCode = SetUtils.GetOrderedHashCode(excluded, _sets);
+			var includeCode = SetUtils.GetOrderedHashCode(included, Sets);
+			var excludeCode = SetUtils.GetOrderedHashCode(excluded, Sets);
 			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
 
-			if (_codeLookup.TryGetValue(fullCode, out var filter))
+			if (CombinationLookup.TryGetValue(fullCode, out var filter))
 			{
 				return filter;
 			}
@@ -71,24 +78,34 @@ namespace Massive
 			filter = included.Length != 0 || excluded.Length != 0
 				? new Filter(included, excluded)
 				: Empty;
-			_codeLookup.Add(fullCode, filter);
+			CombinationLookup.Add(fullCode, filter);
 			return filter;
 		}
 
-		private class SparseSetComparer
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsureLookupAt(int index)
 		{
-			public Sets Sets;
-			public readonly Comparison<SparseSet> ByRegistryIndex;
-
-			public SparseSetComparer(Sets sets)
+			if (index >= Lookup.Length)
 			{
-				Sets = sets;
-				ByRegistryIndex = Compare;
+				Lookup = Lookup.Resize(MathUtils.NextPowerOf2(index + 1));
+			}
+		}
+
+		private class SetComparer
+		{
+			private readonly Sets _sets;
+
+			public readonly Comparison<SparseSet> ByIndex;
+
+			public SetComparer(Sets sets)
+			{
+				_sets = sets;
+				ByIndex = Compare;
 			}
 
 			private int Compare(SparseSet a, SparseSet b)
 			{
-				return Sets.IndexOf(a).CompareTo(Sets.IndexOf(b));
+				return _sets.IndexOf(a).CompareTo(_sets.IndexOf(b));
 			}
 		}
 	}

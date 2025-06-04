@@ -28,6 +28,7 @@ namespace Massive
 			Config = worldConfig;
 
 			var allSets = Sets.AllSets;
+			var allocators = Allocators;
 			Entities.BeforeDestroyed += RemoveFromAll;
 
 			void RemoveFromAll(int entityId)
@@ -39,7 +40,7 @@ namespace Massive
 					sets[i].Remove(entityId);
 				}
 
-				Allocators.Free(entityId);
+				allocators.Free(entityId);
 			}
 		}
 	}
