@@ -4,7 +4,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class World
+	public partial class World
 	{
 		public Entities Entities { get; }
 

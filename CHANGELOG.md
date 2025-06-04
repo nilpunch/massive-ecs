@@ -4,12 +4,14 @@
 
 ### Changed
 
-- `SetRegistry` renamed to `Sets`.
-- `FilterRegistry` renamed to `Filters`.
-- `AllocatorRegistry` renamed to `Allocators`.
+- Renamed `SetRegistry` to `Sets`.
+- Renamed `FilterRegistry` to `Filters`.
+- Renamed `AllocatorRegistry` to `Allocators`.
 - `Destroy()` no longer throws when called with a dead entity.
 - Replaced `MassiveAssert` with individual exceptions.
 - `World.Set()` now throws if the component has no associated data.
+- Renamed `World.Filter()` to `World.GetFilter()`.
+- Made `World` act as a `View` to reduce boilerplate.
 
 ## 20.0.0-alpha.2 - April 27, 2025
 

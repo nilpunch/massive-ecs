@@ -94,19 +94,20 @@ Entity playerEntity = world.GetEntity(player);
 var deltaTime = 1f / 60f;
 
 // Iterate using lightweight views.
+// The world itself acts as a view too.
 var view = world.View();
 
-// Views will select only those entities that contain all the necessary components.
-view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
+// ForEach will select only those entities that contain all the necessary components.
+world.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
 {
 	position.Y += velocity.Magnitude * deltaTime;
-
+    
 	if (position.Y > 5f)
 	{
 		// Create and destroy any amount of entities during iteration.
 		world.Destroy(entityId);
 	}
-
+    
 	// NOTE:
 	// After destroying any entities, cached refs to components
 	// may become invalid for the current iteration cycle.
@@ -114,7 +115,7 @@ view.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
 });
 
 // Pass arguments to avoid boxing.
-view.ForEach((world, deltaTime),
+world.ForEach((world, deltaTime),
 	(ref Position position, ref Velocity velocity,
 		(World World, float DeltaTime) args) =>
 	{
@@ -123,8 +124,7 @@ view.ForEach((world, deltaTime),
 
 // Filter entities right in place.
 // You don't have to cache anything.
-world.View()
-	.Filter<Include<Player>, Exclude<Velocity>>()
+world.Filter<Include<Player>, Exclude<Velocity>>()
 	.ForEach((ref Position position) =>
 	{
 		// ...
@@ -132,18 +132,18 @@ world.View()
 
 // Iterate using foreach with data set.
 var positions = world.DataSet<Position>();
-foreach (var entityId in world.View().Include<Player, Position>())
+foreach (var entityId in world.Include<Player, Position>())
 {
 	ref Position position = ref positions.Get(entityId);
 	// ...
 }
 
-// Chain any amount of components in filters.
+// Chain any number of components in filters.
 var filter = world.Filter<
 	Include<int, string, bool, Include<short, byte, uint, Include<ushort>>>,
 	Exclude<long, char, float, Exclude<double>>>();
 
-// Reuse filter variable to reduce code duplication.
-world.View().Filter(filter).ForEach((ref int n, ref bool b) => { });
-world.View().Filter(filter).ForEach((ref string str) => { });
+// Reuse the same filter view to iterate over different components.
+filter.ForEach((ref int n, ref bool b) => { });
+filter.ForEach((ref string str) => { });
 ```
