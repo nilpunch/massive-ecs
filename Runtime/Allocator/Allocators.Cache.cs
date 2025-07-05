@@ -16,7 +16,7 @@ namespace Massive
 
 		public Allocators()
 		{
-			IntAllocator = (Allocator<int>)Get<int>();
+			IntAllocator = Get<int>();
 		}
 	}
 }

@@ -25,11 +25,11 @@ namespace Massive
 
 		private int ChunkCapacity { get; set; }
 
-		public int ChunkCount { get; private set; }
+		public int ChunkCount { get; protected set; }
 
 		public int[] ChunkFreeLists { get; } = new int[FreeListsLength];
 
-		public int UsedSpace { get; private set; }
+		public int UsedSpace { get; protected set; }
 
 		protected Allocator(int allocatorId)
 		{

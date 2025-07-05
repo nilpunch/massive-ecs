@@ -37,7 +37,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Allocator Get<T>() where T : unmanaged
+		public Allocator<T> Get<T>() where T : unmanaged
 		{
 			var allocatorId = AllocatorId<T>.Index;
 
@@ -46,7 +46,7 @@ namespace Massive
 
 			if (candidate != null)
 			{
-				return candidate;
+				return (Allocator<T>)candidate;
 			}
 
 			var allocator = new Allocator<T>(DefaultValueUtils.GetDefaultValueFor<T>());

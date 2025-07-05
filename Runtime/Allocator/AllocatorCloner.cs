@@ -15,7 +15,7 @@ namespace Massive
 
 		public override void CopyTo(Allocators allocators)
 		{
-			_allocator.CopyTo((Allocator<T>)allocators.Get<T>());
+			_allocator.CopyTo(allocators.Get<T>());
 		}
 	}
 
