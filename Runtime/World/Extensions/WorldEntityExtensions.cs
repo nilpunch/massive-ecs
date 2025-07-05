@@ -164,7 +164,13 @@ namespace Massive
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entities, entity);
 
-			return world.SparseSet<T>().Remove(entity.Id);
+			var typeIndex = TypeId<T>.Info.Index;
+			if (typeIndex >= world.Sets.LookupCapacity || world.Sets.Lookup[typeIndex] is null)
+			{
+				return false;
+			}
+
+			return world.Sets.Lookup[typeIndex].Remove(entity.Id);
 		}
 
 		/// <summary>
@@ -178,7 +184,13 @@ namespace Massive
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(world.Entities, entity);
 
-			return world.SparseSet<T>().Has(entity.Id);
+			var typeIndex = TypeId<T>.Info.Index;
+			if (typeIndex >= world.Sets.LookupCapacity || world.Sets.Lookup[typeIndex] is null)
+			{
+				return false;
+			}
+
+			return world.Sets.Lookup[typeIndex].Has(entity.Id);
 		}
 
 		/// <summary>
@@ -193,7 +205,10 @@ namespace Massive
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(world.Entities, entity);
 
-			var sparseSet = world.SparseSet<T>();
+			var typeIndex = TypeId<T>.Info.Index;
+			InvalidGetOperationException.ThrowIfLookupNotInitialized(entity, world.Sets, typeIndex);
+
+			var sparseSet = world.Sets.Lookup[typeIndex];
 
 			NoDataException.ThrowIfHasNoData(sparseSet, typeof(T), DataAccessContext.WorldGet);
 

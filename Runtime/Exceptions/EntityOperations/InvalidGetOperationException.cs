@@ -15,7 +15,7 @@ namespace Massive
 		{
 			if (!sparseSet.Has(id))
 			{
-				throw new InvalidGetOperationException($"You are trying to get data from the id:{id} that is not added.");
+				throw new InvalidGetOperationException($"You are trying to get data from the entity with id:{id} that is not added.");
 			}
 		}
 
@@ -36,6 +36,26 @@ namespace Massive
 			if (!entities.IsAlive(entityId))
 			{
 				throw new InvalidGetOperationException($"You are trying to get a component from the dead entity with id:{entityId}.");
+			}
+		}
+
+		[Conditional(Condition)]
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static void ThrowIfLookupNotInitialized(int id, Sets sets, int typeIndex)
+		{
+			if (typeIndex >= sets.LookupCapacity || sets.Lookup[typeIndex] is null)
+			{
+				throw new InvalidGetOperationException($"You are trying to get data from the entity with id:{id} that is not added.");
+			}
+		}
+
+		[Conditional(Condition)]
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static void ThrowIfLookupNotInitialized(Entity entity, Sets sets, int typeIndex)
+		{
+			if (typeIndex >= sets.LookupCapacity || sets.Lookup[typeIndex] is null)
+			{
+				throw new InvalidGetOperationException($"You are trying to get data from the entity {entity} that is not added.");
 			}
 		}
 	}

@@ -25,6 +25,8 @@ namespace Massive
 
 		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
 
+		public int LookupCapacity { get; private set; }
+
 		public SetFactory SetFactory { get; }
 
 		public Sets(SetFactory setFactory)
@@ -86,9 +88,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureLookupAt(int index)
 		{
-			if (index >= Lookup.Length)
+			if (index >= LookupCapacity)
 			{
-				Lookup = Lookup.Resize(MathUtils.NextPowerOf2(index + 1));
+				LookupCapacity = MathUtils.NextPowerOf2(index + 1);
+				Lookup = Lookup.Resize(LookupCapacity);
 			}
 		}
 

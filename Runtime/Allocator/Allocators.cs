@@ -25,6 +25,8 @@ namespace Massive
 
 		public Allocator[] Lookup { get; private set; } = Array.Empty<Allocator>();
 
+		public int LookupCapacity { get; private set; }
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Allocator GetExisting(string allocatorId)
 		{
@@ -80,9 +82,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureLookupAt(int index)
 		{
-			if (index >= Lookup.Length)
+			if (index >= LookupCapacity)
 			{
-				Lookup = Lookup.Resize(MathUtils.NextPowerOf2(index + 1));
+				LookupCapacity = MathUtils.NextPowerOf2(index + 1);
+				Lookup = Lookup.Resize(LookupCapacity);
 			}
 		}
 
