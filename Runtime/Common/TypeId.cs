@@ -7,6 +7,18 @@ using Unity.IL2CPP.CompilerServices;
 // ReSharper disable all StaticMemberInGenericType
 namespace Massive
 {
+	public readonly struct TypeIdInfo
+	{
+		public readonly int Index;
+		public readonly string FullName;
+
+		public TypeIdInfo(int index, string fullName)
+		{
+			Index = index;
+			FullName = fullName;
+		}
+	}
+
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]

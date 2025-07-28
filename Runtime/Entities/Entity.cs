@@ -6,7 +6,7 @@ namespace Massive
 	public readonly struct Entity : IEquatable<Entity>
 	{
 		/// <summary>
-		/// 0 counted as invalid.<br/>
+		/// 0 counted as invalid and dead.<br/>
 		/// [ Version: 32 bits | ID: 32 bits ]
 		/// </summary>
 		public readonly long VersionAndId;

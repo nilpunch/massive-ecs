@@ -110,15 +110,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(Allocator allocator)
-		{
-			return Array.IndexOf(Lookup, allocator);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Type TypeOf(Allocator allocator)
 		{
-			return AllocatorId.GetTypeByIndex(IndexOf(allocator));
+			return AllocatorId.GetTypeByIndex(allocator.AllocatorId);
 		}
 
 		/// <summary>
