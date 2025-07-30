@@ -12,7 +12,7 @@ namespace Massive
 	public static class WorldEntityExtensions
 	{
 		/// <summary>
-		/// Returns alive entity for this ID.
+		/// Returns entity for this ID.
 		/// </summary>
 		/// <remarks>
 		/// Throws if the entity with this ID is not alive.
@@ -21,6 +21,18 @@ namespace Massive
 		public static Entity GetEntity(this World world, int id)
 		{
 			return world.Entities.GetEntity(id);
+		}
+
+		/// <summary>
+		/// Returns world entity for this ID.
+		/// </summary>
+		/// <remarks>
+		/// Throws if the entity with this ID is not alive.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static WorldEntity GetWorldEntity(this World world, int id)
+		{
+			return new WorldEntity(world.Entities.GetEntity(id).VersionAndId, world);
 		}
 
 		/// <summary>
@@ -103,9 +115,6 @@ namespace Massive
 		/// <summary>
 		/// Checks whether the entity is alive.
 		/// </summary>
-		/// <remarks>
-		/// Throws if provided entity ID is negative.
-		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAlive(this World world, Entity entity)
 		{
@@ -124,11 +133,19 @@ namespace Massive
 		{
 			InvalidSetOperationException.ThrowIfEntityDead(world.Entities, entity);
 
-			var sparseSet = world.SparseSet<T>();
+			var info = TypeId<T>.Info;
 
-			NoDataException.ThrowIfHasNoData(sparseSet, typeof(T), DataAccessContext.WorldSet);
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
-			var dataSet = (DataSet<T>)sparseSet;
+			if (candidate == null)
+			{
+				candidate = world.Sets.Get<T>();
+			}
+
+			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldSet);
+
+			var dataSet = (DataSet<T>)candidate;
 
 			dataSet.Set(entity.Id, data);
 		}
@@ -147,7 +164,17 @@ namespace Massive
 		{
 			InvalidAddOperationException.ThrowIfEntityDead(world.Entities, entity);
 
-			return world.SparseSet<T>().Add(entity.Id);
+			var info = TypeId<T>.Info;
+
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
+
+			if (candidate == null)
+			{
+				candidate = world.Sets.Get<T>();
+			}
+
+			return candidate.Add(entity.Id);
 		}
 
 		/// <summary>
@@ -164,13 +191,17 @@ namespace Massive
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entities, entity);
 
-			var typeIndex = TypeId<T>.Info.Index;
-			if (typeIndex >= world.Sets.LookupCapacity || world.Sets.Lookup[typeIndex] is null)
+			var info = TypeId<T>.Info;
+
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
+
+			if (candidate == null)
 			{
-				return false;
+				candidate = world.Sets.Get<T>();
 			}
 
-			return world.Sets.Lookup[typeIndex].Remove(entity.Id);
+			return candidate.Remove(entity.Id);
 		}
 
 		/// <summary>
@@ -184,13 +215,17 @@ namespace Massive
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(world.Entities, entity);
 
-			var typeIndex = TypeId<T>.Info.Index;
-			if (typeIndex >= world.Sets.LookupCapacity || world.Sets.Lookup[typeIndex] is null)
+			var info = TypeId<T>.Info;
+
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
+
+			if (candidate == null)
 			{
-				return false;
+				candidate = world.Sets.Get<T>();
 			}
 
-			return world.Sets.Lookup[typeIndex].Has(entity.Id);
+			return candidate.Has(entity.Id);
 		}
 
 		/// <summary>
@@ -205,14 +240,19 @@ namespace Massive
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(world.Entities, entity);
 
-			var typeIndex = TypeId<T>.Info.Index;
-			InvalidGetOperationException.ThrowIfLookupNotInitialized(entity, world.Sets, typeIndex);
+			var info = TypeId<T>.Info;
 
-			var sparseSet = world.Sets.Lookup[typeIndex];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
-			NoDataException.ThrowIfHasNoData(sparseSet, typeof(T), DataAccessContext.WorldGet);
+			if (candidate == null)
+			{
+				candidate = world.Sets.Get<T>();
+			}
 
-			var dataSet = (DataSet<T>)sparseSet;
+			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldGet);
+
+			var dataSet = (DataSet<T>)candidate;
 
 			return ref dataSet.Get(entity.Id);
 		}

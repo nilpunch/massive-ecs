@@ -107,11 +107,19 @@ namespace Massive
 		{
 			InvalidSetOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var sparseSet = world.SparseSet<T>();
+			var info = TypeId<T>.Info;
 
-			NoDataException.ThrowIfHasNoData(sparseSet, typeof(T), DataAccessContext.WorldSet);
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
-			var dataSet = (DataSet<T>)sparseSet;
+			if (candidate == null)
+			{
+				candidate = world.Sets.Get<T>();
+			}
+
+			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldSet);
+
+			var dataSet = (DataSet<T>)candidate;
 
 			dataSet.Set(id, data);
 		}
@@ -130,7 +138,17 @@ namespace Massive
 		{
 			InvalidAddOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			return world.SparseSet<T>().Add(id);
+			var info = TypeId<T>.Info;
+
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
+
+			if (candidate == null)
+			{
+				candidate = world.Sets.Get<T>();
+			}
+
+			return candidate.Add(id);
 		}
 
 		/// <summary>
@@ -147,13 +165,17 @@ namespace Massive
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var typeIndex = TypeId<T>.Info.Index;
-			if (typeIndex >= world.Sets.LookupCapacity || world.Sets.Lookup[typeIndex] is null)
+			var info = TypeId<T>.Info;
+
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
+
+			if (candidate == null)
 			{
-				return false;
+				candidate = world.Sets.Get<T>();
 			}
 
-			return world.Sets.Lookup[typeIndex].Remove(id);
+			return candidate.Remove(id);
 		}
 
 		/// <summary>
@@ -167,13 +189,17 @@ namespace Massive
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var typeIndex = TypeId<T>.Info.Index;
-			if (typeIndex >= world.Sets.LookupCapacity || world.Sets.Lookup[typeIndex] is null)
+			var info = TypeId<T>.Info;
+
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
+
+			if (candidate == null)
 			{
-				return false;
+				candidate = world.Sets.Get<T>();
 			}
 
-			return world.Sets.Lookup[typeIndex].Has(id);
+			return candidate.Has(id);
 		}
 
 		/// <summary>
@@ -188,14 +214,19 @@ namespace Massive
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var typeIndex = TypeId<T>.Info.Index;
-			InvalidGetOperationException.ThrowIfLookupNotInitialized(id, world.Sets, typeIndex);
+			var info = TypeId<T>.Info;
 
-			var sparseSet = world.Sets.Lookup[typeIndex];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
-			NoDataException.ThrowIfHasNoData(sparseSet, typeof(T), DataAccessContext.WorldGet);
+			if (candidate == null)
+			{
+				candidate = world.Sets.Get<T>();
+			}
 
-			var dataSet = (DataSet<T>)sparseSet;
+			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldGet);
+
+			var dataSet = (DataSet<T>)candidate;
 
 			return ref dataSet.Get(id);
 		}
