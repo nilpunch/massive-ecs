@@ -63,6 +63,14 @@ namespace Massive
 				return candidate;
 			}
 
+			var collapsedInfo = TypeId.GetInfo(NegativeUtility.Collapse(info.Type));
+			if (collapsedInfo.Type != info.Type)
+			{
+				var collapsedSet = GetReflected(collapsedInfo.Type);
+				Lookup[info.Index] = collapsedSet;
+				return collapsedSet;
+			}
+
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
 			Insert(info.FullName, set, cloner);
@@ -106,8 +114,7 @@ namespace Massive
 		{
 			var type = typeInfo.Type;
 
-			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Negative<>)
-				&& type.GetGenericArguments()[0].IsDefined(typeof(StoreNegativeAttribute), false))
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Not<>))
 			{
 				var itemIndex = NegativeIdentifiers.BinarySearch(typeInfo.FullName);
 				if (itemIndex >= 0)
@@ -123,7 +130,7 @@ namespace Massive
 			}
 			else if (type.IsDefined(typeof(StoreNegativeAttribute), false))
 			{
-				var negativeType = typeof(Negative<>).MakeGenericType(type);
+				var negativeType = typeof(Not<>).MakeGenericType(type);
 				var negativeInfo = TypeId.GetInfo(negativeType);
 
 				var itemIndex = NegativeIdentifiers.BinarySearch(negativeInfo.FullName);

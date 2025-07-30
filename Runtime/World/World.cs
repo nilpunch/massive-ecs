@@ -63,7 +63,10 @@ namespace Massive
 			{
 				foreach (var entity in Entities)
 				{
-					pair.Negative.Add(entity);
+					if (!pair.Positive.Has(entity))
+					{
+						pair.Negative.Add(entity);
+					}
 				}
 
 				pair.Positive.Negative = pair.Negative;
