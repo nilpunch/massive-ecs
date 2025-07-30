@@ -40,6 +40,11 @@ namespace Massive
 		/// </summary>
 		protected int NextHole { get; set; } = EndHole;
 
+		/// <summary>
+		/// Represents the complementary set. Adding an element to this set removes it from the current one, and vice versa.
+		/// </summary>
+		public SparseSet Negative { get; set; }
+
 		public SparseSet(Packing packing = Packing.Continuous)
 		{
 			Packing = packing;
@@ -134,6 +139,7 @@ namespace Massive
 			UsedIds = MathUtils.Max(UsedIds, id + 1);
 
 			AfterAdded?.Invoke(id);
+			Negative?.Remove(id);
 
 			return true;
 		}
@@ -159,6 +165,7 @@ namespace Massive
 			}
 
 			BeforeRemoved?.Invoke(id);
+			Negative?.Add(id);
 
 			var index = Sparse[id];
 
@@ -192,6 +199,7 @@ namespace Massive
 				{
 					var id = Packed[i];
 					BeforeRemoved?.Invoke(id);
+					Negative?.Add(id);
 					Sparse[id] = Constants.InvalidId;
 				}
 			}
@@ -203,6 +211,7 @@ namespace Massive
 					if (id >= 0)
 					{
 						BeforeRemoved?.Invoke(id);
+						Negative?.Add(id);
 						Sparse[id] = Constants.InvalidId;
 					}
 				}

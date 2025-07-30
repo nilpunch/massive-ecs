@@ -87,7 +87,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private int PageIndex(int index)
 		{
-			return MathUtils.FastPowDiv(index, PageSizePower);
+			return MathUtils.FastDiv(index, PageSizePower);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

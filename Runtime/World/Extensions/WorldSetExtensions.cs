@@ -30,6 +30,8 @@ namespace Massive
 			sets.Insert(info.FullName, set, cloner);
 			sets.Lookup[info.Index] = set;
 
+			sets.TryCreatePairedSet(set, info);
+
 			return set;
 		}
 
@@ -53,6 +55,8 @@ namespace Massive
 
 			sets.Insert(info.FullName, set, cloner);
 			sets.Lookup[info.Index] = set;
+
+			sets.TryCreatePairedSet(set, info);
 
 			return (DataSet<T>)set;
 		}

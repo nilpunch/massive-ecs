@@ -18,10 +18,13 @@ namespace Massive
 		private FastList<int> Hashes { get; } = new FastList<int>();
 
 		private FastList<string> Identifiers { get; } = new FastList<string>();
+		private FastList<string> NegativeIdentifiers { get; } = new FastList<string>();
 
 		private FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
 
 		public SparseSetList AllSets { get; } = new SparseSetList();
+
+		public SparseSetList AllNegativeSets { get; } = new SparseSetList();
 
 		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
 
@@ -33,6 +36,8 @@ namespace Massive
 		{
 			SetFactory = setFactory;
 		}
+
+		public event Action<(SparseSet Positive, SparseSet Negative)> SetPairCreated;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet GetExisting(string setId)
@@ -46,9 +51,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Get<TKey>()
+		public SparseSet Get<T>()
 		{
-			var info = TypeId<TKey>.Info;
+			var info = TypeId<T>.Info;
 
 			EnsureLookupAt(info.Index);
 			var candidate = Lookup[info.Index];
@@ -58,10 +63,12 @@ namespace Massive
 				return candidate;
 			}
 
-			var (set, cloner) = SetFactory.CreateAppropriateSet<TKey>();
+			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
 			Insert(info.FullName, set, cloner);
 			Lookup[info.Index] = set;
+
+			TryCreatePairedSet(set, info);
 
 			return set;
 		}
@@ -95,7 +102,44 @@ namespace Massive
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void TryCreatePairedSet(SparseSet set, TypeIdInfo typeInfo)
+		{
+			var type = typeInfo.Type;
+
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Negative<>)
+				&& type.GetGenericArguments()[0].IsDefined(typeof(StoreNegativeAttribute), false))
+			{
+				var itemIndex = NegativeIdentifiers.BinarySearch(typeInfo.FullName);
+				if (itemIndex >= 0)
+				{
+					return;
+				}
+				var insertionIndex = ~itemIndex;
+				NegativeIdentifiers.Insert(insertionIndex, typeInfo.FullName);
+				AllNegativeSets.Insert(insertionIndex, set);
+
+				var positiveSet = GetReflected(type.GetGenericArguments()[0]);
+				SetPairCreated?.Invoke((positiveSet, set));
+			}
+			else if (type.IsDefined(typeof(StoreNegativeAttribute), false))
+			{
+				var negativeType = typeof(Negative<>).MakeGenericType(type);
+				var negativeInfo = TypeId.GetInfo(negativeType);
+
+				var itemIndex = NegativeIdentifiers.BinarySearch(negativeInfo.FullName);
+				if (itemIndex >= 0)
+				{
+					return;
+				}
+				var insertionIndex = ~itemIndex;
+				NegativeIdentifiers.Insert(insertionIndex, negativeInfo.FullName);
+
+				var negativeSet = GetReflected(negativeType);
+				AllNegativeSets.Insert(insertionIndex, negativeSet);
+				SetPairCreated?.Invoke((set, negativeSet));
+			}
+		}
+
 		public void Insert(string setId, SparseSet set, SetCloner cloner)
 		{
 			// Maintain items sorted.

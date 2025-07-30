@@ -11,11 +11,13 @@ namespace Massive
 	{
 		public readonly int Index;
 		public readonly string FullName;
+		public readonly Type Type;
 
-		public TypeIdInfo(int index, string fullName)
+		public TypeIdInfo(int index, string fullName, Type type)
 		{
 			Index = index;
 			FullName = fullName;
+			Type = type;
 		}
 	}
 
@@ -99,7 +101,7 @@ namespace Massive
 			var index = TypeId.IncrementTypeCounter();
 			var typeName = type.GetFullGenericName();
 
-			var info = new TypeIdInfo(index, typeName);
+			var info = new TypeIdInfo(index, typeName, type);
 
 			Info = info;
 

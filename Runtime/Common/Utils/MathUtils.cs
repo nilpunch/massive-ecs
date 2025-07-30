@@ -84,11 +84,11 @@ namespace Massive
 		/// Fast division for powers of two only.
 		/// </summary>
 		/// <param name="value"> Non-negative value. </param>
-		/// <param name="powerOfTwo"> Power of divider. </param>
+		/// <param name="divider"> Power of divider. </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int FastPowDiv(int value, int powerOfTwo)
+		public static int FastDiv(int value, int divider)
 		{
-			return value >> powerOfTwo;
+			return value >> divider;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

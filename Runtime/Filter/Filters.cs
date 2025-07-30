@@ -75,6 +75,8 @@ namespace Massive
 				return filter;
 			}
 
+			(included, excluded) = MoveNegativeToIncluded(included, excluded);
+
 			filter = included.Length != 0 || excluded.Length != 0
 				? new Filter(included, excluded)
 				: Empty;
@@ -89,6 +91,26 @@ namespace Massive
 			{
 				Lookup = Lookup.Resize(MathUtils.NextPowerOf2(index + 1));
 			}
+		}
+
+		private (SparseSet[] Included, SparseSet[] Excluded) MoveNegativeToIncluded(SparseSet[] included, SparseSet[] excluded)
+		{
+			var includedList = new List<SparseSet>(included);
+			var excludedList = new List<SparseSet>();
+
+			foreach (var set in excluded)
+			{
+				if (set.Negative != null)
+				{
+					includedList.Add(set.Negative);
+				}
+				else
+				{
+					excludedList.Add(set);
+				}
+			}
+
+			return (includedList.ToArray(), excludedList.ToArray());
 		}
 
 		private class SetComparer

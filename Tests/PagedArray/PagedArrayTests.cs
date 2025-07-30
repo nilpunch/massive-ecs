@@ -75,7 +75,7 @@ namespace Massive.Tests
 		{
 			int pow = MathUtils.FastLog2(Constants.DefaultPageSize);
 			
-			return MathUtils.FastPowDiv(value, pow);
+			return MathUtils.FastDiv(value, pow);
 		}
 	}
 }
