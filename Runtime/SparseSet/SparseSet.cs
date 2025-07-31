@@ -12,7 +12,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class SparseSet : PackedSet
 	{
-		protected const int EndHole = int.MaxValue;
+		public const int EndHole = int.MaxValue;
 
 		/// <summary>
 		/// The sparse array, mapping IDs to their packed indices.

@@ -2,13 +2,13 @@ using System;
 
 namespace Massive
 {
-	public static class NegativeUtility
+	public static class NegativeUtils
 	{
-		public static Type Collapse(Type type)
+		public static Type CollapseNegations(Type type)
 		{
 			var depth = 0;
 
-			while (IsNotType(type))
+			while (IsNegative(type))
 			{
 				type = type.GetGenericArguments()[0];
 				depth++;
@@ -24,7 +24,7 @@ namespace Massive
 			return typeof(Not<>).MakeGenericType(type);
 		}
 
-		public static bool IsNotType(Type type)
+		public static bool IsNegative(Type type)
 		{
 			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Not<>);
 		}

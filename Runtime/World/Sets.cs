@@ -17,14 +17,17 @@ namespace Massive
 
 		private FastList<int> Hashes { get; } = new FastList<int>();
 
+		private FastList<bool> IsNegative { get; } = new FastList<bool>();
+
 		private FastList<string> Identifiers { get; } = new FastList<string>();
+
 		private FastList<string> NegativeIdentifiers { get; } = new FastList<string>();
 
 		private FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
 
 		public SparseSetList AllSets { get; } = new SparseSetList();
 
-		public SparseSetList AllNegativeSets { get; } = new SparseSetList();
+		public SparseSetList NegativeSets { get; } = new SparseSetList();
 
 		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
 
@@ -32,12 +35,13 @@ namespace Massive
 
 		public SetFactory SetFactory { get; }
 
-		public Sets(SetFactory setFactory)
+		public Entities Entities { get; }
+
+		public Sets(SetFactory setFactory, Entities entities)
 		{
 			SetFactory = setFactory;
+			Entities = entities;
 		}
-
-		public event Action<(SparseSet Positive, SparseSet Negative)> SetPairCreated;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet GetExisting(string setId)
@@ -63,7 +67,7 @@ namespace Massive
 				return candidate;
 			}
 
-			var collapsedInfo = TypeId.GetInfo(NegativeUtility.Collapse(info.Type));
+			var collapsedInfo = TypeId.GetInfo(NegativeUtils.CollapseNegations(info.Type));
 			if (collapsedInfo.Type != info.Type)
 			{
 				var collapsedSet = GetReflected(collapsedInfo.Type);
@@ -73,7 +77,7 @@ namespace Massive
 
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
-			Insert(info.FullName, set, cloner);
+			Insert(info.FullName, set, cloner, NegativeUtils.IsNegative(info.Type));
 			Lookup[info.Index] = set;
 
 			TryCreatePairedSet(set, info);
@@ -114,7 +118,7 @@ namespace Massive
 		{
 			var type = typeInfo.Type;
 
-			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Not<>))
+			if (NegativeUtils.IsNegative(type))
 			{
 				var itemIndex = NegativeIdentifiers.BinarySearch(typeInfo.FullName);
 				if (itemIndex >= 0)
@@ -123,10 +127,17 @@ namespace Massive
 				}
 				var insertionIndex = ~itemIndex;
 				NegativeIdentifiers.Insert(insertionIndex, typeInfo.FullName);
-				AllNegativeSets.Insert(insertionIndex, set);
+				NegativeSets.Insert(insertionIndex, set);
 
 				var positiveSet = GetReflected(type.GetGenericArguments()[0]);
-				SetPairCreated?.Invoke((positiveSet, set));
+
+				SetUtils.PopulateFromEntities(set, Entities);
+				foreach (var id in positiveSet)
+				{
+					set.Remove(id);
+				}
+				set.Negative = positiveSet;
+				positiveSet.Negative = set;
 			}
 			else if (type.IsDefined(typeof(StoreNegativeAttribute), false))
 			{
@@ -142,12 +153,15 @@ namespace Massive
 				NegativeIdentifiers.Insert(insertionIndex, negativeInfo.FullName);
 
 				var negativeSet = GetReflected(negativeType);
-				AllNegativeSets.Insert(insertionIndex, negativeSet);
-				SetPairCreated?.Invoke((set, negativeSet));
+				NegativeSets.Insert(insertionIndex, negativeSet);
+
+				SetUtils.PopulateFromEntities(negativeSet, Entities);
+				set.Negative = negativeSet;
+				negativeSet.Negative = set;
 			}
 		}
 
-		public void Insert(string setId, SparseSet set, SetCloner cloner)
+		public void Insert(string setId, SparseSet set, SetCloner cloner, bool isNegative = false)
 		{
 			// Maintain items sorted.
 			var itemIndex = Identifiers.BinarySearch(setId);
@@ -162,6 +176,7 @@ namespace Massive
 				AllSets.Insert(insertionIndex, set);
 				Cloners.Insert(insertionIndex, cloner);
 				Hashes.Insert(insertionIndex, setId.GetHashCode());
+				IsNegative.Insert(insertionIndex, isNegative);
 				SetsByIdentifiers.Add(setId, set);
 			}
 		}
@@ -200,6 +215,7 @@ namespace Massive
 			var hashes = Hashes;
 			var otherHashes = other.Hashes;
 			var otherSets = other.AllSets;
+			var otherIsNegative = other.IsNegative;
 
 			if (hashes.Count == otherHashes.Count)
 			{
@@ -212,7 +228,15 @@ namespace Massive
 			{
 				if (index >= hashes.Count || otherHashes[otherIndex] != hashes[index])
 				{
-					otherSets[otherIndex].ClearWithoutNotify();
+					var otherSet = otherSets[otherIndex];
+					if (otherIsNegative[otherIndex])
+					{
+						SetUtils.PopulateFromEntities(otherSet, other.Entities);
+					}
+					else
+					{
+						otherSet.ClearWithoutNotify();
+					}
 				}
 				else
 				{

@@ -78,6 +78,7 @@ namespace Massive
 			UsedIds = MathUtils.Max(UsedIds, id + 1);
 
 			NotifyAfterAdded(id);
+			Negative?.Remove(id);
 		}
 
 		/// <summary>

@@ -22,17 +22,16 @@ namespace Massive
 		public World(WorldConfig worldConfig)
 		{
 			Entities = new Entities();
-			Sets = new Sets(new SetFactory(worldConfig));
+			Sets = new Sets(new SetFactory(worldConfig), Entities);
 			Filters = new Filters(Sets);
 			Allocators = new Allocators();
 			Config = worldConfig;
 
 			var allSets = Sets.AllSets;
-			var allNegativeSets = Sets.AllNegativeSets;
+			var negativeSets = Sets.NegativeSets;
 			var allocators = Allocators;
 			Entities.BeforeDestroyed += RemoveFromAll;
 			Entities.AfterCreated += AddToNegative;
-			Sets.SetPairCreated += PairSets;
 
 			void RemoveFromAll(int entityId)
 			{
@@ -51,26 +50,12 @@ namespace Massive
 
 			void AddToNegative(int entityId)
 			{
-				var setCount = allNegativeSets.Count;
-				var sets = allNegativeSets.Items;
+				var setCount = negativeSets.Count;
+				var sets = negativeSets.Items;
 				for (var i = setCount - 1; i >= 0; i--)
 				{
 					sets[i].Add(entityId);
 				}
-			}
-
-			void PairSets((SparseSet Positive, SparseSet Negative) pair)
-			{
-				foreach (var entity in Entities)
-				{
-					if (!pair.Positive.Has(entity))
-					{
-						pair.Negative.Add(entity);
-					}
-				}
-
-				pair.Positive.Negative = pair.Negative;
-				pair.Negative.Negative = pair.Positive;
 			}
 		}
 	}

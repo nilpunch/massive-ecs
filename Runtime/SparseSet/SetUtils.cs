@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -134,6 +135,26 @@ namespace Massive
 			}
 
 			return hash;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void PopulateFromEntities(SparseSet sparseSet, Entities entities)
+		{
+			sparseSet.Compact();
+			entities.Compact();
+
+			sparseSet.EnsurePackedAt(entities.Count - 1);
+			sparseSet.EnsureSparseAt(entities.UsedIds - 1);
+
+			Array.Copy(entities.Packed, sparseSet.Packed, entities.Count);
+			Array.Copy(entities.Sparse, sparseSet.Sparse, entities.UsedIds);
+
+			if (entities.UsedIds < sparseSet.UsedIds)
+			{
+				Array.Fill(sparseSet.Sparse, Constants.InvalidId, entities.UsedIds, sparseSet.UsedIds - entities.UsedIds);
+			}
+
+			sparseSet.CurrentState = new SparseSet.State(entities.Count, entities.UsedIds, SparseSet.EndHole, sparseSet.Packing);
 		}
 	}
 }
