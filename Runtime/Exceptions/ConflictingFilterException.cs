@@ -9,7 +9,8 @@ namespace Massive
 		public enum FilterType
 		{
 			Include,
-			Exclude
+			Exclude,
+			Both,
 		}
 
 		private ConflictingFilterException(string message) : base(message)
@@ -20,9 +21,22 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static void ThrowIfHasConflicts(SparseSet[] included, SparseSet[] excluded)
 		{
-			if (included.ContainsAny(excluded))
+			for (var i = 0; i < included.Length; i++)
 			{
-				throw new ConflictingFilterException("Filter has conflicting included and excluded components.");
+				for (var j = 0; j < excluded.Length; j++)
+				{
+					if (included[i] == excluded[i])
+					{
+						throw new ConflictingFilterException("Filter has conflicting included and excluded components.");
+					}
+				}
+				for (var j = 0; j < included.Length; j++)
+				{
+					if (included[i] == included[j].Negative)
+					{
+						throw new ConflictingFilterException("Filter has conflicting including components.");
+					}
+				}
 			}
 		}
 
@@ -41,6 +55,7 @@ namespace Massive
 						{
 							FilterType.Include => "Included",
 							FilterType.Exclude => "Excluded",
+							FilterType.Both => "Filter",
 							_ => throw new ArgumentOutOfRangeException(nameof(filterType), filterType, null)
 						};
 

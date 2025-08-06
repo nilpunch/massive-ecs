@@ -134,7 +134,7 @@ namespace Massive
 				SetUtils.PopulateFromEntities(set, Entities);
 				foreach (var id in positiveSet)
 				{
-					set.Remove(id);
+					set.Remove(id, updateNegative: false);
 				}
 				set.Negative = positiveSet;
 				positiveSet.Negative = set;
@@ -232,6 +232,10 @@ namespace Massive
 					if (otherIsNegative[otherIndex])
 					{
 						SetUtils.PopulateFromEntities(otherSet, other.Entities);
+						foreach (var id in otherSet.Negative)
+						{
+							otherSet.Remove(id, updateNegative: false);
+						}
 					}
 					else
 					{

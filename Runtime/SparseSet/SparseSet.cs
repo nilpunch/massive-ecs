@@ -105,7 +105,7 @@ namespace Massive
 		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Add(int id)
+		public bool Add(int id, bool updateNegative = true)
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
@@ -139,7 +139,10 @@ namespace Massive
 			UsedIds = MathUtils.Max(UsedIds, id + 1);
 
 			AfterAdded?.Invoke(id);
-			Negative?.Remove(id);
+			if (Negative != null && updateNegative)
+			{
+				Negative.Remove(id);
+			}
 
 			return true;
 		}
@@ -154,7 +157,7 @@ namespace Massive
 		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Remove(int id)
+		public bool Remove(int id, bool updateNegative = true)
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
@@ -165,7 +168,10 @@ namespace Massive
 			}
 
 			BeforeRemoved?.Invoke(id);
-			Negative?.Add(id);
+			if (Negative != null && updateNegative)
+			{
+				Negative.Add(id);
+			}
 
 			var index = Sparse[id];
 

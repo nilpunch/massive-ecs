@@ -77,6 +77,8 @@ namespace Massive
 
 			(included, excluded) = MoveNegativeToIncluded(included, excluded);
 
+			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Both);
+
 			filter = included.Length != 0 || excluded.Length != 0
 				? new Filter(included, excluded)
 				: Empty;

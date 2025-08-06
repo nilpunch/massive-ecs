@@ -39,10 +39,7 @@ namespace Massive
 				var sets = allSets.Items;
 				for (var i = setCount - 1; i >= 0; i--)
 				{
-					var negative = sets[i].Negative;
-					sets[i].Negative = null; // Don't propagate change to negative sets.
-					sets[i].Remove(entityId);
-					sets[i].Negative = negative;
+					sets[i].Remove(entityId, updateNegative: false);
 				}
 
 				allocators.Free(entityId);
@@ -54,7 +51,7 @@ namespace Massive
 				var sets = negativeSets.Items;
 				for (var i = setCount - 1; i >= 0; i--)
 				{
-					sets[i].Add(entityId);
+					sets[i].Add(entityId, updateNegative: false);
 				}
 			}
 		}
