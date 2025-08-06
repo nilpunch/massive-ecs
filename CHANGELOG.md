@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Renamed `Entity` identifier to `Entifier`.
 - Renamed `SetRegistry` to `Sets`.
 - Renamed `FilterRegistry` to `Filters`.
 - Renamed `AllocatorRegistry` to `Allocators`.
@@ -12,6 +13,20 @@
 - `World.Set()` now throws if the component has no associated data.
 - Renamed `World.Filter()` to `World.GetFilter()`.
 - Made `World` act as a `View` to reduce boilerplate.
+
+### Added
+
+- New `Entity` struct that has clean syntax:
+  - `entity.IsAlive`
+  - `entity.Add<Enemy>()`
+  - `entity.Destroy()`
+  - etc.
+- `StoreNegative` attribute for storing a complementary set of this component to optimize exclusion filtration, like:
+  `world.Exclude<Dead>.ForEach(...);`
+- Negation in all contexts that use component types:
+  - `world.Include<Not<Dead>>.ForEach(...); // Acts like Exclude<Dead>`
+  - `entity.Add<Not<Dead>>(); // Removes Dead component`
+
 
 ## 20.0.0-alpha.2 - April 27, 2025
 
