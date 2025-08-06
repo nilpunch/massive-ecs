@@ -18,7 +18,7 @@
 					ref var bullet = ref bullets.Get(bulletId);
 
 					// Don't collide a character with its own bullet.
-					if (bullet.Owner == world.GetEntity(characterId))
+					if (bullet.Owner == world.GetEntifier(characterId))
 					{
 						continue;
 					}

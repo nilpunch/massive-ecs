@@ -5,6 +5,6 @@
 		public float Lifetime;
 		public int Damage;
 
-		public Entity Owner;
+		public Entifier Owner;
 	}
 }

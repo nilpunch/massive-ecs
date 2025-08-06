@@ -153,10 +153,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Fill<TView>(this TView view, IList<Entity> result)
+		public static void Fill<TView>(this TView view, IList<Entifier> result)
 			where TView : IView
 		{
-			var fillEntities = new FillEntities { Result = result, Entities = view.World.Entities };
+			var fillEntities = new FillEntifiers { Result = result, Entities = view.World.Entities };
 			view.ForEach(ref fillEntities);
 		}
 
@@ -170,14 +170,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Entity FirstEntity<TView>(this TView view)
+		public static Entifier FirstEntity<TView>(this TView view)
 			where TView : IView
 		{
 			var returnFirstEntity = new ReturnFirst { Result = Constants.InvalidId };
 			view.ForEach(ref returnFirstEntity);
 			return returnFirstEntity.Result == Constants.InvalidId
-				? Entity.Dead
-				: view.World.GetEntity(returnFirstEntity.Result);
+				? Entifier.Dead
+				: view.World.GetEntifier(returnFirstEntity.Result);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

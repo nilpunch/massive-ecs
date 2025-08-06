@@ -84,9 +84,9 @@ namespace Massive.Tests
 			for (var i = 0; i < 10; i++)
 				entities.Create();
 
-			Assert.AreEqual(0, entities.GetEntity(0).Id);
-			Assert.AreEqual(3, entities.GetEntity(3).Id);
-			Assert.AreEqual(6, entities.GetEntity(6).Id);
+			Assert.AreEqual(0, entities.GetEntifier(0).Id);
+			Assert.AreEqual(3, entities.GetEntifier(3).Id);
+			Assert.AreEqual(6, entities.GetEntifier(6).Id);
 
 			for (var i = 0; i <= 5; i++)
 			{
@@ -94,9 +94,9 @@ namespace Massive.Tests
 				entities.Create();
 			}
 
-			Assert.AreEqual(0, entities.GetEntity(0).Id);
-			Assert.AreEqual(3, entities.GetEntity(3).Id);
-			Assert.AreEqual(6, entities.GetEntity(6).Id);
+			Assert.AreEqual(0, entities.GetEntifier(0).Id);
+			Assert.AreEqual(3, entities.GetEntifier(3).Id);
+			Assert.AreEqual(6, entities.GetEntifier(6).Id);
 		}
 
 		[TestCase(0)]
@@ -265,7 +265,7 @@ namespace Massive.Tests
 
 			entities.CreateMany(10);
 
-			Assert.IsFalse(entities.IsAlive(Entity.Dead));
+			Assert.IsFalse(entities.IsAlive(Entifier.Dead));
 		}
 	}
 }

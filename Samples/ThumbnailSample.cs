@@ -24,7 +24,7 @@
 
 			// Get full entity identifier from player ID.
 			// Useful for persistent storage of entities.
-			Entity playerEntity = world.GetEntity(player);
+			Entifier playerEntifier = world.GetEntifier(player);
 
 			var deltaTime = 1f / 60f;
 

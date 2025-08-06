@@ -45,15 +45,15 @@ namespace Massive
 		}
 	}
 
-	public struct FillEntities : IEntityAction
+	public struct FillEntifiers : IEntityAction
 	{
-		public IList<Entity> Result;
+		public IList<Entifier> Result;
 		public Entities Entities;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id)
 		{
-			Result.Add(Entities.GetEntity(id));
+			Result.Add(Entities.GetEntifier(id));
 			return true;
 		}
 	}

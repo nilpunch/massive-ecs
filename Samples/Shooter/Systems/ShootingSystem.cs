@@ -19,13 +19,13 @@
 					weapon.Charge -= 1f;
 
 					var bullet = world.CreateEntity();
-					world.Set(bullet, position);
-					world.Set(bullet, new Bullet() { Damage = weapon.BulletDamage, Lifetime = weapon.BulletLifetime, Owner = world.GetEntity(id) });
-					world.Set(bullet, new Velocity() { Value = weapon.ShootingDirection * weapon.BulletSpeed });
-					world.Set(bullet, new CircleCollider() { Radius = 0.1f });
-					world.Set(bullet, new VelocityDamper() { DampingFactor = 0.05f });
+					bullet.Set(position);
+					bullet.Set(new Bullet() { Damage = weapon.BulletDamage, Lifetime = weapon.BulletLifetime, Owner = world.GetEntifier(id) });
+					bullet.Set(new Velocity() { Value = weapon.ShootingDirection * weapon.BulletSpeed });
+					bullet.Set(new CircleCollider() { Radius = 0.1f });
+					bullet.Set(new VelocityDamper() { DampingFactor = 0.05f });
 
-					character.Bullets.In(world).Add(bullet);
+					character.Bullets.In(world).Add(bullet.Entifier);
 				});
 		}
 	}

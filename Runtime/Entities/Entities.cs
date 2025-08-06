@@ -97,11 +97,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity Create()
+		public Entifier Create()
 		{
 			EnsureCapacityAt(Count);
 
-			Entity entity;
+			Entifier entifier;
 
 			if (Packing == Packing.WithHoles && NextHoleId != EndHoleId)
 			{
@@ -109,23 +109,23 @@ namespace Massive
 				var index = Sparse[id];
 				NextHoleId = ~Packed[index];
 				Packed[index] = id;
-				entity = new Entity(id, Versions[index]);
+				entifier = new Entifier(id, Versions[index]);
 			}
 			else if (Count < UsedIds)
 			{
-				entity = new Entity(Packed[Count], Versions[Count]);
+				entifier = new Entifier(Packed[Count], Versions[Count]);
 				Count += 1;
 			}
 			else
 			{
-				entity = new Entity(UsedIds, 1U);
+				entifier = new Entifier(UsedIds, 1U);
 				AssignEntity(UsedIds, 1U, Count);
 				UsedIds += 1;
 				Count += 1;
 			}
 
-			AfterCreated?.Invoke(entity.Id);
-			return entity;
+			AfterCreated?.Invoke(entifier.Id);
+			return entifier;
 		}
 
 		/// <summary>
@@ -252,24 +252,24 @@ namespace Massive
 		/// Throws if the entity with this ID is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity GetEntity(int id)
+		public Entifier GetEntifier(int id)
 		{
 			EntityNotAliveException.ThrowIfEntityDead(this, id);
 
-			return new Entity(id, Versions[Sparse[id]]);
+			return new Entifier(id, Versions[Sparse[id]]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsAlive(Entity entity)
+		public bool IsAlive(Entifier entifier)
 		{
-			if (entity.Id < 0 || entity.Id >= UsedIds)
+			if (entifier.Id < 0 || entifier.Id >= UsedIds)
 			{
 				return false;
 			}
 
-			var index = Sparse[entity.Id];
+			var index = Sparse[entifier.Id];
 
-			return index < Count && Packed[index] == entity.Id && Versions[index] == entity.Version;
+			return index < Count && Packed[index] == entifier.Id && Versions[index] == entifier.Version;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

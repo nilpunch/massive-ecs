@@ -11,11 +11,11 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfEntityDead(Entities entities, Entity entity)
+		public static void ThrowIfEntityDead(Entities entities, Entifier entifier)
 		{
-			if (!entities.IsAlive(entity))
+			if (!entities.IsAlive(entifier))
 			{
-				throw new InvalidRemoveOperationException($"You are trying to remove a component from the dead entity {entity}.");
+				throw new InvalidRemoveOperationException($"You are trying to remove a component from the dead entity {entifier}.");
 			}
 		}
 

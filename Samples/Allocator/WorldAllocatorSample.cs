@@ -4,7 +4,7 @@
 
 	public struct Inventory
 	{
-		public ListHandle<Entity> Items;
+		public ListHandle<Entifier> Items;
 	}
 
 	class WorldAllocatorSample
@@ -17,7 +17,7 @@
 
 			// Allocates a list that's tied to this entity's lifetime.
 			// It will be freed automatically when the entity is destroyed.
-			var items = World.AllocAutoList<Entity>(entity);
+			var items = World.AllocAutoList<Entifier>(entity);
 
 			// Assign the list handle to the Inventory component.
 			World.Set(entity, new Inventory()
@@ -39,10 +39,10 @@
 
 			// You can treat it like a regular list.
 			// It will resize automatically.
-			items.Add(World.CreateEntity<Item>());
-			items.Add(World.CreateEntity<Item>());
-			items.Add(World.CreateEntity<Item>());
-			items.Add(World.CreateEntity<Item>());
+			items.Add(World.CreateEntifier<Item>());
+			items.Add(World.CreateEntifier<Item>());
+			items.Add(World.CreateEntifier<Item>());
+			items.Add(World.CreateEntifier<Item>());
 
 			// Remove an item by index.
 			items.RemoveAt(2);

@@ -9,7 +9,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly partial struct WorldEntity
+	public readonly partial struct Entity
 	{
 		/// <summary>
 		/// Creates a unique entity with components of another entity.<br/>
@@ -21,7 +21,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entity Clone()
 		{
-			InvalidCloneOperationException.ThrowIfEntityDead(World.Entities, Entity);
+			InvalidCloneOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
 			var entityId = Id;
 			var clone = World.CreateEntity();
@@ -67,7 +67,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set<T>(T data)
 		{
-			InvalidSetOperationException.ThrowIfEntityDead(World.Entities, Entity);
+			InvalidSetOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
 			var info = TypeId<T>.Info;
 
@@ -98,7 +98,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Add<T>()
 		{
-			InvalidAddOperationException.ThrowIfEntityDead(World.Entities, Entity);
+			InvalidAddOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
 			var info = TypeId<T>.Info;
 
@@ -125,7 +125,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove<T>()
 		{
-			InvalidRemoveOperationException.ThrowIfEntityDead(World.Entities, Entity);
+			InvalidRemoveOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
 			var info = TypeId<T>.Info;
 
@@ -149,7 +149,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has<T>()
 		{
-			InvalidHasOperationException.ThrowIfEntityDead(World.Entities, Entity);
+			InvalidHasOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
 			var info = TypeId<T>.Info;
 
@@ -174,7 +174,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get<T>()
 		{
-			InvalidGetOperationException.ThrowIfEntityDead(World.Entities, Entity);
+			InvalidGetOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
 			var info = TypeId<T>.Info;
 

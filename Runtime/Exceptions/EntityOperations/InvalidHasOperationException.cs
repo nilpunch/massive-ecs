@@ -11,11 +11,11 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfEntityDead(Entities entities, Entity entity)
+		public static void ThrowIfEntityDead(Entities entities, Entifier entifier)
 		{
-			if (!entities.IsAlive(entity))
+			if (!entities.IsAlive(entifier))
 			{
-				throw new InvalidHasOperationException($"You are trying to check a component on the dead entity {entity}.");
+				throw new InvalidHasOperationException($"You are trying to check a component on the dead entity {entifier}.");
 			}
 		}
 

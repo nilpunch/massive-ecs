@@ -32,7 +32,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void View_FillEntities()
 		{
-			var result = new List<Entity>();
+			var result = new List<Entifier>();
 			Measure.Method(() => _world.View().Fill(result))
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)

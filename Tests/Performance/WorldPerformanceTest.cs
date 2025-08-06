@@ -127,7 +127,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Registry_Fill()
 		{
-			var result = new List<Entity>();
+			var result = new List<Entifier>();
 
 			_world.Clear();
 

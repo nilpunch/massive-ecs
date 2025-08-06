@@ -21,11 +21,11 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfEntityDead(Entities entities, Entity entity)
+		public static void ThrowIfEntityDead(Entities entities, Entifier entifier)
 		{
-			if (!entities.IsAlive(entity))
+			if (!entities.IsAlive(entifier))
 			{
-				throw new InvalidGetOperationException($"You are trying to get a component from the dead entity {entity}.");
+				throw new InvalidGetOperationException($"You are trying to get a component from the dead entity {entifier}.");
 			}
 		}
 
@@ -51,11 +51,11 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfLookupNotInitialized(Entity entity, Sets sets, int typeIndex)
+		public static void ThrowIfLookupNotInitialized(Entifier entifier, Sets sets, int typeIndex)
 		{
 			if (typeIndex >= sets.LookupCapacity || sets.Lookup[typeIndex] is null)
 			{
-				throw new InvalidGetOperationException($"You are trying to get data from the entity {entity} that is not added.");
+				throw new InvalidGetOperationException($"You are trying to get data from the entity {entifier} that is not added.");
 			}
 		}
 	}

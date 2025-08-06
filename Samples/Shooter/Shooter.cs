@@ -34,7 +34,7 @@ namespace Massive.Samples.Shooter
 		public void CreateCharacter(Vector2 position, Vector2 direction, float bulletsPerSecond)
 		{
 			var id = World.Create();
-			World.Set(id, new Character(maxHealth: 20, World.AllocAutoList<Entity>(id)));
+			World.Set(id, new Character(maxHealth: 20, World.AllocAutoList<Entifier>(id)));
 			World.Set(id, new Position() { Value = position });
 			World.Set(id, new Weapon()
 			{
