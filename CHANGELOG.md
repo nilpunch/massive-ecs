@@ -21,7 +21,7 @@
   - `entity.Add<Enemy>()`
   - `entity.Destroy()`
   - etc.
-- `StoreNegative` attribute for storing a complementary set of this component to optimize exclusion filtration, like:
+- `StoreNegative` attribute for storing a complementary set of entities to optimize exclusion filtering:
   `world.Exclude<Dead>.ForEach(...);`
 - Negation in all contexts that use component types:
   - `world.Include<Not<Dead>>.ForEach(...); // Acts like Exclude<Dead>`
