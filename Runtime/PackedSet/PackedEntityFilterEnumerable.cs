@@ -39,7 +39,7 @@ namespace Massive
 			private readonly Packing _originalPacking;
 			private int _index;
 
-			public PackedFilterEntityEnumerator(PackedSet packedSet, ReducedFilter reducedFilter,
+			public Enumerator(PackedSet packedSet, ReducedFilter reducedFilter,
 				World world, Packing packingWhenIterating = Packing.WithHoles)
 			{
 				_packedSet = packedSet;

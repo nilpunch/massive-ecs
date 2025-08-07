@@ -12,13 +12,16 @@ namespace Massive
 
 		public readonly Packing PackingWhenIterating = Packing.WithHoles;
 
+		public readonly bool OptimizeExludeFilter = false;
+
 		public WorldConfig(int? pageSize = default, bool? storeEmptyTypesAsDataSets = default,
-			bool? fullStability = default, Packing? packingWhenIterating = default)
+			bool? fullStability = default, Packing? packingWhenIterating = default, bool? optimizeExludeFilters = default)
 		{
 			PageSize = pageSize ?? PageSize;
 			StoreEmptyTypesAsDataSets = storeEmptyTypesAsDataSets ?? StoreEmptyTypesAsDataSets;
 			FullStability = fullStability ?? FullStability;
 			PackingWhenIterating = packingWhenIterating ?? PackingWhenIterating;
+			OptimizeExludeFilter = optimizeExludeFilters ?? OptimizeExludeFilter;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

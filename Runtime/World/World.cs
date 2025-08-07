@@ -23,7 +23,7 @@ namespace Massive
 		{
 			Entifiers = new Entifiers();
 			Sets = new Sets(new SetFactory(worldConfig), Entifiers);
-			Filters = new Filters(Sets);
+			Filters = new Filters(Sets, worldConfig.OptimizeExludeFilter);
 			Allocators = new Allocators();
 			Config = worldConfig;
 

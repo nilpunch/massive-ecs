@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -51,8 +52,12 @@ namespace Massive
 				return candidate;
 			}
 
-			var included = new TInclude().Select(world.Sets);
-			var excluded = new TExclude().Select(world.Sets);
+			var included = world.Config.OptimizeExludeFilter
+				? new TInclude().Select(world.Sets).Concat(new TExclude().Select(world.Sets, negative: true)).ToArray()
+				: new TInclude().Select(world.Sets);
+			var excluded = world.Config.OptimizeExludeFilter
+				? Array.Empty<SparseSet>()
+				: new TExclude().Select(world.Sets);
 
 			var filter = filters.Get(included, excluded);
 

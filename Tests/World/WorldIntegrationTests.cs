@@ -89,7 +89,7 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach(_ =>
+			world.View().ForEach((int _) =>
 			{
 				if (iterations == 0)
 				{
@@ -184,7 +184,7 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach(_ =>
+			world.View().ForEach((int _) =>
 			{
 				iterations += 1;
 				world.View().ForEach((int innerId, ref TComponent2 innerB) =>

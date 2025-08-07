@@ -57,7 +57,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void View_ForEach()
 		{
-			Measure.Method(() => _world.View().ForEach((_) => { }))
+			Measure.Method(() => _world.View().ForEach((int _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

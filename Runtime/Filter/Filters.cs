@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -15,6 +16,7 @@ namespace Massive
 	{
 		private Sets Sets { get; }
 		private SetComparer Comparer { get; }
+		private bool OptimizeExludeFilter { get; }
 
 		private Dictionary<int, Filter> CombinationLookup { get; } = new Dictionary<int, Filter>();
 
@@ -22,9 +24,10 @@ namespace Massive
 
 		public Filter Empty { get; } = new Filter();
 
-		public Filters(Sets sets)
+		public Filters(Sets sets, bool optimizeExludeFilter)
 		{
 			Sets = sets;
+			OptimizeExludeFilter = optimizeExludeFilter;
 			Comparer = new SetComparer(Sets);
 		}
 
@@ -43,8 +46,12 @@ namespace Massive
 				return candidate;
 			}
 
-			var included = new TInclude().Select(Sets);
-			var excluded = new TExclude().Select(Sets);
+			var included = OptimizeExludeFilter
+				? new TInclude().Select(Sets).Concat(new TExclude().Select(Sets, negative: true)).ToArray()
+				: new TInclude().Select(Sets);
+			var excluded = OptimizeExludeFilter
+				? Array.Empty<SparseSet>()
+				: new TExclude().Select(Sets);
 
 			var filter = Get(included, excluded);
 
