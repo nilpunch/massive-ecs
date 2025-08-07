@@ -86,7 +86,7 @@ world.Get<Velocity>(player) = new Velocity() { Magnitude = 10f };
 
 world.Set(enemy, new Velocity()); // Adds component and sets its data.
 
-// Or use feature-rich entity handle.
+// Rich entity handle with simple syntax.
 var npc = world.CreateEntity();
 npc.Add<Position>();
 npc.Destroy();
@@ -139,7 +139,7 @@ foreach (var entityId in world.Include<Player, Position>())
 	// ...
 }
 
-// Or iterate over rich entities. (simpler)
+// Iterate over rich entities. (simpler)
 foreach (var entity in world.Include<Player>().Entities())
 {
 	ref Position position = ref entity.Get<Position>();
