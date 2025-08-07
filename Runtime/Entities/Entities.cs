@@ -15,7 +15,7 @@ namespace Massive
 		private const int EndHoleId = int.MaxValue;
 
 		/// <summary>
-		/// The packed array, containing entities versions.<br/>
+		/// The sparse array, containing entities versions.<br/>
 		/// Don't cache it and use as is, underlying array can be resized at any moment.
 		/// </summary>
 		public uint[] Versions { get; private set; } = Array.Empty<uint>();
@@ -109,11 +109,12 @@ namespace Massive
 				var index = Sparse[id];
 				NextHoleId = ~Packed[index];
 				Packed[index] = id;
-				entifier = new Entifier(id, Versions[index]);
+				entifier = new Entifier(id, Versions[id]);
 			}
 			else if (Count < UsedIds)
 			{
-				entifier = new Entifier(Packed[Count], Versions[Count]);
+				var id = Packed[Count];
+				entifier = new Entifier(Packed[Count], Versions[id]);
 				Count += 1;
 			}
 			else
@@ -155,15 +156,16 @@ namespace Massive
 			if (Packing == Packing.Continuous)
 			{
 				Count -= 1;
-				var version = Versions[index];
+				var version = Versions[id];
 				MathUtils.IncrementWrapTo1(ref version);
-				AssignEntity(Packed[Count], Versions[Count], index);
+				var lastId = Packed[Count];
+				AssignEntity(lastId, Versions[lastId], index);
 				AssignEntity(id, version, Count);
 			}
 			else
 			{
 				Packed[index] = ~NextHoleId;
-				MathUtils.IncrementWrapTo1(ref Versions[index]);
+				MathUtils.IncrementWrapTo1(ref Versions[id]);
 				NextHoleId = id;
 			}
 
@@ -219,7 +221,7 @@ namespace Massive
 				{
 					var id = Packed[i];
 					BeforeDestroyed?.Invoke(id);
-					MathUtils.IncrementWrapTo1(ref Versions[i]);
+					MathUtils.IncrementWrapTo1(ref Versions[id]);
 					Count -= 1;
 				}
 			}
@@ -231,7 +233,7 @@ namespace Massive
 					if (id >= 0)
 					{
 						BeforeDestroyed?.Invoke(id);
-						MathUtils.IncrementWrapTo1(ref Versions[i]);
+						MathUtils.IncrementWrapTo1(ref Versions[id]);
 					}
 					Count -= 1;
 				}
@@ -256,7 +258,7 @@ namespace Massive
 		{
 			EntityNotAliveException.ThrowIfEntityDead(this, id);
 
-			return new Entifier(id, Versions[Sparse[id]]);
+			return new Entifier(id, Versions[id]);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -269,7 +271,7 @@ namespace Massive
 
 			var index = Sparse[entifier.Id];
 
-			return index < Count && Packed[index] == entifier.Id && Versions[index] == entifier.Version;
+			return index < Count && Packed[index] == entifier.Id && Versions[entifier.Id] == entifier.Version;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -299,11 +301,6 @@ namespace Massive
 		public void ResizePacked(int capacity)
 		{
 			Packed = Packed.Resize(capacity);
-			Versions = Versions.Resize(capacity);
-			if (capacity > PackedCapacity)
-			{
-				Array.Fill(Versions, 1U, PackedCapacity, capacity - PackedCapacity);
-			}
 			PackedCapacity = capacity;
 		}
 
@@ -314,6 +311,11 @@ namespace Massive
 		public void ResizeSparse(int capacity)
 		{
 			Sparse = Sparse.Resize(capacity);
+			Versions = Versions.Resize(capacity);
+			if (capacity > SparseCapacity)
+			{
+				Array.Fill(Versions, 1U, SparseCapacity, capacity - SparseCapacity);
+			}
 			SparseCapacity = capacity;
 		}
 
@@ -338,8 +340,9 @@ namespace Massive
 					{
 						count -= 1;
 
-						var holeVersion = Versions[holeIndex];
-						AssignEntity(Packed[count], Versions[count], holeIndex);
+						var holeVersion = Versions[holeId];
+						var id = Packed[count];
+						AssignEntity(id, Versions[id], holeIndex);
 						AssignEntity(holeId, holeVersion, count);
 
 						for (; count > 0 && Packed[count - 1] < 0; count--) { }
@@ -366,7 +369,7 @@ namespace Massive
 		{
 			Sparse[id] = index;
 			Packed[index] = id;
-			Versions[index] = version;
+			Versions[id] = version;
 		}
 
 		/// <summary>
