@@ -8,9 +8,9 @@ namespace Massive
 		bool Apply(int id);
 	}
 
-	public struct EntityActionAdapter : IEntityAction
+	public struct IdActionAdapter : IEntityAction
 	{
-		public EntityAction Action;
+		public IdAction Action;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id)
@@ -20,15 +20,44 @@ namespace Massive
 		}
 	}
 
-	public struct EntityActionArgsAdapter<TArgs> : IEntityAction
+	public struct IdActionArgsAdapter<TArgs> : IEntityAction
 	{
-		public EntityActionArgs<TArgs> Action;
+		public IdActionArgs<TArgs> Action;
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id)
 		{
 			Action.Invoke(id, Args);
+			return true;
+		}
+	}
+
+	public struct EntityActionAdapter : IEntityAction
+	{
+		public EntityAction Action;
+		public Entities Entities;
+		public World World;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Apply(int id)
+		{
+			Action.Invoke(new Entity(id, Entities.Versions[id], World));
+			return true;
+		}
+	}
+
+	public struct EntityActionArgsAdapter<TArgs> : IEntityAction
+	{
+		public EntityActionArgs<TArgs> Action;
+		public Entities Entities;
+		public World World;
+		public TArgs Args;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Apply(int id)
+		{
+			Action.Invoke(new Entity(id, Entities.Versions[id], World), Args);
 			return true;
 		}
 	}
@@ -53,7 +82,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id)
 		{
-			Result.Add(Entities.GetEntifier(id));
+			Result.Add(new Entifier(id, Entities.Versions[id]));
 			return true;
 		}
 	}

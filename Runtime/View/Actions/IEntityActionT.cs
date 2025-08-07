@@ -7,9 +7,9 @@ namespace Massive
 		bool Apply(int id, ref T a);
 	}
 
-	public struct EntityActionRefAdapter<T> : IEntityAction<T>
+	public struct IdActionRefAdapter<T> : IEntityAction<T>
 	{
-		public EntityActionRef<T> Action;
+		public IdActionRef<T> Action;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id, ref T a)
@@ -19,15 +19,44 @@ namespace Massive
 		}
 	}
 
-	public struct EntityActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
+	public struct IdActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
 	{
-		public EntityActionRefArgs<T, TArgs> Action;
+		public IdActionRefArgs<T, TArgs> Action;
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id, ref T a)
 		{
 			Action.Invoke(id, ref a, Args);
+			return true;
+		}
+	}
+
+	public struct EntityActionRefAdapter<T> : IEntityAction<T>
+	{
+		public EntityActionRef<T> Action;
+		public Entities Entities;
+		public World World;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Apply(int id, ref T a)
+		{
+			Action.Invoke(new Entity(id, Entities.Versions[id], World), ref a);
+			return true;
+		}
+	}
+
+	public struct EntityActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
+	{
+		public EntityActionRefArgs<T, TArgs> Action;
+		public Entities Entities;
+		public World World;
+		public TArgs Args;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Apply(int id, ref T a)
+		{
+			Action.Invoke(new Entity(id, Entities.Versions[id], World), ref a, Args);
 			return true;
 		}
 	}

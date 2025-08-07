@@ -66,7 +66,7 @@ namespace Massive.Tests
 		{
 			var sparseSet = new SparseSet();
 
-			Assert.Throws<Exception>(() =>
+			Assert.Throws<NegativeArgumentException>(() =>
 			{
 				sparseSet.Add(id);
 			});
