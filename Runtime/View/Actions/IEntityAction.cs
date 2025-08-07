@@ -36,13 +36,13 @@ namespace Massive
 	public struct EntityActionAdapter : IEntityAction
 	{
 		public EntityAction Action;
-		public Entities Entities;
+		public Entifiers Entifiers;
 		public World World;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id)
 		{
-			Action.Invoke(new Entity(id, Entities.Versions[id], World));
+			Action.Invoke(new Entity(id, Entifiers.Versions[id], World));
 			return true;
 		}
 	}
@@ -50,14 +50,14 @@ namespace Massive
 	public struct EntityActionArgsAdapter<TArgs> : IEntityAction
 	{
 		public EntityActionArgs<TArgs> Action;
-		public Entities Entities;
+		public Entifiers Entifiers;
 		public World World;
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id)
 		{
-			Action.Invoke(new Entity(id, Entities.Versions[id], World), Args);
+			Action.Invoke(new Entity(id, Entifiers.Versions[id], World), Args);
 			return true;
 		}
 	}
@@ -77,12 +77,12 @@ namespace Massive
 	public struct FillEntifiers : IEntityAction
 	{
 		public IList<Entifier> Result;
-		public Entities Entities;
+		public Entifiers Entifiers;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id)
 		{
-			Result.Add(new Entifier(id, Entities.Versions[id]));
+			Result.Add(new Entifier(id, Entifiers.Versions[id]));
 			return true;
 		}
 	}
@@ -101,12 +101,12 @@ namespace Massive
 
 	public struct DestroyAll : IEntityAction
 	{
-		public Entities Entities;
+		public Entifiers Entifiers;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id)
 		{
-			Entities.Destroy(id);
+			Entifiers.Destroy(id);
 			return true;
 		}
 	}

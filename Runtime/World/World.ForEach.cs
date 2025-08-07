@@ -12,19 +12,19 @@ namespace Massive
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			var entities = Entities;
+			var entifiers = Entifiers;
 
-			var originalPacking = entities.ExchangeToStricterPacking(Config.PackingWhenIterating);
+			var originalPacking = entifiers.ExchangeToStricterPacking(Config.PackingWhenIterating);
 
-			for (var i = entities.Count - 1; i >= 0; i--)
+			for (var i = entifiers.Count - 1; i >= 0; i--)
 			{
-				if (i > entities.Count)
+				if (i > entifiers.Count)
 				{
-					i = entities.Count;
+					i = entifiers.Count;
 					continue;
 				}
 
-				var id = entities.Packed[i];
+				var id = entifiers.Packed[i];
 				if (id >= 0)
 				{
 					if (!action.Apply(id))
@@ -34,7 +34,7 @@ namespace Massive
 				}
 			}
 
-			entities.ExchangePacking(originalPacking);
+			entifiers.ExchangePacking(originalPacking);
 		}
 
 		public void ForEach<TAction, T>(ref TAction action)
@@ -382,7 +382,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public PackedEnumerator GetEnumerator()
 		{
-			return new PackedEnumerator(Entities, Config.PackingWhenIterating);
+			return new PackedEnumerator(Entifiers, Config.PackingWhenIterating);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public PackedEntityEnumerable Entities()
+		{
+			return new PackedEntityEnumerable(Entifiers, this, Config.PackingWhenIterating);
 		}
 	}
 }

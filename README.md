@@ -29,19 +29,18 @@ It’s organized as a set of loosely coupled containers that can be used in diff
 
 Design considerations:
 
+- Supports components of any type.
 - Deterministic with lazy initialization.
-- Component definition is configuration — no extra boilerplate.
 - No deferred command execution — all changes apply immediately.
 - Minimal storage for fast saving. No archetypes or bitsets.
 - Fully managed — no unsafe code, no `Dispose()` methods.
-- Supports components of any type.
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
 
 Features:
 
 - `Clone()` and `CopyTo(other)` methods for creating snapshots.  
   Ideal for implementing replays, undo/redo, or rollbacks.
-- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for adaptive iteration over entities and components.
+- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for fast iteration over entities and components.
 - Fully stable storage (no reference invalidation) on demand:
   - Use the `Stable` attribute for components.
   - Or enable full stability for the entire world.
@@ -87,25 +86,27 @@ world.Get<Velocity>(player) = new Velocity() { Magnitude = 10f };
 
 world.Set(enemy, new Velocity()); // Adds component and sets its data.
 
+// Or use feature-rich entity handle.
+var npc = world.CreateEntity();
+npc.Add<Position>();
+npc.Destroy();
+
 // Get full entity identifier from player ID.
 // Useful for persistent storage of entities.
-Entity playerEntity = world.GetEntity(player);
+Entifier playerEntifier = world.GetEntifier(player);
 
 var deltaTime = 1f / 60f;
 
-// Iterate using lightweight views.
-// The world itself acts as a view too.
-var view = world.View();
-
+// Iterate using lightweight queries.
 // ForEach will select only those entities that contain all the necessary components.
-world.ForEach((int entityId, ref Position position, ref Velocity velocity) =>
+world.ForEach((Entity entity, ref Position position, ref Velocity velocity) =>
 {
 	position.Y += velocity.Magnitude * deltaTime;
     
 	if (position.Y > 5f)
 	{
 		// Create and destroy any amount of entities during iteration.
-		world.Destroy(entityId);
+		entity.Destroy();
 	}
     
 	// NOTE:
@@ -130,11 +131,18 @@ world.Filter<Include<Player>, Exclude<Velocity>>()
 		// ...
 	});
 
-// Iterate using foreach with data set.
+// Iterate using foreach with data set. (faster)
 var positions = world.DataSet<Position>();
 foreach (var entityId in world.Include<Player, Position>())
 {
 	ref Position position = ref positions.Get(entityId);
+	// ...
+}
+
+// Or iterate over rich entities. (simpler)
+foreach (var entity in world.Include<Player>().Entities())
+{
+	ref Position position = ref entity.Get<Position>();
 	// ...
 }
 

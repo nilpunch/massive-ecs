@@ -5,6 +5,7 @@
 ### Changed
 
 - Renamed `Entity` identifier to `Entifier`.
+- Renamed `Entities` to `Entifiers`.
 - Renamed `SetRegistry` to `Sets`.
 - Renamed `FilterRegistry` to `Filters`.
 - Renamed `AllocatorRegistry` to `Allocators`.
@@ -16,11 +17,14 @@
 
 ### Added
 
-- New `Entity` struct that has clean syntax:
+- New rich `Entity` struct with a clean syntax:
   - `entity.IsAlive`
   - `entity.Add<Enemy>()`
   - `entity.Destroy()`
   - etc.
+- Iteration over rich entities:
+  - using `world.ForEach((Entity entity, ref Player player, ...) => ...)` queries.
+  - using `foreach (var entity in world.Include<Player>().Entities())` enumerators.
 - `StoreNegative` attribute for storing a complementary set of entities to optimize exclusion filtering:
   `world.Exclude<Dead>.ForEach(...);`
 - Negation in all contexts that use component types:

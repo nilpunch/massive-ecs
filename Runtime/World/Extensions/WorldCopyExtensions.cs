@@ -36,7 +36,7 @@ namespace Massive
 			IncompatibleConfigsException.ThrowIfIncompatible(world, other);
 
 			// Entities.
-			world.Entities.CopyTo(other.Entities);
+			world.Entifiers.CopyTo(other.Entifiers);
 
 			// Sets.
 			world.Sets.CopyTo(other.Sets);

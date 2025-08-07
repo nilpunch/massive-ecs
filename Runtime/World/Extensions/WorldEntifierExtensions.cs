@@ -20,7 +20,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entifier GetEntifier(this World world, int id)
 		{
-			return world.Entities.GetEntifier(id);
+			return world.Entifiers.GetEntifier(id);
 		}
 
 		/// <summary>
@@ -29,7 +29,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entifier CreateEntifier(this World world)
 		{
-			return world.Entities.Create();
+			return world.Entifiers.Create();
 		}
 
 		/// <summary>
@@ -64,10 +64,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entifier Clone(this World world, Entifier entifier)
 		{
-			InvalidCloneOperationException.ThrowIfEntityDead(world.Entities, entifier);
+			InvalidCloneOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
 			var entityId = entifier.Id;
-			var clone = world.Entities.Create();
+			var clone = world.Entifiers.Create();
 			var cloneId = clone.Id;
 
 			var setList = world.Sets.AllSets;
@@ -97,7 +97,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Destroy(this World world, Entifier entifier)
 		{
-			return world.Entities.Destroy(entifier.Id);
+			return world.Entifiers.Destroy(entifier.Id);
 		}
 
 		/// <summary>
@@ -106,7 +106,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAlive(this World world, Entifier entifier)
 		{
-			return world.Entities.IsAlive(entifier);
+			return world.Entifiers.IsAlive(entifier);
 		}
 
 		/// <summary>
@@ -119,7 +119,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set<T>(this World world, Entifier entifier, T data)
 		{
-			InvalidSetOperationException.ThrowIfEntityDead(world.Entities, entifier);
+			InvalidSetOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
 			var info = TypeId<T>.Info;
 
@@ -150,7 +150,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Add<T>(this World world, Entifier entifier)
 		{
-			InvalidAddOperationException.ThrowIfEntityDead(world.Entities, entifier);
+			InvalidAddOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
 			var info = TypeId<T>.Info;
 
@@ -177,7 +177,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Remove<T>(this World world, Entifier entifier)
 		{
-			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entities, entifier);
+			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
 			var info = TypeId<T>.Info;
 
@@ -201,7 +201,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this World world, Entifier entifier)
 		{
-			InvalidHasOperationException.ThrowIfEntityDead(world.Entities, entifier);
+			InvalidHasOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
 			var info = TypeId<T>.Info;
 
@@ -226,7 +226,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this World world, Entifier entifier)
 		{
-			InvalidGetOperationException.ThrowIfEntityDead(world.Entities, entifier);
+			InvalidGetOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
 			var info = TypeId<T>.Info;
 

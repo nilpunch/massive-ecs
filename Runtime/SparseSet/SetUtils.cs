@@ -138,23 +138,23 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void PopulateFromEntities(SparseSet sparseSet, Entities entities)
+		public static void PopulateFromEntifiers(SparseSet sparseSet, Entifiers entifiers)
 		{
 			sparseSet.Compact();
-			entities.Compact();
+			entifiers.Compact();
 
-			sparseSet.EnsurePackedAt(entities.Count - 1);
-			sparseSet.EnsureSparseAt(entities.UsedIds - 1);
+			sparseSet.EnsurePackedAt(entifiers.Count - 1);
+			sparseSet.EnsureSparseAt(entifiers.UsedIds - 1);
 
-			Array.Copy(entities.Packed, sparseSet.Packed, entities.Count);
-			Array.Copy(entities.Sparse, sparseSet.Sparse, entities.UsedIds);
+			Array.Copy(entifiers.Packed, sparseSet.Packed, entifiers.Count);
+			Array.Copy(entifiers.Sparse, sparseSet.Sparse, entifiers.UsedIds);
 
-			if (entities.UsedIds < sparseSet.UsedIds)
+			if (entifiers.UsedIds < sparseSet.UsedIds)
 			{
-				Array.Fill(sparseSet.Sparse, Constants.InvalidId, entities.UsedIds, sparseSet.UsedIds - entities.UsedIds);
+				Array.Fill(sparseSet.Sparse, Constants.InvalidId, entifiers.UsedIds, sparseSet.UsedIds - entifiers.UsedIds);
 			}
 
-			sparseSet.CurrentState = new SparseSet.State(entities.Count, entities.UsedIds, SparseSet.EndHole, sparseSet.Packing);
+			sparseSet.CurrentState = new SparseSet.State(entifiers.Count, entifiers.UsedIds, SparseSet.EndHole, sparseSet.Packing);
 		}
 	}
 }

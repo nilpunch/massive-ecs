@@ -4,6 +4,9 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	/// <summary>
+	/// Feature-rich entity hanle.
+	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly partial struct Entity : IEquatable<Entifier>, IEquatable<Entity>
@@ -58,7 +61,7 @@ namespace Massive
 		public bool IsAlive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => World.Entities.IsAlive(Entifier);
+			get => World.Entifiers.IsAlive(Entifier);
 		}
 
 		public Entifier Entifier

@@ -10,7 +10,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Clear(this World world)
 		{
-			world.Entities.Clear();
+			world.Entifiers.Clear();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

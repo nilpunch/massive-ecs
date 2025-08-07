@@ -10,7 +10,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Entities : PackedSet
+	public class Entifiers : PackedSet
 	{
 		private const int EndHoleId = int.MaxValue;
 
@@ -46,7 +46,7 @@ namespace Massive
 		/// </summary>
 		private int NextHoleId { get; set; } = EndHoleId;
 
-		public Entities(Packing packing = Packing.Continuous)
+		public Entifiers(Packing packing = Packing.Continuous)
 		{
 			Packing = packing;
 		}
@@ -376,9 +376,9 @@ namespace Massive
 		/// Creates and returns a new entities collection that is an exact copy of this one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entities Clone()
+		public Entifiers Clone()
 		{
-			var clone = new Entities();
+			var clone = new Entifiers();
 			CopyTo(clone);
 			return clone;
 		}
@@ -387,7 +387,7 @@ namespace Massive
 		/// Copies all entities and state from this entities collection into the specified one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(Entities other)
+		public void CopyTo(Entifiers other)
 		{
 			other.EnsureCapacityAt(UsedIds - 1);
 

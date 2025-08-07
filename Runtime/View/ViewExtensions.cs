@@ -92,7 +92,7 @@ namespace Massive
 		public static void ForEach<TView>(this TView view, EntityAction action)
 			where TView : IView
 		{
-			var entityActionAdapter = new EntityActionAdapter { Action = action, Entities = view.World.Entities, World = view.World };
+			var entityActionAdapter = new EntityActionAdapter { Action = action, Entifiers = view.World.Entifiers, World = view.World };
 			view.ForEach(ref entityActionAdapter);
 		}
 
@@ -100,7 +100,7 @@ namespace Massive
 		public static void ForEach<TView, T>(this TView view, EntityActionRef<T> action)
 			where TView : IViewT
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T> { Action = action, Entities = view.World.Entities, World = view.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T> { Action = action, Entifiers = view.World.Entifiers, World = view.World };
 			view.ForEach<EntityActionRefAdapter<T>, T>(ref entityActionRefAdapter);
 		}
 
@@ -108,7 +108,7 @@ namespace Massive
 		public static void ForEach<TView, T1, T2>(this TView view, EntityActionRef<T1, T2> action)
 			where TView : IViewTT
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2> { Action = action, Entities = view.World.Entities, World = view.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2> { Action = action, Entifiers = view.World.Entifiers, World = view.World };
 			view.ForEach<EntityActionRefAdapter<T1, T2>, T1, T2>(ref entityActionRefAdapter);
 		}
 
@@ -116,7 +116,7 @@ namespace Massive
 		public static void ForEach<TView, T1, T2, T3>(this TView view, EntityActionRef<T1, T2, T3> action)
 			where TView : IViewTTT
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3> { Action = action, Entities = view.World.Entities, World = view.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3> { Action = action, Entifiers = view.World.Entifiers, World = view.World };
 			view.ForEach<EntityActionRefAdapter<T1, T2, T3>, T1, T2, T3>(ref entityActionRefAdapter);
 		}
 
@@ -124,7 +124,7 @@ namespace Massive
 		public static void ForEach<TView, T1, T2, T3, T4>(this TView view, EntityActionRef<T1, T2, T3, T4> action)
 			where TView : IViewTTTT
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4> { Action = action, Entities = view.World.Entities, World = view.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4> { Action = action, Entifiers = view.World.Entifiers, World = view.World };
 			view.ForEach<EntityActionRefAdapter<T1, T2, T3, T4>, T1, T2, T3, T4>(ref entityActionRefAdapter);
 		}
 
@@ -132,7 +132,7 @@ namespace Massive
 		public static void ForEach<TView, TArgs>(this TView view, TArgs args, EntityActionArgs<TArgs> action)
 			where TView : IView
 		{
-			var entityActionArgsAdapter = new EntityActionArgsAdapter<TArgs>() { Action = action, Entities = view.World.Entities, World = view.World, Args = args };
+			var entityActionArgsAdapter = new EntityActionArgsAdapter<TArgs>() { Action = action, Entifiers = view.World.Entifiers, World = view.World, Args = args };
 			view.ForEach(ref entityActionArgsAdapter);
 		}
 
@@ -140,7 +140,7 @@ namespace Massive
 		public static void ForEach<TView, TArgs, T>(this TView view, TArgs args, EntityActionRefArgs<T, TArgs> action)
 			where TView : IViewT
 		{
-			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T, TArgs> { Action = action, Entities = view.World.Entities, World = view.World, Args = args };
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T, TArgs> { Action = action, Entifiers = view.World.Entifiers, World = view.World, Args = args };
 			view.ForEach<EntityActionRefArgsAdapter<T, TArgs>, T>(ref entityActionRefArgsAdapter);
 		}
 
@@ -148,7 +148,7 @@ namespace Massive
 		public static void ForEach<TView, TArgs, T1, T2>(this TView view, TArgs args, EntityActionRefArgs<T1, T2, TArgs> action)
 			where TView : IViewTT
 		{
-			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, TArgs> { Action = action, Entities = view.World.Entities, World = view.World, Args = args };
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, TArgs> { Action = action, Entifiers = view.World.Entifiers, World = view.World, Args = args };
 			view.ForEach<EntityActionRefArgsAdapter<T1, T2, TArgs>, T1, T2>(ref entityActionRefArgsAdapter);
 		}
 
@@ -156,7 +156,7 @@ namespace Massive
 		public static void ForEach<TView, TArgs, T1, T2, T3>(this TView view, TArgs args, EntityActionRefArgs<T1, T2, T3, TArgs> action)
 			where TView : IViewTTT
 		{
-			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Entities = view.World.Entities, World = view.World, Args = args };
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Entifiers = view.World.Entifiers, World = view.World, Args = args };
 			view.ForEach<EntityActionRefArgsAdapter<T1, T2, T3, TArgs>, T1, T2, T3>(ref entityActionRefArgsAdapter);
 		}
 
@@ -164,7 +164,7 @@ namespace Massive
 		public static void ForEach<TView, TArgs, T1, T2, T3, T4>(this TView view, TArgs args, EntityActionRefArgs<T1, T2, T3, T4, TArgs> action)
 			where TView : IViewTTTT
 		{
-			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs> { Action = action, Entities = view.World.Entities, World = view.World, Args = args };
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs> { Action = action, Entifiers = view.World.Entifiers, World = view.World, Args = args };
 			view.ForEach<EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs>, T1, T2, T3, T4>(ref entityActionRefArgsAdapter);
 		}
 
@@ -236,8 +236,8 @@ namespace Massive
 		public static void Fill<TView>(this TView view, IList<Entifier> result)
 			where TView : IView
 		{
-			var fillEntities = new FillEntifiers { Result = result, Entities = view.World.Entities };
-			view.ForEach(ref fillEntities);
+			var fillEntifiers = new FillEntifiers { Result = result, Entifiers = view.World.Entifiers };
+			view.ForEach(ref fillEntifiers);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -264,7 +264,7 @@ namespace Massive
 		public static void Destroy<TView>(this TView view)
 			where TView : IView
 		{
-			var destroyEntities = new DestroyAll { Entities = view.World.Entities };
+			var destroyEntities = new DestroyAll { Entifiers = view.World.Entifiers };
 			view.ForEach(ref destroyEntities);
 		}
 

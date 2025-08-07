@@ -6,7 +6,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public partial class World
 	{
-		public Entities Entities { get; }
+		public Entifiers Entifiers { get; }
 
 		public Sets Sets { get; }
 		public Filters Filters { get; }
@@ -21,8 +21,8 @@ namespace Massive
 
 		public World(WorldConfig worldConfig)
 		{
-			Entities = new Entities();
-			Sets = new Sets(new SetFactory(worldConfig), Entities);
+			Entifiers = new Entifiers();
+			Sets = new Sets(new SetFactory(worldConfig), Entifiers);
 			Filters = new Filters(Sets);
 			Allocators = new Allocators();
 			Config = worldConfig;
@@ -30,8 +30,8 @@ namespace Massive
 			var allSets = Sets.AllSets;
 			var negativeSets = Sets.NegativeSets;
 			var allocators = Allocators;
-			Entities.BeforeDestroyed += RemoveFromAll;
-			Entities.AfterCreated += AddToNegative;
+			Entifiers.BeforeDestroyed += RemoveFromAll;
+			Entifiers.AfterCreated += AddToNegative;
 
 			void RemoveFromAll(int entityId)
 			{

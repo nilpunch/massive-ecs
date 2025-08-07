@@ -35,13 +35,13 @@ namespace Massive
 	public struct EntityActionRefAdapter<T> : IEntityAction<T>
 	{
 		public EntityActionRef<T> Action;
-		public Entities Entities;
+		public Entifiers Entifiers;
 		public World World;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id, ref T a)
 		{
-			Action.Invoke(new Entity(id, Entities.Versions[id], World), ref a);
+			Action.Invoke(new Entity(id, Entifiers.Versions[id], World), ref a);
 			return true;
 		}
 	}
@@ -49,14 +49,14 @@ namespace Massive
 	public struct EntityActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
 	{
 		public EntityActionRefArgs<T, TArgs> Action;
-		public Entities Entities;
+		public Entifiers Entifiers;
 		public World World;
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Apply(int id, ref T a)
 		{
-			Action.Invoke(new Entity(id, Entities.Versions[id], World), ref a, Args);
+			Action.Invoke(new Entity(id, Entifiers.Versions[id], World), ref a, Args);
 			return true;
 		}
 	}

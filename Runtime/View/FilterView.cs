@@ -30,7 +30,7 @@ namespace Massive
 			ReducedFilter reducedFilter;
 			if (Filter.Included.Length == 0)
 			{
-				packedSet = World.Entities;
+				packedSet = World.Entifiers;
 				reducedFilter = Filter.NotReduced;
 			}
 			else
@@ -531,12 +531,26 @@ namespace Massive
 		{
 			if (Filter.Included.Length == 0)
 			{
-				return new PackedFilterEnumerator(World.Entities, Filter.NotReduced, PackingWhenIterating);
+				return new PackedFilterEnumerator(World.Entifiers, Filter.NotReduced, PackingWhenIterating);
 			}
 			else
 			{
 				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
 				return new PackedFilterEnumerator(minimalSet, Filter.ReduceIncluded(minimalSet), PackingWhenIterating);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public PackedFilterEntityEnumerable Entities()
+		{
+			if (Filter.Included.Length == 0)
+			{
+				return new PackedFilterEntityEnumerable(World.Entifiers, Filter.NotReduced, World, PackingWhenIterating);
+			}
+			else
+			{
+				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
+				return new PackedFilterEntityEnumerable(minimalSet, Filter.ReduceIncluded(minimalSet), World, PackingWhenIterating);
 			}
 		}
 	}

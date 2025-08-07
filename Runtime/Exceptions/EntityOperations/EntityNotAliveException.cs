@@ -11,9 +11,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfEntityDead(Entities entities, Entifier entifier)
+		public static void ThrowIfEntityDead(Entifiers entifiers, Entifier entifier)
 		{
-			if (!entities.IsAlive(entifier))
+			if (!entifiers.IsAlive(entifier))
 			{
 				throw new EntityNotAliveException($"You are trying to process the dead entity {entifier}.");
 			}
@@ -21,9 +21,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfEntityDead(Entities entities, int entityId)
+		public static void ThrowIfEntityDead(Entifiers entifiers, int entityId)
 		{
-			if (!entities.IsAlive(entityId))
+			if (!entifiers.IsAlive(entityId))
 			{
 				throw new EntityNotAliveException($"You are trying to process the dead entity with id:{entityId}.");
 			}

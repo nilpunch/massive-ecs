@@ -35,12 +35,12 @@ namespace Massive
 
 		public SetFactory SetFactory { get; }
 
-		public Entities Entities { get; }
+		public Entifiers Entifiers { get; }
 
-		public Sets(SetFactory setFactory, Entities entities)
+		public Sets(SetFactory setFactory, Entifiers entifiers)
 		{
 			SetFactory = setFactory;
-			Entities = entities;
+			Entifiers = entifiers;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -131,7 +131,7 @@ namespace Massive
 
 				var positiveSet = GetReflected(type.GetGenericArguments()[0]);
 
-				SetUtils.PopulateFromEntities(set, Entities);
+				SetUtils.PopulateFromEntifiers(set, Entifiers);
 				foreach (var id in positiveSet)
 				{
 					set.Remove(id, updateNegative: false);
@@ -155,7 +155,7 @@ namespace Massive
 				var negativeSet = GetReflected(negativeType);
 				NegativeSets.Insert(insertionIndex, negativeSet);
 
-				SetUtils.PopulateFromEntities(negativeSet, Entities);
+				SetUtils.PopulateFromEntifiers(negativeSet, Entifiers);
 				set.Negative = negativeSet;
 				negativeSet.Negative = set;
 			}
@@ -231,7 +231,7 @@ namespace Massive
 					var otherSet = otherSets[otherIndex];
 					if (otherIsNegative[otherIndex])
 					{
-						SetUtils.PopulateFromEntities(otherSet, other.Entities);
+						SetUtils.PopulateFromEntifiers(otherSet, other.Entifiers);
 						foreach (var id in otherSet.Negative)
 						{
 							otherSet.Remove(id, updateNegative: false);

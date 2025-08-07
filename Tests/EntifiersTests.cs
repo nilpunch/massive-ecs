@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Massive.Tests
 {
 	[TestFixture]
-	public class EntitiesTests
+	public class EntifiersTests
 	{
 		public int EntitiesToCreate = 24;
 
@@ -18,7 +18,7 @@ namespace Massive.Tests
 		public void WhenCompact_AndThereIsHoles_ThenRemoveHoles()
 		{
 			// Arrange.
-			var entities = new Entities(Packing.WithHoles);
+			var entities = new Entifiers(Packing.WithHoles);
 			for (int i = 0; i < EntitiesToCreate; i++)
 				entities.Create();
 			foreach (var id in IdsToDestroy)
@@ -36,7 +36,7 @@ namespace Massive.Tests
 		public void WhenClear_AndThereIsHoles_ThenRestoreTheIdsAndClear()
 		{
 			// Arrange.
-			var entities = new Entities(Packing.WithHoles);
+			var entities = new Entifiers(Packing.WithHoles);
 			for (int i = 0; i < EntitiesToCreate; i++)
 				entities.Create();
 			foreach (var id in IdsToDestroy)
@@ -58,7 +58,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void IsAlive_WhenNotCreated_ShouldBeFalse(int id)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 
 			var isAlive = entities.IsAlive(id);
 
@@ -69,7 +69,7 @@ namespace Massive.Tests
 		[TestCase(-1)]
 		public void IsAlive_WhenOutOfBounds_ShouldNotThrow(int id)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 
 			Assert.DoesNotThrow(CheckAlive);
 
@@ -79,7 +79,7 @@ namespace Massive.Tests
 		[Test]
 		public void GetEntity_ShouldReturnCorrectEntity()
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 
 			for (var i = 0; i < 10; i++)
 				entities.Create();
@@ -104,7 +104,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void Create_ShouldMakeAlive(int id)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
@@ -117,7 +117,7 @@ namespace Massive.Tests
 		[TestCase(4 + 1000)]
 		public void Create_WhenOutOfBounds_ShouldResize(int createAmount)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 
 			Assert.DoesNotThrow(CreateCheck);
 
@@ -131,7 +131,7 @@ namespace Massive.Tests
 		[TestCase(10)]
 		public void Create_ShouldGenerateDistinctIds(int createAmount)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 			var created = new List<int>();
 			for (var i = 0; i < createAmount; i++)
 				created.Add(entities.Create().Id);
@@ -146,7 +146,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void Destroy_ShouldMakeNotAlive(int id)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
@@ -161,7 +161,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void DestroyThenCreate_ShouldRecycleIds(int id)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
@@ -177,7 +177,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void Clear_ShouldMakeNotAlive(int id)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
@@ -192,7 +192,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void Clear_ShouldMakeCountZero(int id)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
@@ -207,7 +207,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void ClearThenCreate_ShouldRecycleIds(int id)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 			for (var i = 0; i <= id; i++)
 				entities.Create();
 
@@ -223,7 +223,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void CreateMany_ShouldMakeAlive(int id)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 
 			entities.CreateMany(id + 1);
 			var isAlive = entities.IsAlive(id);
@@ -235,7 +235,7 @@ namespace Massive.Tests
 		[TestCase(4 + 1000)]
 		public void CreateMany_WhenOutOfBounds_ShouldResize(int createAmount)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 
 			Assert.DoesNotThrow(CreateManyCheck);
 
@@ -248,7 +248,7 @@ namespace Massive.Tests
 		[TestCase(10)]
 		public void CreateMany_ShouldGenerateDistinctIds(int createAmount)
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 			var created = new List<int>();
 			entities.AfterCreated += created.Add;
 
@@ -261,7 +261,7 @@ namespace Massive.Tests
 		[Test]
 		public void EntityDead_ShouldAlwaysBeDead()
 		{
-			var entities = new Entities();
+			var entities = new Entifiers();
 
 			entities.CreateMany(10);
 
