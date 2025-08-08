@@ -31,7 +31,6 @@
   - `world.Include<Not<Dead>>.ForEach(...); // Acts like Exclude<Dead>`
   - `entity.Add<Not<Dead>>(); // Removes Dead component`
 
-
 ## 20.0.0-alpha.2 - April 27, 2025
 
 ### Added

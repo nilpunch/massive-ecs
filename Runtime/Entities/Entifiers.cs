@@ -114,7 +114,7 @@ namespace Massive
 			else if (Count < UsedIds)
 			{
 				var id = Packed[Count];
-				entifier = new Entifier(Packed[Count], Versions[id]);
+				entifier = new Entifier(id, Versions[id]);
 				Count += 1;
 			}
 			else
