@@ -1,4 +1,8 @@
-﻿using Unity.IL2CPP.CompilerServices;
+﻿#if !MASSIVE_DISABLE_ASSERT
+#define MASSIVE_ASSERT
+#endif
+
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
@@ -27,33 +31,7 @@ namespace Massive
 			Allocators = new Allocators();
 			Config = worldConfig;
 
-			var allSets = Sets.AllSets;
-			var negativeSets = Sets.NegativeSets;
-			var allocators = Allocators;
-			Entifiers.BeforeDestroyed += RemoveFromAll;
-			Entifiers.AfterCreated += AddToNegative;
-
-			void RemoveFromAll(int entityId)
-			{
-				var setCount = allSets.Count;
-				var sets = allSets.Items;
-				for (var i = setCount - 1; i >= 0; i--)
-				{
-					sets[i].Remove(entityId, updateNegative: false);
-				}
-
-				allocators.Free(entityId);
-			}
-
-			void AddToNegative(int entityId)
-			{
-				var setCount = negativeSets.Count;
-				var sets = negativeSets.Items;
-				for (var i = setCount - 1; i >= 0; i--)
-				{
-					sets[i].Add(entityId, updateNegative: false);
-				}
-			}
+			Entifiers.WorldContext = new WorldContext(Sets.AllSets, Sets.NegativeSets, Allocators);
 		}
 	}
 }
