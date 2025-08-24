@@ -14,7 +14,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SparseSet SparseSet<T>(this World world)
 		{
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureLookupAt(info.Index);
@@ -31,7 +31,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static DataSet<T> DataSet<T>(this World world)
 		{
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureLookupAt(info.Index);

@@ -35,12 +35,13 @@ namespace Massive
 
 		public SetFactory SetFactory { get; }
 
-		public Entifiers Entifiers { get; }
+		public Entifiers Entifiers { get; set; }
 
-		public Sets(SetFactory setFactory, Entifiers entifiers)
+		public Masks Masks { get; set; }
+
+		public Sets(SetFactory setFactory)
 		{
 			SetFactory = setFactory;
-			Entifiers = entifiers;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -57,7 +58,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet Get<T>()
 		{
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			EnsureLookupAt(info.Index);
 			var candidate = Lookup[info.Index];
@@ -67,7 +68,7 @@ namespace Massive
 				return candidate;
 			}
 
-			var collapsedInfo = TypeId.GetInfo(NegativeUtils.CollapseNegations(info.Type));
+			var collapsedInfo = ComponentId.GetInfo(NegativeUtils.CollapseNegations(info.Type));
 			if (collapsedInfo.Type != info.Type)
 			{
 				var collapsedSet = GetReflected(collapsedInfo.Type);
@@ -77,10 +78,14 @@ namespace Massive
 
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
-			Insert(info.FullName, set, cloner, NegativeUtils.IsNegative(info.Type));
+			set.ComponentId = info.Index;
+			set.Masks = Masks;
+
+			var isNegative = NegativeUtils.IsNegative(info.Type);
+			InsertSet(info.FullName, set, cloner, isNegative);
 			Lookup[info.Index] = set;
 
-			TryCreatePairedSet(set, info);
+			PairComplementarySet(set, info);
 
 			return set;
 		}
@@ -88,7 +93,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public SparseSet GetReflected(Type setType)
 		{
-			if (TypeId.TryGetInfo(setType, out var info))
+			if (ComponentId.TryGetInfo(setType, out var info))
 			{
 				EnsureLookupAt(info.Index);
 				var candidate = Lookup[info.Index];
@@ -111,57 +116,12 @@ namespace Massive
 			{
 				LookupCapacity = MathUtils.NextPowerOf2(index + 1);
 				Lookup = Lookup.Resize(LookupCapacity);
+				Masks.EnsureComponentsCapacity(LookupCapacity);
 			}
 		}
 
-		public void TryCreatePairedSet(SparseSet set, TypeIdInfo typeInfo)
-		{
-			var type = typeInfo.Type;
-
-			if (NegativeUtils.IsNegative(type))
-			{
-				var itemIndex = NegativeIdentifiers.BinarySearch(typeInfo.FullName);
-				if (itemIndex >= 0)
-				{
-					return;
-				}
-				var insertionIndex = ~itemIndex;
-				NegativeIdentifiers.Insert(insertionIndex, typeInfo.FullName);
-				NegativeSets.Insert(insertionIndex, set);
-
-				var positiveSet = GetReflected(type.GetGenericArguments()[0]);
-
-				SetUtils.PopulateFromEntifiers(set, Entifiers);
-				foreach (var id in positiveSet)
-				{
-					set.Remove(id, updateNegative: false);
-				}
-				set.Negative = positiveSet;
-				positiveSet.Negative = set;
-			}
-			else if (type.IsDefined(typeof(StoreNegativeAttribute), false))
-			{
-				var negativeType = typeof(Not<>).MakeGenericType(type);
-				var negativeInfo = TypeId.GetInfo(negativeType);
-
-				var itemIndex = NegativeIdentifiers.BinarySearch(negativeInfo.FullName);
-				if (itemIndex >= 0)
-				{
-					return;
-				}
-				var insertionIndex = ~itemIndex;
-				NegativeIdentifiers.Insert(insertionIndex, negativeInfo.FullName);
-
-				var negativeSet = GetReflected(negativeType);
-				NegativeSets.Insert(insertionIndex, negativeSet);
-
-				SetUtils.PopulateFromEntifiers(negativeSet, Entifiers);
-				set.Negative = negativeSet;
-				negativeSet.Negative = set;
-			}
-		}
-
-		public void Insert(string setId, SparseSet set, SetCloner cloner, bool isNegative = false)
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		private void InsertSet(string setId, SparseSet set, SetCloner cloner, bool isNegative = false)
 		{
 			// Maintain items sorted.
 			var itemIndex = Identifiers.BinarySearch(setId);
@@ -181,6 +141,62 @@ namespace Massive
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		private void PairComplementarySet(SparseSet set, TypeIdInfo typeInfo)
+		{
+			var type = typeInfo.Type;
+
+			if (NegativeUtils.IsNegative(type))
+			{
+				var itemIndex = NegativeIdentifiers.BinarySearch(typeInfo.FullName);
+				if (itemIndex >= 0)
+				{
+					return;
+				}
+				var insertionIndex = ~itemIndex;
+				NegativeIdentifiers.Insert(insertionIndex, typeInfo.FullName);
+				NegativeSets.Insert(insertionIndex, set);
+
+				var positiveSet = GetReflected(type.GetGenericArguments()[0]);
+
+				SetUtils.PopulateFromEntifiers(set, Entifiers);
+				foreach (var id in positiveSet)
+				{
+					set.Remove(id, SparseSet.Update.Nothing);
+				}
+				foreach (var id in set)
+				{
+					Masks.Set(id, typeInfo.Index);
+				}
+				set.Negative = positiveSet;
+				positiveSet.Negative = set;
+			}
+			else if (type.IsDefined(typeof(StoreNegativeAttribute), false))
+			{
+				var negativeType = typeof(Not<>).MakeGenericType(type);
+				var negativeInfo = ComponentId.GetInfo(negativeType);
+
+				var itemIndex = NegativeIdentifiers.BinarySearch(negativeInfo.FullName);
+				if (itemIndex >= 0)
+				{
+					return;
+				}
+				var insertionIndex = ~itemIndex;
+				NegativeIdentifiers.Insert(insertionIndex, negativeInfo.FullName);
+
+				var negativeSet = GetReflected(negativeType);
+				NegativeSets.Insert(insertionIndex, negativeSet);
+
+				SetUtils.PopulateFromEntifiers(negativeSet, Entifiers);
+				foreach (var id in negativeSet)
+				{
+					Masks.Set(id, negativeInfo.Index);
+				}
+				set.Negative = negativeSet;
+				negativeSet.Negative = set;
+			}
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(SparseSet sparseSet)
 		{
@@ -190,7 +206,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Type TypeOf(SparseSet sparseSet)
 		{
-			return TypeId.GetTypeByIndex(IndexOf(sparseSet));
+			return ComponentId.GetTypeByIndex(sparseSet.ComponentId);
 		}
 
 		/// <summary>
@@ -234,7 +250,7 @@ namespace Massive
 						SetUtils.PopulateFromEntifiers(otherSet, other.Entifiers);
 						foreach (var id in otherSet.Negative)
 						{
-							otherSet.Remove(id, updateNegative: false);
+							otherSet.Remove(id, SparseSet.Update.Nothing);
 						}
 					}
 					else

@@ -46,6 +46,9 @@ namespace Massive
 		/// </summary>
 		private int NextHoleId { get; set; } = EndHoleId;
 
+		/// <summary>
+		/// Shortcut to access world.
+		/// </summary>
 		public WorldContext? WorldContext { get; set; }
 
 		public Entifiers(Packing packing = Packing.Continuous)
@@ -128,7 +131,7 @@ namespace Massive
 			}
 
 			AfterCreated?.Invoke(entifier.Id);
-			WorldContext?.AddToNegative(entifier.Id);
+			WorldContext?.EntityCreated(entifier.Id);
 			return entifier;
 		}
 
@@ -153,7 +156,7 @@ namespace Massive
 			}
 
 			BeforeDestroyed?.Invoke(id);
-			WorldContext?.RemoveFromAll(id);
+			WorldContext?.EntityDestroyed(id);
 
 			var index = Sparse[id];
 
@@ -195,7 +198,7 @@ namespace Massive
 				NextHoleId = ~Packed[index];
 				Packed[index] = id;
 				AfterCreated?.Invoke(id);
-				WorldContext?.AddToNegative(id);
+				WorldContext?.EntityCreated(id);
 			}
 
 			while (Count < UsedIds && needToCreate > 0)
@@ -203,7 +206,7 @@ namespace Massive
 				needToCreate -= 1;
 				Count += 1;
 				AfterCreated?.Invoke(Packed[Count - 1]);
-				WorldContext?.AddToNegative(Packed[Count - 1]);
+				WorldContext?.EntityCreated(Packed[Count - 1]);
 			}
 
 			for (var i = 0; i < needToCreate; i++)
@@ -212,7 +215,7 @@ namespace Massive
 				UsedIds += 1;
 				Count += 1;
 				AfterCreated?.Invoke(UsedIds - 1);
-				WorldContext?.AddToNegative(UsedIds - 1);
+				WorldContext?.EntityCreated(UsedIds - 1);
 			}
 		}
 
@@ -228,7 +231,7 @@ namespace Massive
 				{
 					var id = Packed[i];
 					BeforeDestroyed?.Invoke(id);
-					WorldContext?.RemoveFromAll(id);
+					WorldContext?.EntityDestroyed(id);
 					MathUtils.IncrementWrapTo1(ref Versions[id]);
 					Count -= 1;
 				}
@@ -241,7 +244,7 @@ namespace Massive
 					if (id >= 0)
 					{
 						BeforeDestroyed?.Invoke(id);
-						WorldContext?.RemoveFromAll(id);
+						WorldContext?.EntityDestroyed(id);
 						MathUtils.IncrementWrapTo1(ref Versions[id]);
 					}
 					Count -= 1;
@@ -300,6 +303,7 @@ namespace Massive
 				var newCapacity = MathUtils.NextPowerOf2(index + 1);
 				ResizePacked(newCapacity);
 				ResizeSparse(newCapacity);
+				WorldContext?.Masks.EnsureEntitiesCapacity(newCapacity);
 			}
 		}
 

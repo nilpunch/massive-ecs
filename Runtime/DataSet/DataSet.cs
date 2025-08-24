@@ -79,6 +79,7 @@ namespace Massive
 
 			NotifyAfterAdded(id);
 			Negative?.Remove(id);
+			Masks?.Set(id, ComponentId);
 		}
 
 		/// <summary>

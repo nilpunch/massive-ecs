@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if !MASSIVE_DISABLE_ASSERT
+#define MASSIVE_ASSERT
+#endif
+
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -12,7 +16,8 @@ namespace Massive
 		public int PagesCapacity { get; private set; }
 
 		public int PageSize { get; }
-		public int PageSizePower { get; }
+		private int PageSizePower { get; }
+		private int PageSizeMinusOne { get; }
 
 		public PagedArray(int pageSize = Constants.DefaultPageSize)
 		{
@@ -20,6 +25,7 @@ namespace Massive
 
 			PageSize = pageSize;
 			PageSizePower = MathUtils.FastLog2(pageSize);
+			PageSizeMinusOne = pageSize - 1;
 		}
 
 		public Type ElementType => typeof(T);
@@ -87,13 +93,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private int PageIndex(int index)
 		{
-			return MathUtils.FastDiv(index, PageSizePower);
+			return index >> PageSizePower;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private int IndexInPage(int index)
 		{
-			return MathUtils.FastMod(index, PageSize);
+			return index & PageSizeMinusOne;
 		}
 	}
 }

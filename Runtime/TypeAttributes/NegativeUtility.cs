@@ -1,9 +1,11 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
 	public static class NegativeUtils
 	{
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static Type CollapseNegations(Type type)
 		{
 			var depth = 0;
@@ -24,6 +26,7 @@ namespace Massive
 			return typeof(Not<>).MakeGenericType(type);
 		}
 
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static bool IsNegative(Type type)
 		{
 			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Not<>);

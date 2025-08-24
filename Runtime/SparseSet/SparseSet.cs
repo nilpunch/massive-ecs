@@ -45,6 +45,16 @@ namespace Massive
 		/// </summary>
 		public SparseSet Negative { get; set; }
 
+		/// <summary>
+		/// Associated component index. Session-dependent, used for lookups.<br/>
+		/// </summary>
+		public int ComponentId { get; set; } = -1;
+
+		/// <summary>
+		/// Shortcut to access masks.
+		/// </summary>
+		public Masks Masks { get; set; }
+
 		public SparseSet(Packing packing = Packing.Continuous)
 		{
 			Packing = packing;
@@ -105,7 +115,7 @@ namespace Massive
 		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Add(int id, bool updateNegative = true)
+		public bool Add(int id, Update update = Update.All)
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
@@ -139,9 +149,13 @@ namespace Massive
 			UsedIds = MathUtils.Max(UsedIds, id + 1);
 
 			AfterAdded?.Invoke(id);
-			if (Negative != null && updateNegative)
+			if (update != Update.Nothing)
 			{
-				Negative.Remove(id);
+				Masks?.Set(id, ComponentId);
+				if (update == Update.All)
+				{
+					Negative?.Remove(id);
+				}
 			}
 
 			return true;
@@ -157,7 +171,7 @@ namespace Massive
 		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Remove(int id, bool updateNegative = true)
+		public bool Remove(int id, Update update = Update.All)
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
@@ -168,9 +182,13 @@ namespace Massive
 			}
 
 			BeforeRemoved?.Invoke(id);
-			if (Negative != null && updateNegative)
+			if (update != Update.Nothing)
 			{
-				Negative.Add(id);
+				Masks?.Remove(id, ComponentId);
+				if (update == Update.All)
+				{
+					Negative?.Add(id);
+				}
 			}
 
 			var index = Sparse[id];
@@ -478,6 +496,13 @@ namespace Massive
 				NextHole = nextHole;
 				Packing = packing;
 			}
+		}
+
+		public enum Update
+		{
+			Nothing,
+			Masks,
+			All,
 		}
 	}
 }

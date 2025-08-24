@@ -16,8 +16,7 @@ namespace Massive
 		public const int FreeListEndId = int.MaxValue;
 
 		/// <summary>
-		/// Non-deterministic, used for lookups.<br/>
-		/// Don't store it in simulation.
+		/// Session-dependent index, used for lookups.<br/>
 		/// </summary>
 		public int AllocatorId { get; }
 

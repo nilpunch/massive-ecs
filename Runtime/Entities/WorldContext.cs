@@ -11,38 +11,44 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorldContext
 	{
-		private readonly SparseSetList _allSets;
 		private readonly SparseSetList _negativeSets;
-		private readonly Allocators _allocators;
 
-		public WorldContext(SparseSetList allSets, SparseSetList negativeSets, Allocators allocators)
+		public Sets Sets { get; }
+
+		public Masks Masks { get; }
+
+		public Allocators Allocators { get; }
+
+		public WorldContext(Sets sets, Allocators allocators, Masks masks)
 		{
-			_allSets = allSets;
-			_negativeSets = negativeSets;
-			_allocators = allocators;
+			Sets = sets;
+			Masks = masks;
+			_negativeSets = sets.NegativeSets;
+			Allocators = allocators;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void RemoveFromAll(int id)
+		public void EntityDestroyed(int id)
 		{
-			var setCount = _allSets.Count;
-			var sets = _allSets.Items;
-			for (var i = setCount - 1; i >= 0; i--)
+			var buffer = Masks.Buffer;
+			var componentCount = Masks.GetAndRemoveAll(id, buffer);
+
+			for (var i = 0; i < componentCount; i++)
 			{
-				sets[i].Remove(id, updateNegative: false);
+				Sets.Lookup[buffer[i]].Remove(id, SparseSet.Update.Nothing);
 			}
 
-			_allocators.Free(id);
+			Allocators.Free(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void AddToNegative(int id)
+		public void EntityCreated(int id)
 		{
 			var setCount = _negativeSets.Count;
 			var sets = _negativeSets.Items;
 			for (var i = setCount - 1; i >= 0; i--)
 			{
-				sets[i].Add(id, updateNegative: false);
+				sets[i].Add(id, SparseSet.Update.Masks);
 			}
 		}
 	}

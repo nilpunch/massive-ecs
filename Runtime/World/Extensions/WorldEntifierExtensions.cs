@@ -70,19 +70,17 @@ namespace Massive
 			var clone = world.Entifiers.Create();
 			var cloneId = clone.Id;
 
-			var setList = world.Sets.AllSets;
-			var setCount = setList.Count;
-			var sets = setList.Items;
-			for (var i = 0; i < setCount; i++)
+			var sets = world.Sets;
+			var buffer = world.Masks.Buffer;
+			var componentCount = world.Masks.GetAll(entityId, buffer);
+
+			for (int i = 0; i < componentCount; i++)
 			{
-				var set = sets[i];
-				var index = set.GetIndexOrNegative(entityId);
-				if (index >= 0)
-				{
-					set.Add(cloneId);
-					var cloneIndex = set.Sparse[cloneId];
-					set.CopyDataAt(index, cloneIndex);
-				}
+				var set = sets.Lookup[buffer[i]];
+				var index = set.Sparse[entityId];
+				set.Add(cloneId);
+				var cloneIndex = set.Sparse[cloneId];
+				set.CopyDataAt(index, cloneIndex);
 			}
 
 			return clone;
@@ -121,7 +119,7 @@ namespace Massive
 		{
 			InvalidSetOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			world.Sets.EnsureLookupAt(info.Index);
 			var candidate = world.Sets.Lookup[info.Index];
@@ -152,7 +150,7 @@ namespace Massive
 		{
 			InvalidAddOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			world.Sets.EnsureLookupAt(info.Index);
 			var candidate = world.Sets.Lookup[info.Index];
@@ -179,7 +177,7 @@ namespace Massive
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			world.Sets.EnsureLookupAt(info.Index);
 			var candidate = world.Sets.Lookup[info.Index];
@@ -203,7 +201,7 @@ namespace Massive
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			world.Sets.EnsureLookupAt(info.Index);
 			var candidate = world.Sets.Lookup[info.Index];
@@ -228,7 +226,7 @@ namespace Massive
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(world.Entifiers, entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			world.Sets.EnsureLookupAt(info.Index);
 			var candidate = world.Sets.Lookup[info.Index];

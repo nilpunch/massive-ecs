@@ -69,7 +69,7 @@ namespace Massive
 		{
 			InvalidSetOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			World.Sets.EnsureLookupAt(info.Index);
 			var candidate = World.Sets.Lookup[info.Index];
@@ -100,7 +100,7 @@ namespace Massive
 		{
 			InvalidAddOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			World.Sets.EnsureLookupAt(info.Index);
 			var candidate = World.Sets.Lookup[info.Index];
@@ -127,7 +127,7 @@ namespace Massive
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			World.Sets.EnsureLookupAt(info.Index);
 			var candidate = World.Sets.Lookup[info.Index];
@@ -151,7 +151,7 @@ namespace Massive
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			World.Sets.EnsureLookupAt(info.Index);
 			var candidate = World.Sets.Lookup[info.Index];
@@ -176,7 +176,7 @@ namespace Massive
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
 			World.Sets.EnsureLookupAt(info.Index);
 			var candidate = World.Sets.Lookup[info.Index];

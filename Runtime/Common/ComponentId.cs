@@ -4,28 +4,31 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Unity.IL2CPP.CompilerServices;
 
+// ReSharper disable all StaticMemberInGenericType
 namespace Massive
 {
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public static class TypeId
+	public static class ComponentId
 	{
 		private static readonly Dictionary<Type, TypeIdInfo> s_typeInfo = new Dictionary<Type, TypeIdInfo>();
-		private static Type[] s_types = Array.Empty<Type>();
-		private static int s_typeCounter;
+		private static Type[] s_components = Array.Empty<Type>();
+		private static int s_componentsCounter;
 
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static TypeIdInfo GetInfo(Type type)
 		{
 			if (!s_typeInfo.TryGetValue(type, out var typeIdInfo))
 			{
-				WarmupTypeId(type);
+				WarmupCopmonentId(type);
 				typeIdInfo = s_typeInfo[type];
 			}
 
 			return typeIdInfo;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool TryGetInfo(Type type, out TypeIdInfo info)
 		{
 			return s_typeInfo.TryGetValue(type, out info);
@@ -33,19 +36,19 @@ namespace Massive
 
 		public static Type GetTypeByIndex(int index)
 		{
-			if (index >= s_types.Length)
+			if (index >= s_components.Length)
 			{
 				return null;
 			}
 
-			return s_types[index];
+			return s_components[index];
 		}
 
-		public static void WarmupTypeId(Type type)
+		public static void WarmupCopmonentId(Type type)
 		{
 			try
 			{
-				var typeId = typeof(TypeId<>).MakeGenericType(type);
+				var typeId = typeof(ComponentId<>).MakeGenericType(type);
 				RuntimeHelpers.RunClassConstructor(typeId.TypeHandle);
 			}
 			catch
@@ -58,39 +61,60 @@ namespace Massive
 
 		internal static int IncrementTypeCounter()
 		{
-			return Interlocked.Increment(ref s_typeCounter);
+			return Interlocked.Increment(ref s_componentsCounter);
 		}
 
 		internal static void Register(Type type, TypeIdInfo info)
 		{
 			s_typeInfo.Add(type, info);
 
-			if (info.Index >= s_types.Length)
+			if (info.Index >= s_components.Length)
 			{
-				Array.Resize(ref s_types, MathUtils.NextPowerOf2(info.Index + 1));
+				Array.Resize(ref s_components, MathUtils.NextPowerOf2(info.Index + 1));
 			}
-			s_types[info.Index] = type;
+			s_components[info.Index] = type;
 		}
 	}
 
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public static class TypeId<T>
+	public static class ComponentId<T>
 	{
 		public static readonly TypeIdInfo Info;
 
-		static TypeId()
+		static ComponentId()
 		{
 			var type = typeof(T);
-			var index = TypeId.IncrementTypeCounter();
+			var index = ComponentId.IncrementTypeCounter();
 			var typeName = type.GetFullGenericName();
 
 			var info = new TypeIdInfo(index, typeName, type);
 
 			Info = info;
 
-			TypeId.Register(type, info);
+			ComponentId.Register(type, info);
+		}
+	}
+
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	public readonly struct TypeIdInfo
+	{
+		/// <summary>
+		/// Session-dependent index, used for lookups.<br/>
+		/// </summary>
+		public readonly int Index;
+
+		public readonly string FullName;
+
+		public readonly Type Type;
+
+		public TypeIdInfo(int index, string fullName, Type type)
+		{
+			Index = index;
+			FullName = fullName;
+			Type = type;
 		}
 	}
 }
