@@ -84,7 +84,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetAndRemoveAll(int entityId, int[] buffer)
+		public int GetAllAndRemove(int entityId, int[] buffer)
 		{
 			var componentCount = 0;
 			var maskIndex = entityId * MaskLength;

@@ -11,7 +11,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorldContext
 	{
-		private readonly SparseSetList _negativeSets;
+		private SparseSetList NegativeSets { get; }
 
 		public Sets Sets { get; }
 
@@ -23,7 +23,7 @@ namespace Massive
 		{
 			Sets = sets;
 			Masks = masks;
-			_negativeSets = sets.NegativeSets;
+			NegativeSets = sets.NegativeSets;
 			Allocators = allocators;
 		}
 
@@ -31,11 +31,11 @@ namespace Massive
 		public void EntityDestroyed(int id)
 		{
 			var buffer = Masks.Buffer;
-			var componentCount = Masks.GetAndRemoveAll(id, buffer);
+			var componentCount = Masks.GetAllAndRemove(id, buffer);
 
 			for (var i = 0; i < componentCount; i++)
 			{
-				Sets.Lookup[buffer[i]].Remove(id, SparseSet.Update.Nothing);
+				Sets.Lookup[buffer[i]].Remove(id, updateMasksAndNegative: false);
 			}
 
 			Allocators.Free(id);
@@ -44,11 +44,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EntityCreated(int id)
 		{
-			var setCount = _negativeSets.Count;
-			var sets = _negativeSets.Items;
+			var setCount = NegativeSets.Count;
+			var sets = NegativeSets.Items;
 			for (var i = setCount - 1; i >= 0; i--)
 			{
-				sets[i].Add(id, SparseSet.Update.Masks);
+				sets[i].Add(id, updateMasksAndNegative: false);
+				Masks.Set(id, sets[i].ComponentId);
 			}
 		}
 	}

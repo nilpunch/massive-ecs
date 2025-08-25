@@ -115,7 +115,7 @@ namespace Massive
 		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Add(int id, Update update = Update.All)
+		public bool Add(int id, bool updateMasksAndNegative = true)
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
@@ -149,13 +149,10 @@ namespace Massive
 			UsedIds = MathUtils.Max(UsedIds, id + 1);
 
 			AfterAdded?.Invoke(id);
-			if (update != Update.Nothing)
+			if (updateMasksAndNegative)
 			{
 				Masks?.Set(id, ComponentId);
-				if (update == Update.All)
-				{
-					Negative?.Remove(id);
-				}
+				Negative?.Remove(id);
 			}
 
 			return true;
@@ -171,7 +168,7 @@ namespace Massive
 		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Remove(int id, Update update = Update.All)
+		public bool Remove(int id, bool updateMasksAndNegative = true)
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
@@ -182,13 +179,10 @@ namespace Massive
 			}
 
 			BeforeRemoved?.Invoke(id);
-			if (update != Update.Nothing)
+			if (updateMasksAndNegative)
 			{
 				Masks?.Remove(id, ComponentId);
-				if (update == Update.All)
-				{
-					Negative?.Add(id);
-				}
+				Negative?.Add(id);
 			}
 
 			var index = Sparse[id];

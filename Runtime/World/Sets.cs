@@ -162,7 +162,7 @@ namespace Massive
 				SetUtils.PopulateFromEntifiers(set, Entifiers);
 				foreach (var id in positiveSet)
 				{
-					set.Remove(id, SparseSet.Update.Nothing);
+					set.Remove(id, updateMasksAndNegative: false);
 				}
 				foreach (var id in set)
 				{
@@ -250,7 +250,7 @@ namespace Massive
 						SetUtils.PopulateFromEntifiers(otherSet, other.Entifiers);
 						foreach (var id in otherSet.Negative)
 						{
-							otherSet.Remove(id, SparseSet.Update.Nothing);
+							otherSet.Remove(id, updateMasksAndNegative: false);
 						}
 					}
 					else

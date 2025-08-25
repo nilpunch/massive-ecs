@@ -12,44 +12,40 @@ namespace Massive
 		public Masks Masks { get; }
 
 		public long[] IncludeMask { get; }
-		public int IncludeStart { get; }
-		public int IncludeEnd { get; }
+		public int Start { get; }
+		public int End { get; }
 
 		public long[] ExcludeMask { get; }
-		public int ExcludeStart { get; }
-		public int ExcludeEnd { get; }
 
 		public ReducedFilter(SparseSet[] included, int includedLength, SparseSet[] excluded, int excludedLength, SparseSet reduced, Masks masks)
 		{
-			IncludeStart = includedLength == 0 ? 0 : int.MaxValue;
-			IncludeEnd = 0;
-			ExcludeStart = excludedLength == 0 ? 0 : int.MaxValue;
-			ExcludeEnd = 0;
+			Start = includedLength == 0 ? 0 : int.MaxValue;
+			End = 0;
 			Reduced = reduced;
 			Masks = masks;
 
 			for (var i = 0; i < includedLength; i++)
 			{
 				var componentId = included[i].ComponentId;
-				IncludeStart = MathUtils.Min(componentId >> 6, IncludeStart);
-				IncludeEnd = MathUtils.Max((componentId >> 6) + 1, IncludeEnd);
+				Start = MathUtils.Min(componentId >> 6, Start);
+				End = MathUtils.Max((componentId >> 6) + 1, End);
 			}
 
 			for (var i = 0; i < excludedLength; i++)
 			{
 				var componentId = excluded[i].ComponentId;
-				ExcludeStart = MathUtils.Min(componentId >> 6, ExcludeStart);
-				ExcludeEnd = MathUtils.Max((componentId >> 6) + 1, ExcludeEnd);
+				Start = MathUtils.Min(componentId >> 6, Start);
+				End = MathUtils.Max((componentId >> 6) + 1, End);
 			}
 
-			IncludeMask = new long[IncludeEnd];
+			IncludeMask = new long[End];
 			for (var i = 0; i < includedLength; i++)
 			{
 				var componentId = included[i].ComponentId;
 				IncludeMask[componentId >> 6] |= 1L << componentId;
 			}
 
-			ExcludeMask = new long[ExcludeEnd];
+			ExcludeMask = new long[End];
 			for (var i = 0; i < excludedLength; i++)
 			{
 				var componentId = excluded[i].ComponentId;
@@ -65,13 +61,9 @@ namespace Massive
 			var bitmap = Masks.BitMap;
 			var maskOffset = id * Masks.MaskLength;
 
-			for (var i = IncludeStart; i < IncludeEnd; i++)
+			for (var i = Start; i < End; i++)
 			{
 				shouldNotBecomeZero |= (IncludeMask[i] & bitmap[maskOffset + i]) - 1;
-			}
-
-			for (var i = ExcludeStart; i < ExcludeEnd; i++)
-			{
 				shouldStayNegative &= (ExcludeMask[i] & bitmap[maskOffset + i]) - 1;
 			}
 
