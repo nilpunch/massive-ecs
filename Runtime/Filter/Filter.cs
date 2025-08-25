@@ -17,21 +17,23 @@ namespace Massive
 
 		public SparseSet[] Included { get; protected set; }
 		public SparseSet[] Excluded { get; protected set; }
+		public Masks Masks { get; }
 
 		public ReducedFilter NotReduced { get; private set; }
 		private ReducedFilter[] ReducedFilters { get; set; } = Array.Empty<ReducedFilter>();
 
-		public Filter()
-			: this(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
+		public Filter(Masks masks)
+			: this(Array.Empty<SparseSet>(), Array.Empty<SparseSet>(), masks)
 		{
 		}
 
-		public Filter(SparseSet[] included, SparseSet[] excluded)
+		public Filter(SparseSet[] included, SparseSet[] excluded, Masks masks)
 		{
 			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
 
 			Included = included;
 			Excluded = excluded;
+			Masks = masks;
 			IncludedCount = included.Length;
 			ExcludedCount = excluded.Length;
 

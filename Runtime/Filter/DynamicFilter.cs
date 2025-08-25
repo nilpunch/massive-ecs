@@ -13,14 +13,9 @@ namespace Massive
 	{
 		public Sets Sets { get; }
 
-		public DynamicFilter(World world) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
+		public DynamicFilter(World world) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>(), world.Masks)
 		{
 			Sets = world.Sets;
-		}
-
-		public DynamicFilter(Sets sets) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
-		{
-			Sets = sets;
 		}
 
 		public DynamicFilter Include<T>()

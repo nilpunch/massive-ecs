@@ -15,6 +15,7 @@ namespace Massive
 	public class Filters
 	{
 		private Sets Sets { get; }
+		private Masks Masks { get; }
 		private SetComparer Comparer { get; }
 		private bool OptimizeExludeFilter { get; }
 
@@ -22,13 +23,15 @@ namespace Massive
 
 		public Filter[] Lookup { get; private set; } = Array.Empty<Filter>();
 
-		public Filter Empty { get; } = new Filter();
+		public Filter Empty { get; }
 
-		public Filters(Sets sets, bool optimizeExludeFilter)
+		public Filters(Sets sets, Masks masks, bool optimizeExludeFilter)
 		{
 			Sets = sets;
+			Masks = masks;
 			OptimizeExludeFilter = optimizeExludeFilter;
 			Comparer = new SetComparer(Sets);
+			Empty = new Filter(masks);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -87,7 +90,7 @@ namespace Massive
 			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Both);
 
 			filter = included.Length != 0 || excluded.Length != 0
-				? new Filter(included, excluded)
+				? new Filter(included, excluded, Masks)
 				: Empty;
 			CombinationLookup.Add(fullCode, filter);
 			return filter;

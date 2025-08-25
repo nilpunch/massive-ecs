@@ -29,7 +29,7 @@ namespace Massive
 			Masks = new Masks();
 			Entifiers = new Entifiers();
 			Sets = new Sets(new SetFactory(worldConfig));
-			Filters = new Filters(Sets, worldConfig.OptimizeExludeFilter);
+			Filters = new Filters(Sets, Masks, worldConfig.OptimizeExludeFilter);
 			Allocators = new Allocators();
 			Config = worldConfig;
 
