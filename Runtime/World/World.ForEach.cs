@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public partial class World : IView, IViewT, IViewTT, IViewTTT, IViewTTTT
+	public partial class World : IViewT, IViewTT, IViewTTT, IViewTTTT
 	{
 		World IView.World => this;
 

@@ -9,7 +9,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct View : IView, IViewT, IViewTT, IViewTTT, IViewTTTT
+	public readonly struct View : IViewT, IViewTT, IViewTTT, IViewTTTT
 	{
 		public World World { get; }
 		public Packing PackingWhenIterating { get; }

@@ -36,8 +36,9 @@ namespace Massive
 
 			Included[IncludedCount] = set;
 			IncludedCount += 1;
-
-			UpdateReducedFilters();
+			var mask = Mask;
+			mask.Include(set.ComponentId);
+			Mask = mask;
 
 			return this;
 		}
@@ -60,8 +61,9 @@ namespace Massive
 
 			Excluded[ExcludedCount] = set;
 			ExcludedCount += 1;
-
-			UpdateReducedFilters();
+			var mask = Mask;
+			mask.Exclude(set.ComponentId);
+			Mask = mask;
 
 			return this;
 		}

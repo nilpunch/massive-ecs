@@ -13,7 +13,7 @@ namespace Massive
 	{
 		private static readonly Dictionary<Type, TypeIdInfo> s_typeInfo = new Dictionary<Type, TypeIdInfo>();
 		private static Type[] s_types = Array.Empty<Type>();
-		private static int s_typeCounter;
+		private static int s_typeCounter = -1;
 
 		public static TypeIdInfo GetInfo(Type type)
 		{

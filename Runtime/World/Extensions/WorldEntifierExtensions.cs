@@ -53,7 +53,7 @@ namespace Massive
 			world.Set(entity.Id, data);
 			return entity;
 		}
-		
+
 		/// <summary>
 		/// Creates a unique entity with components of another entity.<br/>
 		/// Makes shallow copy of each component.

@@ -15,13 +15,17 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Masks
 	{
-		public readonly byte[] DeBruijn =
+		private readonly byte[] DeBruijn =
 		{
 			0, 1, 17, 2, 18, 50, 3, 57, 47, 19, 22, 51, 29, 4, 33, 58,
 			15, 48, 20, 27, 25, 23, 52, 41, 54, 30, 38, 5, 43, 34, 59, 8,
 			63, 16, 49, 56, 46, 21, 28, 32, 14, 26, 24, 40, 53, 37, 42, 7,
 			62, 55, 45, 31, 13, 39, 36, 6, 61, 44, 12, 35, 60, 11, 10, 9,
 		};
+
+		private Mask[] MaskPool { get; set; } = Array.Empty<Mask>();
+
+		private int MaskCount { get; set; }
 
 		public long[] BitMap { get; private set; } = Array.Empty<long>();
 
@@ -143,6 +147,45 @@ namespace Massive
 				BitMapCapcity = BitMap.Length;
 				Buffer = Buffer.Resize(maskLength * 64);
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Mask RentMask()
+		{
+			if (MaskCount > 0)
+			{
+				var mask = MaskPool[--MaskCount];
+				mask.Clear();
+				mask.Masks = this;
+				return mask;
+			}
+
+			return Mask.New(this);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Mask RentMaskCopy(Mask maskToCopy)
+		{
+			if (MaskCount > 0)
+			{
+				var mask = MaskPool[--MaskCount];
+				maskToCopy.CopyTo(ref mask);
+				mask.Masks = this;
+				return mask;
+			}
+
+			return Mask.New(this);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void ReturnMask(Mask mask)
+		{
+			if (MaskCount >= MaskPool.Length)
+			{
+				MaskPool = MaskPool.Resize(MathUtils.NextPowerOf2(MaskCount + 1));
+			}
+
+			MaskPool[MaskCount++] = mask;
 		}
 
 		/// <summary>

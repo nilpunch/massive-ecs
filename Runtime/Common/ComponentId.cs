@@ -14,7 +14,7 @@ namespace Massive
 	{
 		private static readonly Dictionary<Type, TypeIdInfo> s_typeInfo = new Dictionary<Type, TypeIdInfo>();
 		private static Type[] s_components = Array.Empty<Type>();
-		private static int s_componentsCounter;
+		private static int s_componentsCounter = -1;
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static TypeIdInfo GetInfo(Type type)
@@ -94,27 +94,6 @@ namespace Massive
 			Info = info;
 
 			ComponentId.Register(type, info);
-		}
-	}
-
-	[Il2CppSetOption(Option.NullChecks, false)]
-	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct TypeIdInfo
-	{
-		/// <summary>
-		/// Session-dependent index, used for lookups.<br/>
-		/// </summary>
-		public readonly int Index;
-
-		public readonly string FullName;
-
-		public readonly Type Type;
-
-		public TypeIdInfo(int index, string fullName, Type type)
-		{
-			Index = index;
-			FullName = fullName;
-			Type = type;
 		}
 	}
 }

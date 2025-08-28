@@ -9,7 +9,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct FilterView : IView, IViewT, IViewTT, IViewTTT, IViewTTTT
+	public readonly struct FilterView : IViewT, IViewTT, IViewTTT, IViewTTTT
 	{
 		public World World { get; }
 		public Filter Filter { get; }
@@ -26,19 +26,8 @@ namespace Massive
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			PackedSet packedSet;
-			ReducedFilter reducedFilter;
-			if (Filter.Included.Length == 0)
-			{
-				packedSet = World.Entifiers;
-				reducedFilter = Filter.NotReduced;
-			}
-			else
-			{
-				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
-				packedSet = minimalSet;
-				reducedFilter = Filter.ReduceIncluded(minimalSet);
-			}
+			var mask = Filter.Mask;
+			var packedSet = Filter.Included.Length == 0 ? (PackedSet)World.Entifiers : SetUtils.GetMinimalSet(Filter.Included);
 
 			var originalPacking = packedSet.ExchangeToStricterPacking(PackingWhenIterating);
 
@@ -51,7 +40,7 @@ namespace Massive
 				}
 
 				var id = packedSet.Packed[i];
-				if (reducedFilter.ContainsId(id))
+				if (mask.ContainsId(id))
 				{
 					if (!action.Apply(id))
 					{
@@ -76,7 +65,8 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(dataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var reducedFilter = Filter.ReduceIncluded(minSet);
+			var mask = World.Masks.RentMaskCopy(Filter.Mask);
+			mask.Include(dataSet.ComponentId);
 
 			if (minSet == dataSet)
 			{
@@ -92,7 +82,7 @@ namespace Massive
 						}
 
 						var id = dataSet.Packed[page.Offset + index];
-						if (reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
 							if (!action.Apply(id, ref dataPage[index]))
 							{
@@ -113,9 +103,9 @@ namespace Massive
 					}
 
 					var id = minSet.Packed[i];
-					var index = dataSet.GetIndexOrNegative(id);
-					if (index >= 0 && reducedFilter.ContainsId(id))
+					if (mask.ContainsId(id))
 					{
+						var index = dataSet.Sparse[id];
 						if (!action.Apply(id, ref data[index]))
 						{
 							break;
@@ -125,6 +115,7 @@ namespace Massive
 			}
 
 			minSet.ExchangePacking(originalPacking);
+			mask.ReturnToPool();
 		}
 
 		public void ForEach<TAction, T1, T2>(ref TAction action)
@@ -145,7 +136,9 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var reducedFilter = Filter.ReduceIncluded(minSet);
+			var mask = World.Masks.RentMaskCopy(Filter.Mask);
+			mask.Include(dataSet1.ComponentId);
+			mask.Include(dataSet2.ComponentId);
 
 			if (minSet == dataSet1)
 			{
@@ -161,9 +154,9 @@ namespace Massive
 						}
 
 						var id = dataSet1.Packed[page.Offset + index1];
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						if (index2 >= 0 && reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
+							var index2 = dataSet2.Sparse[id];
 							if (!action.Apply(id, ref page1[index1], ref data2[index2]))
 							{
 								break;
@@ -186,9 +179,9 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[page.Offset + index2];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						if (index1 >= 0 && reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
+							var index1 = dataSet1.Sparse[id];
 							if (!action.Apply(id, ref data1[index1], ref page2[index2]))
 							{
 								break;
@@ -208,11 +201,10 @@ namespace Massive
 					}
 
 					var id = minSet.Packed[i];
-					var index1 = dataSet1.GetIndexOrNegative(id);
-					var index2 = dataSet2.GetIndexOrNegative(id);
-					if ((index1 | index2) >= 0
-						&& reducedFilter.ContainsId(id))
+					if (mask.ContainsId(id))
 					{
+						var index1 = dataSet1.Sparse[id];
+						var index2 = dataSet2.Sparse[id];
 						if (!action.Apply(id, ref data1[index1], ref data2[index2]))
 						{
 							break;
@@ -222,6 +214,7 @@ namespace Massive
 			}
 
 			minSet.ExchangePacking(originalPacking);
+			mask.ReturnToPool();
 		}
 
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
@@ -246,7 +239,10 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var reducedFilter = Filter.ReduceIncluded(minSet);
+			var mask = World.Masks.RentMaskCopy(Filter.Mask);
+			mask.Include(dataSet1.ComponentId);
+			mask.Include(dataSet2.ComponentId);
+			mask.Include(dataSet3.ComponentId);
 
 			if (minSet == dataSet1)
 			{
@@ -262,11 +258,10 @@ namespace Massive
 						}
 
 						var id = dataSet1.Packed[page.Offset + index1];
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						if ((index2 | index3) >= 0
-							&& reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
+							var index2 = dataSet2.Sparse[id];
+							var index3 = dataSet3.Sparse[id];
 							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3]))
 							{
 								break;
@@ -289,11 +284,10 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[page.Offset + index2];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						if ((index1 | index3) >= 0
-							&& reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
+							var index1 = dataSet1.Sparse[id];
+							var index3 = dataSet3.Sparse[id];
 							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3]))
 							{
 								break;
@@ -316,11 +310,10 @@ namespace Massive
 						}
 
 						var id = dataSet3.Packed[page.Offset + index3];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						if ((index1 | index2) >= 0
-							&& reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
+							var index1 = dataSet1.Sparse[id];
+							var index2 = dataSet2.Sparse[id];
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3]))
 							{
 								break;
@@ -340,12 +333,11 @@ namespace Massive
 					}
 
 					var id = minSet.Packed[i];
-					var index1 = dataSet1.GetIndexOrNegative(id);
-					var index2 = dataSet2.GetIndexOrNegative(id);
-					var index3 = dataSet3.GetIndexOrNegative(id);
-					if ((index1 | index2 | index3) >= 0
-						&& reducedFilter.ContainsId(id))
+					if (mask.ContainsId(id))
 					{
+						var index1 = dataSet1.Sparse[id];
+						var index2 = dataSet2.Sparse[id];
+						var index3 = dataSet3.Sparse[id];
 						if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3]))
 						{
 							break;
@@ -355,6 +347,7 @@ namespace Massive
 			}
 
 			minSet.ExchangePacking(originalPacking);
+			mask.ReturnToPool();
 		}
 
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
@@ -383,7 +376,11 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var reducedFilter = Filter.ReduceIncluded(minSet);
+			var mask = World.Masks.RentMaskCopy(Filter.Mask);
+			mask.Include(dataSet1.ComponentId);
+			mask.Include(dataSet2.ComponentId);
+			mask.Include(dataSet3.ComponentId);
+			mask.Include(dataSet4.ComponentId);
 
 			if (minSet == dataSet1)
 			{
@@ -399,12 +396,11 @@ namespace Massive
 						}
 
 						var id = dataSet1.Packed[page.Offset + index1];
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						var index4 = dataSet4.GetIndexOrNegative(id);
-						if ((index2 | index3 | index4) >= 0
-							&& reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
+							var index2 = dataSet2.Sparse[id];
+							var index3 = dataSet3.Sparse[id];
+							var index4 = dataSet4.Sparse[id];
 							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
 							{
 								break;
@@ -427,12 +423,11 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[page.Offset + index2];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						var index4 = dataSet4.GetIndexOrNegative(id);
-						if ((index1 | index3 | index4) >= 0
-							&& reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
+							var index1 = dataSet1.Sparse[id];
+							var index3 = dataSet3.Sparse[id];
+							var index4 = dataSet4.Sparse[id];
 							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3], ref data4[index4]))
 							{
 								break;
@@ -455,12 +450,11 @@ namespace Massive
 						}
 
 						var id = dataSet3.Packed[page.Offset + index3];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						var index4 = dataSet4.GetIndexOrNegative(id);
-						if ((index1 | index2 | index4) >= 0
-							&& reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
+							var index1 = dataSet1.Sparse[id];
+							var index2 = dataSet2.Sparse[id];
+							var index4 = dataSet4.Sparse[id];
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3], ref data4[index4]))
 							{
 								break;
@@ -483,12 +477,11 @@ namespace Massive
 						}
 
 						var id = dataSet4.Packed[page.Offset + index4];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						if ((index1 | index2 | index3) >= 0
-							&& reducedFilter.ContainsId(id))
+						if (mask.ContainsId(id))
 						{
+							var index1 = dataSet1.Sparse[id];
+							var index2 = dataSet2.Sparse[id];
+							var index3 = dataSet3.Sparse[id];
 							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref page4[index4]))
 							{
 								break;
@@ -508,13 +501,12 @@ namespace Massive
 					}
 
 					var id = minSet.Packed[i];
-					var index1 = dataSet1.GetIndexOrNegative(id);
-					var index2 = dataSet2.GetIndexOrNegative(id);
-					var index3 = dataSet3.GetIndexOrNegative(id);
-					var index4 = dataSet4.GetIndexOrNegative(id);
-					if ((index1 | index2 | index3 | index4) >= 0
-						&& reducedFilter.ContainsId(id))
+					if (mask.ContainsId(id))
 					{
+						var index1 = dataSet1.Sparse[id];
+						var index2 = dataSet2.Sparse[id];
+						var index3 = dataSet3.Sparse[id];
+						var index4 = dataSet4.Sparse[id];
 						if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
 						{
 							break;
@@ -524,33 +516,34 @@ namespace Massive
 			}
 
 			minSet.ExchangePacking(originalPacking);
+			mask.ReturnToPool();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public PackedFilterEnumerator GetEnumerator()
+		public PackedMaskedEnumerator GetEnumerator()
 		{
 			if (Filter.Included.Length == 0)
 			{
-				return new PackedFilterEnumerator(World.Entifiers, Filter.NotReduced, PackingWhenIterating);
+				return new PackedMaskedEnumerator(World.Entifiers, World.Masks.RentMaskCopy(Filter.Mask), PackingWhenIterating);
 			}
 			else
 			{
 				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
-				return new PackedFilterEnumerator(minimalSet, Filter.ReduceIncluded(minimalSet), PackingWhenIterating);
+				return new PackedMaskedEnumerator(minimalSet, World.Masks.RentMaskCopy(Filter.Mask), PackingWhenIterating);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public PackedFilterEntityEnumerable Entities()
+		public PackedMaskedEntityEnumerable Entities()
 		{
 			if (Filter.Included.Length == 0)
 			{
-				return new PackedFilterEntityEnumerable(World.Entifiers, Filter.NotReduced, World, PackingWhenIterating);
+				return new PackedMaskedEntityEnumerable(World.Entifiers, World.Masks.RentMaskCopy(Filter.Mask), World, PackingWhenIterating);
 			}
 			else
 			{
 				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
-				return new PackedFilterEntityEnumerable(minimalSet, Filter.ReduceIncluded(minimalSet), World, PackingWhenIterating);
+				return new PackedMaskedEntityEnumerable(minimalSet, World.Masks.RentMaskCopy(Filter.Mask), World, PackingWhenIterating);
 			}
 		}
 	}

@@ -6,18 +6,17 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public struct PackedFilterEnumerator : IDisposable
+	public struct PackedMaskedEnumerator : IDisposable
 	{
 		private readonly PackedSet _packedSet;
-		private readonly ReducedFilter _reducedFilter;
+		private readonly Mask _rentedMask;
 		private readonly Packing _originalPacking;
 		private int _index;
 
-		public PackedFilterEnumerator(PackedSet packedSet, ReducedFilter reducedFilter,
-			Packing packingWhenIterating = Packing.WithHoles)
+		public PackedMaskedEnumerator(PackedSet packedSet, Mask rentedMask, Packing packingWhenIterating = Packing.WithHoles)
 		{
 			_packedSet = packedSet;
-			_reducedFilter = reducedFilter;
+			_rentedMask = rentedMask;
 			_originalPacking = _packedSet.ExchangeToStricterPacking(packingWhenIterating);
 			_index = _packedSet.Count;
 		}
@@ -36,7 +35,7 @@ namespace Massive
 				_index = _packedSet.Count - 1;
 			}
 
-			while (_index >= 0 && !_reducedFilter.ContainsId(_packedSet.Packed[_index]))
+			while (_index >= 0 && !_rentedMask.ContainsId(_packedSet.Packed[_index]))
 			{
 				--_index;
 			}
@@ -48,6 +47,7 @@ namespace Massive
 		public void Dispose()
 		{
 			_packedSet.ExchangePacking(_originalPacking);
+			_rentedMask.ReturnToPool();
 		}
 	}
 }

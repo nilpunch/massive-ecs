@@ -17,10 +17,7 @@ namespace Massive
 
 		public SparseSet[] Included { get; protected set; }
 		public SparseSet[] Excluded { get; protected set; }
-		public Masks Masks { get; }
-
-		public ReducedFilter NotReduced { get; private set; }
-		private ReducedFilter[] ReducedFilters { get; set; } = Array.Empty<ReducedFilter>();
+		public Mask Mask { get; protected set; }
 
 		public Filter(Masks masks)
 			: this(Array.Empty<SparseSet>(), Array.Empty<SparseSet>(), masks)
@@ -31,48 +28,22 @@ namespace Massive
 		{
 			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
 
+			Mask = Mask.New(masks);
+
+			foreach (var include in included)
+			{
+				Mask.Include(include.ComponentId);
+			}
+
+			foreach (var exclude in excluded)
+			{
+				Mask.Exclude(exclude.ComponentId);
+			}
+
 			Included = included;
 			Excluded = excluded;
-			Masks = masks;
 			IncludedCount = included.Length;
 			ExcludedCount = excluded.Length;
-
-			UpdateReducedFilters();
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool ContainsId(int id)
-		{
-			return (SetUtils.NonNegativeIfAssignedInAll(id, Included, IncludedCount)
-				| ~SetUtils.NegativeIfNotAssignedInAll(id, Excluded, ExcludedCount)) >= 0;
-		}
-
-		public ReducedFilter ReduceIncluded(SparseSet included)
-		{
-			for (var i = 0; i < ReducedFilters.Length; i++)
-			{
-				var reducedFilter = ReducedFilters[i];
-				if (reducedFilter.Reduced == included)
-				{
-					return reducedFilter;
-				}
-			}
-
-			return NotReduced;
-		}
-
-		protected void UpdateReducedFilters()
-		{
-			NotReduced = ReducedFilter.Create(this);
-
-			if (IncludedCount > ReducedFilters.Length)
-			{
-				ReducedFilters = ReducedFilters.Resize(IncludedCount);
-				for (var i = 0; i < IncludedCount; i++)
-				{
-					ReducedFilters[i] = ReducedFilter.Create(this, Included[i]);
-				}
-			}
 		}
 	}
 }
