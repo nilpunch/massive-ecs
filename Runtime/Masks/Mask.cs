@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if !MASSIVE_DISABLE_ASSERT
+#define MASSIVE_ASSERT
+#endif
+
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -89,19 +93,25 @@ namespace Massive
 		{
 			var shouldNotBecomeNegative = (long)id;
 			var shouldStayNegative = (long)~id;
+
 			var bitmap = Masks.BitMap;
-			var maskOffset = id * Masks.MaskLength;
+			var offset = id * Masks.MaskLength;
+
+			var includeMask = IncludeMask;
+			var filledInclude = FilledInclude;
+			var excludeMask = ExcludeMask;
+			var filledExclude = FilledExclude;
 
 			for (var i = 0; i < FilledIncludeCount; i++)
 			{
-				var maskIndex = FilledInclude[i];
-				shouldNotBecomeNegative |= (IncludeMask[maskIndex] & bitmap[maskOffset + maskIndex]) - 1;
+				var maskIndex = filledInclude[i];
+				shouldNotBecomeNegative |= (includeMask[maskIndex] & bitmap[offset + maskIndex]) - 1;
 			}
 
 			for (var i = 0; i < FilledExcludeCount; i++)
 			{
-				var maskIndex = FilledExclude[i];
-				shouldStayNegative &= (ExcludeMask[maskIndex] & bitmap[maskOffset + maskIndex]) - 1;
+				var maskIndex = filledExclude[i];
+				shouldStayNegative &= (excludeMask[maskIndex] & bitmap[offset + maskIndex]) - 1;
 			}
 
 			return (shouldNotBecomeNegative | ~shouldStayNegative) >= 0L;
