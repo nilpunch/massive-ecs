@@ -4,6 +4,99 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+	public struct BitSetView<T1>
+	{
+		public DataBitSet<T1> Set1 { get; }
+
+		public delegate void Iterator(int i, ref T1 a);
+
+		public BitSetView(DataBitSet<T1> set1)
+		{
+			Set1 = set1;
+		}
+
+		public void For(Iterator iterator)
+		{
+			var minBitSet = Set1.BitSet;
+
+			var resultBitSet = BitSetPool.Rent();
+			minBitSet.CopyTo(resultBitSet);
+
+			Set1.PushRemoveOnRemove(resultBitSet);
+
+			var minBits1Length = resultBitSet.Bits1.Length;
+
+			for (var current1 = 0; current1 < minBits1Length; current1++)
+			{
+				var offset1 = current1 << 6;
+				var iterated1 = 0;
+
+				while (resultBitSet.Bits1[current1] != 0UL && iterated1 < 64)
+				{
+					var bits1Result = resultBitSet.Bits1[current1] >> iterated1;
+
+					var skip1 = MathUtils.TZC(bits1Result);
+					iterated1 += skip1;
+					bits1Result >>= skip1;
+
+					if (bits1Result == 0UL)
+					{
+						break;
+					}
+
+					var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits1Result);
+					var runEnd1 = iterated1 + runLength1;
+					for (; iterated1 < runEnd1; iterated1++)
+					{
+						if ((resultBitSet.Bits1[current1] & (1UL << iterated1)) == 0)
+						{
+							continue;
+						}
+
+						var current0 = offset1 + iterated1;
+						var dataOffset1 = Set1.Pages[current0].DataIndex & Set1.PageSizeMinusOne;
+						var dataPage1 = Set1.Data[Set1.Pages[current0].DataIndex >> Set1.PageSizePower];
+
+						var offset0 = current0 << 6;
+						var iterated0 = 0;
+
+						while (resultBitSet.Bits0[current0] != 0UL && iterated0 < 64)
+						{
+							var bits0Result = resultBitSet.Bits0[current0] >> iterated0;
+
+							var skip0 = MathUtils.TZC(bits0Result);
+							iterated0 += skip0;
+							bits0Result >>= skip0;
+
+							if (bits0Result == 0UL)
+							{
+								break;
+							}
+
+							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits0Result);
+							var runEnd0 = iterated0 + runLength0;
+							for (; iterated0 < runEnd0; iterated0++)
+							{
+								if ((resultBitSet.Bits0[current0] & (1UL << iterated0)) == 0)
+								{
+									continue;
+								}
+
+								iterator.Invoke(offset0 + iterated0, ref dataPage1[dataOffset1 + iterated0]);
+							}
+						}
+					}
+				}
+			}
+
+			Set1.PopRemoveOnRemove();
+
+			BitSetPool.Return(resultBitSet);
+		}
+	}
+	
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct BitSetView<T1, T2, T3, T4>
 	{
 		public DataBitSet<T1> Set1 { get; }
@@ -11,7 +104,7 @@ namespace Massive
 		public DataBitSet<T3> Set3 { get; }
 		public DataBitSet<T4> Set4 { get; }
 
-		public delegate void Iterator(ref T1 a, ref T2 b, ref T3 c, ref T4 d);
+		public delegate void Iterator(int i, ref T1 a, ref T2 b, ref T3 c, ref T4 d);
 
 		public BitSetView(DataBitSet<T1> set1, DataBitSet<T2> set2, DataBitSet<T3> set3, DataBitSet<T4> set4)
 		{
@@ -64,6 +157,7 @@ namespace Massive
 						}
 
 						var current0 = offset1 + iterated1;
+						var offset0 = current0 << 6;
 						var dataOffset1 = Set1.Pages[current0].DataIndex & Set1.PageSizeMinusOne;
 						var dataOffset2 = Set2.Pages[current0].DataIndex & Set2.PageSizeMinusOne;
 						var dataOffset3 = Set3.Pages[current0].DataIndex & Set3.PageSizeMinusOne;
@@ -97,7 +191,7 @@ namespace Massive
 									continue;
 								}
 
-								iterator.Invoke(
+								iterator.Invoke(offset0 + iterated0,
 									ref dataPage1[dataOffset1 + iterated0],
 									ref dataPage2[dataOffset2 + iterated0],
 									ref dataPage3[dataOffset3 + iterated0],

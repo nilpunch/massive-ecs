@@ -108,15 +108,53 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet Or(BitSet other)
+		public BitSet Not(BitSet other)
 		{
-			throw new NotImplementedException();
+			var otherBits1Length = other.Bits1.Length;
+			var otherBits0Length = otherBits1Length << 6;
+
+			if (otherBits1Length > Bits1.Length)
+			{
+				Bits1 = Bits1.Resize(otherBits1Length);
+				Bits0 = Bits0.Resize(Bits1.Length << 6);
+			}
+
+			for (var i = 0; i < otherBits1Length; i++)
+			{
+				Bits1[i] &= ~other.Bits1[i];
+			}
+
+			for (var j = 0; j < otherBits0Length; j++)
+			{
+				Bits0[j] &= ~other.Bits0[j];
+			}
+
+			return this;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet Not(BitSet other)
+		public BitSet Or(BitSet other)
 		{
-			throw new NotImplementedException();
+			var otherBits1Length = other.Bits1.Length;
+			var otherBits0Length = otherBits1Length << 6;
+
+			if (otherBits1Length > Bits1.Length)
+			{
+				Bits1 = Bits1.Resize(otherBits1Length);
+				Bits0 = Bits0.Resize(Bits1.Length << 6);
+			}
+
+			for (var i = 0; i < otherBits1Length; i++)
+			{
+				Bits1[i] |= other.Bits1[i];
+			}
+
+			for (var j = 0; j < otherBits0Length; j++)
+			{
+				Bits0[j] |= other.Bits0[j];
+			}
+
+			return this;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

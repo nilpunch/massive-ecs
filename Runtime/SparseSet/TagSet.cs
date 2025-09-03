@@ -35,7 +35,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove(int id)
 		{
-			var removedPage = BitSet.Add(id);
+			var removedPage = BitSet.Remove(id);
 
 			if (removedPage > 0)
 			{
