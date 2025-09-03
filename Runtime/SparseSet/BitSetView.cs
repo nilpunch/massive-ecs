@@ -17,10 +17,10 @@ namespace Massive
 
 		public void For(Iterator iterator)
 		{
-			var minBitSet = Set1.BitSet;
+			var minBitSet = Set1;
 
 			var resultBitSet = BitSetPool.Rent();
-			minBitSet.CopyTo(resultBitSet);
+			resultBitSet.CopyFrom(minBitSet);
 
 			Set1.PushRemoveOnRemove(resultBitSet);
 
@@ -94,7 +94,7 @@ namespace Massive
 			BitSetPool.Return(resultBitSet);
 		}
 	}
-	
+
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct BitSetView<T1, T2, T3, T4>
@@ -116,11 +116,11 @@ namespace Massive
 
 		public void For(Iterator iterator)
 		{
-			var minBitSet = BitSet.GetMinBitSet(Set1.BitSet, Set2.BitSet, Set3.BitSet, Set4.BitSet);
+			var minBitSet = BitSetBase.GetMinBitSet(Set1, Set2, Set3, Set4);
 
 			var resultBitSet = BitSetPool.Rent();
-			minBitSet.CopyTo(resultBitSet);
-			resultBitSet.And(Set1.BitSet).And(Set2.BitSet).And(Set3.BitSet).And(Set4.BitSet);
+			resultBitSet.CopyFrom(minBitSet);
+			resultBitSet.And(Set1).And(Set2).And(Set3).And(Set4);
 
 			Set1.PushRemoveOnRemove(resultBitSet);
 			Set2.PushRemoveOnRemove(resultBitSet);

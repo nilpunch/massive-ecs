@@ -21,14 +21,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Return(BitSet bitSet)
+		public static void Return(BitSet bitSetBase)
 		{
 			if (Count >= Pool.Length)
 			{
 				Pool = Pool.Resize(MathUtils.NextPowerOf2(Count + 1));
 			}
 
-			Pool[Count++] = bitSet;
+			Pool[Count++] = bitSetBase;
 		}
 	}
 }

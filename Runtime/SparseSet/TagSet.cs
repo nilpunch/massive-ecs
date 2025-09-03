@@ -6,10 +6,8 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class TagSet
+	public class TagSet : BitSetBase
 	{
-		public BitSet BitSet { get; } = new BitSet();
-
 		public BitSet[] RemoveOnAdd { get; private set; } = Array.Empty<BitSet>();
 		public int RemoveOnAddCount { get; private set; }
 
@@ -17,9 +15,34 @@ namespace Massive
 		public int RemoveOnRemoveCount { get; private set; }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add(int id)
+		public bool Add(int id)
 		{
-			var newPage = BitSet.Add(id);
+			var id0 = id >> 6;
+			var id1 = id >> 12;
+
+			if (id1 >= Bits1.Length)
+			{
+				Bits1 = Bits1.Resize(MathUtils.NextPowerOf2(id1 + 1));
+				Bits0 = Bits0.Resize(Bits1.Length << 6);
+			}
+
+			var bit0 = 1UL << (id & 63);
+			var bit1 = 1UL << (id0 & 63);
+
+			var newPage = -1;
+			var alreadyAdded = (Bits0[id0] & bit0) != 0UL;
+
+			if (alreadyAdded)
+			{
+				return false;
+			}
+
+			if (Bits0[id0] == 0UL)
+			{
+				Bits1[id1] |= bit1;
+				newPage = id0;
+			}
+			Bits0[id0] |= bit0;
 
 			if (newPage > 0)
 			{
@@ -30,12 +53,38 @@ namespace Massive
 			{
 				RemoveOnAdd[i].Remove(id);
 			}
+
+			return true;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove(int id)
+		public bool Remove(int id)
 		{
-			var removedPage = BitSet.Remove(id);
+			var id0 = id >> 6;
+			var id1 = id >> 12;
+
+			if (id0 >= Bits0.Length)
+			{
+				return false;
+			}
+
+			var bit0 = 1UL << (id & 63);
+			var bit1 = 1UL << (id0 & 63);
+
+			var removedPage = -1;
+			var alreadyRemoved = (Bits0[id0] & bit0) == 0UL;
+
+			if (alreadyRemoved)
+			{
+				return false;
+			}
+
+			Bits0[id0] &= ~bit0;
+			if (Bits0[id0] == 0UL)
+			{
+				Bits1[id1] &= ~bit1;
+				removedPage = id0;
+			}
 
 			if (removedPage > 0)
 			{
@@ -46,12 +95,8 @@ namespace Massive
 			{
 				RemoveOnRemove[i].Remove(id);
 			}
-		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Has(int id)
-		{
-			return BitSet.Has(id);
+			return true;
 		}
 
 		protected virtual void AddPage(int page)
@@ -63,14 +108,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void PushRemoveOnAdd(BitSet bitSet)
+		public void PushRemoveOnAdd(BitSet bitSetBase)
 		{
 			if (RemoveOnAddCount >= RemoveOnAdd.Length)
 			{
 				RemoveOnAdd = RemoveOnAdd.ResizeToNextPowOf2(RemoveOnAddCount + 1);
 			}
 
-			RemoveOnAdd[RemoveOnAddCount++] = bitSet;
+			RemoveOnAdd[RemoveOnAddCount++] = bitSetBase;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -80,14 +125,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void PushRemoveOnRemove(BitSet bitSet)
+		public void PushRemoveOnRemove(BitSet bitSetBase)
 		{
 			if (RemoveOnRemoveCount >= RemoveOnRemove.Length)
 			{
 				RemoveOnRemove = RemoveOnRemove.ResizeToNextPowOf2(RemoveOnRemoveCount + 1);
 			}
 
-			RemoveOnRemove[RemoveOnRemoveCount++] = bitSet;
+			RemoveOnRemove[RemoveOnRemoveCount++] = bitSetBase;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
