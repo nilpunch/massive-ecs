@@ -27,7 +27,6 @@ namespace Massive
 
 			var resultBitSet = BitSetPool.Rent();
 			minBitSet.CopyTo(resultBitSet);
-
 			resultBitSet.And(Set1.BitSet).And(Set2.BitSet).And(Set3.BitSet).And(Set4.BitSet);
 
 			Set1.PushRemoveOnRemove(resultBitSet);
@@ -59,6 +58,11 @@ namespace Massive
 					var runEnd1 = iterated1 + runLength1;
 					for (; iterated1 < runEnd1; iterated1++)
 					{
+						if ((resultBitSet.Bits1[current1] & (1UL << iterated1)) == 0)
+						{
+							continue;
+						}
+
 						var current0 = offset1 + iterated1;
 						var dataOffset1 = Set1.Pages[current0].DataIndex & Set1.PageSizeMinusOne;
 						var dataOffset2 = Set2.Pages[current0].DataIndex & Set2.PageSizeMinusOne;
@@ -88,6 +92,11 @@ namespace Massive
 							var runEnd0 = iterated0 + runLength0;
 							for (; iterated0 < runEnd0; iterated0++)
 							{
+								if ((resultBitSet.Bits0[current0] & (1UL << iterated0)) == 0)
+								{
+									continue;
+								}
+
 								iterator.Invoke(
 									ref dataPage1[dataOffset1 + iterated0],
 									ref dataPage2[dataOffset2 + iterated0],
