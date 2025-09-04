@@ -11,16 +11,16 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class DynamicFilter : Filter
 	{
-		public Sets Sets { get; }
+		public BitSets BitSets { get; }
 
-		public DynamicFilter(World world) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>(), world.Masks)
+		public DynamicFilter(World world) : base(Array.Empty<BitSet>(), Array.Empty<BitSet>(), world.Masks)
 		{
-			Sets = world.Sets;
+			BitSets = world.BitSets;
 		}
 
 		public DynamicFilter Include<T>()
 		{
-			var set = Sets.Get<T>();
+			var set = BitSets.Get<T>();
 
 			ConflictingFilterException.ThrowIfConflictWithExcluded(this, set);
 
@@ -45,7 +45,7 @@ namespace Massive
 
 		public DynamicFilter Exclude<T>()
 		{
-			var set = Sets.Get<T>();
+			var set = BitSets.Get<T>();
 
 			ConflictingFilterException.ThrowIfConflictWithIncluded(this, set);
 

@@ -1,34 +1,35 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	public static class BitSetPool
+	public static class PopsPool
 	{
 		public static int Count { get; set; }
 
-		public static BitSet[] Pool { get; set; } = Array.Empty<BitSet>();
+		public static Pops[] Pool { get; set; } = Array.Empty<Pops>();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static BitSet Rent()
+		public static Pops Rent()
 		{
 			if (Count > 0)
 			{
 				return Pool[--Count];
 			}
 
-			return new BitSet();
+			return new Pops();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Return(BitSet bitSetBase)
+		public static void ReturnAndPop(Pops pop)
 		{
 			if (Count >= Pool.Length)
 			{
 				Pool = Pool.Resize(MathUtils.NextPowerOf2(Count + 1));
 			}
 
-			Pool[Count++] = bitSetBase;
+			pop.PopAll();
+			Pool[Count++] = pop;
 		}
 	}
 }

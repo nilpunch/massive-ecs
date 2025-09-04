@@ -9,23 +9,45 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="Massive.SparseSet"/>.
+	/// Data extension for <see cref="BitSet"/>.
 	/// Does not reset the data for added elements.
 	/// Does not preserve data when elements are moved.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class DataSet<T> : SparseSet, IDataSet
+	public class DataSet<T> : BitSet, IDataSet
 	{
-		/// <summary>
-		/// The packed array that stores paged data.
-		/// </summary>
-		public PagedArray<T> Data { get; }
+		public const int EndFreePage = Constants.InvalidId;
 
-		public DataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
-			: base(packing)
+		public struct Page
 		{
-			Data = new PagedArray<T>(pageSize);
+			public int DataIndex;
+			public int NextFreePage;
+		}
+
+		public T[][] Data { get; private set; } = Array.Empty<T[]>();
+
+		public Page[] Pages { get; protected internal set; } = Array.Empty<Page>();
+
+		public int UsedPages { get; protected internal set; }
+
+		public int NextFreePage { get; protected internal set; } = EndFreePage;
+
+		public int PageSize { get; }
+
+		public Type ElementType { get; }
+
+		public int PageSizePower { get; }
+
+		public int PageSizeMinusOne { get; }
+
+		public DataSet(int pageSize = Constants.DefaultPageSize)
+		{
+			InvalidPageSizeException.ThrowIfNotPowerOf2<T>(pageSize);
+
+			PageSize = pageSize;
+			PageSizePower = MathUtils.FastLog2(pageSize);
+			PageSizeMinusOne = pageSize - 1;
 		}
 
 		/// <summary>
@@ -34,9 +56,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			InvalidGetOperationException.ThrowIfNotAdded(this, id);
-
-			return ref Data[Sparse[id]];
+			var index = Pages[id >> 6].DataIndex + (id & 63);
+			return ref Data[index >> PageSizePower][index & PageSizeMinusOne];
 		}
 
 		/// <summary>
@@ -47,80 +68,101 @@ namespace Massive
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
-			EnsureSparseAt(id);
+			var id0 = id >> 6;
+			var id1 = id >> 12;
 
-			var index = Sparse[id];
-			if (index != Constants.InvalidId)
+			if (id1 >= Bits1.Length)
 			{
-				// If ID is already present, write the data.
-				Data[index] = data;
-				return;
+				Bits1 = Bits1.Resize(MathUtils.NextPowerOf2(id1 + 1));
+				Bits0 = Bits0.Resize(Bits1.Length << 6);
 			}
 
-			if (Packing == Packing.WithHoles && NextHole != EndHole)
+			var offsetInPage = id & 63;
+			var bit0 = 1UL << offsetInPage;
+			var bit1 = 1UL << (id0 & 63);
+
+			var newPage = -1;
+
+			if (Bits0[id0] == 0UL)
 			{
-				// Fill the hole.
-				index = NextHole;
-				NextHole = ~Packed[index];
+				Bits1[id1] |= bit1;
+				newPage = id0;
 			}
-			else // Packing.Continuous || Packing.WithPersistentHoles
+			Bits0[id0] |= bit0;
+
+			if (newPage >= 0)
 			{
-				// Append to the end.
-				index = Count;
-				EnsurePackedAt(index);
-				Data.EnsurePageAt(index);
-				Count += 1;
+				AddPage(newPage);
 			}
 
-			Pair(id, index);
-			Data[index] = data;
+			for (var i = 0; i < RemoveOnAddCount; i++)
+			{
+				RemoveOnAdd[i].Remove(id);
+			}
 
-			UsedIds = MathUtils.Max(UsedIds, id + 1);
-
+			var index = Pages[id0].DataIndex + offsetInPage;
+			Data[index >> PageSizePower][index & PageSizeMinusOne] = data;
 			NotifyAfterAdded(id);
-			Negative?.Remove(id);
 			Masks?.Set(id, ComponentId);
 		}
 
-		/// <summary>
-		/// Moves the data from one index to another.
-		/// </summary>
-		protected override void MoveDataAt(int source, int destination)
+		protected override void AddPage(int page)
 		{
-			Data[destination] = Data[source];
+			if (page >= Pages.Length)
+			{
+				Pages = Pages.Resize(MathUtils.NextPowerOf2(page + 1));
+			}
+
+			if (NextFreePage != EndFreePage)
+			{
+				var nextFreePage = NextFreePage;
+				NextFreePage = Pages[nextFreePage].NextFreePage;
+				Pages[page].DataIndex = Pages[nextFreePage].DataIndex;
+			}
+			else
+			{
+				var nextPageDataIndex = UsedPages << 6;
+				EnsurePageAt(nextPageDataIndex);
+				UsedPages++;
+				Pages[page].DataIndex = nextPageDataIndex;
+			}
 		}
 
-		/// <summary>
-		/// Swaps the data between two indices.
-		/// </summary>
-		public override void SwapDataAt(int first, int second)
+		protected override void RemovePage(int page)
 		{
-			InvalidPackedIndexException.ThrowIfNotPacked(this, first);
-			InvalidPackedIndexException.ThrowIfNotPacked(this, second);
+			Pages[page].NextFreePage = NextFreePage;
+			NextFreePage = page;
+		}
 
-			Data.Swap(first, second);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsurePageAt(int id)
+		{
+			EnsurePage(id >> PageSizePower);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsurePage(int page)
+		{
+			if (page >= Data.Length)
+			{
+				Data = Data.Resize(page + 1);
+			}
+
+			Data[page] ??= new T[PageSize];
 		}
 
 		/// <summary>
 		/// Copies the data from one index to another.
 		/// </summary>
-		public override void CopyDataAt(int source, int destination)
+		public override void CopyData(int sourceId, int destinationId)
 		{
-			InvalidPackedIndexException.ThrowIfNotPacked(this, source);
-			InvalidPackedIndexException.ThrowIfNotPacked(this, destination);
-
-			Data[destination] = Data[source];
+			Data[destinationId] = Data[sourceId];
 		}
 
-		/// <summary>
-		/// Ensures data exists at the specified index.
-		/// </summary>
-		protected override void EnsureAndPrepareDataAt(int index)
+		Array IDataSet.GetPage(int page)
 		{
-			Data.EnsurePageAt(index);
+			return Data[page];
 		}
-
-		IPagedArray IDataSet.Data => Data;
 
 		object IDataSet.GetRaw(int id) => Get(id);
 
@@ -133,7 +175,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DataSet<T> Clone()
 		{
-			var clone = new DataSet<T>(Data.PageSize);
+			var clone = new DataSet<T>(PageSize);
 			CopyTo(clone);
 			return clone;
 		}
@@ -145,22 +187,32 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(DataSet<T> other)
 		{
-			IncompatiblePageSizeException.ThrowIfIncompatible(Data, other.Data);
+			// IncompatiblePageSizeException.ThrowIfIncompatible(Data, other.Data);
 
-			CopySparseTo(other);
+			CopyBitsTo(other);
 
-			var sourceData = Data;
-			var destinationData = other.Data;
-
-			foreach (var page in new PageSequence(sourceData.PageSize, Count))
+			var sourcePages = Data;
+			var destinationPages = other.Data;
+			
+			foreach (var page in new PageSequence(PageSize, UsedPages << 6))
 			{
-				destinationData.EnsurePage(page.Index);
+				other.EnsurePage(page.Index);
 
-				var sourcePage = sourceData.Pages[page.Index];
-				var destinationPage = destinationData.Pages[page.Index];
+				var sourcePage = sourcePages[page.Index];
+				var destinationPage = destinationPages[page.Index];
 
 				Array.Copy(sourcePage, destinationPage, page.Length);
 			}
+
+			if (UsedPages > other.Pages.Length)
+			{
+				other.Pages = other.Pages.ResizeToNextPowOf2(UsedPages);
+			}
+
+			Array.Copy(Pages, other.Pages, UsedPages);
+
+			other.UsedPages = UsedPages;
+			other.NextFreePage = NextFreePage;
 		}
 	}
 }

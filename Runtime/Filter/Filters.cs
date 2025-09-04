@@ -14,7 +14,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Filters
 	{
-		private Sets Sets { get; }
+		private BitSets BitSets { get; }
 		private Masks Masks { get; }
 		private SetComparer Comparer { get; }
 		private bool OptimizeExludeFilter { get; }
@@ -25,12 +25,12 @@ namespace Massive
 
 		public Filter Empty { get; }
 
-		public Filters(Sets sets, Masks masks, bool optimizeExludeFilter)
+		public Filters(BitSets bitSets, Masks masks, bool optimizeExludeFilter)
 		{
-			Sets = sets;
+			BitSets = bitSets;
 			Masks = masks;
 			OptimizeExludeFilter = optimizeExludeFilter;
-			Comparer = new SetComparer(Sets);
+			Comparer = new SetComparer(BitSets);
 			Empty = new Filter(masks);
 		}
 
@@ -50,11 +50,11 @@ namespace Massive
 			}
 
 			var included = OptimizeExludeFilter
-				? new TInclude().Select(Sets).Concat(new TExclude().Select(Sets, negative: true)).ToArray()
-				: new TInclude().Select(Sets);
+				? new TInclude().Select(BitSets).Concat(new TExclude().Select(BitSets, negative: true)).ToArray()
+				: new TInclude().Select(BitSets);
 			var excluded = OptimizeExludeFilter
-				? Array.Empty<SparseSet>()
-				: new TExclude().Select(Sets);
+				? Array.Empty<BitSet>()
+				: new TExclude().Select(BitSets);
 
 			var filter = Get(included, excluded);
 
@@ -64,10 +64,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public Filter Get(SparseSet[] included = null, SparseSet[] excluded = null)
+		public Filter Get(BitSet[] included = null, BitSet[] excluded = null)
 		{
-			included ??= Array.Empty<SparseSet>();
-			excluded ??= Array.Empty<SparseSet>();
+			included ??= Array.Empty<BitSet>();
+			excluded ??= Array.Empty<BitSet>();
 
 			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
 			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Include);
@@ -76,18 +76,14 @@ namespace Massive
 			Array.Sort(included, Comparer.ByIndex);
 			Array.Sort(excluded, Comparer.ByIndex);
 
-			var includeCode = SetUtils.GetOrderedHashCode(included, Sets);
-			var excludeCode = SetUtils.GetOrderedHashCode(excluded, Sets);
+			var includeCode = BitSets.GetOrderedHashCode(included);
+			var excludeCode = BitSets.GetOrderedHashCode(excluded);
 			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
 
 			if (CombinationLookup.TryGetValue(fullCode, out var filter))
 			{
 				return filter;
 			}
-
-			(included, excluded) = MoveNegativeToIncluded(included, excluded);
-
-			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Both);
 
 			filter = included.Length != 0 || excluded.Length != 0
 				? new Filter(included, excluded, Masks)
@@ -105,41 +101,21 @@ namespace Massive
 			}
 		}
 
-		private (SparseSet[] Included, SparseSet[] Excluded) MoveNegativeToIncluded(SparseSet[] included, SparseSet[] excluded)
-		{
-			var includedList = new List<SparseSet>(included);
-			var excludedList = new List<SparseSet>();
-
-			foreach (var set in excluded)
-			{
-				if (set.Negative != null)
-				{
-					includedList.Add(set.Negative);
-				}
-				else
-				{
-					excludedList.Add(set);
-				}
-			}
-
-			return (includedList.ToArray(), excludedList.ToArray());
-		}
-
 		private class SetComparer
 		{
-			private readonly Sets _sets;
+			private readonly BitSets _bitSets;
 
-			public readonly Comparison<SparseSet> ByIndex;
+			public readonly Comparison<BitSet> ByIndex;
 
-			public SetComparer(Sets sets)
+			public SetComparer(BitSets bitSets)
 			{
-				_sets = sets;
+				_bitSets = bitSets;
 				ByIndex = Compare;
 			}
 
-			private int Compare(SparseSet a, SparseSet b)
+			private int Compare(BitSet a, BitSet b)
 			{
-				return _sets.IndexOf(a).CompareTo(_sets.IndexOf(b));
+				return _bitSets.IndexOf(a).CompareTo(_bitSets.IndexOf(b));
 			}
 		}
 	}

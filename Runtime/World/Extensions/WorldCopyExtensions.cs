@@ -37,7 +37,7 @@ namespace Massive
 
 			world.Entifiers.CopyTo(other.Entifiers);
 			world.Masks.CopyTo(other.Masks);
-			world.Sets.CopyTo(other.Sets);
+			world.BitSets.CopyTo(other.BitSets);
 			world.Allocators.CopyTo(other.Allocators);
 		}
 	}

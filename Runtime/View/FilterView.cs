@@ -13,43 +13,100 @@ namespace Massive
 	{
 		public World World { get; }
 		public Filter Filter { get; }
-		public Packing PackingWhenIterating { get; }
 
-		public FilterView(World world, Filter filter = null,
-			Packing packingWhenIterating = Packing.WithHoles)
+		public FilterView(World world, Filter filter = null)
 		{
 			World = world;
-			PackingWhenIterating = packingWhenIterating;
 			Filter = filter ?? world.Filters.Empty;
 		}
 
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			var mask = Filter.Mask;
-			var packedSet = Filter.Included.Length == 0 ? (PackedSet)World.Entifiers : SetUtils.GetMinimalSet(Filter.Included);
+			var resultBits = BitsPool.Rent();
+			var rentedPops = PopsPool.Rent();
 
-			var originalPacking = packedSet.ExchangeToStricterPacking(PackingWhenIterating);
+			int bits1Length;
 
-			for (var i = packedSet.Count - 1; i >= 0; i--)
+			if (Filter.IncludedCount == 0)
 			{
-				if (i > packedSet.Count)
-				{
-					i = packedSet.Count;
-					continue;
-				}
+				World.Entifiers.CopyBitsTo(resultBits);
+				World.Entifiers.PushRemoveOnRemove(resultBits);
+				rentedPops.AddPopOnRemove(World.Entifiers);
+				bits1Length = World.Entifiers.Bits1.Length;
+			}
+			else
+			{
+				var minBits = BitsBase.GetMinBits(Filter.Included, Filter.IncludedCount);
+				minBits.CopyBitsTo(resultBits);
+				bits1Length = minBits.Bits1.Length;
+			}
 
-				var id = packedSet.Packed[i];
-				if (mask.ContainsId(id))
+			FilterBitsAndPops(resultBits, rentedPops);
+
+			for (var current1 = 0; current1 < bits1Length; current1++)
+			{
+				var offset1 = current1 << 6;
+				var iterated1 = 0;
+
+				while (resultBits.Bits1[current1] != 0UL && iterated1 < 64)
 				{
-					if (!action.Apply(id))
+					var bits1Result = resultBits.Bits1[current1] >> iterated1;
+
+					var skip1 = MathUtils.TZC(bits1Result);
+					iterated1 += skip1;
+					bits1Result >>= skip1;
+
+					if (bits1Result == 0UL)
 					{
 						break;
+					}
+
+					var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits1Result);
+					var runEnd1 = iterated1 + runLength1;
+					for (; iterated1 < runEnd1; iterated1++)
+					{
+						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0)
+						{
+							continue;
+						}
+
+						var current0 = offset1 + iterated1;
+
+						var offset0 = current0 << 6;
+						var iterated0 = 0;
+
+						while (resultBits.Bits0[current0] != 0UL && iterated0 < 64)
+						{
+							var bits0Result = resultBits.Bits0[current0] >> iterated0;
+
+							var skip0 = MathUtils.TZC(bits0Result);
+							iterated0 += skip0;
+							bits0Result >>= skip0;
+
+							if (bits0Result == 0UL)
+							{
+								break;
+							}
+
+							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits0Result);
+							var runEnd0 = iterated0 + runLength0;
+							for (; iterated0 < runEnd0; iterated0++)
+							{
+								if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0)
+								{
+									continue;
+								}
+
+								action.Apply(offset0 + iterated0);
+							}
+						}
 					}
 				}
 			}
 
-			packedSet.ExchangePacking(originalPacking);
+			BitsPool.Return(resultBits);
+			PopsPool.ReturnAndPop(rentedPops);
 		}
 
 		public void ForEach<TAction, T>(ref TAction action)
@@ -59,63 +116,83 @@ namespace Massive
 
 			var dataSet = World.DataSet<T>();
 
-			ConflictingFilterException.ThrowIfCantInclude<T>(Filter, dataSet);
+			var resultBits = BitsPool.Rent();
+			var rentedPops = PopsPool.Rent();
 
-			var data = dataSet.Data;
+			dataSet.CopyBitsTo(resultBits);
 
-			var minSet = SetUtils.GetMinimalSet(dataSet, Filter.Included);
-			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var mask = World.Masks.RentMaskCopy(Filter.Mask);
-			mask.Include(dataSet.ComponentId);
+			dataSet.PushRemoveOnRemove(resultBits);
+			rentedPops.AddPopOnRemove(dataSet);
 
-			if (minSet == dataSet)
+			FilterBitsAndPops(resultBits, rentedPops);
+
+			var bits1Length = dataSet.Bits1.Length;
+
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				foreach (var page in new PageSequence(data.PageSize, dataSet.Count))
+				var offset1 = current1 << 6;
+				var iterated1 = 0;
+
+				while (resultBits.Bits1[current1] != 0UL && iterated1 < 64)
 				{
-					var dataPage = data.Pages[page.Index];
-					for (var index = page.Length - 1; index >= 0; index--)
+					var bits1Result = resultBits.Bits1[current1] >> iterated1;
+
+					var skip1 = MathUtils.TZC(bits1Result);
+					iterated1 += skip1;
+					bits1Result >>= skip1;
+
+					if (bits1Result == 0UL)
 					{
-						if (page.Offset + index > dataSet.Count)
+						break;
+					}
+
+					var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits1Result);
+					var runEnd1 = iterated1 + runLength1;
+					for (; iterated1 < runEnd1; iterated1++)
+					{
+						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0)
 						{
-							index = dataSet.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet.Packed[page.Offset + index];
-						if (mask.ContainsId(id))
+						var current0 = offset1 + iterated1;
+						var dataOffset1 = dataSet.Pages[current0].DataIndex & dataSet.PageSizeMinusOne;
+						var dataPage1 = dataSet.Data[dataSet.Pages[current0].DataIndex >> dataSet.PageSizePower];
+
+						var offset0 = current0 << 6;
+						var iterated0 = 0;
+
+						while (resultBits.Bits0[current0] != 0UL && iterated0 < 64)
 						{
-							if (!action.Apply(id, ref dataPage[index]))
+							var bits0Result = resultBits.Bits0[current0] >> iterated0;
+
+							var skip0 = MathUtils.TZC(bits0Result);
+							iterated0 += skip0;
+							bits0Result >>= skip0;
+
+							if (bits0Result == 0UL)
 							{
 								break;
+							}
+
+							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits0Result);
+							var runEnd0 = iterated0 + runLength0;
+							for (; iterated0 < runEnd0; iterated0++)
+							{
+								if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0)
+								{
+									continue;
+								}
+
+								action.Apply(offset0 + iterated0, ref dataPage1[dataOffset1 + iterated0]);
 							}
 						}
 					}
 				}
 			}
-			else
-			{
-				for (var i = minSet.Count - 1; i >= 0; i--)
-				{
-					if (i > minSet.Count)
-					{
-						i = minSet.Count;
-						continue;
-					}
 
-					var id = minSet.Packed[i];
-					if (mask.ContainsId(id))
-					{
-						var index = dataSet.Sparse[id];
-						if (!action.Apply(id, ref data[index]))
-						{
-							break;
-						}
-					}
-				}
-			}
-
-			minSet.ExchangePacking(originalPacking);
-			mask.ReturnToPool();
+			BitsPool.Return(resultBits);
+			PopsPool.ReturnAndPop(rentedPops);
 		}
 
 		public void ForEach<TAction, T1, T2>(ref TAction action)
@@ -127,94 +204,91 @@ namespace Massive
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
 
-			ConflictingFilterException.ThrowIfCantInclude<T1>(Filter, dataSet1);
-			ConflictingFilterException.ThrowIfCantInclude<T2>(Filter, dataSet2);
+			var minSet = BitsBase.GetMinBits(dataSet1, dataSet2);
 
-			var data1 = dataSet1.Data;
-			var data2 = dataSet2.Data;
-			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
+			var resultBits = BitsPool.RentClone(minSet);
+			var rentedPops = PopsPool.Rent();
 
-			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
-			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var mask = World.Masks.RentMaskCopy(Filter.Mask);
-			mask.Include(dataSet1.ComponentId);
-			mask.Include(dataSet2.ComponentId);
+			resultBits.And(dataSet1).And(dataSet2);
 
-			if (minSet == dataSet1)
+			dataSet1.PushRemoveOnRemove(resultBits);
+			dataSet2.PushRemoveOnRemove(resultBits);
+			rentedPops.AddPopOnRemove(dataSet1);
+			rentedPops.AddPopOnRemove(dataSet2);
+
+			FilterBitsAndPops(resultBits, rentedPops);
+
+			var bits1Length = minSet.Bits1.Length;
+
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
+				var offset1 = current1 << 6;
+				var iterated1 = 0;
+
+				while (resultBits.Bits1[current1] != 0UL && iterated1 < 64)
 				{
-					var page1 = data1.Pages[page.Index];
-					for (var index1 = page.Length - 1; index1 >= 0; index1--)
+					var bits1Result = resultBits.Bits1[current1] >> iterated1;
+
+					var skip1 = MathUtils.TZC(bits1Result);
+					iterated1 += skip1;
+					bits1Result >>= skip1;
+
+					if (bits1Result == 0UL)
 					{
-						if (page.Offset + index1 > dataSet1.Count)
+						break;
+					}
+
+					var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits1Result);
+					var runEnd1 = iterated1 + runLength1;
+					for (; iterated1 < runEnd1; iterated1++)
+					{
+						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0)
 						{
-							index1 = dataSet1.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet1.Packed[page.Offset + index1];
-						if (mask.ContainsId(id))
+						var current0 = offset1 + iterated1;
+						var dataOffset1 = dataSet1.Pages[current0].DataIndex & dataSet1.PageSizeMinusOne;
+						var dataOffset2 = dataSet2.Pages[current0].DataIndex & dataSet2.PageSizeMinusOne;
+						var dataPage1 = dataSet1.Data[dataSet1.Pages[current0].DataIndex >> dataSet1.PageSizePower];
+						var dataPage2 = dataSet2.Data[dataSet2.Pages[current0].DataIndex >> dataSet2.PageSizePower];
+
+						var offset0 = current0 << 6;
+						var iterated0 = 0;
+
+						while (resultBits.Bits0[current0] != 0UL && iterated0 < 64)
 						{
-							var index2 = dataSet2.Sparse[id];
-							if (!action.Apply(id, ref page1[index1], ref data2[index2]))
+							var bits0Result = resultBits.Bits0[current0] >> iterated0;
+
+							var skip0 = MathUtils.TZC(bits0Result);
+							iterated0 += skip0;
+							bits0Result >>= skip0;
+
+							if (bits0Result == 0UL)
 							{
 								break;
+							}
+
+							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits0Result);
+							var runEnd0 = iterated0 + runLength0;
+							for (; iterated0 < runEnd0; iterated0++)
+							{
+								if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0)
+								{
+									continue;
+								}
+
+								action.Apply(offset0 + iterated0,
+									ref dataPage1[dataOffset1 + iterated0],
+									ref dataPage2[dataOffset2 + iterated0]);
 							}
 						}
 					}
 				}
 			}
-			else if (minSet == dataSet2)
-			{
-				foreach (var page in new PageSequence(data2.PageSize, dataSet2.Count))
-				{
-					var page2 = data2.Pages[page.Index];
-					for (var index2 = page.Length - 1; index2 >= 0; index2--)
-					{
-						if (page.Offset + index2 > dataSet2.Count)
-						{
-							index2 = dataSet2.Count - page.Offset;
-							continue;
-						}
 
-						var id = dataSet2.Packed[page.Offset + index2];
-						if (mask.ContainsId(id))
-						{
-							var index1 = dataSet1.Sparse[id];
-							if (!action.Apply(id, ref data1[index1], ref page2[index2]))
-							{
-								break;
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				for (var i = minSet.Count - 1; i >= 0; i--)
-				{
-					if (i > minSet.Count)
-					{
-						i = minSet.Count;
-						continue;
-					}
-
-					var id = minSet.Packed[i];
-					if (mask.ContainsId(id))
-					{
-						var index1 = dataSet1.Sparse[id];
-						var index2 = dataSet2.Sparse[id];
-						if (!action.Apply(id, ref data1[index1], ref data2[index2]))
-						{
-							break;
-						}
-					}
-				}
-			}
-
-			minSet.ExchangePacking(originalPacking);
-			mask.ReturnToPool();
+			BitsPool.Return(resultBits);
+			PopsPool.ReturnAndPop(rentedPops);
 		}
 
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
@@ -228,126 +302,96 @@ namespace Massive
 			var dataSet2 = World.DataSet<T2>();
 			var dataSet3 = World.DataSet<T3>();
 
-			ConflictingFilterException.ThrowIfCantInclude<T1>(Filter, dataSet1);
-			ConflictingFilterException.ThrowIfCantInclude<T2>(Filter, dataSet2);
-			ConflictingFilterException.ThrowIfCantInclude<T3>(Filter, dataSet3);
+			var minSet = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3);
 
-			var data1 = dataSet1.Data;
-			var data2 = dataSet2.Data;
-			var data3 = dataSet3.Data;
-			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3);
+			var resultBits = BitsPool.RentClone(minSet);
+			var rentedPops = PopsPool.Rent();
 
-			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
-			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var mask = World.Masks.RentMaskCopy(Filter.Mask);
-			mask.Include(dataSet1.ComponentId);
-			mask.Include(dataSet2.ComponentId);
-			mask.Include(dataSet3.ComponentId);
+			resultBits.And(dataSet1).And(dataSet2).And(dataSet3);
 
-			if (minSet == dataSet1)
+			dataSet1.PushRemoveOnRemove(resultBits);
+			dataSet2.PushRemoveOnRemove(resultBits);
+			dataSet3.PushRemoveOnRemove(resultBits);
+			rentedPops.AddPopOnRemove(dataSet1);
+			rentedPops.AddPopOnRemove(dataSet2);
+			rentedPops.AddPopOnRemove(dataSet3);
+
+			FilterBitsAndPops(resultBits, rentedPops);
+
+			var bits1Length = minSet.Bits1.Length;
+
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
+				var offset1 = current1 << 6;
+				var iterated1 = 0;
+
+				while (resultBits.Bits1[current1] != 0UL && iterated1 < 64)
 				{
-					var page1 = data1.Pages[page.Index];
-					for (var index1 = page.Length - 1; index1 >= 0; index1--)
+					var bits1Result = resultBits.Bits1[current1] >> iterated1;
+
+					var skip1 = MathUtils.TZC(bits1Result);
+					iterated1 += skip1;
+					bits1Result >>= skip1;
+
+					if (bits1Result == 0UL)
 					{
-						if (page.Offset + index1 > dataSet1.Count)
+						break;
+					}
+
+					var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits1Result);
+					var runEnd1 = iterated1 + runLength1;
+					for (; iterated1 < runEnd1; iterated1++)
+					{
+						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0)
 						{
-							index1 = dataSet1.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet1.Packed[page.Offset + index1];
-						if (mask.ContainsId(id))
+						var current0 = offset1 + iterated1;
+						var dataOffset1 = dataSet1.Pages[current0].DataIndex & dataSet1.PageSizeMinusOne;
+						var dataOffset2 = dataSet2.Pages[current0].DataIndex & dataSet2.PageSizeMinusOne;
+						var dataOffset3 = dataSet3.Pages[current0].DataIndex & dataSet3.PageSizeMinusOne;
+						var dataPage1 = dataSet1.Data[dataSet1.Pages[current0].DataIndex >> dataSet1.PageSizePower];
+						var dataPage2 = dataSet2.Data[dataSet2.Pages[current0].DataIndex >> dataSet2.PageSizePower];
+						var dataPage3 = dataSet3.Data[dataSet3.Pages[current0].DataIndex >> dataSet3.PageSizePower];
+
+						var offset0 = current0 << 6;
+						var iterated0 = 0;
+
+						while (resultBits.Bits0[current0] != 0UL && iterated0 < 64)
 						{
-							var index2 = dataSet2.Sparse[id];
-							var index3 = dataSet3.Sparse[id];
-							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3]))
+							var bits0Result = resultBits.Bits0[current0] >> iterated0;
+
+							var skip0 = MathUtils.TZC(bits0Result);
+							iterated0 += skip0;
+							bits0Result >>= skip0;
+
+							if (bits0Result == 0UL)
 							{
 								break;
+							}
+
+							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits0Result);
+							var runEnd0 = iterated0 + runLength0;
+							for (; iterated0 < runEnd0; iterated0++)
+							{
+								if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0)
+								{
+									continue;
+								}
+
+								action.Apply(offset0 + iterated0,
+									ref dataPage1[dataOffset1 + iterated0],
+									ref dataPage2[dataOffset2 + iterated0],
+									ref dataPage3[dataOffset3 + iterated0]);
 							}
 						}
 					}
 				}
 			}
-			else if (minSet == dataSet2)
-			{
-				foreach (var page in new PageSequence(data2.PageSize, dataSet2.Count))
-				{
-					var page2 = data2.Pages[page.Index];
-					for (var index2 = page.Length - 1; index2 >= 0; index2--)
-					{
-						if (page.Offset + index2 > dataSet2.Count)
-						{
-							index2 = dataSet2.Count - page.Offset;
-							continue;
-						}
 
-						var id = dataSet2.Packed[page.Offset + index2];
-						if (mask.ContainsId(id))
-						{
-							var index1 = dataSet1.Sparse[id];
-							var index3 = dataSet3.Sparse[id];
-							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3]))
-							{
-								break;
-							}
-						}
-					}
-				}
-			}
-			else if (minSet == dataSet3)
-			{
-				foreach (var page in new PageSequence(data3.PageSize, dataSet3.Count))
-				{
-					var page3 = data3.Pages[page.Index];
-					for (var index3 = page.Length - 1; index3 >= 0; index3--)
-					{
-						if (page.Offset + index3 > dataSet3.Count)
-						{
-							index3 = dataSet3.Count - page.Offset;
-							continue;
-						}
-
-						var id = dataSet3.Packed[page.Offset + index3];
-						if (mask.ContainsId(id))
-						{
-							var index1 = dataSet1.Sparse[id];
-							var index2 = dataSet2.Sparse[id];
-							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3]))
-							{
-								break;
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				for (var i = minSet.Count - 1; i >= 0; i--)
-				{
-					if (i > minSet.Count)
-					{
-						i = minSet.Count;
-						continue;
-					}
-
-					var id = minSet.Packed[i];
-					if (mask.ContainsId(id))
-					{
-						var index1 = dataSet1.Sparse[id];
-						var index2 = dataSet2.Sparse[id];
-						var index3 = dataSet3.Sparse[id];
-						if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3]))
-						{
-							break;
-						}
-					}
-				}
-			}
-
-			minSet.ExchangePacking(originalPacking);
-			mask.ReturnToPool();
+			BitsPool.Return(resultBits);
+			PopsPool.ReturnAndPop(rentedPops);
 		}
 
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
@@ -363,187 +407,173 @@ namespace Massive
 			var dataSet3 = World.DataSet<T3>();
 			var dataSet4 = World.DataSet<T4>();
 
-			ConflictingFilterException.ThrowIfCantInclude<T1>(Filter, dataSet1);
-			ConflictingFilterException.ThrowIfCantInclude<T2>(Filter, dataSet2);
-			ConflictingFilterException.ThrowIfCantInclude<T3>(Filter, dataSet3);
-			ConflictingFilterException.ThrowIfCantInclude<T4>(Filter, dataSet4);
+			var minSet = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3, dataSet4);
 
-			var data1 = dataSet1.Data;
-			var data2 = dataSet2.Data;
-			var data3 = dataSet3.Data;
-			var data4 = dataSet4.Data;
-			var minDataSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
+			var resultBits = BitsPool.RentClone(minSet);
+			var rentedPops = PopsPool.Rent();
 
-			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
-			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var mask = World.Masks.RentMaskCopy(Filter.Mask);
-			mask.Include(dataSet1.ComponentId);
-			mask.Include(dataSet2.ComponentId);
-			mask.Include(dataSet3.ComponentId);
-			mask.Include(dataSet4.ComponentId);
+			resultBits.And(dataSet1).And(dataSet2).And(dataSet3).And(dataSet4);
 
-			if (minSet == dataSet1)
+			dataSet1.PushRemoveOnRemove(resultBits);
+			dataSet2.PushRemoveOnRemove(resultBits);
+			dataSet3.PushRemoveOnRemove(resultBits);
+			dataSet4.PushRemoveOnRemove(resultBits);
+			rentedPops.AddPopOnRemove(dataSet1);
+			rentedPops.AddPopOnRemove(dataSet2);
+			rentedPops.AddPopOnRemove(dataSet3);
+			rentedPops.AddPopOnRemove(dataSet4);
+
+			FilterBitsAndPops(resultBits, rentedPops);
+
+			var bits1Length = minSet.Bits1.Length;
+
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
+				var offset1 = current1 << 6;
+				var iterated1 = 0;
+
+				while (resultBits.Bits1[current1] != 0UL && iterated1 < 64)
 				{
-					var page1 = data1.Pages[page.Index];
-					for (var index1 = page.Length - 1; index1 >= 0; index1--)
+					var bits1Result = resultBits.Bits1[current1] >> iterated1;
+
+					var skip1 = MathUtils.TZC(bits1Result);
+					iterated1 += skip1;
+					bits1Result >>= skip1;
+
+					if (bits1Result == 0UL)
 					{
-						if (page.Offset + index1 > dataSet1.Count)
+						break;
+					}
+
+					var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits1Result);
+					var runEnd1 = iterated1 + runLength1;
+					for (; iterated1 < runEnd1; iterated1++)
+					{
+						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0)
 						{
-							index1 = dataSet1.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet1.Packed[page.Offset + index1];
-						if (mask.ContainsId(id))
+						var current0 = offset1 + iterated1;
+						var dataOffset1 = dataSet1.Pages[current0].DataIndex & dataSet1.PageSizeMinusOne;
+						var dataOffset2 = dataSet2.Pages[current0].DataIndex & dataSet2.PageSizeMinusOne;
+						var dataOffset3 = dataSet3.Pages[current0].DataIndex & dataSet3.PageSizeMinusOne;
+						var dataOffset4 = dataSet4.Pages[current0].DataIndex & dataSet4.PageSizeMinusOne;
+						var dataPage1 = dataSet1.Data[dataSet1.Pages[current0].DataIndex >> dataSet1.PageSizePower];
+						var dataPage2 = dataSet2.Data[dataSet2.Pages[current0].DataIndex >> dataSet2.PageSizePower];
+						var dataPage3 = dataSet3.Data[dataSet3.Pages[current0].DataIndex >> dataSet3.PageSizePower];
+						var dataPage4 = dataSet4.Data[dataSet4.Pages[current0].DataIndex >> dataSet4.PageSizePower];
+
+						var offset0 = current0 << 6;
+						var iterated0 = 0;
+
+						while (resultBits.Bits0[current0] != 0UL && iterated0 < 64)
 						{
-							var index2 = dataSet2.Sparse[id];
-							var index3 = dataSet3.Sparse[id];
-							var index4 = dataSet4.Sparse[id];
-							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
+							var bits0Result = resultBits.Bits0[current0] >> iterated0;
+
+							var skip0 = MathUtils.TZC(bits0Result);
+							iterated0 += skip0;
+							bits0Result >>= skip0;
+
+							if (bits0Result == 0UL)
 							{
 								break;
+							}
+
+							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits0Result);
+							var runEnd0 = iterated0 + runLength0;
+							for (; iterated0 < runEnd0; iterated0++)
+							{
+								if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0)
+								{
+									continue;
+								}
+
+								action.Apply(offset0 + iterated0,
+									ref dataPage1[dataOffset1 + iterated0],
+									ref dataPage2[dataOffset2 + iterated0],
+									ref dataPage3[dataOffset3 + iterated0],
+									ref dataPage4[dataOffset4 + iterated0]);
 							}
 						}
 					}
 				}
 			}
-			else if (minSet == dataSet2)
-			{
-				foreach (var page in new PageSequence(data2.PageSize, dataSet2.Count))
-				{
-					var page2 = data2.Pages[page.Index];
-					for (var index2 = page.Length - 1; index2 >= 0; index2--)
-					{
-						if (page.Offset + index2 > dataSet2.Count)
-						{
-							index2 = dataSet2.Count - page.Offset;
-							continue;
-						}
 
-						var id = dataSet2.Packed[page.Offset + index2];
-						if (mask.ContainsId(id))
-						{
-							var index1 = dataSet1.Sparse[id];
-							var index3 = dataSet3.Sparse[id];
-							var index4 = dataSet4.Sparse[id];
-							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3], ref data4[index4]))
-							{
-								break;
-							}
-						}
-					}
-				}
-			}
-			else if (minSet == dataSet3)
-			{
-				foreach (var page in new PageSequence(data3.PageSize, dataSet3.Count))
-				{
-					var page3 = data3.Pages[page.Index];
-					for (var index3 = page.Length - 1; index3 >= 0; index3--)
-					{
-						if (page.Offset + index3 > dataSet3.Count)
-						{
-							index3 = dataSet3.Count - page.Offset;
-							continue;
-						}
-
-						var id = dataSet3.Packed[page.Offset + index3];
-						if (mask.ContainsId(id))
-						{
-							var index1 = dataSet1.Sparse[id];
-							var index2 = dataSet2.Sparse[id];
-							var index4 = dataSet4.Sparse[id];
-							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3], ref data4[index4]))
-							{
-								break;
-							}
-						}
-					}
-				}
-			}
-			else if (minSet == dataSet4)
-			{
-				foreach (var page in new PageSequence(data4.PageSize, dataSet4.Count))
-				{
-					var page4 = data4.Pages[page.Index];
-					for (var index4 = page.Length - 1; index4 >= 0; index4--)
-					{
-						if (page.Offset + index4 > dataSet4.Count)
-						{
-							index4 = dataSet4.Count - page.Offset;
-							continue;
-						}
-
-						var id = dataSet4.Packed[page.Offset + index4];
-						if (mask.ContainsId(id))
-						{
-							var index1 = dataSet1.Sparse[id];
-							var index2 = dataSet2.Sparse[id];
-							var index3 = dataSet3.Sparse[id];
-							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref page4[index4]))
-							{
-								break;
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				for (var i = minSet.Count - 1; i >= 0; i--)
-				{
-					if (i > minSet.Count)
-					{
-						i = minSet.Count;
-						continue;
-					}
-
-					var id = minSet.Packed[i];
-					if (mask.ContainsId(id))
-					{
-						var index1 = dataSet1.Sparse[id];
-						var index2 = dataSet2.Sparse[id];
-						var index3 = dataSet3.Sparse[id];
-						var index4 = dataSet4.Sparse[id];
-						if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
-						{
-							break;
-						}
-					}
-				}
-			}
-
-			minSet.ExchangePacking(originalPacking);
-			mask.ReturnToPool();
+			BitsPool.Return(resultBits);
+			PopsPool.ReturnAndPop(rentedPops);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public PackedMaskedEnumerator GetEnumerator()
+		public BitsEnumerator GetEnumerator()
 		{
-			if (Filter.Included.Length == 0)
+			var resultBits = BitsPool.Rent();
+			var rentedPops = PopsPool.Rent();
+
+			int bits1Length;
+
+			if (Filter.IncludedCount == 0)
 			{
-				return new PackedMaskedEnumerator(World.Entifiers, World.Masks.RentMaskCopy(Filter.Mask), PackingWhenIterating);
+				World.Entifiers.CopyBitsTo(resultBits);
+				World.Entifiers.PushRemoveOnRemove(resultBits);
+				rentedPops.AddPopOnRemove(World.Entifiers);
+				bits1Length = World.Entifiers.Bits1.Length;
 			}
 			else
 			{
-				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
-				return new PackedMaskedEnumerator(minimalSet, World.Masks.RentMaskCopy(Filter.Mask), PackingWhenIterating);
+				var minBits = BitsBase.GetMinBits(Filter.Included, Filter.IncludedCount);
+				minBits.CopyBitsTo(resultBits);
+				bits1Length = minBits.Bits1.Length;
 			}
+
+			FilterBitsAndPops(resultBits, rentedPops);
+
+			return new BitsEnumerator(resultBits, rentedPops, bits1Length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public PackedMaskedEntityEnumerable Entities()
+		public EntityEnumerable Entities()
 		{
-			if (Filter.Included.Length == 0)
+			var resultBits = BitsPool.Rent();
+			var rentedPops = PopsPool.Rent();
+
+			int bits1Length;
+
+			if (Filter.IncludedCount == 0)
 			{
-				return new PackedMaskedEntityEnumerable(World.Entifiers, World.Masks.RentMaskCopy(Filter.Mask), World, PackingWhenIterating);
+				World.Entifiers.CopyBitsTo(resultBits);
+				World.Entifiers.PushRemoveOnRemove(resultBits);
+				rentedPops.AddPopOnRemove(World.Entifiers);
+				bits1Length = World.Entifiers.Bits1.Length;
 			}
 			else
 			{
-				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
-				return new PackedMaskedEntityEnumerable(minimalSet, World.Masks.RentMaskCopy(Filter.Mask), World, PackingWhenIterating);
+				var minBits = BitsBase.GetMinBits(Filter.Included, Filter.IncludedCount);
+				minBits.CopyBitsTo(resultBits);
+				bits1Length = minBits.Bits1.Length;
+			}
+
+			FilterBitsAndPops(resultBits, rentedPops);
+
+			return new EntityEnumerable(resultBits, rentedPops, World, bits1Length);
+		}
+
+		private void FilterBitsAndPops(Bits resultBits, Pops rentedPops)
+		{
+			for (var i = 0; i < Filter.IncludedCount; i++)
+			{
+				var included = Filter.Included[i];
+				resultBits.And(included);
+				included.PushRemoveOnRemove(resultBits);
+				rentedPops.AddPopOnRemove(included);
+			}
+
+			for (var i = 0; i < Filter.ExcludedCount; i++)
+			{
+				var excluded = Filter.Excluded[i];
+				resultBits.Not(excluded);
+				excluded.PushRemoveOnAdd(resultBits);
+				rentedPops.AddPopOnAdd(excluded);
 			}
 		}
 	}

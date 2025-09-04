@@ -11,19 +11,16 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorldContext
 	{
-		private SparseSetList NegativeSets { get; }
-
-		public Sets Sets { get; }
+		public BitSets BitSets { get; }
 
 		public Masks Masks { get; }
 
 		public Allocators Allocators { get; }
 
-		public WorldContext(Sets sets, Allocators allocators, Masks masks)
+		public WorldContext(BitSets bitSets, Allocators allocators, Masks masks)
 		{
-			Sets = sets;
+			BitSets = bitSets;
 			Masks = masks;
-			NegativeSets = sets.NegativeSets;
 			Allocators = allocators;
 		}
 
@@ -35,22 +32,10 @@ namespace Massive
 
 			for (var i = 0; i < componentCount; i++)
 			{
-				Sets.Lookup[buffer[i]].Remove(id, updateMasksAndNegative: false);
+				BitSets.Lookup[buffer[i]].Remove(id);
 			}
 
 			Allocators.Free(id);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EntityCreated(int id)
-		{
-			var setCount = NegativeSets.Count;
-			var sets = NegativeSets.Items;
-			for (var i = setCount - 1; i >= 0; i--)
-			{
-				sets[i].Add(id, updateMasksAndNegative: false);
-				Masks.Set(id, sets[i].ComponentId);
-			}
 		}
 	}
 }

@@ -7,7 +7,6 @@ namespace Massive
 		[UnityEngine.Scripting.Preserve]
 		private static void ReflectionSupportForAOT()
 		{
-			_ = new MassiveCopyingDataSet<T>();
 			_ = new CopyingDataSet<T>();
 			_ = new CopyingDataSetCloner<T>(null);
 		}

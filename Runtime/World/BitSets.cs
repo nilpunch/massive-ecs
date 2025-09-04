@@ -11,25 +11,19 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Sets
+	public class BitSets
 	{
-		private Dictionary<string, SparseSet> SetsByIdentifiers { get; } = new Dictionary<string, SparseSet>();
+		private Dictionary<string, BitSet> SetsByIdentifiers { get; } = new Dictionary<string, BitSet>();
 
 		private FastList<int> Hashes { get; } = new FastList<int>();
 
-		private FastList<bool> IsNegative { get; } = new FastList<bool>();
-
 		private FastList<string> Identifiers { get; } = new FastList<string>();
-
-		private FastList<string> NegativeIdentifiers { get; } = new FastList<string>();
 
 		private FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
 
 		public SparseSetList AllSets { get; } = new SparseSetList();
 
-		public SparseSetList NegativeSets { get; } = new SparseSetList();
-
-		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
+		public BitSet[] Lookup { get; private set; } = Array.Empty<BitSet>();
 
 		public int LookupCapacity { get; private set; }
 
@@ -39,13 +33,13 @@ namespace Massive
 
 		public Masks Masks { get; set; }
 
-		public Sets(SetFactory setFactory)
+		public BitSets(SetFactory setFactory)
 		{
 			SetFactory = setFactory;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet GetExisting(string setId)
+		public BitSet GetExisting(string setId)
 		{
 			if (SetsByIdentifiers.TryGetValue(setId, out var set))
 			{
@@ -56,7 +50,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet Get<T>()
+		public BitSet Get<T>()
 		{
 			var info = ComponentId<T>.Info;
 
@@ -68,30 +62,19 @@ namespace Massive
 				return candidate;
 			}
 
-			var collapsedInfo = ComponentId.GetInfo(NegativeUtils.CollapseNegations(info.Type));
-			if (collapsedInfo.Type != info.Type)
-			{
-				var collapsedSet = GetReflected(collapsedInfo.Type);
-				Lookup[info.Index] = collapsedSet;
-				return collapsedSet;
-			}
-
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
 			set.ComponentId = info.Index;
 			set.Masks = Masks;
 
-			var isNegative = NegativeUtils.IsNegative(info.Type);
-			InsertSet(info.FullName, set, cloner, isNegative);
+			InsertSet(info.FullName, set, cloner);
 			Lookup[info.Index] = set;
-
-			PairComplementarySet(set, info);
 
 			return set;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet GetReflected(Type setType)
+		public BitSet GetReflected(Type setType)
 		{
 			if (ComponentId.TryGetInfo(setType, out var info))
 			{
@@ -104,9 +87,9 @@ namespace Massive
 				}
 			}
 
-			var createMethod = typeof(Sets).GetMethod(nameof(Get));
+			var createMethod = typeof(BitSets).GetMethod(nameof(Get));
 			var genericMethod = createMethod?.MakeGenericMethod(setType);
-			return (SparseSet)genericMethod?.Invoke(this, new object[] { });
+			return (BitSet)genericMethod?.Invoke(this, new object[] { });
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -121,7 +104,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		private void InsertSet(string setId, SparseSet set, SetCloner cloner, bool isNegative = false)
+		private void InsertSet(string setId, BitSet set, SetCloner cloner)
 		{
 			// Maintain items sorted.
 			var itemIndex = Identifiers.BinarySearch(setId);
@@ -136,77 +119,33 @@ namespace Massive
 				AllSets.Insert(insertionIndex, set);
 				Cloners.Insert(insertionIndex, cloner);
 				Hashes.Insert(insertionIndex, setId.GetHashCode());
-				IsNegative.Insert(insertionIndex, isNegative);
 				SetsByIdentifiers.Add(setId, set);
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		private void PairComplementarySet(SparseSet set, TypeIdInfo typeInfo)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(BitSet bitSet)
 		{
-			var type = typeInfo.Type;
-
-			if (NegativeUtils.IsNegative(type))
-			{
-				var itemIndex = NegativeIdentifiers.BinarySearch(typeInfo.FullName);
-				if (itemIndex >= 0)
-				{
-					return;
-				}
-				var insertionIndex = ~itemIndex;
-				NegativeIdentifiers.Insert(insertionIndex, typeInfo.FullName);
-				NegativeSets.Insert(insertionIndex, set);
-
-				var positiveSet = GetReflected(type.GetGenericArguments()[0]);
-
-				SetUtils.PopulateFromEntifiers(set, Entifiers);
-				foreach (var id in positiveSet)
-				{
-					set.Remove(id, updateMasksAndNegative: false);
-				}
-				foreach (var id in set)
-				{
-					Masks.Set(id, typeInfo.Index);
-				}
-				set.Negative = positiveSet;
-				positiveSet.Negative = set;
-			}
-			else if (type.IsDefined(typeof(StoreNegativeAttribute), false))
-			{
-				var negativeType = typeof(Not<>).MakeGenericType(type);
-				var negativeInfo = ComponentId.GetInfo(negativeType);
-
-				var itemIndex = NegativeIdentifiers.BinarySearch(negativeInfo.FullName);
-				if (itemIndex >= 0)
-				{
-					return;
-				}
-				var insertionIndex = ~itemIndex;
-				NegativeIdentifiers.Insert(insertionIndex, negativeInfo.FullName);
-
-				var negativeSet = GetReflected(negativeType);
-				NegativeSets.Insert(insertionIndex, negativeSet);
-
-				SetUtils.PopulateFromEntifiers(negativeSet, Entifiers);
-				foreach (var id in negativeSet)
-				{
-					Masks.Set(id, negativeInfo.Index);
-				}
-				set.Negative = negativeSet;
-				negativeSet.Negative = set;
-			}
+			return bitSet.ComponentId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(SparseSet sparseSet)
+		public Type TypeOf(BitSet bitSet)
 		{
-			return Array.IndexOf(Lookup, sparseSet);
+			return ComponentId.GetTypeByIndex(bitSet.ComponentId);
 		}
-
+		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Type TypeOf(SparseSet sparseSet)
+		public int GetOrderedHashCode(BitSet[] orderedSets)
 		{
-			return ComponentId.GetTypeByIndex(sparseSet.ComponentId);
+			var hash = 17;
+			for (var i = 0; i < orderedSets.Length; i++)
+			{
+				var index = IndexOf(orderedSets[i]) + 1; // Avoid zero.
+				hash = unchecked(hash * 31 + index);
+			}
+
+			return hash;
 		}
 
 		/// <summary>
@@ -217,7 +156,7 @@ namespace Massive
 		/// Throws if the set factories are incompatible.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(Sets other)
+		public void CopyTo(BitSets other)
 		{
 			IncompatibleConfigsException.ThrowIfIncompatible(SetFactory, other.SetFactory);
 
@@ -231,7 +170,6 @@ namespace Massive
 			var hashes = Hashes;
 			var otherHashes = other.Hashes;
 			var otherSets = other.AllSets;
-			var otherIsNegative = other.IsNegative;
 
 			if (hashes.Count == otherHashes.Count)
 			{
@@ -244,19 +182,7 @@ namespace Massive
 			{
 				if (index >= hashes.Count || otherHashes[otherIndex] != hashes[index])
 				{
-					var otherSet = otherSets[otherIndex];
-					if (otherIsNegative[otherIndex])
-					{
-						SetUtils.PopulateFromEntifiers(otherSet, other.Entifiers);
-						foreach (var id in otherSet.Negative)
-						{
-							otherSet.Remove(id, updateMasksAndNegative: false);
-						}
-					}
-					else
-					{
-						otherSet.ClearWithoutNotify();
-					}
+					otherSets[otherIndex].ClearWithoutNotify();
 				}
 				else
 				{

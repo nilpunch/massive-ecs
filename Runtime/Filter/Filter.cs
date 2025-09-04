@@ -15,16 +15,16 @@ namespace Massive
 		public int IncludedCount { get; protected set; }
 		public int ExcludedCount { get; protected set; }
 
-		public SparseSet[] Included { get; protected set; }
-		public SparseSet[] Excluded { get; protected set; }
+		public BitSet[] Included { get; protected set; }
+		public BitSet[] Excluded { get; protected set; }
 		public Mask Mask { get; protected set; }
 
 		public Filter(Masks masks)
-			: this(Array.Empty<SparseSet>(), Array.Empty<SparseSet>(), masks)
+			: this(Array.Empty<BitSet>(), Array.Empty<BitSet>(), masks)
 		{
 		}
 
-		public Filter(SparseSet[] included, SparseSet[] excluded, Masks masks)
+		public Filter(BitSet[] included, BitSet[] excluded, Masks masks)
 		{
 			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
 

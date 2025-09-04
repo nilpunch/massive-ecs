@@ -11,9 +11,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfNotAdded(SparseSet sparseSet, int id)
+		public static void ThrowIfNotAdded(BitSet bitSet, int id)
 		{
-			if (!sparseSet.Has(id))
+			if (!bitSet.Has(id))
 			{
 				throw new InvalidGetOperationException($"You are trying to get data from the entity with id:{id} that is not added.");
 			}
@@ -41,9 +41,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfLookupNotInitialized(int id, Sets sets, int typeIndex)
+		public static void ThrowIfLookupNotInitialized(int id, BitSets bitSets, int typeIndex)
 		{
-			if (typeIndex >= sets.LookupCapacity || sets.Lookup[typeIndex] is null)
+			if (typeIndex >= bitSets.LookupCapacity || bitSets.Lookup[typeIndex] is null)
 			{
 				throw new InvalidGetOperationException($"You are trying to get data from the entity with id:{id} that is not added.");
 			}
@@ -51,9 +51,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfLookupNotInitialized(Entifier entifier, Sets sets, int typeIndex)
+		public static void ThrowIfLookupNotInitialized(Entifier entifier, BitSets bitSets, int typeIndex)
 		{
-			if (typeIndex >= sets.LookupCapacity || sets.Lookup[typeIndex] is null)
+			if (typeIndex >= bitSets.LookupCapacity || bitSets.Lookup[typeIndex] is null)
 			{
 				throw new InvalidGetOperationException($"You are trying to get data from the entity {entifier} that is not added.");
 			}

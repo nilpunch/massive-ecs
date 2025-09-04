@@ -2,6 +2,7 @@
 #define MASSIVE_ASSERT
 #endif
 
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -14,19 +15,19 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class CopyingDataSet<T> : ManagedDataSet<T> where T : ICopyable<T>
+	public class CopyingDataSet<T> : DataSet<T> where T : ICopyable<T>
 	{
-		public CopyingDataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous)
-			: base(pageSize, packing)
+		public CopyingDataSet(int pageSize = Constants.DefaultPageSize)
+			: base(pageSize)
 		{
 		}
 
 		/// <summary>
 		/// Copies the data from one index to another.
 		/// </summary>
-		public override void CopyDataAt(int source, int destination)
+		public override void CopyData(int sourceId, int destinationId)
 		{
-			Data[source].CopyTo(ref Data[destination]);
+			Get(sourceId).CopyTo(ref Get(destinationId));
 		}
 
 		/// <summary>
@@ -36,7 +37,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CopyingDataSet<T> CloneCopyable()
 		{
-			var clone = new CopyingDataSet<T>(Data.PageSize);
+			var clone = new CopyingDataSet<T>(PageSize);
 			CopyToCopyable(clone);
 			return clone;
 		}
@@ -48,25 +49,35 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToCopyable(DataSet<T> other)
 		{
-			IncompatiblePageSizeException.ThrowIfIncompatible(Data, other.Data);
+			// IncompatiblePageSizeException.ThrowIfIncompatible(Data, other.Data);
 
-			CopySparseTo(other);
+			CopyBitsTo(other);
 
-			var sourceData = Data;
-			var destinationData = other.Data;
+			var sourcePages = Data;
+			var destinationPages = other.Data;
 
-			foreach (var page in new PageSequence(sourceData.PageSize, Count))
+			foreach (var page in new PageSequence(PageSize, UsedPages << 6))
 			{
-				destinationData.EnsurePage(page.Index);
+				other.EnsurePage(page.Index);
 
-				var sourcePage = sourceData.Pages[page.Index];
-				var destinationPage = destinationData.Pages[page.Index];
+				var sourcePage = sourcePages[page.Index];
+				var destinationPage = destinationPages[page.Index];
 
 				for (var i = 0; i < page.Length; i++)
 				{
 					sourcePage[i].CopyTo(ref destinationPage[i]);
 				}
 			}
+
+			if (UsedPages > other.Pages.Length)
+			{
+				other.Pages = other.Pages.ResizeToNextPowOf2(UsedPages);
+			}
+
+			Array.Copy(Pages, other.Pages, UsedPages);
+
+			other.UsedPages = UsedPages;
+			other.NextFreePage = NextFreePage;
 		}
 	}
 }
