@@ -53,15 +53,12 @@ namespace Massive
 
 			CopyBitsTo(other);
 
-			var sourcePages = Data;
-			var destinationPages = other.Data;
-
 			foreach (var page in new PageSequence(PageSize, UsedPages << 6))
 			{
 				other.EnsurePage(page.Index);
 
-				var sourcePage = sourcePages[page.Index];
-				var destinationPage = destinationPages[page.Index];
+				var sourcePage = Data[page.Index];
+				var destinationPage = other.Data[page.Index];
 
 				for (var i = 0; i < page.Length; i++)
 				{

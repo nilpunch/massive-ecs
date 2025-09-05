@@ -58,10 +58,7 @@ namespace Massive
 			var bit0 = 1UL << (id & 63);
 			var bit1 = 1UL << (id0 & 63);
 
-			var newPage = -1;
-			var alreadyPresent = (Bits0[id0] & bit0) != 0UL;
-
-			if (alreadyPresent)
+			if ((Bits0[id0] & bit0) != 0UL)
 			{
 				return false;
 			}
@@ -69,14 +66,9 @@ namespace Massive
 			if (Bits0[id0] == 0UL)
 			{
 				Bits1[id1] |= bit1;
-				newPage = id0;
+				AddPage(id0);
 			}
 			Bits0[id0] |= bit0;
-
-			if (newPage >= 0)
-			{
-				AddPage(newPage);
-			}
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
@@ -114,10 +106,7 @@ namespace Massive
 			var bit0 = 1UL << (id & 63);
 			var bit1 = 1UL << (id0 & 63);
 
-			var removedPage = -1;
-			var notPresent = (Bits0[id0] & bit0) == 0UL;
-
-			if (notPresent)
+			if ((Bits0[id0] & bit0) == 0UL)
 			{
 				return false;
 			}
@@ -129,12 +118,7 @@ namespace Massive
 			if (Bits0[id0] == 0UL)
 			{
 				Bits1[id1] &= ~bit1;
-				removedPage = id0;
-			}
-
-			if (removedPage >= 0)
-			{
-				RemovePage(removedPage);
+				RemovePage(id0);
 			}
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)
@@ -160,7 +144,9 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ClearWithoutNotify()
 		{
-			throw new NotImplementedException();
+			Array.Fill(Bits1, 0UL);
+			Array.Fill(Bits0, 0UL);
+			RemoveAllPages();
 		}
 
 		/// <summary>
@@ -209,6 +195,10 @@ namespace Massive
 		}
 
 		protected virtual void RemovePage(int page)
+		{
+		}
+
+		protected virtual void RemoveAllPages()
 		{
 		}
 

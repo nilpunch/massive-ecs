@@ -8,14 +8,14 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class BitsBase
 	{
+		public ulong[] Bits0 { get; protected set; } = Array.Empty<ulong>();
+		public ulong[] Bits1 { get; protected set; } = Array.Empty<ulong>();
+
 		public Bits[] RemoveOnAdd { get; private set; } = Array.Empty<Bits>();
 		public int RemoveOnAddCount { get; private set; }
 
 		public Bits[] RemoveOnRemove { get; private set; } = Array.Empty<Bits>();
 		public int RemoveOnRemoveCount { get; private set; }
-
-		public ulong[] Bits0 { get; protected set; } = Array.Empty<ulong>();
-		public ulong[] Bits1 { get; protected set; } = Array.Empty<ulong>();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void GrowToFit(BitsBase other)
@@ -153,7 +153,7 @@ namespace Massive
 			}
 			return minimal;
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitsBase GetMinBits(BitSet[] bits, int count)
 		{

@@ -81,19 +81,12 @@ namespace Massive
 			var bit0 = 1UL << offsetInPage;
 			var bit1 = 1UL << (id0 & 63);
 
-			var newPage = -1;
-
 			if (Bits0[id0] == 0UL)
 			{
 				Bits1[id1] |= bit1;
-				newPage = id0;
+				AddPage(id0);
 			}
 			Bits0[id0] |= bit0;
-
-			if (newPage >= 0)
-			{
-				AddPage(newPage);
-			}
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
@@ -132,6 +125,12 @@ namespace Massive
 		{
 			Pages[page].NextFreePage = NextFreePage;
 			NextFreePage = page;
+		}
+
+		protected override void RemoveAllPages()
+		{
+			NextFreePage = EndFreePage;
+			UsedPages = 0;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -191,15 +190,12 @@ namespace Massive
 
 			CopyBitsTo(other);
 
-			var sourcePages = Data;
-			var destinationPages = other.Data;
-			
 			foreach (var page in new PageSequence(PageSize, UsedPages << 6))
 			{
 				other.EnsurePage(page.Index);
 
-				var sourcePage = sourcePages[page.Index];
-				var destinationPage = destinationPages[page.Index];
+				var sourcePage = Data[page.Index];
+				var destinationPage = other.Data[page.Index];
 
 				Array.Copy(sourcePage, destinationPage, page.Length);
 			}
