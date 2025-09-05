@@ -13,7 +13,7 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Masks
+	public class Components
 	{
 		private readonly byte[] DeBruijn =
 		{
@@ -23,10 +23,6 @@ namespace Massive
 			62, 55, 45, 31, 13, 39, 36, 6, 61, 44, 12, 35, 60, 11, 10, 9,
 		};
 
-		private Mask[] MaskPool { get; set; } = Array.Empty<Mask>();
-
-		private int MaskCount { get; set; }
-
 		public long[] BitMap { get; private set; } = Array.Empty<long>();
 
 		/// <summary>
@@ -34,7 +30,7 @@ namespace Massive
 		/// </summary>
 		public int[] Buffer { get; private set; } = Array.Empty<int>();
 
-		public int BitMapCapcity { get; private set; }
+		public int BitMapCapacity { get; private set; }
 
 		public int MaskLength { get; private set; }
 
@@ -116,8 +112,8 @@ namespace Massive
 			if (capacity > EntitiesCapacity)
 			{
 				EntitiesCapacity = MathUtils.NextPowerOf2(capacity);
-				BitMapCapcity = MaskLength * EntitiesCapacity;
-				BitMap = BitMap.Resize(BitMapCapcity);
+				BitMapCapacity = MaskLength * EntitiesCapacity;
+				BitMap = BitMap.Resize(BitMapCapacity);
 			}
 		}
 
@@ -144,57 +140,18 @@ namespace Massive
 
 				BitMap = newBitMap;
 				MaskLength = maskLength;
-				BitMapCapcity = BitMap.Length;
+				BitMapCapacity = BitMap.Length;
 				Buffer = Buffer.Resize(maskLength * 64);
 			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Mask RentMask()
-		{
-			if (MaskCount > 0)
-			{
-				var mask = MaskPool[--MaskCount];
-				mask.Clear();
-				mask.Masks = this;
-				return mask;
-			}
-
-			return Mask.New(this);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Mask RentMaskCopy(Mask maskToCopy)
-		{
-			if (MaskCount > 0)
-			{
-				var mask = MaskPool[--MaskCount];
-				maskToCopy.CopyTo(ref mask);
-				mask.Masks = this;
-				return mask;
-			}
-
-			return Mask.New(this);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ReturnMask(Mask mask)
-		{
-			if (MaskCount >= MaskPool.Length)
-			{
-				MaskPool = MaskPool.Resize(MathUtils.NextPowerOf2(MaskCount + 1));
-			}
-
-			MaskPool[MaskCount++] = mask;
 		}
 
 		/// <summary>
 		/// Creates and returns a new sparse set that is an exact copy of this one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Masks Clone()
+		public Components Clone()
 		{
-			var clone = new Masks();
+			var clone = new Components();
 			CopyTo(clone);
 			return clone;
 		}
@@ -203,10 +160,10 @@ namespace Massive
 		/// Copies all sparse state from this set into the specified one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(Masks other)
+		public void CopyTo(Components other)
 		{
-			var bitmapCapacity = BitMapCapcity;
-			var otherBitmapCapacity = other.BitMapCapcity;
+			var bitmapCapacity = BitMapCapacity;
+			var otherBitmapCapacity = other.BitMapCapacity;
 
 			if (other.MaskLength != MaskLength)
 			{
@@ -219,7 +176,7 @@ namespace Massive
 			{
 				other.BitMap = new long[bitmapCapacity];
 				other.EntitiesCapacity = EntitiesCapacity;
-				other.BitMapCapcity = bitmapCapacity;
+				other.BitMapCapacity = bitmapCapacity;
 			}
 
 			Array.Copy(BitMap, other.BitMap, bitmapCapacity);

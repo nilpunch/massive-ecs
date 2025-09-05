@@ -15,9 +15,8 @@ namespace Massive
 	public class Filters
 	{
 		private BitSets BitSets { get; }
-		private Masks Masks { get; }
+		private Components Components { get; }
 		private SetComparer Comparer { get; }
-		private bool OptimizeExludeFilter { get; }
 
 		private Dictionary<int, Filter> CombinationLookup { get; } = new Dictionary<int, Filter>();
 
@@ -25,13 +24,12 @@ namespace Massive
 
 		public Filter Empty { get; }
 
-		public Filters(BitSets bitSets, Masks masks, bool optimizeExludeFilter)
+		public Filters(BitSets bitSets, Components components)
 		{
 			BitSets = bitSets;
-			Masks = masks;
-			OptimizeExludeFilter = optimizeExludeFilter;
+			Components = components;
 			Comparer = new SetComparer(BitSets);
-			Empty = new Filter(masks);
+			Empty = new Filter(components);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,12 +47,8 @@ namespace Massive
 				return candidate;
 			}
 
-			var included = OptimizeExludeFilter
-				? new TInclude().Select(BitSets).Concat(new TExclude().Select(BitSets, negative: true)).ToArray()
-				: new TInclude().Select(BitSets);
-			var excluded = OptimizeExludeFilter
-				? Array.Empty<BitSet>()
-				: new TExclude().Select(BitSets);
+			var included = new TInclude().Select(BitSets);
+			var excluded = new TExclude().Select(BitSets);
 
 			var filter = Get(included, excluded);
 
@@ -86,7 +80,7 @@ namespace Massive
 			}
 
 			filter = included.Length != 0 || excluded.Length != 0
-				? new Filter(included, excluded, Masks)
+				? new Filter(included, excluded)
 				: Empty;
 			CombinationLookup.Add(fullCode, filter);
 			return filter;

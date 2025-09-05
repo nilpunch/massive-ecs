@@ -20,7 +20,7 @@ namespace Massive
 		/// <summary>
 		/// Shortcut to access masks.
 		/// </summary>
-		public Masks Masks { get; set; }
+		public Components Components { get; set; }
 
 		/// <summary>
 		/// Shoots only after <see cref="Add"/> call, when the ID was not already present.
@@ -55,7 +55,8 @@ namespace Massive
 				Bits0 = Bits0.Resize(Bits1.Length << 6);
 			}
 
-			var bit0 = 1UL << (id & 63);
+			var mod = id & 63;
+			var bit0 = 1UL << mod;
 			var bit1 = 1UL << (id0 & 63);
 
 			if ((Bits0[id0] & bit0) != 0UL)
@@ -75,8 +76,10 @@ namespace Massive
 				RemoveOnAdd[i].Remove(id);
 			}
 
+			PrepareData(id0, mod);
+
 			AfterAdded?.Invoke(id);
-			Masks?.Set(id, ComponentId);
+			Components?.Set(id, ComponentId);
 
 			return true;
 		}
@@ -112,7 +115,7 @@ namespace Massive
 			}
 
 			BeforeRemoved?.Invoke(id);
-			Masks?.Remove(id, ComponentId);
+			Components?.Remove(id, ComponentId);
 
 			Bits0[id0] &= ~bit0;
 			if (Bits0[id0] == 0UL)
@@ -190,6 +193,10 @@ namespace Massive
 			return new BitsEnumerator(bits, pops, Bits1.Length);
 		}
 
+		public virtual void CopyData(int sourceId, int destinationId)
+		{
+		}
+
 		protected virtual void AddPage(int page)
 		{
 		}
@@ -202,16 +209,8 @@ namespace Massive
 		{
 		}
 
-		/// <summary>
-		/// Prepares data at the specified index, if necessary.
-		/// </summary>
-		protected virtual void PrepareData(int id)
+		protected virtual void PrepareData(int page, int indexInPage)
 		{
-		}
-
-		public virtual void CopyData(int sourceId, int destinationId)
-		{
-			throw new NotImplementedException();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -17,28 +17,15 @@ namespace Massive
 
 		public BitSet[] Included { get; protected set; }
 		public BitSet[] Excluded { get; protected set; }
-		public Mask Mask { get; protected set; }
 
-		public Filter(Masks masks)
-			: this(Array.Empty<BitSet>(), Array.Empty<BitSet>(), masks)
+		public Filter(Components components)
+			: this(Array.Empty<BitSet>(), Array.Empty<BitSet>())
 		{
 		}
 
-		public Filter(BitSet[] included, BitSet[] excluded, Masks masks)
+		public Filter(BitSet[] included, BitSet[] excluded)
 		{
 			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
-
-			Mask = Mask.New(masks);
-
-			foreach (var include in included)
-			{
-				Mask.Include(include.ComponentId);
-			}
-
-			foreach (var exclude in excluded)
-			{
-				Mask.Exclude(exclude.ComponentId);
-			}
 
 			Included = included;
 			Excluded = excluded;

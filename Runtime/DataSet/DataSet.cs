@@ -96,7 +96,7 @@ namespace Massive
 			var index = Pages[id0].DataIndex + offsetInPage;
 			Data[index >> PageSizePower][index & PageSizeMinusOne] = data;
 			NotifyAfterAdded(id);
-			Masks?.Set(id, ComponentId);
+			Components?.Set(id, ComponentId);
 		}
 
 		protected override void AddPage(int page)

@@ -8,7 +8,7 @@
 
 		public MassiveWorldConfig(int? framesCapacity = default, int? pageSize = DefaultMassivePageSize, bool? storeEmptyTypesAsDataSets = default,
 			bool? fullStability = default, Packing? packingWhenIterating = default, bool? optimizeExludeFilters = default)
-			: base(pageSize, storeEmptyTypesAsDataSets, fullStability, packingWhenIterating, optimizeExludeFilters)
+			: base(pageSize, storeEmptyTypesAsDataSets, fullStability)
 		{
 			FramesCapacity = framesCapacity ?? FramesCapacity;
 		}

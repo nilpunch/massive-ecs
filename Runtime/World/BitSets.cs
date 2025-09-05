@@ -31,7 +31,7 @@ namespace Massive
 
 		public Entifiers Entifiers { get; set; }
 
-		public Masks Masks { get; set; }
+		public Components Components { get; set; }
 
 		public BitSets(SetFactory setFactory)
 		{
@@ -65,7 +65,7 @@ namespace Massive
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
 			set.ComponentId = info.Index;
-			set.Masks = Masks;
+			set.Components = Components;
 
 			InsertSet(info.FullName, set, cloner);
 			Lookup[info.Index] = set;
@@ -99,7 +99,7 @@ namespace Massive
 			{
 				LookupCapacity = MathUtils.NextPowerOf2(index + 1);
 				Lookup = Lookup.Resize(LookupCapacity);
-				Masks.EnsureComponentsCapacity(LookupCapacity);
+				Components.EnsureComponentsCapacity(LookupCapacity);
 			}
 		}
 

@@ -36,7 +36,7 @@ namespace Massive
 			IncompatibleConfigsException.ThrowIfIncompatible(world, other);
 
 			world.Entifiers.CopyTo(other.Entifiers);
-			world.Masks.CopyTo(other.Masks);
+			world.Components.CopyTo(other.Components);
 			world.BitSets.CopyTo(other.BitSets);
 			world.Allocators.CopyTo(other.Allocators);
 		}

@@ -52,12 +52,8 @@ namespace Massive
 				return candidate;
 			}
 
-			var included = world.Config.OptimizeExludeFilter
-				? new TInclude().Select(world.BitSets).Concat(new TExclude().Select(world.BitSets, negative: true)).ToArray()
-				: new TInclude().Select(world.BitSets);
-			var excluded = world.Config.OptimizeExludeFilter
-				? Array.Empty<BitSet>()
-				: new TExclude().Select(world.BitSets);
+			var included = new TInclude().Select(world.BitSets);
+			var excluded = new TExclude().Select(world.BitSets);
 
 			var filter = filters.Get(included, excluded);
 

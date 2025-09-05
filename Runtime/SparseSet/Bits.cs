@@ -12,19 +12,19 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(int id)
 		{
-			AddInternal(id);
+			SetBitInternal(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove(int id)
 		{
-			RemoveInternal(id);
+			RemoveBitInternal(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has(int id)
 		{
-			return HasInternal(id);
+			return HasBitInternal(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

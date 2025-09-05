@@ -13,22 +13,22 @@ namespace Massive
 	{
 		public BitSets BitSets { get; }
 
-		public Masks Masks { get; }
+		public Components Components { get; }
 
 		public Allocators Allocators { get; }
 
-		public WorldContext(BitSets bitSets, Allocators allocators, Masks masks)
+		public WorldContext(BitSets bitSets, Allocators allocators, Components components)
 		{
 			BitSets = bitSets;
-			Masks = masks;
+			Components = components;
 			Allocators = allocators;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EntityDestroyed(int id)
 		{
-			var buffer = Masks.Buffer;
-			var componentCount = Masks.GetAllAndRemove(id, buffer);
+			var buffer = Components.Buffer;
+			var componentCount = Components.GetAllAndRemove(id, buffer);
 
 			for (var i = 0; i < componentCount; i++)
 			{

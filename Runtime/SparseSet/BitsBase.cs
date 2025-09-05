@@ -20,10 +20,16 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void GrowToFit(BitsBase other)
 		{
-			if (Bits1.Length < other.Bits1.Length)
+			EnsureBits1Capacity(other.Bits1.Length);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsureBits1Capacity(int bits1Capacity)
+		{
+			if (Bits1.Length < bits1Capacity)
 			{
-				Bits1 = Bits1.Resize(other.Bits1.Length);
-				Bits0 = Bits0.Resize(other.Bits0.Length);
+				Bits1 = Bits1.Resize(bits1Capacity);
+				Bits0 = Bits0.Resize(bits1Capacity << 6);
 			}
 		}
 
@@ -74,7 +80,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected void AddInternal(int id)
+		protected void SetBitInternal(int id)
 		{
 			var id0 = id >> 6;
 			var id1 = id >> 12;
@@ -101,7 +107,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected void RemoveInternal(int id)
+		protected void RemoveBitInternal(int id)
 		{
 			var id0 = id >> 6;
 			var id1 = id >> 12;
@@ -127,7 +133,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected bool HasInternal(int id)
+		protected bool HasBitInternal(int id)
 		{
 			var id0 = id >> 6;
 

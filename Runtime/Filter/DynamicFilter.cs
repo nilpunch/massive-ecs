@@ -13,7 +13,7 @@ namespace Massive
 	{
 		public BitSets BitSets { get; }
 
-		public DynamicFilter(World world) : base(Array.Empty<BitSet>(), Array.Empty<BitSet>(), world.Masks)
+		public DynamicFilter(World world) : base(Array.Empty<BitSet>(), Array.Empty<BitSet>())
 		{
 			BitSets = world.BitSets;
 		}
@@ -36,9 +36,6 @@ namespace Massive
 
 			Included[IncludedCount] = set;
 			IncludedCount += 1;
-			var mask = Mask;
-			mask.Include(set.ComponentId);
-			Mask = mask;
 
 			return this;
 		}
@@ -61,9 +58,6 @@ namespace Massive
 
 			Excluded[ExcludedCount] = set;
 			ExcludedCount += 1;
-			var mask = Mask;
-			mask.Exclude(set.ComponentId);
-			Mask = mask;
 
 			return this;
 		}

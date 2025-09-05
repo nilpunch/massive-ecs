@@ -22,9 +22,10 @@ namespace Massive
 		/// <summary>
 		/// Resets data at the specified index.
 		/// </summary>
-		protected override void PrepareData(int id)
+		protected override void PrepareData(int page, int indexInPage)
 		{
-			Get(id) = DefaultValue;
+			var index = Pages[page].DataIndex + indexInPage;
+			Data[index >> PageSizePower][index & PageSizeMinusOne] = DefaultValue;
 		}
 	}
 }

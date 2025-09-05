@@ -10,18 +10,11 @@ namespace Massive
 
 		public readonly bool FullStability = false;
 
-		public readonly Packing PackingWhenIterating = Packing.WithHoles;
-
-		public readonly bool OptimizeExludeFilter = false;
-
-		public WorldConfig(int? pageSize = default, bool? storeEmptyTypesAsDataSets = default,
-			bool? fullStability = default, Packing? packingWhenIterating = default, bool? optimizeExludeFilters = default)
+		public WorldConfig(int? pageSize = default, bool? storeEmptyTypesAsDataSets = default, bool? fullStability = default)
 		{
 			PageSize = pageSize ?? PageSize;
 			StoreEmptyTypesAsDataSets = storeEmptyTypesAsDataSets ?? StoreEmptyTypesAsDataSets;
 			FullStability = fullStability ?? FullStability;
-			PackingWhenIterating = packingWhenIterating ?? PackingWhenIterating;
-			OptimizeExludeFilter = optimizeExludeFilters ?? OptimizeExludeFilter;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -29,8 +22,7 @@ namespace Massive
 		{
 			return PageSize == other.PageSize
 				&& StoreEmptyTypesAsDataSets == other.StoreEmptyTypesAsDataSets
-				&& FullStability == other.FullStability
-				&& PackingWhenIterating == other.PackingWhenIterating;
+				&& FullStability == other.FullStability;
 		}
 	}
 }
