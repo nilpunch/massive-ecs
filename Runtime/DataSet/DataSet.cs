@@ -155,7 +155,7 @@ namespace Massive
 		/// </summary>
 		public override void CopyData(int sourceId, int destinationId)
 		{
-			Data[destinationId] = Data[sourceId];
+			Get(destinationId) = Get(sourceId);
 		}
 
 		Array IDataSet.GetPage(int page)

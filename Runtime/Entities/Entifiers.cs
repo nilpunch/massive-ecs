@@ -154,7 +154,75 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			throw new NotImplementedException();
+			var bits1Length = Bits1.Length;
+
+			for (var current1 = 0; current1 < bits1Length; current1++)
+			{
+				var offset1 = current1 << 6;
+				var iterated1 = 0;
+
+				while (Bits1[current1] != 0UL && iterated1 < 64)
+				{
+					var bits1Result = Bits1[current1] >> iterated1;
+
+					var skip1 = MathUtils.TZC(bits1Result);
+					iterated1 += skip1;
+					bits1Result >>= skip1;
+
+					if (bits1Result == 0UL)
+					{
+						break;
+					}
+
+					var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits1Result);
+					var runEnd1 = iterated1 + runLength1;
+					for (; iterated1 < runEnd1; iterated1++)
+					{
+						if ((Bits1[current1] & (1UL << iterated1)) == 0)
+						{
+							continue;
+						}
+
+						var current0 = offset1 + iterated1;
+
+						var offset0 = current0 << 6;
+						var iterated0 = 0;
+
+						while (Bits0[current0] != 0UL && iterated0 < 64)
+						{
+							var bits0Result = Bits0[current0] >> iterated0;
+
+							var skip0 = MathUtils.TZC(bits0Result);
+							iterated0 += skip0;
+							bits0Result >>= skip0;
+
+							if (bits0Result == 0UL)
+							{
+								break;
+							}
+
+							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits0Result);
+							var runEnd0 = iterated0 + runLength0;
+							for (; iterated0 < runEnd0; iterated0++)
+							{
+								if ((Bits0[current0] & (1UL << iterated0)) == 0)
+								{
+									continue;
+								}
+
+								var id = offset0 + iterated0;
+								BeforeDestroyed?.Invoke(id);
+								RemoveBitInternal(id);
+								WorldContext?.EntityDestroyed(id);
+
+								EnsureReuseAt(ReusedIds);
+								Reuse[ReusedIds++] = id;
+								MathUtils.IncrementWrapTo1(ref Versions[id]);
+							}
+						}
+					}
+				}
+			}
 		}
 
 		/// <remarks>
