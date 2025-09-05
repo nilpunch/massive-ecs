@@ -78,8 +78,8 @@ namespace Massive
 
 			PrepareData(id0, mod);
 
-			AfterAdded?.Invoke(id);
 			Components?.Set(id, ComponentId);
+			AfterAdded?.Invoke(id);
 
 			return true;
 		}

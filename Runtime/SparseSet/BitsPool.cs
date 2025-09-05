@@ -23,15 +23,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Bits RentClone(BitsBase other)
 		{
-			Bits bits;
-			if (Count > 0)
-			{
-				bits = Pool[--Count];
-			}
-			else
-			{
-				bits = new Bits();
-			}
+			var bits = Count > 0 ? Pool[--Count] : new Bits();
 			other.CopyBitsTo(bits);
 			return bits;
 		}

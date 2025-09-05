@@ -39,24 +39,24 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set(int entityId, int componentId)
 		{
-			var index = componentId >> 6; // div 64.
-			var bit = componentId & 63; // mod 64.
+			var index = componentId >> 6;
+			var bit = componentId & 63;
 			BitMap[entityId * MaskLength + index] |= 1L << bit;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove(int entityId, int componentId)
 		{
-			var index = componentId >> 6; // div 64.
-			var bit = componentId & 63; // mod 64.
+			var index = componentId >> 6;
+			var bit = componentId & 63;
 			BitMap[entityId * MaskLength + index] &= ~(1L << bit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has(int entityId, int componentId)
 		{
-			var index = componentId >> 6; // div 64.
-			var bit = componentId & 63; // mod 64.
+			var index = componentId >> 6;
+			var bit = componentId & 63;
 			return (BitMap[entityId * MaskLength + index] & (1L << bit)) != 0;
 		}
 
@@ -67,10 +67,10 @@ namespace Massive
 			var maskIndex = entityId * MaskLength;
 			for (var i = 0; i < MaskLength; i++, maskIndex++)
 			{
-				var componentOffset = i << 6; // mul 64.
+				var componentOffset = i << 6;
 				var mask = BitMap[maskIndex];
 
-				// Algorithm adapted from StaticEcs
+				// Algorithm adapted from StaticEcs.
 				// Source: https://github.com/Felid-Force-Studios/StaticEcs/blob/be8bb1c668309294aeecef80313677da368d7703/Src/Utils/BitMask.cs#L432
 				while (mask != 0L)
 				{
@@ -90,12 +90,12 @@ namespace Massive
 			var maskIndex = entityId * MaskLength;
 			for (var i = 0; i < MaskLength; i++, maskIndex++)
 			{
-				var componentOffset = i << 6; // mul 64.
+				var componentOffset = i << 6;
 				var mask = BitMap[maskIndex];
 
 				while (mask != 0L)
 				{
-					var componentIndex = DeBruijn[((ulong)(mask & -mask) * 0x37E84A99DAE458F) >> 58]; // LSB(v).
+					var componentIndex = DeBruijn[((ulong)(mask & -mask) * 0x37E84A99DAE458F) >> 58];
 					buffer[componentCount++] = componentOffset + componentIndex;
 					mask &= mask - 1L;
 				}

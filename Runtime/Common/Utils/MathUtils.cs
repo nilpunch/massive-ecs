@@ -118,15 +118,24 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static byte TZC(long x)
-		{
-			return DeBruijn[((ulong)(x & -x) * 0x37E84A99DAE458F) >> 58];
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static byte TZC(ulong x)
 		{
 			return DeBruijn[((x & (~x + 1)) * 0x37E84A99DAE458F) >> 58];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int EstimateRuns(ulong x, int maxNeeded = 32)
+		{
+			var flips = x ^ (x >> 1);
+			var count = 1;
+
+			while (flips != 0 && count <= maxNeeded)
+			{
+				flips &= flips - 1;
+				count++;
+			}
+
+			return count;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

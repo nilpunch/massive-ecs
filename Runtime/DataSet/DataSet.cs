@@ -35,8 +35,6 @@ namespace Massive
 
 		public int PageSize { get; }
 
-		public Type ElementType { get; }
-
 		public int PageSizePower { get; }
 
 		public int PageSizeMinusOne { get; }
@@ -77,8 +75,8 @@ namespace Massive
 				Bits0 = Bits0.Resize(Bits1.Length << 6);
 			}
 
-			var offsetInPage = id & 63;
-			var bit0 = 1UL << offsetInPage;
+			var mod = id & 63;
+			var bit0 = 1UL << mod;
 			var bit1 = 1UL << (id0 & 63);
 
 			if (Bits0[id0] == 0UL)
@@ -93,10 +91,11 @@ namespace Massive
 				RemoveOnAdd[i].Remove(id);
 			}
 
-			var index = Pages[id0].DataIndex + offsetInPage;
+			var index = Pages[id0].DataIndex + mod;
 			Data[index >> PageSizePower][index & PageSizeMinusOne] = data;
-			NotifyAfterAdded(id);
+
 			Components?.Set(id, ComponentId);
+			NotifyAfterAdded(id);
 		}
 
 		protected override void AddPage(int page)
@@ -162,6 +161,8 @@ namespace Massive
 		{
 			return Data[page];
 		}
+
+		Type IDataSet.ElementType => typeof(T);
 
 		object IDataSet.GetRaw(int id) => Get(id);
 
