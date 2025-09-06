@@ -124,18 +124,11 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int EstimateRuns(ulong x, int maxNeeded = 32)
+		public static bool HasLessThen3Runs(ulong x)
 		{
 			var flips = x ^ (x >> 1);
-			var count = 1;
-
-			while (flips != 0 && count <= maxNeeded)
-			{
-				flips &= flips - 1;
-				count++;
-			}
-
-			return count;
+			flips &= flips - 1UL;
+			return flips == 0UL;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
