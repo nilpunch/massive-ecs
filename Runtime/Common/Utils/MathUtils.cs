@@ -109,27 +109,20 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static byte LSB(ulong x)
+		public static int LSB(ulong x)
 		{
 			return DeBruijn[((x & (~x + 1)) * 0x37E84A99DAE458F) >> 58];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static byte ApproximateMSB(ulong x)
+		public static int ApproximateMSB(ulong x)
 		{
-			if (x >= 0b_1_00000000_00000000_00000000_00000000_00000000_00000000UL)
-			{
-				return 64;
-			}
 			if (x >= 0b_1_00000000_00000000_00000000_00000000UL)
 			{
-				return 48;
+				return x >= 0b_1_00000000_00000000_00000000_00000000_00000000_00000000UL ? 64 : 48;
 			}
-			if (x >= 0b_1_00000000_00000000)
-			{
-				return 32;
-			}
-			return 16;
+
+			return x >= 0b_1_00000000_00000000UL ? 32 : 16;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

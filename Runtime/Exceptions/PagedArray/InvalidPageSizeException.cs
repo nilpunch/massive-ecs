@@ -18,5 +18,15 @@ namespace Massive
 				throw new InvalidPageSizeException($"Page size must be power of two! Type:{typeof(T).GetGenericName()}.");
 			}
 		}
+
+		[Conditional(Condition)]
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static void ThrowIfTooSmall<T>(int pageSize)
+		{
+			if (pageSize < 64)
+			{
+				throw new InvalidPageSizeException($"Page size must be at least 64! Type:{typeof(T).GetGenericName()}.");
+			}
+		}
 	}
 }

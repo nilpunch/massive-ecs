@@ -25,7 +25,7 @@ namespace Massive
 		protected override void PrepareData(int page, int indexInPage)
 		{
 			var index = Pages[page].DataIndex + indexInPage;
-			Data[index >> PageSizePower][index & PageSizeMinusOne] = DefaultValue;
+			PagedData[index >> PageSizePower][index & PageSizeMinusOne] = DefaultValue;
 		}
 	}
 }

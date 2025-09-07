@@ -57,8 +57,8 @@ namespace Massive
 			{
 				other.EnsurePage(page.Index);
 
-				var sourcePage = Data[page.Index];
-				var destinationPage = other.Data[page.Index];
+				var sourcePage = PagedData[page.Index];
+				var destinationPage = other.PagedData[page.Index];
 
 				for (var i = 0; i < page.Length; i++)
 				{

@@ -25,7 +25,7 @@ namespace Massive
 			public int NextFreePage;
 		}
 
-		public T[][] Data { get; private set; } = Array.Empty<T[]>();
+		public T[][] PagedData { get; private set; } = Array.Empty<T[]>();
 
 		public Page[] Pages { get; protected internal set; } = Array.Empty<Page>();
 
@@ -55,7 +55,7 @@ namespace Massive
 		public ref T Get(int id)
 		{
 			var index = Pages[id >> 6].DataIndex + (id & 63);
-			return ref Data[index >> PageSizePower][index & PageSizeMinusOne];
+			return ref PagedData[index >> PageSizePower][index & PageSizeMinusOne];
 		}
 
 		/// <summary>
@@ -86,13 +86,13 @@ namespace Massive
 			}
 			Bits0[id0] |= bit0;
 
+			var index = Pages[id0].DataIndex + mod;
+			PagedData[index >> PageSizePower][index & PageSizeMinusOne] = data;
+
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
 				RemoveOnAdd[i].Remove(id);
 			}
-
-			var index = Pages[id0].DataIndex + mod;
-			Data[index >> PageSizePower][index & PageSizeMinusOne] = data;
 
 			Components?.Set(id, ComponentId);
 			NotifyAfterAdded(id);
@@ -141,12 +141,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePage(int page)
 		{
-			if (page >= Data.Length)
+			if (page >= PagedData.Length)
 			{
-				Data = Data.Resize(page + 1);
+				PagedData = PagedData.Resize(page + 1);
 			}
 
-			Data[page] ??= new T[PageSize];
+			PagedData[page] ??= new T[PageSize];
 		}
 
 		/// <summary>
@@ -159,7 +159,7 @@ namespace Massive
 
 		Array IDataSet.GetPage(int page)
 		{
-			return Data[page];
+			return PagedData[page];
 		}
 
 		Type IDataSet.ElementType => typeof(T);
@@ -195,8 +195,8 @@ namespace Massive
 			{
 				other.EnsurePage(page.Index);
 
-				var sourcePage = Data[page.Index];
-				var destinationPage = other.Data[page.Index];
+				var sourcePage = PagedData[page.Index];
+				var destinationPage = other.PagedData[page.Index];
 
 				Array.Copy(sourcePage, destinationPage, page.Length);
 			}

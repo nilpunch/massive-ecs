@@ -71,12 +71,12 @@ namespace Massive
 			}
 			Bits0[id0] |= bit0;
 
+			PrepareData(id0, mod);
+
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
 				RemoveOnAdd[i].Remove(id);
 			}
-
-			PrepareData(id0, mod);
 
 			Components?.Set(id, ComponentId);
 			AfterAdded?.Invoke(id);
