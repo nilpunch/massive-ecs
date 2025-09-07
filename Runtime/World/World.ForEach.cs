@@ -22,40 +22,41 @@ namespace Massive
 
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				var bits1 = resultBits.Bits1[current1];
-				if (bits1 == 0UL)
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
 					continue;
 				}
 
-				var offset1 = current1 << 6;
-				var iterated1 = MathUtils.TZC(bits1);
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				if (MathUtils.HasLessThen3Runs(bits1))
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					bits1 >>= iterated1;
-					var runEnd1 = bits1 == ulong.MaxValue ? 64 : iterated1 + MathUtils.TZC(~bits1);
-					for (; iterated1 < runEnd1; iterated1++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0UL)
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						Bits0Loop(offset1, iterated1, ref action);
+						Bits0Loop(offset + index, ref action);
 					}
 					continue;
 				}
 
-				Bits0Loop(offset1, iterated1, ref action);
-				resultBits.Bits1[current1] &= bits1 - 1UL;
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
 
-				while (resultBits.Bits1[current1] != 0UL)
+				while (bits != 0UL)
 				{
-					bits1 = resultBits.Bits1[current1];
-					iterated1 = MathUtils.TZC(bits1);
-					Bits0Loop(offset1, iterated1, ref action);
-					resultBits.Bits1[current1] &= bits1 - 1UL;
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
 
@@ -65,43 +66,38 @@ namespace Massive
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			void Bits0Loop(int offset1, int iterated1, ref TAction action)
+			void Bits0Loop(int current0, ref TAction action)
 			{
-				var current0 = offset1 + iterated1;
-				var bits0 = resultBits.Bits0[current0];
-				if (bits0 == 0UL)
-				{
-					return;
-				}
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				var offset0 = current0 << 6;
-				var iterated0 = MathUtils.TZC(bits0);
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
 
-				if (MathUtils.HasLessThen3Runs(bits0))
+				if (setBitCount << 1 > runLength)
 				{
-					bits0 >>= iterated0;
-					var runEnd0 = bits0 == ulong.MaxValue ? 64 : iterated0 + MathUtils.TZC(~bits0);
-					for (; iterated0 < runEnd0; iterated0++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0UL)
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						action.Apply(offset0 + iterated0);
+						action.Apply(offset + index);
 					}
 					return;
 				}
 
-				action.Apply(offset0 + iterated0);
-				resultBits.Bits0[current0] &= bits0 - 1UL;
+				action.Apply(offset + index);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
 
-				while (resultBits.Bits0[current0] != 0UL)
+				while (bits != 0UL)
 				{
-					bits0 = resultBits.Bits0[current0];
-					iterated0 = MathUtils.TZC(bits0);
-					action.Apply(offset0 + iterated0);
-					resultBits.Bits0[current0] &= bits0 - 1UL;
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
 				}
 			}
 		}
@@ -121,40 +117,41 @@ namespace Massive
 
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				var bits1 = resultBits.Bits1[current1];
-				if (bits1 == 0UL)
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
 					continue;
 				}
 
-				var offset1 = current1 << 6;
-				var iterated1 = MathUtils.TZC(bits1);
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				if (MathUtils.HasLessThen3Runs(bits1))
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					bits1 >>= iterated1;
-					var runEnd1 = bits1 == ulong.MaxValue ? 64 : iterated1 + MathUtils.TZC(~bits1);
-					for (; iterated1 < runEnd1; iterated1++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0UL)
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						Bits0Loop(offset1, iterated1, ref action);
+						Bits0Loop(offset + index, ref action);
 					}
 					continue;
 				}
 
-				Bits0Loop(offset1, iterated1, ref action);
-				resultBits.Bits1[current1] &= bits1 - 1UL;
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
 
-				while (resultBits.Bits1[current1] != 0UL)
+				while (bits != 0UL)
 				{
-					bits1 = resultBits.Bits1[current1];
-					iterated1 = MathUtils.TZC(bits1);
-					Bits0Loop(offset1, iterated1, ref action);
-					resultBits.Bits1[current1] &= bits1 - 1UL;
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
 
@@ -164,49 +161,44 @@ namespace Massive
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			void Bits0Loop(int offset1, int iterated1, ref TAction action)
+			void Bits0Loop(int current0, ref TAction action)
 			{
-				var current0 = offset1 + iterated1;
-				var bits0 = resultBits.Bits0[current0];
-				if (bits0 == 0UL)
-				{
-					return;
-				}
-
 				var dataOffset = dataSet.Pages[current0].DataIndex & dataSet.PageSizeMinusOne;
 				var dataPage = dataSet.Data[dataSet.Pages[current0].DataIndex >> dataSet.PageSizePower];
 
-				var offset0 = current0 << 6;
-				var iterated0 = MathUtils.TZC(bits0);
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				if (MathUtils.HasLessThen3Runs(bits0))
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					bits0 >>= iterated0;
-					var runEnd0 = bits0 == ulong.MaxValue ? 64 : iterated0 + MathUtils.TZC(~bits0);
-					for (; iterated0 < runEnd0; iterated0++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0UL)
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						action.Apply(offset0 + iterated0,
-							ref dataPage[dataOffset + iterated0]);
+						action.Apply(offset + index,
+							ref dataPage[dataOffset + index]);
 					}
 					return;
 				}
 
-				action.Apply(offset0 + iterated0,
-					ref dataPage[dataOffset + iterated0]);
-				resultBits.Bits0[current0] &= bits0 - 1UL;
+				action.Apply(offset + index,
+					ref dataPage[dataOffset + index]);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
 
-				while (resultBits.Bits0[current0] != 0UL)
+				while (bits != 0UL)
 				{
-					bits0 = resultBits.Bits0[current0];
-					iterated0 = MathUtils.TZC(bits0);
-					action.Apply(offset0 + iterated0,
-						ref dataPage[dataOffset + iterated0]);
-					resultBits.Bits0[current0] &= bits0 - 1UL;
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index,
+						ref dataPage[dataOffset + index]);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
 				}
 			}
 		}
@@ -229,40 +221,41 @@ namespace Massive
 
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				var bits1 = resultBits.Bits1[current1];
-				if (bits1 == 0UL)
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
 					continue;
 				}
 
-				var offset1 = current1 << 6;
-				var iterated1 = MathUtils.TZC(bits1);
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				if (MathUtils.HasLessThen3Runs(bits1))
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					bits1 >>= iterated1;
-					var runEnd1 = bits1 == ulong.MaxValue ? 64 : iterated1 + MathUtils.TZC(~bits1);
-					for (; iterated1 < runEnd1; iterated1++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0UL)
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						Bits0Loop(offset1, iterated1, ref action);
+						Bits0Loop(offset + index, ref action);
 					}
 					continue;
 				}
 
-				Bits0Loop(offset1, iterated1, ref action);
-				resultBits.Bits1[current1] &= bits1 - 1UL;
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
 
-				while (resultBits.Bits1[current1] != 0UL)
+				while (bits != 0UL)
 				{
-					bits1 = resultBits.Bits1[current1];
-					iterated1 = MathUtils.TZC(bits1);
-					Bits0Loop(offset1, iterated1, ref action);
-					resultBits.Bits1[current1] &= bits1 - 1UL;
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
 
@@ -273,54 +266,49 @@ namespace Massive
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			void Bits0Loop(int offset1, int iterated1, ref TAction action)
+			void Bits0Loop(int current0, ref TAction action)
 			{
-				var current0 = offset1 + iterated1;
-				var bits0 = resultBits.Bits0[current0];
-				if (bits0 == 0UL)
-				{
-					return;
-				}
-
 				var dataOffset1 = dataSet1.Pages[current0].DataIndex & dataSet1.PageSizeMinusOne;
 				var dataOffset2 = dataSet2.Pages[current0].DataIndex & dataSet2.PageSizeMinusOne;
 				var dataPage1 = dataSet1.Data[dataSet1.Pages[current0].DataIndex >> dataSet1.PageSizePower];
 				var dataPage2 = dataSet2.Data[dataSet2.Pages[current0].DataIndex >> dataSet2.PageSizePower];
 
-				var offset0 = current0 << 6;
-				var iterated0 = MathUtils.TZC(bits0);
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				if (MathUtils.HasLessThen3Runs(bits0))
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					bits0 >>= iterated0;
-					var runEnd0 = bits0 == ulong.MaxValue ? 64 : iterated0 + MathUtils.TZC(~bits0);
-					for (; iterated0 < runEnd0; iterated0++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0UL)
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						action.Apply(offset0 + iterated0,
-							ref dataPage1[dataOffset1 + iterated0],
-							ref dataPage2[dataOffset2 + iterated0]);
+						action.Apply(offset + index,
+							ref dataPage1[dataOffset1 + index],
+							ref dataPage2[dataOffset2 + index]);
 					}
 					return;
 				}
 
-				action.Apply(offset0 + iterated0,
-					ref dataPage1[dataOffset1 + iterated0],
-					ref dataPage2[dataOffset2 + iterated0]);
-				resultBits.Bits0[current0] &= bits0 - 1UL;
+				action.Apply(offset + index,
+					ref dataPage1[dataOffset1 + index],
+					ref dataPage2[dataOffset2 + index]);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
 
-				while (resultBits.Bits0[current0] != 0UL)
+				while (bits != 0UL)
 				{
-					bits0 = resultBits.Bits0[current0];
-					iterated0 = MathUtils.TZC(bits0);
-					action.Apply(offset0 + iterated0,
-						ref dataPage1[dataOffset1 + iterated0],
-						ref dataPage2[dataOffset2 + iterated0]);
-					resultBits.Bits0[current0] &= bits0 - 1UL;
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index,
+						ref dataPage1[dataOffset1 + index],
+						ref dataPage2[dataOffset2 + index]);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
 				}
 			}
 		}
@@ -342,60 +330,54 @@ namespace Massive
 
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				var bits1 = resultBits.Bits1[current1];
-				if (bits1 == 0UL)
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
 					continue;
 				}
 
-				var offset1 = current1 << 6;
-				var iterated1 = MathUtils.TZC(bits1);
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				if (MathUtils.HasLessThen3Runs(bits1))
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					bits1 >>= iterated1;
-					var runEnd1 = bits1 == ulong.MaxValue ? 64 : iterated1 + MathUtils.TZC(~bits1);
-					for (; iterated1 < runEnd1; iterated1++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0UL)
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						Bits0Loop(offset1, iterated1, ref action);
+						Bits0Loop(offset + index, ref action);
 					}
 					continue;
 				}
 
-				Bits0Loop(offset1, iterated1, ref action);
-				resultBits.Bits1[current1] &= bits1 - 1UL;
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
 
-				while (resultBits.Bits1[current1] != 0UL)
+				while (bits != 0UL)
 				{
-					bits1 = resultBits.Bits1[current1];
-					iterated1 = MathUtils.TZC(bits1);
-					Bits0Loop(offset1, iterated1, ref action);
-					resultBits.Bits1[current1] &= bits1 - 1UL;
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
 
 			dataSet1.PopRemoveOnRemove();
 			dataSet2.PopRemoveOnRemove();
 			dataSet3.PopRemoveOnRemove();
-			
+
 			BitsPool.Return(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			void Bits0Loop(int offset1, int iterated1, ref TAction action)
+			void Bits0Loop(int current0, ref TAction action)
 			{
-				var current0 = offset1 + iterated1;
-				var bits0 = resultBits.Bits0[current0];
-				if (bits0 == 0UL)
-				{
-					return;
-				}
-
 				var dataOffset1 = dataSet1.Pages[current0].DataIndex & dataSet1.PageSizeMinusOne;
 				var dataOffset2 = dataSet2.Pages[current0].DataIndex & dataSet2.PageSizeMinusOne;
 				var dataOffset3 = dataSet3.Pages[current0].DataIndex & dataSet3.PageSizeMinusOne;
@@ -403,43 +385,45 @@ namespace Massive
 				var dataPage2 = dataSet2.Data[dataSet2.Pages[current0].DataIndex >> dataSet2.PageSizePower];
 				var dataPage3 = dataSet3.Data[dataSet3.Pages[current0].DataIndex >> dataSet3.PageSizePower];
 
-				var offset0 = current0 << 6;
-				var iterated0 = MathUtils.TZC(bits0);
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				if (MathUtils.HasLessThen3Runs(bits0))
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					bits0 >>= iterated0;
-					var runEnd0 = bits0 == ulong.MaxValue ? 64 : iterated0 + MathUtils.TZC(~bits0);
-					for (; iterated0 < runEnd0; iterated0++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0UL)
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						action.Apply(offset0 + iterated0,
-							ref dataPage1[dataOffset1 + iterated0],
-							ref dataPage2[dataOffset2 + iterated0],
-							ref dataPage3[dataOffset3 + iterated0]);
+						action.Apply(offset + index,
+							ref dataPage1[dataOffset1 + index],
+							ref dataPage2[dataOffset2 + index],
+							ref dataPage3[dataOffset3 + index]);
 					}
 					return;
 				}
 
-				action.Apply(offset0 + iterated0,
-					ref dataPage1[dataOffset1 + iterated0],
-					ref dataPage2[dataOffset2 + iterated0],
-					ref dataPage3[dataOffset3 + iterated0]);
-				resultBits.Bits0[current0] &= bits0 - 1UL;
+				action.Apply(offset + index,
+					ref dataPage1[dataOffset1 + index],
+					ref dataPage2[dataOffset2 + index],
+					ref dataPage3[dataOffset3 + index]);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
 
-				while (resultBits.Bits0[current0] != 0UL)
+				while (bits != 0UL)
 				{
-					bits0 = resultBits.Bits0[current0];
-					iterated0 = MathUtils.TZC(bits0);
-					action.Apply(offset0 + iterated0,
-						ref dataPage1[dataOffset1 + iterated0],
-						ref dataPage2[dataOffset2 + iterated0],
-						ref dataPage3[dataOffset3 + iterated0]);
-					resultBits.Bits0[current0] &= bits0 - 1UL;
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index,
+						ref dataPage1[dataOffset1 + index],
+						ref dataPage2[dataOffset2 + index],
+						ref dataPage3[dataOffset3 + index]);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
 				}
 			}
 		}
@@ -468,40 +452,41 @@ namespace Massive
 
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				var bits1 = resultBits.Bits1[current1];
-				if (bits1 == 0UL)
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
 					continue;
 				}
 
-				var offset1 = current1 << 6;
-				var iterated1 = MathUtils.TZC(bits1);
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				if (MathUtils.HasLessThen3Runs(bits1))
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					bits1 >>= iterated1;
-					var runEnd1 = bits1 == ulong.MaxValue ? 64 : iterated1 + MathUtils.TZC(~bits1);
-					for (; iterated1 < runEnd1; iterated1++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits1[current1] & (1UL << iterated1)) == 0UL)
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						Bits0Loop(offset1, iterated1, ref action);
+						Bits0Loop(offset + index, ref action);
 					}
 					continue;
 				}
 
-				Bits0Loop(offset1, iterated1, ref action);
-				resultBits.Bits1[current1] &= bits1 - 1UL;
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
 
-				while (resultBits.Bits1[current1] != 0UL)
+				while (bits != 0UL)
 				{
-					bits1 = resultBits.Bits1[current1];
-					iterated1 = MathUtils.TZC(bits1);
-					Bits0Loop(offset1, iterated1, ref action);
-					resultBits.Bits1[current1] &= bits1 - 1UL;
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
 
@@ -509,20 +494,13 @@ namespace Massive
 			dataSet2.PopRemoveOnRemove();
 			dataSet3.PopRemoveOnRemove();
 			dataSet4.PopRemoveOnRemove();
-			
+
 			BitsPool.Return(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			void Bits0Loop(int offset1, int iterated1, ref TAction action)
+			void Bits0Loop(int current0, ref TAction action)
 			{
-				var current0 = offset1 + iterated1;
-				var bits0 = resultBits.Bits0[current0];
-				if (bits0 == 0UL)
-				{
-					return;
-				}
-
 				var dataOffset1 = dataSet1.Pages[current0].DataIndex & dataSet1.PageSizeMinusOne;
 				var dataOffset2 = dataSet2.Pages[current0].DataIndex & dataSet2.PageSizeMinusOne;
 				var dataOffset3 = dataSet3.Pages[current0].DataIndex & dataSet3.PageSizeMinusOne;
@@ -532,46 +510,48 @@ namespace Massive
 				var dataPage3 = dataSet3.Data[dataSet3.Pages[current0].DataIndex >> dataSet3.PageSizePower];
 				var dataPage4 = dataSet4.Data[dataSet4.Pages[current0].DataIndex >> dataSet4.PageSizePower];
 
-				var offset0 = current0 << 6;
-				var iterated0 = MathUtils.TZC(bits0);
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
 
-				if (MathUtils.HasLessThen3Runs(bits0))
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					bits0 >>= iterated0;
-					var runEnd0 = bits0 == ulong.MaxValue ? 64 : iterated0 + MathUtils.TZC(~bits0);
-					for (; iterated0 < runEnd0; iterated0++)
+					for (; index < runEnd; index++)
 					{
-						if ((resultBits.Bits0[current0] & (1UL << iterated0)) == 0UL)
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
 						{
 							continue;
 						}
 
-						action.Apply(offset0 + iterated0,
-							ref dataPage1[dataOffset1 + iterated0],
-							ref dataPage2[dataOffset2 + iterated0],
-							ref dataPage3[dataOffset3 + iterated0],
-							ref dataPage4[dataOffset4 + iterated0]);
+						action.Apply(offset + index,
+							ref dataPage1[dataOffset1 + index],
+							ref dataPage2[dataOffset2 + index],
+							ref dataPage3[dataOffset3 + index],
+							ref dataPage4[dataOffset4 + index]);
 					}
 					return;
 				}
 
-				action.Apply(offset0 + iterated0,
-					ref dataPage1[dataOffset1 + iterated0],
-					ref dataPage2[dataOffset2 + iterated0],
-					ref dataPage3[dataOffset3 + iterated0],
-					ref dataPage4[dataOffset4 + iterated0]);
-				resultBits.Bits0[current0] &= bits0 - 1UL;
+				action.Apply(offset + index,
+					ref dataPage1[dataOffset1 + index],
+					ref dataPage2[dataOffset2 + index],
+					ref dataPage3[dataOffset3 + index],
+					ref dataPage4[dataOffset4 + index]);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
 
-				while (resultBits.Bits0[current0] != 0UL)
+				while (bits != 0UL)
 				{
-					bits0 = resultBits.Bits0[current0];
-					iterated0 = MathUtils.TZC(bits0);
-					action.Apply(offset0 + iterated0,
-						ref dataPage1[dataOffset1 + iterated0],
-						ref dataPage2[dataOffset2 + iterated0],
-						ref dataPage3[dataOffset3 + iterated0],
-						ref dataPage4[dataOffset4 + iterated0]);
-					resultBits.Bits0[current0] &= bits0 - 1UL;
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index,
+						ref dataPage1[dataOffset1 + index],
+						ref dataPage2[dataOffset2 + index],
+						ref dataPage3[dataOffset3 + index],
+						ref dataPage4[dataOffset4 + index]);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
 				}
 			}
 		}

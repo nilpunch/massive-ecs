@@ -103,7 +103,7 @@ namespace Massive
 						if (_iterated0 < 64 && _rentedBits.Bits0[_current0] != 0UL)
 						{
 							var bits0Result = _rentedBits.Bits0[_current0] >> _iterated0;
-							var skip0 = MathUtils.TZC(bits0Result);
+							var skip0 = MathUtils.LSB(bits0Result);
 							_iterated0 += skip0;
 							bits0Result >>= skip0;
 
@@ -112,7 +112,7 @@ namespace Massive
 								break;
 							}
 
-							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits0Result);
+							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.LSB(~bits0Result);
 							_runEnd0 = _iterated0 + runLength0;
 							continue;
 						}
@@ -141,7 +141,7 @@ namespace Massive
 						if (_iterated1 < 64 && _rentedBits.Bits1[_current1] != 0UL)
 						{
 							var bits1Result = _rentedBits.Bits1[_current1] >> _iterated1;
-							var skip1 = MathUtils.TZC(bits1Result);
+							var skip1 = MathUtils.LSB(bits1Result);
 							_iterated1 += skip1;
 							bits1Result >>= skip1;
 
@@ -150,7 +150,7 @@ namespace Massive
 								break;
 							}
 
-							var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits1Result);
+							var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.LSB(~bits1Result);
 							_runEnd1 = _iterated1 + runLength1;
 							continue;
 						}
@@ -186,7 +186,7 @@ namespace Massive
 					{
 						var bits1Result = _rentedBits.Bits1[_current1] >> _iterated1;
 
-						var skip1 = MathUtils.TZC(bits1Result);
+						var skip1 = MathUtils.LSB(bits1Result);
 						_iterated1 += skip1;
 						bits1Result >>= skip1;
 
@@ -195,7 +195,7 @@ namespace Massive
 							break;
 						}
 
-						var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits1Result);
+						var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.LSB(~bits1Result);
 						_runEnd1 = _iterated1 + runLength1;
 						for (; _iterated1 < _runEnd1; _iterated1++)
 						{
@@ -213,7 +213,7 @@ namespace Massive
 							{
 								var bits0Result = _rentedBits.Bits0[_current0] >> _iterated0;
 
-								var skip0 = MathUtils.TZC(bits0Result);
+								var skip0 = MathUtils.LSB(bits0Result);
 								_iterated0 += skip0;
 								bits0Result >>= skip0;
 
@@ -222,7 +222,7 @@ namespace Massive
 									break;
 								}
 
-								var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.TZC(~bits0Result);
+								var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.LSB(~bits0Result);
 								_runEnd0 = _iterated0 + runLength0;
 
 								_iterated1++;

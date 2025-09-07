@@ -100,35 +100,36 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int LeadingZeroesCount(int x)
+		public static int PopCount(ulong x)
 		{
-			x |= x >> 1;
-			x |= x >> 2;
-			x |= x >> 4;
-			x |= x >> 8;
-			x |= x >> 16;
-
-			x -= x >> 1 & 0x55555555;
-			x = (x >> 2 & 0x33333333) + (x & 0x33333333);
-			x = (x >> 4) + x & 0x0f0f0f0f;
-			x += x >> 8;
-			x += x >> 16;
-
-			return sizeof(int) * 8 - (x & 0x0000003f);
+			x -= (x >> 1) & 0x5555555555555555UL;
+			x = (x & 0x3333333333333333UL) + ((x >> 2) & 0x3333333333333333UL);
+			x = (x + (x >> 4)) & 0x0F0F0F0F0F0F0F0FUL;
+			return (int)((x * 0x0101010101010101UL) >> 56);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static byte TZC(ulong x)
+		public static byte LSB(ulong x)
 		{
 			return DeBruijn[((x & (~x + 1)) * 0x37E84A99DAE458F) >> 58];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasLessThen3Runs(ulong x)
+		public static byte ApproximateMSB(ulong x)
 		{
-			var flips = x ^ (x >> 1);
-			flips &= flips - 1UL;
-			return flips == 0UL;
+			if (x >= 0b_1_00000000_00000000_00000000_00000000_00000000_00000000UL)
+			{
+				return 64;
+			}
+			if (x >= 0b_1_00000000_00000000_00000000_00000000UL)
+			{
+				return 48;
+			}
+			if (x >= 0b_1_00000000_00000000)
+			{
+				return 32;
+			}
+			return 16;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
