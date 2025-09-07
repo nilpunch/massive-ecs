@@ -11,7 +11,7 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfIncompatible(IPagedArray a, IPagedArray b)
+		public static void ThrowIfIncompatible(IDataSet a, IDataSet b)
 		{
 			if (a.PageSize != b.PageSize)
 			{

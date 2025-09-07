@@ -6,6 +6,8 @@
 
 		void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction;
+
+		BitsEnumerator GetEnumerator();
 	}
 
 	public interface IViewT : IView

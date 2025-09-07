@@ -49,7 +49,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToCopyable(DataSet<T> other)
 		{
-			// IncompatiblePageSizeException.ThrowIfIncompatible(Data, other.Data);
+			IncompatiblePageSizeException.ThrowIfIncompatible(this, other);
 
 			CopyBitsTo(other);
 

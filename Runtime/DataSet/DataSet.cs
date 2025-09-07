@@ -17,8 +17,6 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class DataSet<T> : BitSet, IDataSet
 	{
-		public const int EndFreePage = Constants.InvalidId;
-
 		public struct Page
 		{
 			public int DataIndex;
@@ -31,7 +29,7 @@ namespace Massive
 
 		public int UsedPages { get; protected internal set; }
 
-		public int NextFreePage { get; protected internal set; } = EndFreePage;
+		public int NextFreePage { get; protected internal set; } = Constants.InvalidId;
 
 		public int PageSize { get; }
 
@@ -101,7 +99,7 @@ namespace Massive
 
 		protected override void AddPage(int page)
 		{
-			if (NextFreePage != EndFreePage)
+			if (NextFreePage != Constants.InvalidId)
 			{
 				var nextFreePage = NextFreePage;
 				NextFreePage = Pages[nextFreePage].NextFreePage;
@@ -128,7 +126,7 @@ namespace Massive
 
 		protected override void RemoveAllPages()
 		{
-			NextFreePage = EndFreePage;
+			NextFreePage = Constants.InvalidId;
 			UsedPages = 0;
 		}
 
@@ -187,7 +185,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(DataSet<T> other)
 		{
-			// IncompatiblePageSizeException.ThrowIfIncompatible(Data, other.Data);
+			IncompatiblePageSizeException.ThrowIfIncompatible(this, other);
 
 			CopyBitsTo(other);
 

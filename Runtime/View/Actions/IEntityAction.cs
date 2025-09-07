@@ -5,7 +5,7 @@ namespace Massive
 {
 	public interface IEntityAction
 	{
-		bool Apply(int id);
+		void Apply(int id);
 	}
 
 	public struct IdActionAdapter : IEntityAction
@@ -13,10 +13,9 @@ namespace Massive
 		public IdAction Action;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
+		public void Apply(int id)
 		{
 			Action.Invoke(id);
-			return true;
 		}
 	}
 
@@ -26,10 +25,9 @@ namespace Massive
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
+		public void Apply(int id)
 		{
 			Action.Invoke(id, Args);
-			return true;
 		}
 	}
 
@@ -40,10 +38,9 @@ namespace Massive
 		public World World;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
+		public void Apply(int id)
 		{
 			Action.Invoke(new Entity(id, Entifiers.Versions[id], World));
-			return true;
 		}
 	}
 
@@ -55,10 +52,9 @@ namespace Massive
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
+		public void Apply(int id)
 		{
 			Action.Invoke(new Entity(id, Entifiers.Versions[id], World), Args);
-			return true;
 		}
 	}
 
@@ -67,10 +63,9 @@ namespace Massive
 		public IList<int> Result;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
+		public void Apply(int id)
 		{
 			Result.Add(id);
-			return true;
 		}
 	}
 
@@ -80,22 +75,9 @@ namespace Massive
 		public Entifiers Entifiers;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
+		public void Apply(int id)
 		{
 			Result.Add(new Entifier(id, Entifiers.Versions[id]));
-			return true;
-		}
-	}
-
-	public struct ReturnFirst : IEntityAction
-	{
-		public int Result;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
-		{
-			Result = id;
-			return false;
 		}
 	}
 
@@ -104,10 +86,9 @@ namespace Massive
 		public Entifiers Entifiers;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
+		public void Apply(int id)
 		{
 			Entifiers.Destroy(id);
-			return true;
 		}
 	}
 
@@ -116,10 +97,9 @@ namespace Massive
 		public int Result;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id)
+		public void Apply(int id)
 		{
 			Result += 1;
-			return true;
 		}
 	}
 }
