@@ -42,6 +42,7 @@ namespace Massive
 		public DataSet(int pageSize = Constants.DefaultPageSize)
 		{
 			InvalidPageSizeException.ThrowIfNotPowerOf2<T>(pageSize);
+			InvalidPageSizeException.ThrowIfTooSmall<T>(pageSize);
 
 			PageSize = pageSize;
 			PageSizePower = MathUtils.FastLog2(pageSize);
@@ -100,24 +101,23 @@ namespace Massive
 
 		protected override void AddPage(int page)
 		{
-			if (page >= Pages.Length)
-			{
-				Pages = Pages.Resize(MathUtils.NextPowerOf2(page + 1));
-			}
-
 			if (NextFreePage != EndFreePage)
 			{
 				var nextFreePage = NextFreePage;
 				NextFreePage = Pages[nextFreePage].NextFreePage;
 				Pages[page].DataIndex = Pages[nextFreePage].DataIndex;
+				return;
 			}
-			else
+
+			if (page >= Pages.Length)
 			{
-				var nextPageDataIndex = UsedPages << 6;
-				EnsurePageAt(nextPageDataIndex);
-				UsedPages++;
-				Pages[page].DataIndex = nextPageDataIndex;
+				Pages = Pages.Resize(MathUtils.NextPowerOf2(page + 1));
 			}
+
+			var nextPageDataIndex = UsedPages << 6;
+			EnsurePageAt(nextPageDataIndex);
+			Pages[page].DataIndex = nextPageDataIndex;
+			UsedPages++;
 		}
 
 		protected override void RemovePage(int page)
