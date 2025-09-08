@@ -191,8 +191,8 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			void Bits0Loop(int current0, ref TAction action)
 			{
-				var dataOffset = dataSet.Pages[current0].DataIndex & dataSet.PageSizeMinusOne;
-				var dataPage = dataSet.PagedData[dataSet.Pages[current0].DataIndex >> dataSet.PageSizePower];
+				var dataOffset = dataSet.Blocks[current0].StartInPage;
+				var dataPage = dataSet.PagedData[dataSet.Blocks[current0].PageIndex];
 
 				var bits = resultBits.Bits0[current0];
 				var offset = current0 << 6;
@@ -303,10 +303,10 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			void Bits0Loop(int current0, ref TAction action)
 			{
-				var dataOffset1 = dataSet1.Pages[current0].DataIndex & dataSet1.PageSizeMinusOne;
-				var dataOffset2 = dataSet2.Pages[current0].DataIndex & dataSet2.PageSizeMinusOne;
-				var dataPage1 = dataSet1.PagedData[dataSet1.Pages[current0].DataIndex >> dataSet1.PageSizePower];
-				var dataPage2 = dataSet2.PagedData[dataSet2.Pages[current0].DataIndex >> dataSet2.PageSizePower];
+				var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
+				var dataOffset2 = dataSet2.Blocks[current0].StartInPage;
+				var dataPage1 = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
+				var dataPage2 = dataSet2.PagedData[dataSet2.Blocks[current0].PageIndex];
 
 				var bits = resultBits.Bits0[current0];
 				var offset = current0 << 6;
@@ -424,12 +424,12 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			void Bits0Loop(int current0, ref TAction action)
 			{
-				var dataOffset1 = dataSet1.Pages[current0].DataIndex & dataSet1.PageSizeMinusOne;
-				var dataOffset2 = dataSet2.Pages[current0].DataIndex & dataSet2.PageSizeMinusOne;
-				var dataOffset3 = dataSet3.Pages[current0].DataIndex & dataSet3.PageSizeMinusOne;
-				var dataPage1 = dataSet1.PagedData[dataSet1.Pages[current0].DataIndex >> dataSet1.PageSizePower];
-				var dataPage2 = dataSet2.PagedData[dataSet2.Pages[current0].DataIndex >> dataSet2.PageSizePower];
-				var dataPage3 = dataSet3.PagedData[dataSet3.Pages[current0].DataIndex >> dataSet3.PageSizePower];
+				var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
+				var dataOffset2 = dataSet2.Blocks[current0].StartInPage;
+				var dataOffset3 = dataSet3.Blocks[current0].StartInPage;
+				var dataPage1 = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
+				var dataPage2 = dataSet2.PagedData[dataSet2.Blocks[current0].PageIndex];
+				var dataPage3 = dataSet3.PagedData[dataSet3.Blocks[current0].PageIndex];
 
 				var bits = resultBits.Bits0[current0];
 				var offset = current0 << 6;
@@ -554,14 +554,14 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			void Bits0Loop(int current0, ref TAction action)
 			{
-				var dataOffset1 = dataSet1.Pages[current0].DataIndex & dataSet1.PageSizeMinusOne;
-				var dataOffset2 = dataSet2.Pages[current0].DataIndex & dataSet2.PageSizeMinusOne;
-				var dataOffset3 = dataSet3.Pages[current0].DataIndex & dataSet3.PageSizeMinusOne;
-				var dataOffset4 = dataSet4.Pages[current0].DataIndex & dataSet4.PageSizeMinusOne;
-				var dataPage1 = dataSet1.PagedData[dataSet1.Pages[current0].DataIndex >> dataSet1.PageSizePower];
-				var dataPage2 = dataSet2.PagedData[dataSet2.Pages[current0].DataIndex >> dataSet2.PageSizePower];
-				var dataPage3 = dataSet3.PagedData[dataSet3.Pages[current0].DataIndex >> dataSet3.PageSizePower];
-				var dataPage4 = dataSet4.PagedData[dataSet4.Pages[current0].DataIndex >> dataSet4.PageSizePower];
+				var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
+				var dataOffset2 = dataSet2.Blocks[current0].StartInPage;
+				var dataOffset3 = dataSet3.Blocks[current0].StartInPage;
+				var dataOffset4 = dataSet4.Blocks[current0].StartInPage;
+				var dataPage1 = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
+				var dataPage2 = dataSet2.PagedData[dataSet2.Blocks[current0].PageIndex];
+				var dataPage3 = dataSet3.PagedData[dataSet3.Blocks[current0].PageIndex];
+				var dataPage4 = dataSet4.PagedData[dataSet4.Blocks[current0].PageIndex];
 
 				var bits = resultBits.Bits0[current0];
 				var offset = current0 << 6;

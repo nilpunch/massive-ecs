@@ -17,19 +17,20 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class DataSet<T> : BitSet, IDataSet
 	{
-		public struct Page
+		public struct Block
 		{
-			public int DataIndex;
+			public int PageIndex;
+			public int StartInPage;
 			public int NextFreePage;
 		}
 
 		public T[][] PagedData { get; private set; } = Array.Empty<T[]>();
 
-		public Page[] Pages { get; protected internal set; } = Array.Empty<Page>();
+		public Block[] Blocks { get; protected internal set; } = Array.Empty<Block>();
 
-		public int UsedPages { get; protected internal set; }
+		public int UsedBlocks { get; protected internal set; }
 
-		public int NextFreePage { get; protected internal set; } = Constants.InvalidId;
+		public int NextFreeBlock { get; protected internal set; } = Constants.InvalidId;
 
 		public int PageSize { get; }
 
@@ -53,8 +54,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			var index = Pages[id >> 6].DataIndex + (id & 63);
-			return ref PagedData[index >> PageSizePower][index & PageSizeMinusOne];
+			var block = Blocks[id >> 6];
+			return ref PagedData[block.PageIndex][block.StartInPage + (id & 63)];
 		}
 
 		/// <summary>
@@ -74,19 +75,19 @@ namespace Massive
 				Bits0 = Bits0.Resize(Bits1.Length << 6);
 			}
 
-			var mod = id & 63;
-			var bit0 = 1UL << mod;
+			var mod64 = id & 63;
+			var bit0 = 1UL << mod64;
 			var bit1 = 1UL << (id0 & 63);
 
 			if (Bits0[id0] == 0UL)
 			{
 				Bits1[id1] |= bit1;
-				AddPage(id0);
+				AllocBlock(id0);
 			}
 			Bits0[id0] |= bit0;
 
-			var index = Pages[id0].DataIndex + mod;
-			PagedData[index >> PageSizePower][index & PageSizeMinusOne] = data;
+			var block = Blocks[id0];
+			PagedData[block.PageIndex][block.StartInPage + mod64] = data;
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
@@ -97,37 +98,40 @@ namespace Massive
 			NotifyAfterAdded(id);
 		}
 
-		protected override void AddPage(int page)
+		protected override void AllocBlock(int block)
 		{
-			if (NextFreePage != Constants.InvalidId)
+			if (NextFreeBlock != Constants.InvalidId)
 			{
-				var nextFreePage = NextFreePage;
-				NextFreePage = Pages[nextFreePage].NextFreePage;
-				Pages[page].DataIndex = Pages[nextFreePage].DataIndex;
+				var nextFreePage = NextFreeBlock;
+				NextFreeBlock = Blocks[nextFreePage].NextFreePage;
+				Blocks[block] = Blocks[nextFreePage];
 				return;
 			}
 
-			if (page >= Pages.Length)
+			if (block >= Blocks.Length)
 			{
-				Pages = Pages.Resize(MathUtils.NextPowerOf2(page + 1));
+				Blocks = Blocks.Resize(MathUtils.NextPowerOf2(block + 1));
 			}
 
-			var nextPageDataIndex = UsedPages << 6;
-			EnsurePageAt(nextPageDataIndex);
-			Pages[page].DataIndex = nextPageDataIndex;
-			UsedPages++;
+			var startIndex = UsedBlocks << 6;
+			var pageIndex = startIndex >> PageSizePower;
+			var startInPage = startIndex & PageSizeMinusOne;
+			EnsurePage(pageIndex);
+			Blocks[block].PageIndex = pageIndex;
+			Blocks[block].StartInPage = startInPage;
+			UsedBlocks++;
 		}
 
-		protected override void RemovePage(int page)
+		protected override void FreeBlock(int block)
 		{
-			Pages[page].NextFreePage = NextFreePage;
-			NextFreePage = page;
+			Blocks[block].NextFreePage = NextFreeBlock;
+			NextFreeBlock = block;
 		}
 
-		protected override void RemoveAllPages()
+		protected override void FreeAllBlocks()
 		{
-			NextFreePage = Constants.InvalidId;
-			UsedPages = 0;
+			NextFreeBlock = Constants.InvalidId;
+			UsedBlocks = 0;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -189,7 +193,7 @@ namespace Massive
 
 			CopyBitsTo(other);
 
-			foreach (var page in new PageSequence(PageSize, UsedPages << 6))
+			foreach (var page in new PageSequence(PageSize, UsedBlocks << 6))
 			{
 				other.EnsurePage(page.Index);
 
@@ -199,15 +203,15 @@ namespace Massive
 				Array.Copy(sourcePage, destinationPage, page.Length);
 			}
 
-			if (UsedPages > other.Pages.Length)
+			if (UsedBlocks > other.Blocks.Length)
 			{
-				other.Pages = other.Pages.ResizeToNextPowOf2(UsedPages);
+				other.Blocks = other.Blocks.ResizeToNextPowOf2(UsedBlocks);
 			}
 
-			Array.Copy(Pages, other.Pages, UsedPages);
+			Array.Copy(Blocks, other.Blocks, UsedBlocks);
 
-			other.UsedPages = UsedPages;
-			other.NextFreePage = NextFreePage;
+			other.UsedBlocks = UsedBlocks;
+			other.NextFreeBlock = NextFreeBlock;
 		}
 	}
 }

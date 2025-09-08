@@ -55,8 +55,8 @@ namespace Massive
 				Bits0 = Bits0.Resize(Bits1.Length << 6);
 			}
 
-			var mod = id & 63;
-			var bit0 = 1UL << mod;
+			var mod64 = id & 63;
+			var bit0 = 1UL << mod64;
 			var bit1 = 1UL << (id0 & 63);
 
 			if ((Bits0[id0] & bit0) != 0UL)
@@ -67,11 +67,11 @@ namespace Massive
 			if (Bits0[id0] == 0UL)
 			{
 				Bits1[id1] |= bit1;
-				AddPage(id0);
+				AllocBlock(id0);
 			}
 			Bits0[id0] |= bit0;
 
-			PrepareData(id0, mod);
+			PrepareData(id0, mod64);
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
@@ -121,7 +121,7 @@ namespace Massive
 			if (Bits0[id0] == 0UL)
 			{
 				Bits1[id1] &= ~bit1;
-				RemovePage(id0);
+				FreeBlock(id0);
 			}
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)
@@ -211,7 +211,7 @@ namespace Massive
 
 						if (needToRemovePage)
 						{
-							RemovePage(current0);
+							FreeBlock(current0);
 						}
 					}
 				}
@@ -228,7 +228,7 @@ namespace Massive
 		{
 			Array.Fill(Bits1, 0UL);
 			Array.Fill(Bits0, 0UL);
-			RemoveAllPages();
+			FreeAllBlocks();
 		}
 
 		/// <summary>
@@ -276,19 +276,19 @@ namespace Massive
 		{
 		}
 
-		protected virtual void AddPage(int page)
+		protected virtual void AllocBlock(int block)
 		{
 		}
 
-		protected virtual void RemovePage(int page)
+		protected virtual void FreeBlock(int block)
 		{
 		}
 
-		protected virtual void RemoveAllPages()
+		protected virtual void FreeAllBlocks()
 		{
 		}
 
-		protected virtual void PrepareData(int page, int indexInPage)
+		protected virtual void PrepareData(int blockIndex, int mod64)
 		{
 		}
 

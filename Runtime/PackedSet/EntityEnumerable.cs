@@ -70,7 +70,7 @@ namespace Massive
 				_current0 = _offset1 + MathUtils.LSB(_bits1);
 				_bits1 &= _bits1 - 1UL;
 				_offset0 = _current0 << 6;
-				_bits0 = _rentedBits.Bits0[_current0];
+				_bits0 = _bits1Length == 0 ? 0UL : _rentedBits.Bits0[_current0];
 
 				_current = default;
 			}

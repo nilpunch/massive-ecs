@@ -53,7 +53,7 @@ namespace Massive
 
 			CopyBitsTo(other);
 
-			foreach (var page in new PageSequence(PageSize, UsedPages << 6))
+			foreach (var page in new PageSequence(PageSize, UsedBlocks << 6))
 			{
 				other.EnsurePage(page.Index);
 
@@ -66,15 +66,15 @@ namespace Massive
 				}
 			}
 
-			if (UsedPages > other.Pages.Length)
+			if (UsedBlocks > other.Blocks.Length)
 			{
-				other.Pages = other.Pages.ResizeToNextPowOf2(UsedPages);
+				other.Blocks = other.Blocks.ResizeToNextPowOf2(UsedBlocks);
 			}
 
-			Array.Copy(Pages, other.Pages, UsedPages);
+			Array.Copy(Blocks, other.Blocks, UsedBlocks);
 
-			other.UsedPages = UsedPages;
-			other.NextFreePage = NextFreePage;
+			other.UsedBlocks = UsedBlocks;
+			other.NextFreeBlock = NextFreeBlock;
 		}
 	}
 }

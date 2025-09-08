@@ -117,12 +117,16 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int ApproximateMSB(ulong x)
 		{
-			if (x >= 0b_1_00000000_00000000_00000000_00000000UL)
+			const ulong MSB48 = 1UL << 48;
+			const ulong MSB32 = 1UL << 32;
+			const ulong MSB16 = 1UL << 16;
+
+			if (x >= MSB32)
 			{
-				return x >= 0b_1_00000000_00000000_00000000_00000000_00000000_00000000UL ? 64 : 48;
+				return x >= MSB48 ? 64 : 48;
 			}
 
-			return x >= 0b_1_00000000_00000000UL ? 32 : 16;
+			return x >= MSB16 ? 32 : 16;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -12,9 +12,9 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Entifiers : BitsBase
 	{
-		public int[] Reuse { get; protected set; } = Array.Empty<int>();
+		public int[] Pool { get; protected set; } = Array.Empty<int>();
 
-		public int ReusedIds { get; protected set; }
+		public int PooledIds { get; protected set; }
 
 		/// <summary>
 		/// The sparse array, containing entities versions.<br/>
@@ -49,7 +49,7 @@ namespace Massive
 		/// <summary>
 		/// The current amount of alive entities.<br/>
 		/// </summary>
-		public int Count => UsedIds - ReusedIds;
+		public int Count => UsedIds - PooledIds;
 
 		/// <summary>
 		/// Gets or sets the current state for serialization or rollback purposes.
@@ -57,11 +57,11 @@ namespace Massive
 		public State CurrentState
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new State(ReusedIds, UsedIds);
+			get => new State(PooledIds, UsedIds);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
-				ReusedIds = value.ReusedIds;
+				PooledIds = value.ReusedIds;
 				UsedIds = value.UsedIds;
 			}
 		}
@@ -72,14 +72,14 @@ namespace Massive
 			int id;
 			uint version;
 
-			if (ReusedIds != 0)
+			if (PooledIds != 0)
 			{
-				id = Reuse[--ReusedIds];
+				id = Pool[--PooledIds];
 				version = Versions[id];
 			}
 			else
 			{
-				EnsureCapacityAt(UsedIds);
+				EnsureEntityAt(UsedIds);
 				id = UsedIds++;
 				version = 1U;
 			}
@@ -114,8 +114,8 @@ namespace Massive
 			RemoveBitInternal(id);
 			WorldContext?.EntityDestroyed(id);
 
-			EnsureReuseAt(ReusedIds);
-			Reuse[ReusedIds++] = id;
+			EnsurePoolAt(PooledIds);
+			Pool[PooledIds++] = id;
 			MathUtils.IncrementWrapTo1(ref Versions[id]);
 
 			return true;
@@ -130,12 +130,12 @@ namespace Massive
 			NegativeArgumentException.ThrowIfNegative(amount);
 
 			var needToCreate = amount;
-			EnsureCapacityAt(needToCreate + UsedIds);
+			EnsureEntityAt(needToCreate + UsedIds);
 
-			while (ReusedIds != 0 && needToCreate > 0)
+			while (PooledIds != 0 && needToCreate > 0)
 			{
 				needToCreate -= 1;
-				var id = Reuse[--ReusedIds];
+				var id = Pool[--PooledIds];
 				SetBitInternal(id);
 				AfterCreated?.Invoke(id);
 			}
@@ -215,8 +215,8 @@ namespace Massive
 								RemoveBitInternal(id);
 								WorldContext?.EntityDestroyed(id);
 
-								EnsureReuseAt(ReusedIds);
-								Reuse[ReusedIds++] = id;
+								EnsurePoolAt(PooledIds);
+								Pool[PooledIds++] = id;
 								MathUtils.IncrementWrapTo1(ref Versions[id]);
 							}
 						}
@@ -254,37 +254,30 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Ensures the sparse and packed arrays has sufficient capacity for the specified index.
+		/// Ensures the version array has sufficient capacity for the specified index.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureCapacityAt(int index)
+		public void EnsureEntityAt(int index)
 		{
 			if (index >= VersionsCapacity)
 			{
-				var newCapacity = MathUtils.NextPowerOf2(index + 1);
-				ResizeVersions(newCapacity);
-				WorldContext?.Components.EnsureEntitiesCapacity(newCapacity);
+				Versions = Versions.ResizeToNextPowOf2(index + 1);
+				if (Versions.Length > VersionsCapacity)
+				{
+					Array.Fill(Versions, 1U, VersionsCapacity, Versions.Length - VersionsCapacity);
+				}
+				VersionsCapacity = Versions.Length;
+				WorldContext?.Components.EnsureEntitiesCapacity(VersionsCapacity);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureReuseAt(int index)
+		public void EnsurePoolAt(int index)
 		{
-			if (index >= Reuse.Length) 
+			if (index >= Pool.Length) 
 			{
-				Reuse = Reuse.ResizeToNextPowOf2(index + 1);
+				Pool = Pool.ResizeToNextPowOf2(index + 1);
 			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ResizeVersions(int capacity)
-		{
-			Versions = Versions.Resize(capacity);
-			if (capacity > VersionsCapacity)
-			{
-				Array.Fill(Versions, 1U, VersionsCapacity, capacity - VersionsCapacity);
-			}
-			VersionsCapacity = capacity;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -315,10 +308,10 @@ namespace Massive
 		{
 			CopyBitsTo(other);
 
-			other.EnsureCapacityAt(UsedIds - 1);
-			other.EnsureReuseAt(ReusedIds - 1);
+			other.EnsureEntityAt(UsedIds - 1);
+			other.EnsurePoolAt(PooledIds - 1);
 
-			Array.Copy(Reuse, other.Reuse, ReusedIds);
+			Array.Copy(Pool, other.Pool, PooledIds);
 			Array.Copy(Versions, other.Versions, UsedIds);
 
 			if (UsedIds < other.UsedIds)
