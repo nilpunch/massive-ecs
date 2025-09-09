@@ -21,7 +21,7 @@ namespace Massive
 		{
 			public int PageIndex;
 			public int StartInPage;
-			public int NextFreePage;
+			public int NextFreeBlock;
 		}
 
 		public T[][] PagedData { get; private set; } = Array.Empty<T[]>();
@@ -100,17 +100,17 @@ namespace Massive
 
 		protected override void AllocBlock(int block)
 		{
+			if (block >= Blocks.Length)
+			{
+				Blocks = Blocks.ResizeToNextPowOf2(block + 1);
+			}
+
 			if (NextFreeBlock != Constants.InvalidId)
 			{
 				var nextFreePage = NextFreeBlock;
-				NextFreeBlock = Blocks[nextFreePage].NextFreePage;
+				NextFreeBlock = Blocks[nextFreePage].NextFreeBlock;
 				Blocks[block] = Blocks[nextFreePage];
 				return;
-			}
-
-			if (block >= Blocks.Length)
-			{
-				Blocks = Blocks.Resize(MathUtils.NextPowerOf2(block + 1));
 			}
 
 			var startIndex = UsedBlocks << 6;
@@ -124,7 +124,7 @@ namespace Massive
 
 		protected override void FreeBlock(int block)
 		{
-			Blocks[block].NextFreePage = NextFreeBlock;
+			Blocks[block].NextFreeBlock = NextFreeBlock;
 			NextFreeBlock = block;
 		}
 
