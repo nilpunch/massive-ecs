@@ -75,7 +75,7 @@ namespace Massive.Tests
 				iterations += 1;
 			});
 
-			Assert.AreEqual(1000, iterations);
+			Assert.AreEqual(1, iterations);
 		}
 
 		[Test]
@@ -305,7 +305,6 @@ namespace Massive.Tests
 	[TestFixture]
 	public class WorldIntegrationTests
 	{
-		[Stable]
 		private struct StableData
 		{
 			public int Value;

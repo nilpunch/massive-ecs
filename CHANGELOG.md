@@ -1,5 +1,15 @@
 # Changelog
 
+## 20.0.0-alpha.4 - September 9, 2025
+
+Breaking storage changes.
+
+### Changed
+
+- Sparse sets are replaces with hierarchical bitsets.
+- Iteration reworked to use bit scans and boolean operations on the entities in each pool of interest.
+- TODO etc.
+
 ## 20.0.0-alpha.3 - August 8, 2025
 
 ### Changed

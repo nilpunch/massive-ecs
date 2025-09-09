@@ -4,7 +4,8 @@
 
 `Massive` is a fast and simple library for game programming and more.  
 Designed for use in games with deterministic prediction-rollback netcode.  
-Based on sparse sets. Inspired by [EnTT](https://github.com/skypjack/entt).
+Based on bitsets. Inspired by [EnTT](https://github.com/skypjack/entt).  
+Reinforced with insights from [Static ECS](https://github.com/Felid-Force-Studios/StaticEcs).
 
 Does not reference Unity Engine, so it could be used in a regular C# project.
 
@@ -34,7 +35,7 @@ Design considerations:
 - Supports components of any type.
 - Deterministic with lazy initialization.
 - No deferred command execution — all changes apply immediately.
-- Minimal storage for fast saving. No archetypes or bitsets.
+- Minimal storage for fast saving. No archetypes.
 - Fully managed — no unsafe code, no `Dispose()` methods.
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
 
@@ -43,9 +44,7 @@ Features:
 - `Clone()` and `CopyTo(other)` methods for creating snapshots.  
   Ideal for implementing replays, undo/redo, or rollbacks.
 - Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for fast iteration over entities and components.
-- Fully stable storage (no reference invalidation) on demand:
-  - Use the `Stable` attribute for components.
-  - Or enable full stability for the entire world.
+- Fully stable storage, no reference invalidation.
 - `Allocator` lets you use collections inside components and easily integrate external tools in rollback pipeline.
 
 ### Rollbacks ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks))
@@ -110,11 +109,6 @@ world.ForEach((Entity entity, ref Position position, ref Velocity velocity) =>
 		// Create and destroy any amount of entities during iteration.
 		entity.Destroy();
 	}
-    
-	// NOTE:
-	// After destroying any entities, cached refs to components
-	// may become invalid for the current iteration cycle.
-	// If this behavior does not suit you, use Stable attribute on component.
 });
 
 // Pass arguments to avoid boxing.

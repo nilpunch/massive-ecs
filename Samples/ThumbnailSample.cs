@@ -44,11 +44,6 @@
 					// Create and destroy any amount of entities during iteration.
 					entity.Destroy();
 				}
-
-				// NOTE:
-				// After destroying any entities, cached refs to components
-				// may become invalid for the current iteration cycle.
-				// If this behavior does not suit you, use Stable attribute on component.
 			});
 
 			// Pass arguments to avoid boxing.
