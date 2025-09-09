@@ -45,7 +45,7 @@ namespace Massive.PerformanceTests
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static World PrepareTestRegistry(WorldFilling worldFilling, bool fullStability)
 		{
-			var config = new WorldConfig(fullStability: fullStability);
+			var config = new WorldConfig();
 			return worldFilling switch
 			{
 				WorldFilling.SingleComponent => new World(config).FillWorldWithSingleComponent(),

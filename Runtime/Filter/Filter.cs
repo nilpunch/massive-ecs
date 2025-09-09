@@ -18,7 +18,7 @@ namespace Massive
 		public BitSet[] Included { get; protected set; }
 		public BitSet[] Excluded { get; protected set; }
 
-		public Filter(Components components)
+		public Filter()
 			: this(Array.Empty<BitSet>(), Array.Empty<BitSet>())
 		{
 		}

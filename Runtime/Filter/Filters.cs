@@ -15,7 +15,6 @@ namespace Massive
 	public class Filters
 	{
 		private BitSets BitSets { get; }
-		private Components Components { get; }
 		private SetComparer Comparer { get; }
 
 		private Dictionary<int, Filter> CombinationLookup { get; } = new Dictionary<int, Filter>();
@@ -24,12 +23,11 @@ namespace Massive
 
 		public Filter Empty { get; }
 
-		public Filters(BitSets bitSets, Components components)
+		public Filters(BitSets bitSets)
 		{
 			BitSets = bitSets;
-			Components = components;
 			Comparer = new SetComparer(BitSets);
-			Empty = new Filter(components);
+			Empty = new Filter();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

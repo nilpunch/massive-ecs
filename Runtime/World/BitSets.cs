@@ -21,7 +21,7 @@ namespace Massive
 
 		private FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
 
-		public SparseSetList AllSets { get; } = new SparseSetList();
+		public BitSetList AllSets { get; } = new BitSetList();
 
 		public BitSet[] Lookup { get; private set; } = Array.Empty<BitSet>();
 
@@ -29,13 +29,12 @@ namespace Massive
 
 		public SetFactory SetFactory { get; }
 
-		public Entifiers Entifiers { get; set; }
+		public Components Components { get; }
 
-		public Components Components { get; set; }
-
-		public BitSets(SetFactory setFactory)
+		public BitSets(SetFactory setFactory, Components components)
 		{
 			SetFactory = setFactory;
+			Components = components;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

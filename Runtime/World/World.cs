@@ -28,13 +28,11 @@ namespace Massive
 		{
 			Components = new Components();
 			Entifiers = new Entifiers();
-			BitSets = new BitSets(new SetFactory(worldConfig));
-			Filters = new Filters(BitSets, Components);
+			BitSets = new BitSets(new SetFactory(worldConfig), Components);
+			Filters = new Filters(BitSets);
 			Allocators = new Allocators();
 			Config = worldConfig;
 
-			BitSets.Entifiers = Entifiers;
-			BitSets.Components = Components;
 			Entifiers.WorldContext = new WorldContext(BitSets, Allocators, Components);
 		}
 	}

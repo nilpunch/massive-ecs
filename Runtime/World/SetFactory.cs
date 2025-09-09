@@ -7,28 +7,24 @@ namespace Massive
 	{
 		private readonly bool _storeEmptyTypesAsDataSets;
 		private readonly int _pageSize;
-		private readonly bool _fullStability;
 
 		public SetFactory(WorldConfig worldConfig)
 			: this(worldConfig.StoreEmptyTypesAsDataSets,
-				worldConfig.PageSize, worldConfig.FullStability)
+				worldConfig.PageSize)
 		{
 		}
 
-		public SetFactory(bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize,
-			bool fullStability = false)
+		public SetFactory(bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
 		{
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 			_pageSize = pageSize;
-			_fullStability = fullStability;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool CompatibleWith(SetFactory other)
 		{
 			return _storeEmptyTypesAsDataSets == other._storeEmptyTypesAsDataSets
-				&& _pageSize == other._pageSize
-				&& _fullStability == other._fullStability;
+				&& _pageSize == other._pageSize;
 		}
 
 		public Output CreateAppropriateSet<T>()

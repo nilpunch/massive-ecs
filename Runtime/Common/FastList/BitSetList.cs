@@ -7,7 +7,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class SparseSetList
+	public class BitSetList
 	{
 		private BitSet[] _items = Array.Empty<BitSet>();
 
