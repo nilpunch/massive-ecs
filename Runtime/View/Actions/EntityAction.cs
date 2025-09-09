@@ -39,7 +39,7 @@
 	public delegate void EntityActionRefArgs<T1, T2, T3, TArgs>(Entity entity, ref T1 a, ref T2 b, ref T3 c, TArgs args);
 
 	public delegate void EntityActionRefArgs<T1, T2, T3, T4, TArgs>(Entity entity, ref T1 a, ref T2 b, ref T3 c, ref T4 d, TArgs args);
-	
+
 	public delegate void ActionRef<T>(ref T a);
 
 	public delegate void ActionRef<T1, T2>(ref T1 a, ref T2 b);

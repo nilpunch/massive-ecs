@@ -19,7 +19,7 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfHasConflicts(SparseSet[] included, SparseSet[] excluded)
+		public static void ThrowIfHasConflicts(BitSet[] included, BitSet[] excluded)
 		{
 			for (var i = 0; i < included.Length; i++)
 			{
@@ -30,19 +30,12 @@ namespace Massive
 						throw new ConflictingFilterException("Filter has conflicting included and excluded components.");
 					}
 				}
-				for (var j = 0; j < included.Length; j++)
-				{
-					if (included[i] == included[j].Negative)
-					{
-						throw new ConflictingFilterException("Filter has conflicting including components.");
-					}
-				}
 			}
 		}
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfHasDuplicates(SparseSet[] sets, FilterType filterType)
+		public static void ThrowIfHasDuplicates(BitSet[] sets, FilterType filterType)
 		{
 			for (var i = 0; i < sets.Length; i++)
 			{
@@ -67,9 +60,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfCantInclude<T>(Filter filter, SparseSet sparseSet)
+		public static void ThrowIfCantInclude<T>(Filter filter, BitSet bitSet)
 		{
-			if (filter.Excluded.Contains(sparseSet))
+			if (filter.Excluded.Contains(bitSet))
 			{
 				throw new ConflictingFilterException($"You are trying include a set of type:{typeof(T).GetGenericName()} while filter want to exclude it.");
 			}
@@ -77,9 +70,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfConflictWithIncluded(Filter filter, SparseSet sparseSet)
+		public static void ThrowIfConflictWithIncluded(Filter filter, BitSet bitSet)
 		{
-			if (filter.Excluded.Contains(sparseSet))
+			if (filter.Excluded.Contains(bitSet))
 			{
 				throw new ConflictingFilterException("Conflict with excluded sets.");
 			}
@@ -87,9 +80,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfConflictWithExcluded(Filter filter, SparseSet sparseSet)
+		public static void ThrowIfConflictWithExcluded(Filter filter, BitSet bitSet)
 		{
-			if (filter.Included.Contains(sparseSet))
+			if (filter.Included.Contains(bitSet))
 			{
 				throw new ConflictingFilterException("Conflict with included sets.");
 			}

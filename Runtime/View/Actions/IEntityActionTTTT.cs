@@ -4,7 +4,7 @@ namespace Massive
 {
 	public interface IEntityAction<T1, T2, T3, T4>
 	{
-		bool Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d);
+		void Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d);
 	}
 
 	public struct IdActionRefAdapter<T1, T2, T3, T4> : IEntityAction<T1, T2, T3, T4>
@@ -12,10 +12,9 @@ namespace Massive
 		public IdActionRef<T1, T2, T3, T4> Action;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
+		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
 		{
 			Action.Invoke(id, ref a, ref b, ref c, ref d);
-			return true;
 		}
 	}
 
@@ -25,10 +24,9 @@ namespace Massive
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
+		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
 		{
 			Action.Invoke(id, ref a, ref b, ref c, ref d, Args);
-			return true;
 		}
 	}
 
@@ -39,10 +37,9 @@ namespace Massive
 		public World World;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
+		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
 		{
 			Action.Invoke(new Entity(id, Entifiers.Versions[id], World), ref a, ref b, ref c, ref d);
-			return true;
 		}
 	}
 
@@ -54,10 +51,9 @@ namespace Massive
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
+		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
 		{
 			Action.Invoke(new Entity(id, Entifiers.Versions[id], World), ref a, ref b, ref c, ref d, Args);
-			return true;
 		}
 	}
 
@@ -66,10 +62,9 @@ namespace Massive
 		public ActionRef<T1, T2, T3, T4> Action;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
+		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
 		{
 			Action.Invoke(ref a, ref b, ref c, ref d);
-			return true;
 		}
 	}
 
@@ -79,10 +74,9 @@ namespace Massive
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
+		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d)
 		{
 			Action.Invoke(ref a, ref b, ref c, ref d, Args);
-			return true;
 		}
 	}
 }

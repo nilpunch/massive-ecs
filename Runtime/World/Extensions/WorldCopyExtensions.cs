@@ -35,13 +35,9 @@ namespace Massive
 		{
 			IncompatibleConfigsException.ThrowIfIncompatible(world, other);
 
-			// Entities.
 			world.Entifiers.CopyTo(other.Entifiers);
-
-			// Sets.
-			world.Sets.CopyTo(other.Sets);
-
-			// Allocators.
+			world.Components.CopyTo(other.Components);
+			world.BitSets.CopyTo(other.BitSets);
 			world.Allocators.CopyTo(other.Allocators);
 		}
 	}

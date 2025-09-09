@@ -12,7 +12,8 @@ namespace Massive
 	{
 		public Entifiers Entifiers { get; }
 
-		public Sets Sets { get; }
+		public BitSets BitSets { get; }
+		public Components Components { get; }
 		public Filters Filters { get; }
 		public Allocators Allocators { get; }
 
@@ -25,13 +26,14 @@ namespace Massive
 
 		public World(WorldConfig worldConfig)
 		{
+			Components = new Components();
 			Entifiers = new Entifiers();
-			Sets = new Sets(new SetFactory(worldConfig), Entifiers);
-			Filters = new Filters(Sets, worldConfig.OptimizeExludeFilter);
+			BitSets = new BitSets(new SetFactory(worldConfig), Components);
+			Filters = new Filters(BitSets);
 			Allocators = new Allocators();
 			Config = worldConfig;
 
-			Entifiers.WorldContext = new WorldContext(Sets.AllSets, Sets.NegativeSets, Allocators);
+			Entifiers.WorldContext = new WorldContext(BitSets, Allocators, Components);
 		}
 	}
 }

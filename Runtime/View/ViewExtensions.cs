@@ -244,20 +244,24 @@ namespace Massive
 		public static int First<TView>(this TView view)
 			where TView : IView
 		{
-			var returnFirst = new ReturnFirst() { Result = Constants.InvalidId };
-			view.ForEach(ref returnFirst);
-			return returnFirst.Result;
+			foreach (var id in view)
+			{
+				return id;
+			}
+
+			return Constants.InvalidId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity FirstEntity<TView>(this TView view)
 			where TView : IView
 		{
-			var returnFirstEntity = new ReturnFirst { Result = Constants.InvalidId };
-			view.ForEach(ref returnFirstEntity);
-			return returnFirstEntity.Result == Constants.InvalidId
-				? new Entity(Entifier.Dead, view.World)
-				: view.World.GetEntity(returnFirstEntity.Result);
+			foreach (var id in view)
+			{
+				return view.World.GetEntity(id);
+			}
+
+			return new Entity(Entifier.Dead, view.World);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

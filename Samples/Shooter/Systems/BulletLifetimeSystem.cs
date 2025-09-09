@@ -4,7 +4,7 @@
 	{
 		public static void Update(World world, float deltaTime)
 		{
-			world.View().Exclude<Dead>().ForEach((world, deltaTime),
+			world.Exclude<Dead>().ForEach((world, deltaTime),
 				static (int bulletId, ref Bullet bullet, (World World, float DeltaTime) args) =>
 				{
 					var (world, deltaTime) = args;

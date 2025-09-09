@@ -3,7 +3,7 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="Massive.SparseSet"/>.
+	/// Data extension for <see cref="BitSet"/>.
 	/// Resets data to default value for added elements.
 	/// Used for unmanaged components.
 	/// </summary>
@@ -13,27 +13,19 @@ namespace Massive
 	{
 		public T DefaultValue { get; }
 
-		public UnmanagedDataSet(int pageSize = Constants.DefaultPageSize, Packing packing = Packing.Continuous, T defaultValue = default)
-			: base(pageSize, packing)
+		public UnmanagedDataSet(int pageSize = Constants.DefaultPageSize, T defaultValue = default)
+			: base(pageSize)
 		{
 			DefaultValue = defaultValue;
 		}
 
 		/// <summary>
-		/// Ensures data exists at the specified index, and resets it.
-		/// </summary>
-		protected override void EnsureAndPrepareDataAt(int index)
-		{
-			Data.EnsurePageAt(index);
-			Data[index] = DefaultValue;
-		}
-
-		/// <summary>
 		/// Resets data at the specified index.
 		/// </summary>
-		protected override void PrepareDataAt(int index)
+		protected override void PrepareData(int blockIndex, int mod64)
 		{
-			Data[index] = DefaultValue;
+			var block = Blocks[blockIndex];
+			PagedData[block.PageIndex][block.StartInPage + mod64] = DefaultValue;
 		}
 	}
 }

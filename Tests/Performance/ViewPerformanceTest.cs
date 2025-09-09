@@ -22,7 +22,7 @@ namespace Massive.PerformanceTests
 		public void View_Fill()
 		{
 			var result = new List<int>();
-			Measure.Method(() => _world.View().Fill(result))
+			Measure.Method(() => _world.Fill(result))
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -33,7 +33,7 @@ namespace Massive.PerformanceTests
 		public void View_FillEntities()
 		{
 			var result = new List<Entifier>();
-			Measure.Method(() => _world.View().Fill(result))
+			Measure.Method(() => _world.Fill(result))
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -45,7 +45,7 @@ namespace Massive.PerformanceTests
 		{
 			Measure.Method(() =>
 				{
-					foreach (var entityId in _world.View())
+					foreach (var entityId in _world)
 					{
 					}
 				})
@@ -57,7 +57,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void View_ForEach()
 		{
-			Measure.Method(() => _world.View().ForEach((int _) => { }))
+			Measure.Method(() => _world.ForEach((int _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -66,7 +66,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void ViewT_ForEach()
 		{
-			Measure.Method(() => _world.View().ForEach((int _, ref TestState64 _) => { }))
+			Measure.Method(() => _world.ForEach((int _, ref TestState64 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -75,7 +75,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void ViewTT_ForEach()
 		{
-			Measure.Method(() => _world.View().ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
+			Measure.Method(() => _world.ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -84,7 +84,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void ViewTTT_ForEach()
 		{
-			Measure.Method(() => _world.View().ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
+			Measure.Method(() => _world.ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -93,7 +93,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void ViewT_ForEachExtra()
 		{
-			Measure.Method(() => _world.View().ForEach(0.016f, (int _, ref TestState64 _, float dt) => { }))
+			Measure.Method(() => _world.ForEach(0.016f, (int _, ref TestState64 _, float dt) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -102,7 +102,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void ViewTT_ForEachExtra()
 		{
-			Measure.Method(() => _world.View().ForEach(0.016f, (int _, ref TestState64 _, ref TestState64_2 _, float dt) => { }))
+			Measure.Method(() => _world.ForEach(0.016f, (int _, ref TestState64 _, ref TestState64_2 _, float dt) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -111,7 +111,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void ViewTTT_ForEachExtra()
 		{
-			Measure.Method(() => _world.View().ForEach(0.016f, (int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _, float dt) => { }))
+			Measure.Method(() => _world.ForEach(0.016f, (int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _, float dt) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

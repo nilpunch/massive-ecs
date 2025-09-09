@@ -11,9 +11,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfNotPacked(SparseSet set, int index)
+		public static void ThrowIfNotPacked(BitSet set, int index)
 		{
-			if (!set.HasPacked(index))
+			// if (!set.HasPacked(index))
 			{
 				throw new InvalidPackedIndexException($"The packed index:{index} is not present in set.");
 			}

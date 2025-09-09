@@ -13,6 +13,25 @@ namespace Massive
 			return array;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static T[] ResizeToNextPowOf2<T>(this T[] array, int capacity)
+		{
+			Array.Resize(ref array, MathUtils.NextPowerOf2(capacity));
+			return array;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static T[] ResizeAndFill<T>(this T[] array, int capacity, T growFill)
+		{
+			var lastCapacity = array.Length;
+			Array.Resize(ref array, capacity);
+			if (capacity > lastCapacity)
+			{
+				Array.Fill(array, growFill, lastCapacity, capacity - lastCapacity);
+			}
+			return array;
+		}
+
 		public static bool Contains<T>(this T[] array, T value)
 		{
 			var equalityComparer = EqualityComparer<T>.Default;

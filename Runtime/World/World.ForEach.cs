@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public partial class World : IView, IViewT, IViewTT, IViewTTT, IViewTTTT
+	public partial class World : IViewT, IViewTT, IViewTTT, IViewTTTT
 	{
 		World IView.World => this;
 
@@ -14,27 +14,88 @@ namespace Massive
 		{
 			var entifiers = Entifiers;
 
-			var originalPacking = entifiers.ExchangeToStricterPacking(Config.PackingWhenIterating);
+			var resultBits = BitsPool.RentClone(entifiers).RemoveOnRemove(entifiers);
 
-			for (var i = entifiers.Count - 1; i >= 0; i--)
+			var bits1Length = entifiers.Bits1.Length;
+
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				if (i > entifiers.Count)
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
-					i = entifiers.Count;
 					continue;
 				}
 
-				var id = entifiers.Packed[i];
-				if (id >= 0)
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					if (!action.Apply(id))
+					for (; index < runEnd; index++)
 					{
-						break;
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
+						{
+							continue;
+						}
+
+						Bits0Loop(offset + index, ref action);
 					}
+					continue;
+				}
+
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
+
+				while (bits != 0UL)
+				{
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
 
-			entifiers.ExchangePacking(originalPacking);
+			BitsPool.ReturnAndPop(resultBits);
+			return;
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			void Bits0Loop(int current0, ref TAction action)
+			{
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
+				{
+					for (; index < runEnd; index++)
+					{
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
+						{
+							continue;
+						}
+
+						action.Apply(offset + index);
+					}
+					return;
+				}
+
+				action.Apply(offset + index);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
+
+				while (bits != 0UL)
+				{
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
+				}
+			}
 		}
 
 		public void ForEach<TAction, T>(ref TAction action)
@@ -44,34 +105,94 @@ namespace Massive
 
 			var dataSet = this.DataSet<T>();
 
-			var data = dataSet.Data;
+			var resultBits = BitsPool.RentClone(dataSet).RemoveOnRemove(dataSet);
 
-			var originalPacking = dataSet.Packing;
-			dataSet.ExchangeToStricterPacking(Config.PackingWhenIterating);
+			var bits1Length = dataSet.Bits1.Length;
 
-			foreach (var page in new PageSequence(data.PageSize, dataSet.Count))
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				var dataPage = data.Pages[page.Index];
-				for (var index = page.Length - 1; index >= 0; index--)
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
-					if (page.Offset + index > dataSet.Count)
-					{
-						index = dataSet.Count - page.Offset;
-						continue;
-					}
+					continue;
+				}
 
-					var id = dataSet.Packed[page.Offset + index];
-					if (id >= 0)
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
+				{
+					for (; index < runEnd; index++)
 					{
-						if (!action.Apply(id, ref dataPage[index]))
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
 						{
-							break;
+							continue;
 						}
+
+						Bits0Loop(offset + index, ref action);
 					}
+					continue;
+				}
+
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
+
+				while (bits != 0UL)
+				{
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
 
-			dataSet.ExchangePacking(originalPacking);
+			BitsPool.ReturnAndPop(resultBits);
+			return;
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			void Bits0Loop(int current0, ref TAction action)
+			{
+				var dataOffset = dataSet.Blocks[current0].StartInPage;
+				var dataPage = dataSet.PagedData[dataSet.Blocks[current0].PageIndex];
+
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
+				{
+					for (; index < runEnd; index++)
+					{
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
+						{
+							continue;
+						}
+
+						action.Apply(offset + index,
+							ref dataPage[dataOffset + index]);
+					}
+					return;
+				}
+
+				action.Apply(offset + index,
+					ref dataPage[dataOffset + index]);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
+
+				while (bits != 0UL)
+				{
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index,
+						ref dataPage[dataOffset + index]);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
+				}
+			}
 		}
 
 		public void ForEach<TAction, T1, T2>(ref TAction action)
@@ -83,65 +204,102 @@ namespace Massive
 			var dataSet1 = this.DataSet<T1>();
 			var dataSet2 = this.DataSet<T2>();
 
-			var data1 = dataSet1.Data;
-			var data2 = dataSet2.Data;
+			var resultBits = BitsPool.RentClone(dataSet1)
+				.AndBits(dataSet2)
+				.RemoveOnRemove(dataSet1)
+				.RemoveOnRemove(dataSet2);
 
-			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2);
-			var originalPacking = minSet.ExchangeToStricterPacking(Config.PackingWhenIterating);
+			var bits1Length = BitsBase.GetMinBits(dataSet1, dataSet2).Bits1.Length;
 
-			// Iterate over the smallest data set.
-			if (minSet == dataSet1)
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
-					var page1 = data1.Pages[page.Index];
-					for (var index1 = page.Length - 1; index1 >= 0; index1--)
+					continue;
+				}
+
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
+				{
+					for (; index < runEnd; index++)
 					{
-						if (page.Offset + index1 > dataSet1.Count)
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
 						{
-							index1 = dataSet1.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet1.Packed[page.Offset + index1];
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						if (index2 >= 0)
-						{
-							if (!action.Apply(id, ref page1[index1], ref data2[index2]))
-							{
-								break;
-							}
-						}
+						Bits0Loop(offset + index, ref action);
 					}
+					continue;
+				}
+
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
+
+				while (bits != 0UL)
+				{
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
-			else
+
+			BitsPool.ReturnAndPop(resultBits);
+			return;
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			void Bits0Loop(int current0, ref TAction action)
 			{
-				foreach (var page in new PageSequence(data2.PageSize, dataSet2.Count))
+				var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
+				var dataOffset2 = dataSet2.Blocks[current0].StartInPage;
+				var dataPage1 = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
+				var dataPage2 = dataSet2.PagedData[dataSet2.Blocks[current0].PageIndex];
+
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					var page2 = data2.Pages[page.Index];
-					for (var index2 = page.Length - 1; index2 >= 0; index2--)
+					for (; index < runEnd; index++)
 					{
-						if (page.Offset + index2 > dataSet2.Count)
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
 						{
-							index2 = dataSet2.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet2.Packed[page.Offset + index2];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						if (index1 >= 0)
-						{
-							if (!action.Apply(id, ref data1[index1], ref page2[index2]))
-							{
-								break;
-							}
-						}
+						action.Apply(offset + index,
+							ref dataPage1[dataOffset1 + index],
+							ref dataPage2[dataOffset2 + index]);
 					}
+					return;
+				}
+
+				action.Apply(offset + index,
+					ref dataPage1[dataOffset1 + index],
+					ref dataPage2[dataOffset2 + index]);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
+
+				while (bits != 0UL)
+				{
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index,
+						ref dataPage1[dataOffset1 + index],
+						ref dataPage2[dataOffset2 + index]);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
 				}
 			}
-
-			minSet.ExchangePacking(originalPacking);
 		}
 
 		public void ForEach<TAction, T1, T2, T3>(ref TAction action)
@@ -155,94 +313,109 @@ namespace Massive
 			var dataSet2 = this.DataSet<T2>();
 			var dataSet3 = this.DataSet<T3>();
 
-			var data1 = dataSet1.Data;
-			var data2 = dataSet2.Data;
-			var data3 = dataSet3.Data;
+			var resultBits = BitsPool.RentClone(dataSet1)
+				.AndBits(dataSet2)
+				.AndBits(dataSet3)
+				.RemoveOnRemove(dataSet1)
+				.RemoveOnRemove(dataSet2)
+				.RemoveOnRemove(dataSet3);
 
-			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3);
-			var originalPacking = minSet.ExchangeToStricterPacking(Config.PackingWhenIterating);
+			var bits1Length = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3).Bits1.Length;
 
-			// Iterate over the smallest data set.
-			if (minSet == dataSet1)
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
-					var page1 = data1.Pages[page.Index];
-					for (var index1 = page.Length - 1; index1 >= 0; index1--)
+					continue;
+				}
+
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
+				{
+					for (; index < runEnd; index++)
 					{
-						if (page.Offset + index1 > dataSet1.Count)
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
 						{
-							index1 = dataSet1.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet1.Packed[page.Offset + index1];
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						if ((index2 | index3) >= 0)
-						{
-							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3]))
-							{
-								break;
-							}
-						}
+						Bits0Loop(offset + index, ref action);
 					}
+					continue;
+				}
+
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
+
+				while (bits != 0UL)
+				{
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
-			else if (minSet == dataSet2)
+
+			BitsPool.ReturnAndPop(resultBits);
+			return;
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			void Bits0Loop(int current0, ref TAction action)
 			{
-				foreach (var page in new PageSequence(data2.PageSize, dataSet2.Count))
+				var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
+				var dataOffset2 = dataSet2.Blocks[current0].StartInPage;
+				var dataOffset3 = dataSet3.Blocks[current0].StartInPage;
+				var dataPage1 = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
+				var dataPage2 = dataSet2.PagedData[dataSet2.Blocks[current0].PageIndex];
+				var dataPage3 = dataSet3.PagedData[dataSet3.Blocks[current0].PageIndex];
+
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					var page2 = data2.Pages[page.Index];
-					for (var index2 = page.Length - 1; index2 >= 0; index2--)
+					for (; index < runEnd; index++)
 					{
-						if (page.Offset + index2 > dataSet2.Count)
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
 						{
-							index2 = dataSet2.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet2.Packed[page.Offset + index2];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						if ((index1 | index3) >= 0)
-						{
-							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3]))
-							{
-								break;
-							}
-						}
+						action.Apply(offset + index,
+							ref dataPage1[dataOffset1 + index],
+							ref dataPage2[dataOffset2 + index],
+							ref dataPage3[dataOffset3 + index]);
 					}
+					return;
 				}
-			}
-			else
-			{
-				foreach (var page in new PageSequence(data3.PageSize, dataSet3.Count))
+
+				action.Apply(offset + index,
+					ref dataPage1[dataOffset1 + index],
+					ref dataPage2[dataOffset2 + index],
+					ref dataPage3[dataOffset3 + index]);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
+
+				while (bits != 0UL)
 				{
-					var page3 = data3.Pages[page.Index];
-					for (var index3 = page.Length - 1; index3 >= 0; index3--)
-					{
-						if (page.Offset + index3 > dataSet3.Count)
-						{
-							index3 = dataSet3.Count - page.Offset;
-							continue;
-						}
-
-						var id = dataSet3.Packed[page.Offset + index3];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						if ((index1 | index2) >= 0)
-						{
-							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3]))
-							{
-								break;
-							}
-						}
-					}
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index,
+						ref dataPage1[dataOffset1 + index],
+						ref dataPage2[dataOffset2 + index],
+						ref dataPage3[dataOffset3 + index]);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
 				}
 			}
-
-			minSet.ExchangePacking(originalPacking);
 		}
 
 		public void ForEach<TAction, T1, T2, T3, T4>(ref TAction action)
@@ -258,137 +431,130 @@ namespace Massive
 			var dataSet3 = this.DataSet<T3>();
 			var dataSet4 = this.DataSet<T4>();
 
-			var data1 = dataSet1.Data;
-			var data2 = dataSet2.Data;
-			var data3 = dataSet3.Data;
-			var data4 = dataSet4.Data;
+			var resultBits = BitsPool.RentClone(dataSet1)
+				.AndBits(dataSet2)
+				.AndBits(dataSet3)
+				.AndBits(dataSet4)
+				.RemoveOnRemove(dataSet1)
+				.RemoveOnRemove(dataSet2)
+				.RemoveOnRemove(dataSet3)
+				.RemoveOnRemove(dataSet4);
 
-			var minSet = SetUtils.GetMinimalSet(dataSet1, dataSet2, dataSet3, dataSet4);
-			var originalPacking = minSet.ExchangeToStricterPacking(Config.PackingWhenIterating);
+			var bits1Length = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3, dataSet4).Bits1.Length;
 
-			// Iterate over the smallest data set.
-			if (minSet == dataSet1)
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				foreach (var page in new PageSequence(data1.PageSize, dataSet1.Count))
+				var bits = resultBits.Bits1[current1];
+				if (bits == 0UL)
 				{
-					var page1 = data1.Pages[page.Index];
-					for (var index1 = page.Length - 1; index1 >= 0; index1--)
+					continue;
+				}
+
+				var offset = current1 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
+				{
+					for (; index < runEnd; index++)
 					{
-						if (page.Offset + index1 > dataSet1.Count)
+						if ((resultBits.Bits1[current1] & (1UL << index)) == 0UL)
 						{
-							index1 = dataSet1.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet1.Packed[page.Offset + index1];
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						var index4 = dataSet4.GetIndexOrNegative(id);
-						if ((index2 | index3 | index4) >= 0)
-						{
-							if (!action.Apply(id, ref page1[index1], ref data2[index2], ref data3[index3], ref data4[index4]))
-							{
-								break;
-							}
-						}
+						Bits0Loop(offset + index, ref action);
 					}
+					continue;
+				}
+
+				Bits0Loop(offset + index, ref action);
+				bits &= resultBits.Bits1[current1] & (bits - 1UL);
+
+				while (bits != 0UL)
+				{
+					index = MathUtils.LSB(bits);
+					Bits0Loop(offset + index, ref action);
+					bits &= resultBits.Bits1[current1] & (bits - 1UL);
 				}
 			}
-			else if (minSet == dataSet2)
+
+			BitsPool.ReturnAndPop(resultBits);
+			return;
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			void Bits0Loop(int current0, ref TAction action)
 			{
-				foreach (var page in new PageSequence(data2.PageSize, dataSet2.Count))
+				var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
+				var dataOffset2 = dataSet2.Blocks[current0].StartInPage;
+				var dataOffset3 = dataSet3.Blocks[current0].StartInPage;
+				var dataOffset4 = dataSet4.Blocks[current0].StartInPage;
+				var dataPage1 = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
+				var dataPage2 = dataSet2.PagedData[dataSet2.Blocks[current0].PageIndex];
+				var dataPage3 = dataSet3.PagedData[dataSet3.Blocks[current0].PageIndex];
+				var dataPage4 = dataSet4.PagedData[dataSet4.Blocks[current0].PageIndex];
+
+				var bits = resultBits.Bits0[current0];
+				var offset = current0 << 6;
+				var index = MathUtils.LSB(bits);
+				var runEnd = MathUtils.ApproximateMSB(bits);
+
+				var setBitCount = MathUtils.PopCount(bits);
+				var runLength = runEnd - index;
+
+				if (setBitCount << 1 > runLength)
 				{
-					var page2 = data2.Pages[page.Index];
-					for (var index2 = page.Length - 1; index2 >= 0; index2--)
+					for (; index < runEnd; index++)
 					{
-						if (page.Offset + index2 > dataSet2.Count)
+						if ((resultBits.Bits0[current0] & (1UL << index)) == 0UL)
 						{
-							index2 = dataSet2.Count - page.Offset;
 							continue;
 						}
 
-						var id = dataSet2.Packed[page.Offset + index2];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						var index4 = dataSet4.GetIndexOrNegative(id);
-						if ((index1 | index3 | index4) >= 0)
-						{
-							if (!action.Apply(id, ref data1[index1], ref page2[index2], ref data3[index3], ref data4[index4]))
-							{
-								break;
-							}
-						}
+						action.Apply(offset + index,
+							ref dataPage1[dataOffset1 + index],
+							ref dataPage2[dataOffset2 + index],
+							ref dataPage3[dataOffset3 + index],
+							ref dataPage4[dataOffset4 + index]);
 					}
+					return;
 				}
-			}
-			else if (minSet == dataSet3)
-			{
-				foreach (var page in new PageSequence(data3.PageSize, dataSet3.Count))
+
+				action.Apply(offset + index,
+					ref dataPage1[dataOffset1 + index],
+					ref dataPage2[dataOffset2 + index],
+					ref dataPage3[dataOffset3 + index],
+					ref dataPage4[dataOffset4 + index]);
+				bits &= resultBits.Bits0[current0] & (bits - 1UL);
+
+				while (bits != 0UL)
 				{
-					var page3 = data3.Pages[page.Index];
-					for (var index3 = page.Length - 1; index3 >= 0; index3--)
-					{
-						if (page.Offset + index3 > dataSet3.Count)
-						{
-							index3 = dataSet3.Count - page.Offset;
-							continue;
-						}
-
-						var id = dataSet3.Packed[page.Offset + index3];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						var index4 = dataSet4.GetIndexOrNegative(id);
-						if ((index1 | index2 | index4) >= 0)
-						{
-							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref page3[index3], ref data4[index4]))
-							{
-								break;
-							}
-						}
-					}
+					index = MathUtils.LSB(bits);
+					action.Apply(offset + index,
+						ref dataPage1[dataOffset1 + index],
+						ref dataPage2[dataOffset2 + index],
+						ref dataPage3[dataOffset3 + index],
+						ref dataPage4[dataOffset4 + index]);
+					bits &= resultBits.Bits0[current0] & (bits - 1UL);
 				}
 			}
-			else
-			{
-				foreach (var page in new PageSequence(data4.PageSize, dataSet4.Count))
-				{
-					var page4 = data4.Pages[page.Index];
-					for (var index4 = page.Length - 1; index4 >= 0; index4--)
-					{
-						if (page.Offset + index4 > dataSet4.Count)
-						{
-							index4 = dataSet4.Count - page.Offset;
-							continue;
-						}
-
-						var id = dataSet4.Packed[page.Offset + index4];
-						var index1 = dataSet1.GetIndexOrNegative(id);
-						var index2 = dataSet2.GetIndexOrNegative(id);
-						var index3 = dataSet3.GetIndexOrNegative(id);
-						if ((index1 | index2 | index3) >= 0)
-						{
-							if (!action.Apply(id, ref data1[index1], ref data2[index2], ref data3[index3], ref page4[index4]))
-							{
-								break;
-							}
-						}
-					}
-				}
-			}
-
-			minSet.ExchangePacking(originalPacking);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public PackedEnumerator GetEnumerator()
+		public BitsEnumerator GetEnumerator()
 		{
-			return new PackedEnumerator(Entifiers, Config.PackingWhenIterating);
+			var bits = BitsPool.RentClone(Entifiers).RemoveOnRemove(Entifiers);
+			return new BitsEnumerator(bits, Entifiers.Bits1.Length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public PackedEntityEnumerable Entities()
+		public EntityEnumerable Entities()
 		{
-			return new PackedEntityEnumerable(Entifiers, this, Config.PackingWhenIterating);
+			var bits = BitsPool.RentClone(Entifiers).RemoveOnRemove(Entifiers);
+			return new EntityEnumerable(bits, this, Entifiers.Bits1.Length);
 		}
 	}
 }

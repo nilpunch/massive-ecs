@@ -7,28 +7,24 @@ namespace Massive
 	{
 		private readonly bool _storeEmptyTypesAsDataSets;
 		private readonly int _pageSize;
-		private readonly bool _fullStability;
 
 		public SetFactory(WorldConfig worldConfig)
 			: this(worldConfig.StoreEmptyTypesAsDataSets,
-				worldConfig.PageSize, worldConfig.FullStability)
+				worldConfig.PageSize)
 		{
 		}
 
-		public SetFactory(bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize,
-			bool fullStability = false)
+		public SetFactory(bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
 		{
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 			_pageSize = pageSize;
-			_fullStability = fullStability;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool CompatibleWith(SetFactory other)
 		{
 			return _storeEmptyTypesAsDataSets == other._storeEmptyTypesAsDataSets
-				&& _pageSize == other._pageSize
-				&& _fullStability == other._fullStability;
+				&& _pageSize == other._pageSize;
 		}
 
 		public Output CreateAppropriateSet<T>()
@@ -45,9 +41,9 @@ namespace Massive
 
 		private Output CreateSparseSet<T>()
 		{
-			var sparseSet = new SparseSet(GetPackingFor(typeof(T)));
-			var cloner = new SparseSetCloner<T>(sparseSet);
-			return new Output(sparseSet, cloner);
+			var bitSet = new BitSet();
+			var cloner = new SparseSetCloner<T>(bitSet);
+			return new Output(bitSet, cloner);
 		}
 
 		private Output CreateDataSet<T>()
@@ -55,19 +51,19 @@ namespace Massive
 			var type = typeof(T);
 			if (CopyableUtils.IsImplementedFor(type))
 			{
-				var dataSet = CopyableUtils.CreateCopyingDataSet<T>(GetPageSizeFor(type), GetPackingFor(type));
+				var dataSet = CopyableUtils.CreateCopyingDataSet<T>(GetPageSizeFor(type));
 				var cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else if (type.IsManaged())
 			{
-				var dataSet = new ManagedDataSet<T>(GetPageSizeFor(type), GetPackingFor(type));
+				var dataSet = new DataSet<T>(GetPageSizeFor(type));
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else
 			{
-				var dataSet = new UnmanagedDataSet<T>(GetPageSizeFor(type), GetPackingFor(type), DefaultValueUtils.GetDefaultValueFor<T>());
+				var dataSet = new UnmanagedDataSet<T>(GetPageSizeFor(type), DefaultValueUtils.GetDefaultValueFor<T>());
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
@@ -93,23 +89,18 @@ namespace Massive
 			return _pageSize;
 		}
 
-		public Packing GetPackingFor(Type type)
-		{
-			return _fullStability || type.IsDefined(typeof(StableAttribute), false) ? Packing.WithHoles : Packing.Continuous;
-		}
-
 		public readonly struct Output
 		{
-			public readonly SparseSet Set;
+			public readonly BitSet Set;
 			public readonly SetCloner Cloner;
 
-			public Output(SparseSet set, SetCloner cloner)
+			public Output(BitSet set, SetCloner cloner)
 			{
 				Set = set;
 				Cloner = cloner;
 			}
 
-			public void Deconstruct(out SparseSet set, out SetCloner cloner)
+			public void Deconstruct(out BitSet set, out SetCloner cloner)
 			{
 				set = Set;
 				cloner = Cloner;

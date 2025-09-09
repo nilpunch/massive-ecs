@@ -13,45 +13,6 @@ namespace Massive.Tests
 		{
 			0, 1, 3, 20, 21, 23
 		};
-
-		[Test]
-		public void WhenCompact_AndThereIsHoles_ThenRemoveHoles()
-		{
-			// Arrange.
-			var entities = new Entifiers(Packing.WithHoles);
-			for (int i = 0; i < EntitiesToCreate; i++)
-				entities.Create();
-			foreach (var id in IdsToDestroy)
-				entities.Destroy(id);
-
-			// Act.
-			entities.Compact();
-
-			// Assert.
-			int remainIdsCount = EntitiesToCreate - IdsToDestroy.Length;
-			Assert.AreEqual(remainIdsCount, entities.Count);
-		}
-		
-		[Test]
-		public void WhenClear_AndThereIsHoles_ThenRestoreTheIdsAndClear()
-		{
-			// Arrange.
-			var entities = new Entifiers(Packing.WithHoles);
-			for (int i = 0; i < EntitiesToCreate; i++)
-				entities.Create();
-			foreach (var id in IdsToDestroy)
-				entities.Destroy(id);
-
-			// Act.
-			entities.Clear();
-
-			// Assert.
-			for (int i = 0; i < EntitiesToCreate; i++)
-			{
-				Assert.IsFalse(entities.IsAlive(i));
-				Assert.IsTrue(entities.Packed[i] >= 0);
-			}
-		}
 		
 		[TestCase(0)]
 		[TestCase(1)]

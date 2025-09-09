@@ -6,6 +6,14 @@ namespace Massive
 	[Il2CppEagerStaticClassConstruction]
 	public static class MathUtils
 	{
+		private static byte[] DeBruijn =
+		{
+			0, 1, 17, 2, 18, 50, 3, 57, 47, 19, 22, 51, 29, 4, 33, 58,
+			15, 48, 20, 27, 25, 23, 52, 41, 54, 30, 38, 5, 43, 34, 59, 8,
+			63, 16, 49, 56, 46, 21, 28, 32, 14, 26, 24, 40, 53, 37, 42, 7,
+			62, 55, 45, 31, 13, 39, 36, 6, 61, 44, 12, 35, 60, 11, 10, 9,
+		};
+
 		/// <summary>
 		/// Computes the smallest power of two greater than or equal to a value.
 		/// </summary>
@@ -92,21 +100,33 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int LeadingZeroesCount(int x)
+		public static int PopCount(ulong x)
 		{
-			x |= x >> 1;
-			x |= x >> 2;
-			x |= x >> 4;
-			x |= x >> 8;
-			x |= x >> 16;
+			x -= (x >> 1) & 0x5555555555555555UL;
+			x = (x & 0x3333333333333333UL) + ((x >> 2) & 0x3333333333333333UL);
+			x = (x + (x >> 4)) & 0x0F0F0F0F0F0F0F0FUL;
+			return (int)((x * 0x0101010101010101UL) >> 56);
+		}
 
-			x -= x >> 1 & 0x55555555;
-			x = (x >> 2 & 0x33333333) + (x & 0x33333333);
-			x = (x >> 4) + x & 0x0f0f0f0f;
-			x += x >> 8;
-			x += x >> 16;
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int LSB(ulong x)
+		{
+			return DeBruijn[((x & (~x + 1)) * 0x37E84A99DAE458F) >> 58];
+		}
 
-			return sizeof(int) * 8 - (x & 0x0000003f);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int ApproximateMSB(ulong x)
+		{
+			const ulong MSB48 = 1UL << 48;
+			const ulong MSB32 = 1UL << 32;
+			const ulong MSB16 = 1UL << 16;
+
+			if (x >= MSB32)
+			{
+				return x >= MSB48 ? 64 : 48;
+			}
+
+			return x >= MSB16 ? 32 : 16;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

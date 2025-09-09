@@ -11,21 +11,16 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class DynamicFilter : Filter
 	{
-		public Sets Sets { get; }
+		public BitSets BitSets { get; }
 
-		public DynamicFilter(World world) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
+		public DynamicFilter(World world) : base(Array.Empty<BitSet>(), Array.Empty<BitSet>())
 		{
-			Sets = world.Sets;
-		}
-
-		public DynamicFilter(Sets sets) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
-		{
-			Sets = sets;
+			BitSets = world.BitSets;
 		}
 
 		public DynamicFilter Include<T>()
 		{
-			var set = Sets.Get<T>();
+			var set = BitSets.Get<T>();
 
 			ConflictingFilterException.ThrowIfConflictWithExcluded(this, set);
 
@@ -36,20 +31,18 @@ namespace Massive
 
 			if (IncludedCount >= Included.Length)
 			{
-				Included = Included.Resize(MathUtils.NextPowerOf2(IncludedCount + 1));
+				Included = Included.ResizeToNextPowOf2(IncludedCount + 1);
 			}
 
 			Included[IncludedCount] = set;
 			IncludedCount += 1;
-
-			UpdateReducedFilters();
 
 			return this;
 		}
 
 		public DynamicFilter Exclude<T>()
 		{
-			var set = Sets.Get<T>();
+			var set = BitSets.Get<T>();
 
 			ConflictingFilterException.ThrowIfConflictWithIncluded(this, set);
 
@@ -60,13 +53,11 @@ namespace Massive
 
 			if (ExcludedCount >= Excluded.Length)
 			{
-				Excluded = Excluded.Resize(MathUtils.NextPowerOf2(ExcludedCount + 1));
+				Excluded = Excluded.ResizeToNextPowOf2(ExcludedCount + 1);
 			}
 
 			Excluded[ExcludedCount] = set;
 			ExcludedCount += 1;
-
-			UpdateReducedFilters();
 
 			return this;
 		}

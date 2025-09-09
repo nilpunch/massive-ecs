@@ -10,31 +10,27 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Entifiers : PackedSet
+	public class Entifiers : BitsBase, IBitsBacktrack
 	{
-		private const int EndHoleId = int.MaxValue;
+		private Bits[] RemoveOnAdd { get; set; } = Array.Empty<Bits>();
+		private int RemoveOnAddCount { get; set; }
+
+		private Bits[] RemoveOnRemove { get; set; } = Array.Empty<Bits>();
+		private int RemoveOnRemoveCount { get; set; }
+
+		public int[] Pool { get; protected set; } = Array.Empty<int>();
+
+		public int PooledIds { get; protected set; }
 
 		/// <summary>
 		/// The sparse array, containing entities versions.<br/>
-		/// Don't cache it and use as is, underlying array can be resized at any moment.
 		/// </summary>
 		public uint[] Versions { get; private set; } = Array.Empty<uint>();
 
 		/// <summary>
-		/// The sparse array, mapping IDs to their packed indices.<br/>
-		/// Don't cache it and use as is, underlying array can be resized at any moment.
+		/// The current capacity of the versions array.
 		/// </summary>
-		public int[] Sparse { get; private set; } = Array.Empty<int>();
-
-		/// <summary>
-		/// The current capacity of the packed array.
-		/// </summary>
-		public int PackedCapacity { get; private set; }
-
-		/// <summary>
-		/// The current capacity of the sparse array.
-		/// </summary>
-		public int SparseCapacity { get; private set; }
+		public int VersionsCapacity { get; private set; }
 
 		/// <summary>
 		/// The maximum count of entity ids in use.
@@ -42,34 +38,9 @@ namespace Massive
 		public int UsedIds { get; private set; }
 
 		/// <summary>
-		/// The ID of the next available hole in the sparse array, or <see cref="EndHoleId"/> if no holes exist.
+		/// Shortcut to access world.
 		/// </summary>
-		private int NextHoleId { get; set; } = EndHoleId;
-
 		public WorldContext? WorldContext { get; set; }
-
-		public Entifiers(Packing packing = Packing.Continuous)
-		{
-			Packing = packing;
-		}
-
-		/// <summary>
-		/// Checks whether a packed array has no holes in it.
-		/// </summary>
-		public bool IsContinuous
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Packing == Packing.Continuous || NextHoleId == EndHoleId;
-		}
-
-		/// <summary>
-		/// Checks whether a packed array has any holes in it.
-		/// </summary>
-		public bool HasHoles
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Packing != Packing.Continuous && NextHoleId != EndHoleId;
-		}
 
 		/// <summary>
 		/// Shoots after entity is created.
@@ -82,54 +53,47 @@ namespace Massive
 		public event Action<int> BeforeDestroyed;
 
 		/// <summary>
+		/// The current amount of alive entities.<br/>
+		/// </summary>
+		public int Count => UsedIds - PooledIds;
+
+		/// <summary>
 		/// Gets or sets the current state for serialization or rollback purposes.
 		/// </summary>
 		public State CurrentState
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new State(Count, UsedIds, NextHoleId, Packing);
+			get => new State(PooledIds, UsedIds);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
-				Count = value.Count;
+				PooledIds = value.ReusedIds;
 				UsedIds = value.UsedIds;
-				NextHoleId = value.NextHoleId;
-				Packing = value.Packing;
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entifier Create()
 		{
-			EnsureCapacityAt(Count);
+			int id;
+			uint version;
 
-			Entifier entifier;
-
-			if (Packing == Packing.WithHoles && NextHoleId != EndHoleId)
+			if (PooledIds != 0)
 			{
-				var id = NextHoleId;
-				var index = Sparse[id];
-				NextHoleId = ~Packed[index];
-				Packed[index] = id;
-				entifier = new Entifier(id, Versions[id]);
-			}
-			else if (Count < UsedIds)
-			{
-				var id = Packed[Count];
-				entifier = new Entifier(id, Versions[id]);
-				Count += 1;
+				id = Pool[--PooledIds];
+				version = Versions[id];
 			}
 			else
 			{
-				entifier = new Entifier(UsedIds, 1U);
-				AssignEntity(UsedIds, 1U, Count);
-				UsedIds += 1;
-				Count += 1;
+				EnsureEntityAt(UsedIds);
+				id = UsedIds++;
+				version = 1U;
 			}
 
-			AfterCreated?.Invoke(entifier.Id);
-			WorldContext?.AddToNegative(entifier.Id);
-			return entifier;
+			SetBit(id);
+			AfterCreated?.Invoke(id);
+
+			return new Entifier(id, version);
 		}
 
 		/// <summary>
@@ -147,31 +111,18 @@ namespace Massive
 			NegativeArgumentException.ThrowIfNegative(id);
 
 			// If entity is not alive, nothing to be done.
-			if (id >= UsedIds || Sparse[id] >= Count || Packed[Sparse[id]] != id)
+			if (id >= UsedIds || (Bits0[id >> 6] & (1UL << (id & 63))) == 0UL)
 			{
 				return false;
 			}
 
 			BeforeDestroyed?.Invoke(id);
-			WorldContext?.RemoveFromAll(id);
+			RemoveBit(id);
+			WorldContext?.EntityDestroyed(id);
 
-			var index = Sparse[id];
-
-			if (Packing == Packing.Continuous)
-			{
-				Count -= 1;
-				var version = Versions[id];
-				MathUtils.IncrementWrapTo1(ref version);
-				var lastId = Packed[Count];
-				AssignEntity(lastId, Versions[lastId], index);
-				AssignEntity(id, version, Count);
-			}
-			else
-			{
-				Packed[index] = ~NextHoleId;
-				MathUtils.IncrementWrapTo1(ref Versions[id]);
-				NextHoleId = id;
-			}
+			EnsurePoolAt(PooledIds);
+			Pool[PooledIds++] = id;
+			MathUtils.IncrementWrapTo1(ref Versions[id]);
 
 			return true;
 		}
@@ -185,34 +136,21 @@ namespace Massive
 			NegativeArgumentException.ThrowIfNegative(amount);
 
 			var needToCreate = amount;
-			EnsureCapacityAt(needToCreate + Count);
+			EnsureEntityAt(needToCreate + UsedIds);
 
-			while (Packing == Packing.WithHoles && NextHoleId != EndHoleId && needToCreate > 0)
+			while (PooledIds != 0 && needToCreate > 0)
 			{
 				needToCreate -= 1;
-				var id = NextHoleId;
-				var index = Sparse[id];
-				NextHoleId = ~Packed[index];
-				Packed[index] = id;
+				var id = Pool[--PooledIds];
+				SetBit(id);
 				AfterCreated?.Invoke(id);
-				WorldContext?.AddToNegative(id);
-			}
-
-			while (Count < UsedIds && needToCreate > 0)
-			{
-				needToCreate -= 1;
-				Count += 1;
-				AfterCreated?.Invoke(Packed[Count - 1]);
-				WorldContext?.AddToNegative(Packed[Count - 1]);
 			}
 
 			for (var i = 0; i < needToCreate; i++)
 			{
-				AssignEntity(UsedIds, 1U, Count);
-				UsedIds += 1;
-				Count += 1;
-				AfterCreated?.Invoke(UsedIds - 1);
-				WorldContext?.AddToNegative(UsedIds - 1);
+				var id = UsedIds++;
+				SetBit(id);
+				AfterCreated?.Invoke(id);
 			}
 		}
 
@@ -222,40 +160,74 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			if (IsContinuous)
-			{
-				for (var i = Count - 1; i >= 0; i--)
-				{
-					var id = Packed[i];
-					BeforeDestroyed?.Invoke(id);
-					WorldContext?.RemoveFromAll(id);
-					MathUtils.IncrementWrapTo1(ref Versions[id]);
-					Count -= 1;
-				}
-			}
-			else
-			{
-				for (var i = Count - 1; i >= 0; i--)
-				{
-					var id = Packed[i];
-					if (id >= 0)
-					{
-						BeforeDestroyed?.Invoke(id);
-						WorldContext?.RemoveFromAll(id);
-						MathUtils.IncrementWrapTo1(ref Versions[id]);
-					}
-					Count -= 1;
-				}
+			var bits1Length = Bits1.Length;
 
-				var nextHoleId = NextHoleId;
-				while (nextHoleId != EndHoleId)
+			for (var current1 = 0; current1 < bits1Length; current1++)
+			{
+				var offset1 = current1 << 6;
+				var iterated1 = 0;
+
+				while (Bits1[current1] != 0UL && iterated1 < 64)
 				{
-					var holeId = nextHoleId;
-					var holeIndex = Sparse[holeId];
-					nextHoleId = ~Packed[holeIndex];
-					Packed[holeIndex] = holeId;
+					var bits1Result = Bits1[current1] >> iterated1;
+
+					var skip1 = MathUtils.LSB(bits1Result);
+					iterated1 += skip1;
+					bits1Result >>= skip1;
+
+					if (bits1Result == 0UL)
+					{
+						break;
+					}
+
+					var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.LSB(~bits1Result);
+					var runEnd1 = iterated1 + runLength1;
+					for (; iterated1 < runEnd1; iterated1++)
+					{
+						if ((Bits1[current1] & (1UL << iterated1)) == 0)
+						{
+							continue;
+						}
+
+						var current0 = offset1 + iterated1;
+
+						var offset0 = current0 << 6;
+						var iterated0 = 0;
+
+						while (Bits0[current0] != 0UL && iterated0 < 64)
+						{
+							var bits0Result = Bits0[current0] >> iterated0;
+
+							var skip0 = MathUtils.LSB(bits0Result);
+							iterated0 += skip0;
+							bits0Result >>= skip0;
+
+							if (bits0Result == 0UL)
+							{
+								break;
+							}
+
+							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.LSB(~bits0Result);
+							var runEnd0 = iterated0 + runLength0;
+							for (; iterated0 < runEnd0; iterated0++)
+							{
+								if ((Bits0[current0] & (1UL << iterated0)) == 0)
+								{
+									continue;
+								}
+
+								var id = offset0 + iterated0;
+								BeforeDestroyed?.Invoke(id);
+								RemoveBit(id);
+								WorldContext?.EntityDestroyed(id);
+
+								EnsurePoolAt(PooledIds);
+								Pool[PooledIds++] = id;
+								MathUtils.IncrementWrapTo1(ref Versions[id]);
+							}
+						}
+					}
 				}
-				NextHoleId = EndHoleId;
 			}
 		}
 
@@ -278,107 +250,134 @@ namespace Massive
 				return false;
 			}
 
-			var index = Sparse[entifier.Id];
-
-			return index < Count && Packed[index] == entifier.Id && Versions[entifier.Id] == entifier.Version;
+			return Versions[entifier.Id] == entifier.Version;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			return id >= 0 && id < UsedIds && Sparse[id] < Count && Packed[Sparse[id]] == id;
+			return id >= 0 && id < UsedIds && (Bits0[id >> 6] & (1UL << (id & 63))) != 0UL;
 		}
 
 		/// <summary>
-		/// Ensures the sparse and packed arrays has sufficient capacity for the specified index.
+		/// Ensures the version array has sufficient capacity for the specified index.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureCapacityAt(int index)
+		public void EnsureEntityAt(int index)
 		{
-			if (index >= SparseCapacity)
+			if (index >= VersionsCapacity)
 			{
-				var newCapacity = MathUtils.NextPowerOf2(index + 1);
-				ResizePacked(newCapacity);
-				ResizeSparse(newCapacity);
-			}
-		}
-
-		/// <summary>
-		/// Resizes the packed array to the specified capacity.
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ResizePacked(int capacity)
-		{
-			Packed = Packed.Resize(capacity);
-			PackedCapacity = capacity;
-		}
-
-		/// <summary>
-		/// Resizes the sparse array to the specified capacity.
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ResizeSparse(int capacity)
-		{
-			Sparse = Sparse.Resize(capacity);
-			Versions = Versions.Resize(capacity);
-			if (capacity > SparseCapacity)
-			{
-				Array.Fill(Versions, 1U, SparseCapacity, capacity - SparseCapacity);
-			}
-			SparseCapacity = capacity;
-		}
-
-		/// <summary>
-		/// Removes all holes from the packed array.
-		/// </summary>
-		public override void Compact()
-		{
-			if (HasHoles)
-			{
-				var count = Count;
-				var nextHoleId = NextHoleId;
-
-				for (; count > 0 && Packed[count - 1] < 0; count--) { }
-
-				while (nextHoleId != EndHoleId)
+				Versions = Versions.ResizeToNextPowOf2(index + 1);
+				if (Versions.Length > VersionsCapacity)
 				{
-					var holeId = nextHoleId;
-					var holeIndex = Sparse[holeId];
-					nextHoleId = ~Packed[holeIndex];
-					if (holeIndex < count)
-					{
-						count -= 1;
-
-						var holeVersion = Versions[holeId];
-						var id = Packed[count];
-						AssignEntity(id, Versions[id], holeIndex);
-						AssignEntity(holeId, holeVersion, count);
-
-						for (; count > 0 && Packed[count - 1] < 0; count--) { }
-					}
-					else
-					{
-						Packed[holeIndex] = holeId;
-					}
+					Array.Fill(Versions, 1U, VersionsCapacity, Versions.Length - VersionsCapacity);
 				}
-
-				Count = count;
-				NextHoleId = EndHoleId;
+				VersionsCapacity = Versions.Length;
+				WorldContext?.Components.EnsureEntitiesCapacity(VersionsCapacity);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public PackedEnumerator GetEnumerator()
+		public void EnsurePoolAt(int index)
 		{
-			return new PackedEnumerator(this);
+			if (index >= Pool.Length)
+			{
+				Pool = Pool.ResizeToNextPowOf2(index + 1);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AssignEntity(int id, uint version, int index)
+		public BitsEnumerator GetEnumerator()
 		{
-			Sparse[id] = index;
-			Packed[index] = id;
-			Versions[id] = version;
+			var bits = BitsPool.RentClone(this).RemoveOnRemove(this);
+			return new BitsEnumerator(bits, Bits1.Length);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void SetBit(int id)
+		{
+			var id0 = id >> 6;
+			var id1 = id >> 12;
+
+			if (id1 >= Bits1.Length)
+			{
+				Bits1 = Bits1.Resize(MathUtils.NextPowerOf2(id1 + 1));
+				Bits0 = Bits0.Resize(Bits1.Length << 6);
+			}
+
+			var bit0 = 1UL << (id & 63);
+			var bit1 = 1UL << (id0 & 63);
+
+			if (Bits0[id0] == 0UL)
+			{
+				Bits1[id1] |= bit1;
+			}
+			Bits0[id0] |= bit0;
+
+			for (var i = 0; i < RemoveOnAddCount; i++)
+			{
+				RemoveOnAdd[i].Remove(id);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void RemoveBit(int id)
+		{
+			var id0 = id >> 6;
+			var id1 = id >> 12;
+
+			if (id0 >= Bits0.Length)
+			{
+				return;
+			}
+
+			var bit0 = 1UL << (id & 63);
+			var bit1 = 1UL << (id0 & 63);
+
+			Bits0[id0] &= ~bit0;
+			if (Bits0[id0] == 0UL)
+			{
+				Bits1[id1] &= ~bit1;
+			}
+
+			for (var i = 0; i < RemoveOnRemoveCount; i++)
+			{
+				RemoveOnRemove[i].Remove(id);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PushRemoveOnAdd(Bits bits)
+		{
+			if (RemoveOnAddCount >= RemoveOnAdd.Length)
+			{
+				RemoveOnAdd = RemoveOnAdd.ResizeToNextPowOf2(RemoveOnAddCount + 1);
+			}
+
+			RemoveOnAdd[RemoveOnAddCount++] = bits;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PopRemoveOnAdd()
+		{
+			RemoveOnAddCount--;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PushRemoveOnRemove(Bits bits)
+		{
+			if (RemoveOnRemoveCount >= RemoveOnRemove.Length)
+			{
+				RemoveOnRemove = RemoveOnRemove.ResizeToNextPowOf2(RemoveOnRemoveCount + 1);
+			}
+
+			RemoveOnRemove[RemoveOnRemoveCount++] = bits;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PopRemoveOnRemove()
+		{
+			RemoveOnRemoveCount--;
 		}
 
 		/// <summary>
@@ -398,11 +397,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Entifiers other)
 		{
-			other.EnsureCapacityAt(UsedIds - 1);
+			CopyBitsTo(other);
 
-			Array.Copy(Packed, other.Packed, UsedIds);
+			other.EnsureEntityAt(UsedIds - 1);
+			other.EnsurePoolAt(PooledIds - 1);
+
+			Array.Copy(Pool, other.Pool, PooledIds);
 			Array.Copy(Versions, other.Versions, UsedIds);
-			Array.Copy(Sparse, other.Sparse, UsedIds);
 
 			if (UsedIds < other.UsedIds)
 			{
@@ -414,17 +415,13 @@ namespace Massive
 
 		public readonly struct State
 		{
-			public readonly int Count;
+			public readonly int ReusedIds;
 			public readonly int UsedIds;
-			public readonly int NextHoleId;
-			public readonly Packing Packing;
 
-			public State(int count, int usedIds, int nextHoleId, Packing packing)
+			public State(int reusedIds, int usedIds)
 			{
-				Count = count;
+				ReusedIds = reusedIds;
 				UsedIds = usedIds;
-				NextHoleId = nextHoleId;
-				Packing = packing;
 			}
 		}
 	}

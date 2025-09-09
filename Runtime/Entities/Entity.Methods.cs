@@ -27,19 +27,14 @@ namespace Massive
 			var clone = World.CreateEntity();
 			var cloneId = clone.Id;
 
-			var setList = World.Sets.AllSets;
+			var setList = World.BitSets.AllSets;
 			var setCount = setList.Count;
 			var sets = setList.Items;
 			for (var i = 0; i < setCount; i++)
 			{
 				var set = sets[i];
-				var index = set.GetIndexOrNegative(entityId);
-				if (index >= 0)
-				{
-					set.Add(cloneId);
-					var cloneIndex = set.Sparse[cloneId];
-					set.CopyDataAt(index, cloneIndex);
-				}
+				set.Add(cloneId);
+				set.CopyData(entityId, cloneId);
 			}
 
 			return clone;
@@ -69,14 +64,14 @@ namespace Massive
 		{
 			InvalidSetOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.BitSets.EnsureLookupAt(info.Index);
+			var candidate = World.BitSets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = World.Sets.Get<T>();
+				candidate = World.BitSets.Get<T>();
 			}
 
 			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldSet);
@@ -100,14 +95,14 @@ namespace Massive
 		{
 			InvalidAddOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.BitSets.EnsureLookupAt(info.Index);
+			var candidate = World.BitSets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = World.Sets.Get<T>();
+				candidate = World.BitSets.Get<T>();
 			}
 
 			return candidate.Add(Id);
@@ -127,14 +122,14 @@ namespace Massive
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.BitSets.EnsureLookupAt(info.Index);
+			var candidate = World.BitSets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = World.Sets.Get<T>();
+				candidate = World.BitSets.Get<T>();
 			}
 
 			return candidate.Remove(Id);
@@ -151,14 +146,14 @@ namespace Massive
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.BitSets.EnsureLookupAt(info.Index);
+			var candidate = World.BitSets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = World.Sets.Get<T>();
+				candidate = World.BitSets.Get<T>();
 			}
 
 			return candidate.Has(Id);
@@ -176,14 +171,14 @@ namespace Massive
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(World.Entifiers, Entifier);
 
-			var info = TypeId<T>.Info;
+			var info = ComponentId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.BitSets.EnsureLookupAt(info.Index);
+			var candidate = World.BitSets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = World.Sets.Get<T>();
+				candidate = World.BitSets.Get<T>();
 			}
 
 			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldGet);

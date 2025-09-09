@@ -22,7 +22,7 @@ namespace Massive.PerformanceTests
 		public void FilterView_Fill()
 		{
 			var result = new List<int>();
-			Measure.Method(() => _world.View().Filter().Fill(result))
+			Measure.Method(() => _world.Filter().Fill(result))
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -33,7 +33,7 @@ namespace Massive.PerformanceTests
 		public void FilterView_FillEntities()
 		{
 			var result = new List<Entifier>();
-			Measure.Method(() => _world.View().Filter().Fill(result))
+			Measure.Method(() => _world.Filter().Fill(result))
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -45,7 +45,7 @@ namespace Massive.PerformanceTests
 		{
 			Measure.Method(() =>
 				{
-					foreach (var entityId in _world.View().Filter())
+					foreach (var entityId in _world.Filter())
 					{
 					}
 				})
@@ -57,7 +57,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void FilterView_ForEach()
 		{
-			Measure.Method(() => _world.View().Filter().ForEach((int _) => { }))
+			Measure.Method(() => _world.Filter().ForEach((int _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -66,7 +66,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void FilterViewT_ForEach()
 		{
-			Measure.Method(() => _world.View().Filter().ForEach((int _, ref TestState64 _) => { }))
+			Measure.Method(() => _world.Filter().ForEach((int _, ref TestState64 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -75,7 +75,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void FilterViewTT_ForEach()
 		{
-			Measure.Method(() => _world.View().Filter().ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
+			Measure.Method(() => _world.Filter().ForEach((int _, ref TestState64 _, ref TestState64_2 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -84,7 +84,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void FilterViewTTT_ForEach()
 		{
-			Measure.Method(() => _world.View().Filter().ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
+			Measure.Method(() => _world.Filter().ForEach((int _, ref TestState64 _, ref TestState64_2 _, ref TestState64_3 _) => { }))
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();

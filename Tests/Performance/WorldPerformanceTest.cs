@@ -45,7 +45,7 @@ namespace Massive.PerformanceTests
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static World PrepareTestRegistry(WorldFilling worldFilling, bool fullStability)
 		{
-			var config = new WorldConfig(fullStability: fullStability);
+			var config = new WorldConfig();
 			return worldFilling switch
 			{
 				WorldFilling.SingleComponent => new World(config).FillWorldWithSingleComponent(),
@@ -136,7 +136,7 @@ namespace Massive.PerformanceTests
 				_world.Create<TestState64>();
 			}
 
-			Measure.Method(() => { _world.View().Filter<Include<TestState64>>().Fill(result); })
+			Measure.Method(() => { _world.Filter<Include<TestState64>>().Fill(result); })
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -157,7 +157,7 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					foreach (var entityId in _world.View())
+					foreach (var entityId in _world)
 					{
 						_world.Get<PositionComponent>(entityId);
 						_world.Get<VelocityComponent>(entityId);
@@ -184,7 +184,7 @@ namespace Massive.PerformanceTests
 				{
 					var positions = _world.DataSet<PositionComponent>();
 					var velocities = _world.DataSet<VelocityComponent>();
-					foreach (var entityId in _world.View())
+					foreach (var entityId in _world)
 					{
 						positions.Get(entityId);
 						velocities.Get(entityId);
@@ -207,7 +207,7 @@ namespace Massive.PerformanceTests
 				_world.Set(entity, new VelocityComponent() { X = 1, Y = 1 });
 			}
 
-			Measure.Method(() => { _world.View().ForEach((ref PositionComponent position, ref VelocityComponent velocity) => { }); })
+			Measure.Method(() => { _world.ForEach((ref PositionComponent position, ref VelocityComponent velocity) => { }); })
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
 				.Run();
@@ -225,7 +225,7 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					foreach (var entityId in _world.View())
+					foreach (var entityId in _world)
 					{
 						_world.Remove<PositionComponent>(entityId);
 						_world.Set(entityId, new PositionComponent() { X = entityId, Y = entityId });
@@ -249,7 +249,7 @@ namespace Massive.PerformanceTests
 			Measure.Method(() =>
 				{
 					var positions = _world.DataSet<PositionComponent>();
-					foreach (var entityId in _world.View())
+					foreach (var entityId in _world)
 					{
 						positions.Remove(entityId);
 						positions.Set(entityId, new PositionComponent() { X = entityId, Y = entityId });
@@ -269,7 +269,7 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_world.View().Include<PositionComponent, VelocityComponent>();
+						_world.Include<PositionComponent, VelocityComponent>();
 					}
 				})
 				.MeasurementCount(MeasurementCount)

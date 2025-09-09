@@ -78,8 +78,7 @@ namespace Massive
 	public readonly struct AllocatorIdInfo
 	{
 		/// <summary>
-		/// Non-deterministic, used for lookups.<br/>
-		/// Don't store it in simulation.
+		/// Session-dependent index, used for lookups.<br/>
 		/// </summary>
 		public readonly int Index;
 

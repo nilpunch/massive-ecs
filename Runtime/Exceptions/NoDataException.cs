@@ -40,9 +40,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfHasNoData(SparseSet sparseSet, Type type, DataAccessContext context)
+		public static void ThrowIfHasNoData(BitSet bitSet, Type type, DataAccessContext context)
 		{
-			if (!(sparseSet is IDataSet))
+			if (!(bitSet is IDataSet))
 			{
 				var suggestion = context switch
 				{

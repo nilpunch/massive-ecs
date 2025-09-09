@@ -4,23 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Unity.IL2CPP.CompilerServices;
 
-// ReSharper disable all StaticMemberInGenericType
 namespace Massive
 {
-	public readonly struct TypeIdInfo
-	{
-		public readonly int Index;
-		public readonly string FullName;
-		public readonly Type Type;
-
-		public TypeIdInfo(int index, string fullName, Type type)
-		{
-			Index = index;
-			FullName = fullName;
-			Type = type;
-		}
-	}
-
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -28,7 +13,7 @@ namespace Massive
 	{
 		private static readonly Dictionary<Type, TypeIdInfo> s_typeInfo = new Dictionary<Type, TypeIdInfo>();
 		private static Type[] s_types = Array.Empty<Type>();
-		private static int s_typeCounter;
+		private static int s_typeCounter = -1;
 
 		public static TypeIdInfo GetInfo(Type type)
 		{

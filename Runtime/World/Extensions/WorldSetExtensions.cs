@@ -12,10 +12,10 @@ namespace Massive
 	public static class WorldSetExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static SparseSet SparseSet<T>(this World world)
+		public static BitSet SparseSet<T>(this World world)
 		{
-			var info = TypeId<T>.Info;
-			var sets = world.Sets;
+			var info = ComponentId<T>.Info;
+			var sets = world.BitSets;
 
 			sets.EnsureLookupAt(info.Index);
 			var candidate = sets.Lookup[info.Index];
@@ -31,8 +31,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static DataSet<T> DataSet<T>(this World world)
 		{
-			var info = TypeId<T>.Info;
-			var sets = world.Sets;
+			var info = ComponentId<T>.Info;
+			var sets = world.BitSets;
 
 			sets.EnsureLookupAt(info.Index);
 			var candidate = sets.Lookup[info.Index];

@@ -20,7 +20,7 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach((ref TComponent1 value) =>
+			world.ForEach((ref TComponent1 value) =>
 			{
 				if (iterations == 0)
 				{
@@ -29,7 +29,7 @@ namespace Massive.Tests
 						var entity = world.Create<TComponent1>();
 					}
 
-					world.View().ForEach((int id, ref TComponent1 value) =>
+					world.ForEach((int id, ref TComponent1 value) =>
 					{
 						world.Destroy(id);
 					});
@@ -52,7 +52,7 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach((ref TComponent1 value) =>
+			world.ForEach((ref TComponent1 value) =>
 			{
 				if (iterations == 0)
 				{
@@ -61,7 +61,7 @@ namespace Massive.Tests
 						var entity = world.Create<TComponent1>();
 					}
 
-					world.View().ForEach((int id, ref TComponent1 value) =>
+					world.ForEach((int id, ref TComponent1 value) =>
 					{
 						world.Destroy(id);
 					});
@@ -75,7 +75,7 @@ namespace Massive.Tests
 				iterations += 1;
 			});
 
-			Assert.AreEqual(1000, iterations);
+			Assert.AreEqual(1, iterations);
 		}
 
 		[Test]
@@ -89,7 +89,7 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach((int _) =>
+			world.ForEach((int _) =>
 			{
 				if (iterations == 0)
 				{
@@ -98,7 +98,7 @@ namespace Massive.Tests
 						var entity = world.Create<TComponent1>();
 					}
 
-					world.View().ForEach((int id, ref TComponent1 value) =>
+					world.ForEach((int id, ref TComponent1 value) =>
 					{
 						world.Destroy(id);
 					});
@@ -121,7 +121,7 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			foreach (var id in world.View())
+			foreach (var id in world)
 			{
 				if (iterations == 0)
 				{
@@ -130,7 +130,7 @@ namespace Massive.Tests
 						var entity = world.Create<TComponent1>();
 					}
 
-					world.View().ForEach((int id, ref TComponent1 value) =>
+					world.ForEach((int id, ref TComponent1 value) =>
 					{
 						world.Destroy(id);
 					});
@@ -157,10 +157,10 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach((ref TComponent2 b) =>
+			world.ForEach((ref TComponent2 b) =>
 			{
 				iterations += 1;
-				world.View().ForEach((int innerId, ref TComponent2 innerB) =>
+				world.ForEach((int innerId, ref TComponent2 innerB) =>
 				{
 					world.Destroy(innerId);
 				});
@@ -184,10 +184,10 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach((int _) =>
+			world.ForEach((int _) =>
 			{
 				iterations += 1;
-				world.View().ForEach((int innerId, ref TComponent2 innerB) =>
+				world.ForEach((int innerId, ref TComponent2 innerB) =>
 				{
 					world.Destroy(innerId);
 				});
@@ -211,10 +211,10 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			foreach (var id in world.View())
+			foreach (var id in world)
 			{
 				iterations += 1;
-				world.View().ForEach((int innerId, ref TComponent2 innerB) =>
+				world.ForEach((int innerId, ref TComponent2 innerB) =>
 				{
 					world.Destroy(innerId);
 				});
@@ -237,10 +237,10 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach((ref TComponent2 b) =>
+			world.ForEach((ref TComponent2 b) =>
 			{
 				iterations += 1;
-				world.View().ForEach((int innerId, ref TComponent2 innerB) =>
+				world.ForEach((int innerId, ref TComponent2 innerB) =>
 				{
 					world.Remove<TComponent2>(innerId);
 				});
@@ -263,10 +263,10 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach((ref TComponent1 c1, ref TComponent2 c2) =>
+			world.ForEach((ref TComponent1 c1, ref TComponent2 c2) =>
 			{
 				iterations += 1;
-				world.View().ForEach((int innerId, ref TComponent2 innerC2) =>
+				world.ForEach((int innerId, ref TComponent2 innerC2) =>
 				{
 					world.Remove<TComponent2>(innerId);
 				});
@@ -289,10 +289,10 @@ namespace Massive.Tests
 			}
 
 			dynamic iterations = new int();
-			world.View().ForEach((ref TComponent1 c1, ref TComponent2 c2) =>
+			world.ForEach((ref TComponent1 c1, ref TComponent2 c2) =>
 			{
 				iterations += 1;
-				world.View().ForEach((int innerId, ref TComponent1 innerC2) =>
+				world.ForEach((int innerId, ref TComponent1 innerC2) =>
 				{
 					world.Remove<TComponent1>(innerId);
 				});
@@ -305,7 +305,6 @@ namespace Massive.Tests
 	[TestFixture]
 	public class WorldIntegrationTests
 	{
-		[Stable]
 		private struct StableData
 		{
 			public int Value;
@@ -321,7 +320,7 @@ namespace Massive.Tests
 				world.Set(entity, new StableData() { Value = entity });
 			}
 
-			world.View().ForEach((int entity, ref StableData c2) =>
+			world.ForEach((int entity, ref StableData c2) =>
 			{
 				Assert.AreEqual(world.Get<StableData>(entity).Value, c2.Value);
 

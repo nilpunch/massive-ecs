@@ -26,7 +26,7 @@ namespace Massive.PerformanceTests
 						new Vector2(1f, 0f),
 						CharacterRowsAmount);
 				})
-				.CleanUp(() => shooter.World.View().ForEach((entityId) =>
+				.CleanUp(() => shooter.World.ForEach((entityId) =>
 				{
 					shooter.World.Destroy(entityId);
 				}))
