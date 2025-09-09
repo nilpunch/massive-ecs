@@ -29,7 +29,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Return(Bits bits)
+		public static void ReturnAndPop(Bits bits)
 		{
 			if (Count >= Pool.Length)
 			{
@@ -37,6 +37,7 @@ namespace Massive
 			}
 
 			Pool[Count++] = bits;
+			bits.PopAll();
 		}
 	}
 }

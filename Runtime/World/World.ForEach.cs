@@ -14,9 +14,7 @@ namespace Massive
 		{
 			var entifiers = Entifiers;
 
-			var resultBits = BitsPool.RentClone(entifiers);
-
-			entifiers.PushRemoveOnRemove(resultBits);
+			var resultBits = BitsPool.RentClone(entifiers).RemoveOnRemove(entifiers);
 
 			var bits1Length = entifiers.Bits1.Length;
 
@@ -60,9 +58,7 @@ namespace Massive
 				}
 			}
 
-			entifiers.PopRemoveOnRemove();
-
-			BitsPool.Return(resultBits);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -109,9 +105,7 @@ namespace Massive
 
 			var dataSet = this.DataSet<T>();
 
-			var resultBits = BitsPool.RentClone(dataSet);
-
-			dataSet.PushRemoveOnRemove(resultBits);
+			var resultBits = BitsPool.RentClone(dataSet).RemoveOnRemove(dataSet);
 
 			var bits1Length = dataSet.Bits1.Length;
 
@@ -155,9 +149,7 @@ namespace Massive
 				}
 			}
 
-			dataSet.PopRemoveOnRemove();
-
-			BitsPool.Return(resultBits);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -212,10 +204,10 @@ namespace Massive
 			var dataSet1 = this.DataSet<T1>();
 			var dataSet2 = this.DataSet<T2>();
 
-			var resultBits = BitsPool.RentClone(dataSet1).And(dataSet2);
-
-			dataSet1.PushRemoveOnRemove(resultBits);
-			dataSet2.PushRemoveOnRemove(resultBits);
+			var resultBits = BitsPool.RentClone(dataSet1)
+				.AndBits(dataSet2)
+				.RemoveOnRemove(dataSet1)
+				.RemoveOnRemove(dataSet2);
 
 			var bits1Length = BitsBase.GetMinBits(dataSet1, dataSet2).Bits1.Length;
 
@@ -259,10 +251,7 @@ namespace Massive
 				}
 			}
 
-			dataSet1.PopRemoveOnRemove();
-			dataSet2.PopRemoveOnRemove();
-
-			BitsPool.Return(resultBits);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -324,7 +313,12 @@ namespace Massive
 			var dataSet2 = this.DataSet<T2>();
 			var dataSet3 = this.DataSet<T3>();
 
-			var resultBits = BitsPool.RentClone(dataSet1).And(dataSet2).And(dataSet3);
+			var resultBits = BitsPool.RentClone(dataSet1)
+				.AndBits(dataSet2)
+				.AndBits(dataSet3)
+				.RemoveOnRemove(dataSet1)
+				.RemoveOnRemove(dataSet2)
+				.RemoveOnRemove(dataSet3);
 
 			var bits1Length = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3).Bits1.Length;
 
@@ -368,11 +362,7 @@ namespace Massive
 				}
 			}
 
-			dataSet1.PopRemoveOnRemove();
-			dataSet2.PopRemoveOnRemove();
-			dataSet3.PopRemoveOnRemove();
-
-			BitsPool.Return(resultBits);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -441,12 +431,14 @@ namespace Massive
 			var dataSet3 = this.DataSet<T3>();
 			var dataSet4 = this.DataSet<T4>();
 
-			var resultBits = BitsPool.RentClone(dataSet1).And(dataSet2).And(dataSet3).And(dataSet4);
-
-			dataSet1.PushRemoveOnRemove(resultBits);
-			dataSet2.PushRemoveOnRemove(resultBits);
-			dataSet3.PushRemoveOnRemove(resultBits);
-			dataSet4.PushRemoveOnRemove(resultBits);
+			var resultBits = BitsPool.RentClone(dataSet1)
+				.AndBits(dataSet2)
+				.AndBits(dataSet3)
+				.AndBits(dataSet4)
+				.RemoveOnRemove(dataSet1)
+				.RemoveOnRemove(dataSet2)
+				.RemoveOnRemove(dataSet3)
+				.RemoveOnRemove(dataSet4);
 
 			var bits1Length = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3, dataSet4).Bits1.Length;
 
@@ -490,12 +482,7 @@ namespace Massive
 				}
 			}
 
-			dataSet1.PopRemoveOnRemove();
-			dataSet2.PopRemoveOnRemove();
-			dataSet3.PopRemoveOnRemove();
-			dataSet4.PopRemoveOnRemove();
-
-			BitsPool.Return(resultBits);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -559,19 +546,15 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitsEnumerator GetEnumerator()
 		{
-			var bits = BitsPool.RentClone(Entifiers);
-			Entifiers.PushRemoveOnRemove(bits);
-			var pops = PopsPool.Rent().AddPopOnRemove(Entifiers);
-			return new BitsEnumerator(bits, pops, Entifiers.Bits1.Length);
+			var bits = BitsPool.RentClone(Entifiers).RemoveOnRemove(Entifiers);
+			return new BitsEnumerator(bits, Entifiers.Bits1.Length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EntityEnumerable Entities()
 		{
-			var bits = BitsPool.RentClone(Entifiers);
-			Entifiers.PushRemoveOnRemove(bits);
-			var pops = PopsPool.Rent().AddPopOnRemove(Entifiers);
-			return new EntityEnumerable(bits, pops, this, Entifiers.Bits1.Length);
+			var bits = BitsPool.RentClone(Entifiers).RemoveOnRemove(Entifiers);
+			return new EntityEnumerable(bits, this, Entifiers.Bits1.Length);
 		}
 	}
 }

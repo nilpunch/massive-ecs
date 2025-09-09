@@ -10,8 +10,14 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class BitSet : BitsBase
+	public class BitSet : BitsBase, IBitsBacktrack
 	{
+		protected Bits[] RemoveOnAdd { get; private set; } = Array.Empty<Bits>();
+		protected int RemoveOnAddCount { get; private set; }
+
+		private Bits[] RemoveOnRemove { get; set; } = Array.Empty<Bits>();
+		private int RemoveOnRemoveCount { get; set; }
+
 		/// <summary>
 		/// Associated component index. Session-dependent, used for lookups.<br/>
 		/// </summary>
@@ -266,10 +272,42 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitsEnumerator GetEnumerator()
 		{
-			var bits = BitsPool.RentClone(this);
-			PushRemoveOnRemove(bits);
-			var pops = PopsPool.Rent().AddPopOnRemove(this);
-			return new BitsEnumerator(bits, pops, Bits1.Length);
+			var bits = BitsPool.RentClone(this).RemoveOnRemove(this);
+			return new BitsEnumerator(bits, Bits1.Length);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PushRemoveOnAdd(Bits bits)
+		{
+			if (RemoveOnAddCount >= RemoveOnAdd.Length)
+			{
+				RemoveOnAdd = RemoveOnAdd.ResizeToNextPowOf2(RemoveOnAddCount + 1);
+			}
+
+			RemoveOnAdd[RemoveOnAddCount++] = bits;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PopRemoveOnAdd()
+		{
+			RemoveOnAddCount--;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PushRemoveOnRemove(Bits bits)
+		{
+			if (RemoveOnRemoveCount >= RemoveOnRemove.Length)
+			{
+				RemoveOnRemove = RemoveOnRemove.ResizeToNextPowOf2(RemoveOnRemoveCount + 1);
+			}
+
+			RemoveOnRemove[RemoveOnRemoveCount++] = bits;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PopRemoveOnRemove()
+		{
+			RemoveOnRemoveCount--;
 		}
 
 		public virtual void CopyData(int sourceId, int destinationId)

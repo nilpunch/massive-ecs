@@ -10,8 +10,14 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Entifiers : BitsBase
+	public class Entifiers : BitsBase, IBitsBacktrack
 	{
+		private Bits[] RemoveOnAdd { get; set; } = Array.Empty<Bits>();
+		private int RemoveOnAddCount { get; set; }
+
+		private Bits[] RemoveOnRemove { get; set; } = Array.Empty<Bits>();
+		private int RemoveOnRemoveCount { get; set; }
+
 		public int[] Pool { get; protected set; } = Array.Empty<int>();
 
 		public int PooledIds { get; protected set; }
@@ -84,7 +90,7 @@ namespace Massive
 				version = 1U;
 			}
 
-			SetBitInternal(id);
+			SetBit(id);
 			AfterCreated?.Invoke(id);
 
 			return new Entifier(id, version);
@@ -111,7 +117,7 @@ namespace Massive
 			}
 
 			BeforeDestroyed?.Invoke(id);
-			RemoveBitInternal(id);
+			RemoveBit(id);
 			WorldContext?.EntityDestroyed(id);
 
 			EnsurePoolAt(PooledIds);
@@ -136,14 +142,14 @@ namespace Massive
 			{
 				needToCreate -= 1;
 				var id = Pool[--PooledIds];
-				SetBitInternal(id);
+				SetBit(id);
 				AfterCreated?.Invoke(id);
 			}
 
 			for (var i = 0; i < needToCreate; i++)
 			{
 				var id = UsedIds++;
-				SetBitInternal(id);
+				SetBit(id);
 				AfterCreated?.Invoke(id);
 			}
 		}
@@ -212,7 +218,7 @@ namespace Massive
 
 								var id = offset0 + iterated0;
 								BeforeDestroyed?.Invoke(id);
-								RemoveBitInternal(id);
+								RemoveBit(id);
 								WorldContext?.EntityDestroyed(id);
 
 								EnsurePoolAt(PooledIds);
@@ -274,7 +280,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePoolAt(int index)
 		{
-			if (index >= Pool.Length) 
+			if (index >= Pool.Length)
 			{
 				Pool = Pool.ResizeToNextPowOf2(index + 1);
 			}
@@ -283,10 +289,95 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitsEnumerator GetEnumerator()
 		{
-			var bits = BitsPool.RentClone(this);
-			PushRemoveOnRemove(bits);
-			var pops = PopsPool.Rent().AddPopOnRemove(this);
-			return new BitsEnumerator(bits, pops, Bits1.Length);
+			var bits = BitsPool.RentClone(this).RemoveOnRemove(this);
+			return new BitsEnumerator(bits, Bits1.Length);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void SetBit(int id)
+		{
+			var id0 = id >> 6;
+			var id1 = id >> 12;
+
+			if (id1 >= Bits1.Length)
+			{
+				Bits1 = Bits1.Resize(MathUtils.NextPowerOf2(id1 + 1));
+				Bits0 = Bits0.Resize(Bits1.Length << 6);
+			}
+
+			var bit0 = 1UL << (id & 63);
+			var bit1 = 1UL << (id0 & 63);
+
+			if (Bits0[id0] == 0UL)
+			{
+				Bits1[id1] |= bit1;
+			}
+			Bits0[id0] |= bit0;
+
+			for (var i = 0; i < RemoveOnAddCount; i++)
+			{
+				RemoveOnAdd[i].Remove(id);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void RemoveBit(int id)
+		{
+			var id0 = id >> 6;
+			var id1 = id >> 12;
+
+			if (id0 >= Bits0.Length)
+			{
+				return;
+			}
+
+			var bit0 = 1UL << (id & 63);
+			var bit1 = 1UL << (id0 & 63);
+
+			Bits0[id0] &= ~bit0;
+			if (Bits0[id0] == 0UL)
+			{
+				Bits1[id1] &= ~bit1;
+			}
+
+			for (var i = 0; i < RemoveOnRemoveCount; i++)
+			{
+				RemoveOnRemove[i].Remove(id);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PushRemoveOnAdd(Bits bits)
+		{
+			if (RemoveOnAddCount >= RemoveOnAdd.Length)
+			{
+				RemoveOnAdd = RemoveOnAdd.ResizeToNextPowOf2(RemoveOnAddCount + 1);
+			}
+
+			RemoveOnAdd[RemoveOnAddCount++] = bits;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PopRemoveOnAdd()
+		{
+			RemoveOnAddCount--;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PushRemoveOnRemove(Bits bits)
+		{
+			if (RemoveOnRemoveCount >= RemoveOnRemove.Length)
+			{
+				RemoveOnRemove = RemoveOnRemove.ResizeToNextPowOf2(RemoveOnRemoveCount + 1);
+			}
+
+			RemoveOnRemove[RemoveOnRemoveCount++] = bits;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void IBitsBacktrack.PopRemoveOnRemove()
+		{
+			RemoveOnRemoveCount--;
 		}
 
 		/// <summary>

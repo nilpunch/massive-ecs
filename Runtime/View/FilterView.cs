@@ -24,15 +24,13 @@ namespace Massive
 			where TAction : IEntityAction
 		{
 			var resultBits = BitsPool.Rent();
-			var rentedPops = PopsPool.Rent();
 
 			int bits1Length;
 
 			if (Filter.IncludedCount == 0)
 			{
 				World.Entifiers.CopyBitsTo(resultBits);
-				World.Entifiers.PushRemoveOnRemove(resultBits);
-				rentedPops.AddPopOnRemove(World.Entifiers);
+				resultBits.RemoveOnRemove(World.Entifiers);
 				bits1Length = World.Entifiers.Bits1.Length;
 			}
 			else
@@ -42,7 +40,7 @@ namespace Massive
 				bits1Length = minBits.Bits1.Length;
 			}
 
-			FilterBitsAndPops(resultBits, rentedPops);
+			ApplyFilter(resultBits);
 
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
@@ -84,8 +82,7 @@ namespace Massive
 				}
 			}
 
-			BitsPool.Return(resultBits);
-			PopsPool.ReturnAndPop(rentedPops);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -132,15 +129,9 @@ namespace Massive
 
 			var dataSet = World.DataSet<T>();
 
-			var resultBits = BitsPool.Rent();
-			var rentedPops = PopsPool.Rent();
+			var resultBits = BitsPool.RentClone(dataSet).RemoveOnRemove(dataSet);
 
-			dataSet.CopyBitsTo(resultBits);
-
-			dataSet.PushRemoveOnRemove(resultBits);
-			rentedPops.AddPopOnRemove(dataSet);
-
-			FilterBitsAndPops(resultBits, rentedPops);
+			ApplyFilter(resultBits);
 
 			var bits1Length = dataSet.Bits1.Length;
 
@@ -184,8 +175,7 @@ namespace Massive
 				}
 			}
 
-			BitsPool.Return(resultBits);
-			PopsPool.ReturnAndPop(rentedPops);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -240,21 +230,14 @@ namespace Massive
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
 
-			var minSet = BitsBase.GetMinBits(dataSet1, dataSet2);
+			var resultBits = BitsPool.RentClone(dataSet1)
+				.AndBits(dataSet2)
+				.RemoveOnRemove(dataSet1)
+				.RemoveOnRemove(dataSet2);
 
-			var resultBits = BitsPool.RentClone(minSet);
-			var rentedPops = PopsPool.Rent();
+			ApplyFilter(resultBits);
 
-			resultBits.And(dataSet1).And(dataSet2);
-
-			dataSet1.PushRemoveOnRemove(resultBits);
-			dataSet2.PushRemoveOnRemove(resultBits);
-			rentedPops.AddPopOnRemove(dataSet1);
-			rentedPops.AddPopOnRemove(dataSet2);
-
-			FilterBitsAndPops(resultBits, rentedPops);
-
-			var bits1Length = minSet.Bits1.Length;
+			var bits1Length = BitsBase.GetMinBits(dataSet1, dataSet2).Bits1.Length;
 
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
@@ -296,8 +279,7 @@ namespace Massive
 				}
 			}
 
-			BitsPool.Return(resultBits);
-			PopsPool.ReturnAndPop(rentedPops);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -359,23 +341,16 @@ namespace Massive
 			var dataSet2 = World.DataSet<T2>();
 			var dataSet3 = World.DataSet<T3>();
 
-			var minSet = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3);
+			var resultBits = BitsPool.RentClone(dataSet1)
+				.AndBits(dataSet2)
+				.AndBits(dataSet3)
+				.RemoveOnRemove(dataSet1)
+				.RemoveOnRemove(dataSet2)
+				.RemoveOnRemove(dataSet3);
 
-			var resultBits = BitsPool.RentClone(minSet);
-			var rentedPops = PopsPool.Rent();
+			ApplyFilter(resultBits);
 
-			resultBits.And(dataSet1).And(dataSet2).And(dataSet3);
-
-			dataSet1.PushRemoveOnRemove(resultBits);
-			dataSet2.PushRemoveOnRemove(resultBits);
-			dataSet3.PushRemoveOnRemove(resultBits);
-			rentedPops.AddPopOnRemove(dataSet1);
-			rentedPops.AddPopOnRemove(dataSet2);
-			rentedPops.AddPopOnRemove(dataSet3);
-
-			FilterBitsAndPops(resultBits, rentedPops);
-
-			var bits1Length = minSet.Bits1.Length;
+			var bits1Length = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3).Bits1.Length;
 
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
@@ -417,8 +392,7 @@ namespace Massive
 				}
 			}
 
-			BitsPool.Return(resultBits);
-			PopsPool.ReturnAndPop(rentedPops);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -487,25 +461,18 @@ namespace Massive
 			var dataSet3 = World.DataSet<T3>();
 			var dataSet4 = World.DataSet<T4>();
 
-			var minSet = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3, dataSet4);
+			var resultBits = BitsPool.RentClone(dataSet1)
+				.AndBits(dataSet2)
+				.AndBits(dataSet3)
+				.AndBits(dataSet4)
+				.RemoveOnRemove(dataSet1)
+				.RemoveOnRemove(dataSet2)
+				.RemoveOnRemove(dataSet3)
+				.RemoveOnRemove(dataSet4);
 
-			var resultBits = BitsPool.RentClone(minSet);
-			var rentedPops = PopsPool.Rent();
+			ApplyFilter(resultBits);
 
-			resultBits.And(dataSet1).And(dataSet2).And(dataSet3).And(dataSet4);
-
-			dataSet1.PushRemoveOnRemove(resultBits);
-			dataSet2.PushRemoveOnRemove(resultBits);
-			dataSet3.PushRemoveOnRemove(resultBits);
-			dataSet4.PushRemoveOnRemove(resultBits);
-			rentedPops.AddPopOnRemove(dataSet1);
-			rentedPops.AddPopOnRemove(dataSet2);
-			rentedPops.AddPopOnRemove(dataSet3);
-			rentedPops.AddPopOnRemove(dataSet4);
-
-			FilterBitsAndPops(resultBits, rentedPops);
-
-			var bits1Length = minSet.Bits1.Length;
+			var bits1Length = BitsBase.GetMinBits(dataSet1, dataSet2, dataSet3, dataSet4).Bits1.Length;
 
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
@@ -547,8 +514,7 @@ namespace Massive
 				}
 			}
 
-			BitsPool.Return(resultBits);
-			PopsPool.ReturnAndPop(rentedPops);
+			BitsPool.ReturnAndPop(resultBits);
 			return;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -613,15 +579,13 @@ namespace Massive
 		public BitsEnumerator GetEnumerator()
 		{
 			var resultBits = BitsPool.Rent();
-			var rentedPops = PopsPool.Rent();
 
 			int bits1Length;
 
 			if (Filter.IncludedCount == 0)
 			{
 				World.Entifiers.CopyBitsTo(resultBits);
-				World.Entifiers.PushRemoveOnRemove(resultBits);
-				rentedPops.AddPopOnRemove(World.Entifiers);
+				resultBits.RemoveOnRemove(World.Entifiers);
 				bits1Length = World.Entifiers.Bits1.Length;
 			}
 			else
@@ -631,24 +595,22 @@ namespace Massive
 				bits1Length = minBits.Bits1.Length;
 			}
 
-			FilterBitsAndPops(resultBits, rentedPops);
+			ApplyFilter(resultBits);
 
-			return new BitsEnumerator(resultBits, rentedPops, bits1Length);
+			return new BitsEnumerator(resultBits, bits1Length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EntityEnumerable Entities()
 		{
 			var resultBits = BitsPool.Rent();
-			var rentedPops = PopsPool.Rent();
 
 			int bits1Length;
 
 			if (Filter.IncludedCount == 0)
 			{
 				World.Entifiers.CopyBitsTo(resultBits);
-				World.Entifiers.PushRemoveOnRemove(resultBits);
-				rentedPops.AddPopOnRemove(World.Entifiers);
+				resultBits.RemoveOnRemove(World.Entifiers);
 				bits1Length = World.Entifiers.Bits1.Length;
 			}
 			else
@@ -658,27 +620,25 @@ namespace Massive
 				bits1Length = minBits.Bits1.Length;
 			}
 
-			FilterBitsAndPops(resultBits, rentedPops);
+			ApplyFilter(resultBits);
 
-			return new EntityEnumerable(resultBits, rentedPops, World, bits1Length);
+			return new EntityEnumerable(resultBits, World, bits1Length);
 		}
 
-		private void FilterBitsAndPops(Bits resultBits, Pops rentedPops)
+		private void ApplyFilter(Bits resultBits)
 		{
 			for (var i = 0; i < Filter.IncludedCount; i++)
 			{
 				var included = Filter.Included[i];
-				resultBits.And(included);
-				included.PushRemoveOnRemove(resultBits);
-				rentedPops.AddPopOnRemove(included);
+				resultBits.AndBits(included);
+				resultBits.RemoveOnRemove(included);
 			}
 
 			for (var i = 0; i < Filter.ExcludedCount; i++)
 			{
 				var excluded = Filter.Excluded[i];
-				resultBits.Not(excluded);
-				excluded.PushRemoveOnAdd(resultBits);
-				rentedPops.AddPopOnAdd(excluded);
+				resultBits.NotBits(excluded);
+				resultBits.RemoveOnAdd(excluded);
 			}
 		}
 	}

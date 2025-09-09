@@ -12,7 +12,7 @@ namespace Massive
 			Array.Resize(ref array, capacity);
 			return array;
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static T[] ResizeToNextPowOf2<T>(this T[] array, int capacity)
 		{

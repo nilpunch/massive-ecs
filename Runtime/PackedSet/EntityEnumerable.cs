@@ -9,14 +9,12 @@ namespace Massive
 	public readonly struct EntityEnumerable
 	{
 		private readonly Bits _rentedBits;
-		private readonly Pops _rentedPops;
 		private readonly World _world;
 		private readonly int _bits1Length;
 
-		public EntityEnumerable(Bits rentedBits, Pops rentedPops, World world, int bits1Length)
+		public EntityEnumerable(Bits rentedBits, World world, int bits1Length)
 		{
 			_rentedBits = rentedBits;
-			_rentedPops = rentedPops;
 			_world = world;
 			_bits1Length = bits1Length;
 		}
@@ -24,7 +22,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
-			return new Enumerator(_rentedBits, _rentedPops, _world, _bits1Length);
+			return new Enumerator(_rentedBits, _world, _bits1Length);
 		}
 
 		[Il2CppSetOption(Option.NullChecks, false)]
@@ -32,7 +30,6 @@ namespace Massive
 		public struct Enumerator : IDisposable
 		{
 			private readonly Bits _rentedBits;
-			private readonly Pops _rentedPops;
 			private readonly World _world;
 			private readonly Entifiers _entifiers;
 
@@ -52,10 +49,9 @@ namespace Massive
 			private int _index0;
 			private int _runEnd0;
 
-			public Enumerator(Bits rentedBits, Pops rentedPops, World world, int bits1Length)
+			public Enumerator(Bits rentedBits, World world, int bits1Length)
 			{
 				_rentedBits = rentedBits;
-				_rentedPops = rentedPops;
 				_world = world;
 				_entifiers = world.Entifiers;
 				_bits1Length = bits1Length;
@@ -173,10 +169,9 @@ namespace Massive
 
 			public void Dispose()
 			{
-				BitsPool.Return(_rentedBits);
-				PopsPool.ReturnAndPop(_rentedPops);
+				BitsPool.ReturnAndPop(_rentedBits);
 			}
-			
+
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			private void SetupAndRunInnerLoop()
 			{

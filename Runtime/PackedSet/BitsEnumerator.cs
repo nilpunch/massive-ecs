@@ -9,7 +9,6 @@ namespace Massive
 	public struct BitsEnumerator : IDisposable
 	{
 		private readonly Bits _rentedBits;
-		private readonly Pops _rentedPops;
 
 		private readonly int _bits1Length;
 
@@ -25,10 +24,9 @@ namespace Massive
 		private int _index0;
 		private int _runEnd0;
 
-		public BitsEnumerator(Bits rentedBits, Pops rentedPops, int bits1Length)
+		public BitsEnumerator(Bits rentedBits, int bits1Length)
 		{
 			_rentedBits = rentedBits;
-			_rentedPops = rentedPops;
 			_bits1Length = bits1Length;
 
 			_current1 = -1;
@@ -140,8 +138,7 @@ namespace Massive
 
 		public void Dispose()
 		{
-			BitsPool.Return(_rentedBits);
-			PopsPool.ReturnAndPop(_rentedPops);
+			BitsPool.ReturnAndPop(_rentedBits);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

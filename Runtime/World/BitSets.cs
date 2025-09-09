@@ -134,7 +134,7 @@ namespace Massive
 		{
 			return ComponentId.GetTypeByIndex(bitSet.ComponentId);
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetOrderedHashCode(BitSet[] orderedSets)
 		{
