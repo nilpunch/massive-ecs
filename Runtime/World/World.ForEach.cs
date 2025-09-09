@@ -47,15 +47,12 @@ namespace Massive
 					continue;
 				}
 
-				Bits0Loop(offset + index, ref action);
-				bits &= resultBits.Bits1[current1] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					Bits0Loop(offset + index, ref action);
 					bits &= resultBits.Bits1[current1] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 
 			BitsPool.ReturnAndPop(resultBits);
@@ -86,15 +83,12 @@ namespace Massive
 					return;
 				}
 
-				action.Apply(offset + index);
-				bits &= resultBits.Bits0[current0] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					action.Apply(offset + index);
 					bits &= resultBits.Bits0[current0] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 		}
 
@@ -138,15 +132,12 @@ namespace Massive
 					continue;
 				}
 
-				Bits0Loop(offset + index, ref action);
-				bits &= resultBits.Bits1[current1] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					Bits0Loop(offset + index, ref action);
 					bits &= resultBits.Bits1[current1] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 
 			BitsPool.ReturnAndPop(resultBits);
@@ -181,17 +172,13 @@ namespace Massive
 					return;
 				}
 
-				action.Apply(offset + index,
-					ref dataPage[dataOffset + index]);
-				bits &= resultBits.Bits0[current0] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					action.Apply(offset + index,
 						ref dataPage[dataOffset + index]);
 					bits &= resultBits.Bits0[current0] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 		}
 
@@ -240,15 +227,12 @@ namespace Massive
 					continue;
 				}
 
-				Bits0Loop(offset + index, ref action);
-				bits &= resultBits.Bits1[current1] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					Bits0Loop(offset + index, ref action);
 					bits &= resultBits.Bits1[current1] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 
 			BitsPool.ReturnAndPop(resultBits);
@@ -286,19 +270,14 @@ namespace Massive
 					return;
 				}
 
-				action.Apply(offset + index,
-					ref dataPage1[dataOffset1 + index],
-					ref dataPage2[dataOffset2 + index]);
-				bits &= resultBits.Bits0[current0] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					action.Apply(offset + index,
 						ref dataPage1[dataOffset1 + index],
 						ref dataPage2[dataOffset2 + index]);
 					bits &= resultBits.Bits0[current0] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 		}
 
@@ -351,15 +330,12 @@ namespace Massive
 					continue;
 				}
 
-				Bits0Loop(offset + index, ref action);
-				bits &= resultBits.Bits1[current1] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					Bits0Loop(offset + index, ref action);
 					bits &= resultBits.Bits1[current1] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 
 			BitsPool.ReturnAndPop(resultBits);
@@ -400,21 +376,15 @@ namespace Massive
 					return;
 				}
 
-				action.Apply(offset + index,
-					ref dataPage1[dataOffset1 + index],
-					ref dataPage2[dataOffset2 + index],
-					ref dataPage3[dataOffset3 + index]);
-				bits &= resultBits.Bits0[current0] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					action.Apply(offset + index,
 						ref dataPage1[dataOffset1 + index],
 						ref dataPage2[dataOffset2 + index],
 						ref dataPage3[dataOffset3 + index]);
 					bits &= resultBits.Bits0[current0] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 		}
 
@@ -471,15 +441,12 @@ namespace Massive
 					continue;
 				}
 
-				Bits0Loop(offset + index, ref action);
-				bits &= resultBits.Bits1[current1] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					Bits0Loop(offset + index, ref action);
 					bits &= resultBits.Bits1[current1] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 
 			BitsPool.ReturnAndPop(resultBits);
@@ -523,23 +490,16 @@ namespace Massive
 					return;
 				}
 
-				action.Apply(offset + index,
-					ref dataPage1[dataOffset1 + index],
-					ref dataPage2[dataOffset2 + index],
-					ref dataPage3[dataOffset3 + index],
-					ref dataPage4[dataOffset4 + index]);
-				bits &= resultBits.Bits0[current0] & (bits - 1UL);
-
-				while (bits != 0UL)
+				do
 				{
-					index = MathUtils.LSB(bits);
 					action.Apply(offset + index,
 						ref dataPage1[dataOffset1 + index],
 						ref dataPage2[dataOffset2 + index],
 						ref dataPage3[dataOffset3 + index],
 						ref dataPage4[dataOffset4 + index]);
 					bits &= resultBits.Bits0[current0] & (bits - 1UL);
-				}
+					index = MathUtils.LSB(bits);
+				} while (bits != 0UL);
 			}
 		}
 
