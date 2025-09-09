@@ -12,7 +12,7 @@ namespace Massive
 	public static class WorldSetExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static BitSet SparseSet<T>(this World world)
+		public static BitSet BitSet<T>(this World world)
 		{
 			var info = ComponentId<T>.Info;
 			var sets = world.BitSets;

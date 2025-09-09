@@ -22,12 +22,12 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static void ThrowIfHasNoData<T>(World world, DataAccessContext context)
 		{
-			if (!(world.SparseSet<T>() is DataSet<T>))
+			if (!(world.BitSet<T>() is DataSet<T>))
 			{
 				var suggestion = context switch
 				{
 					DataAccessContext.View => "Don't use empty components as generic arguments in ForEach(ref T ...) methods",
-					DataAccessContext.WorldDataSet => "Use " + nameof(WorldSetExtensions.SparseSet) + "<T>() method for empty components instead",
+					DataAccessContext.WorldDataSet => "Use " + nameof(WorldSetExtensions.BitSet) + "<T>() method for empty components instead",
 					DataAccessContext.WorldGet => "Don't use" + nameof(WorldIdExtensions.Get) + "<T>() method with empty components",
 					DataAccessContext.WorldSet => "Don't use" + nameof(WorldIdExtensions.Set) + "<T>() method with empty components",
 					_ => throw new ArgumentOutOfRangeException(nameof(context), context, null)
@@ -47,7 +47,7 @@ namespace Massive
 				var suggestion = context switch
 				{
 					DataAccessContext.View => "Don't use empty components as generic arguments in ForEach(ref T ...) methods",
-					DataAccessContext.WorldDataSet => "Use " + nameof(WorldSetExtensions.SparseSet) + "<T>() method for empty components instead",
+					DataAccessContext.WorldDataSet => "Use " + nameof(WorldSetExtensions.BitSet) + "<T>() method for empty components instead",
 					DataAccessContext.WorldGet => "Don't use" + nameof(WorldIdExtensions.Get) + "<T>() method with empty components",
 					DataAccessContext.WorldSet => "Don't use" + nameof(WorldIdExtensions.Set) + "<T>() method with empty components",
 					_ => throw new ArgumentOutOfRangeException(nameof(context), context, null)
