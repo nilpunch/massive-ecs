@@ -74,7 +74,7 @@ namespace Massive
 			var buffer = world.Components.Buffer;
 			var componentCount = world.Components.GetAll(entityId, buffer);
 
-			for (int i = 0; i < componentCount; i++)
+			for (var i = 0; i < componentCount; i++)
 			{
 				var set = sets.Lookup[buffer[i]];
 				set.Add(cloneId);
