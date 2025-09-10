@@ -11,15 +11,15 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorldContext
 	{
-		public BitSets BitSets { get; }
+		public Sets Sets { get; }
 
 		public Components Components { get; }
 
 		public Allocators Allocators { get; }
 
-		public WorldContext(BitSets bitSets, Allocators allocators, Components components)
+		public WorldContext(Sets sets, Allocators allocators, Components components)
 		{
-			BitSets = bitSets;
+			Sets = sets;
 			Components = components;
 			Allocators = allocators;
 		}
@@ -32,7 +32,7 @@ namespace Massive
 
 			for (var i = 0; i < componentCount; i++)
 			{
-				BitSets.Lookup[buffer[i]].Remove(id);
+				Sets.Lookup[buffer[i]].Remove(id);
 			}
 
 			Allocators.Free(id);

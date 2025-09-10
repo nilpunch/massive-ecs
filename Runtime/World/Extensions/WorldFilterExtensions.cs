@@ -25,8 +25,8 @@ namespace Massive
 				return candidate;
 			}
 
-			var included = new TInclude().Select(world.BitSets);
-			var excluded = Array.Empty<BitSet>();
+			var included = new TInclude().Select(world.Sets);
+			var excluded = Array.Empty<SparseSet>();
 
 			var filter = filters.Get(included, excluded);
 
@@ -52,8 +52,8 @@ namespace Massive
 				return candidate;
 			}
 
-			var included = new TInclude().Select(world.BitSets);
-			var excluded = new TExclude().Select(world.BitSets);
+			var included = new TInclude().Select(world.Sets);
+			var excluded = new TExclude().Select(world.Sets);
 
 			var filter = filters.Get(included, excluded);
 

@@ -10,7 +10,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class BitSet : BitsBase, IBitsBacktrack
+	public class SparseSet : BitsBase, IBitsBacktrack
 	{
 		protected Bits[] RemoveOnAdd { get; private set; } = Array.Empty<Bits>();
 		protected int RemoveOnAddCount { get; private set; }
@@ -340,9 +340,9 @@ namespace Massive
 		/// Creates and returns a new sparse set that is an exact copy of this one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet CloneBits()
+		public SparseSet CloneBits()
 		{
-			var clone = new BitSet();
+			var clone = new SparseSet();
 			CopyBitsTo(clone);
 			return clone;
 		}

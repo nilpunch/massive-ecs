@@ -6,16 +6,16 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public sealed class SparseSetCloner<T> : SetCloner
 	{
-		private readonly BitSet _bitSet;
+		private readonly SparseSet _sparseSet;
 
-		public SparseSetCloner(BitSet bitSet)
+		public SparseSetCloner(SparseSet sparseSet)
 		{
-			_bitSet = bitSet;
+			_sparseSet = sparseSet;
 		}
 
-		public override void CopyTo(BitSets bitSets)
+		public override void CopyTo(Sets sets)
 		{
-			_bitSet.CopyBitsTo(bitSets.Get<T>());
+			_sparseSet.CopyBitsTo(sets.Get<T>());
 		}
 	}
 }

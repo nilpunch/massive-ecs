@@ -14,7 +14,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Filters
 	{
-		private BitSets BitSets { get; }
+		private Sets Sets { get; }
 		private SetComparer Comparer { get; }
 
 		private Dictionary<int, Filter> CombinationLookup { get; } = new Dictionary<int, Filter>();
@@ -23,10 +23,10 @@ namespace Massive
 
 		public Filter Empty { get; }
 
-		public Filters(BitSets bitSets)
+		public Filters(Sets sets)
 		{
-			BitSets = bitSets;
-			Comparer = new SetComparer(BitSets);
+			Sets = sets;
+			Comparer = new SetComparer(Sets);
 			Empty = new Filter();
 		}
 
@@ -45,8 +45,8 @@ namespace Massive
 				return candidate;
 			}
 
-			var included = new TInclude().Select(BitSets);
-			var excluded = new TExclude().Select(BitSets);
+			var included = new TInclude().Select(Sets);
+			var excluded = new TExclude().Select(Sets);
 
 			var filter = Get(included, excluded);
 
@@ -56,10 +56,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public Filter Get(BitSet[] included = null, BitSet[] excluded = null)
+		public Filter Get(SparseSet[] included = null, SparseSet[] excluded = null)
 		{
-			included ??= Array.Empty<BitSet>();
-			excluded ??= Array.Empty<BitSet>();
+			included ??= Array.Empty<SparseSet>();
+			excluded ??= Array.Empty<SparseSet>();
 
 			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
 			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Include);
@@ -68,8 +68,8 @@ namespace Massive
 			Array.Sort(included, Comparer.ByIndex);
 			Array.Sort(excluded, Comparer.ByIndex);
 
-			var includeCode = BitSets.GetOrderedHashCode(included);
-			var excludeCode = BitSets.GetOrderedHashCode(excluded);
+			var includeCode = Sets.GetOrderedHashCode(included);
+			var excludeCode = Sets.GetOrderedHashCode(excluded);
 			var fullCode = MathUtils.CombineHashes(includeCode, excludeCode);
 
 			if (CombinationLookup.TryGetValue(fullCode, out var filter))
@@ -95,19 +95,19 @@ namespace Massive
 
 		private class SetComparer
 		{
-			private readonly BitSets _bitSets;
+			private readonly Sets _sets;
 
-			public readonly Comparison<BitSet> ByIndex;
+			public readonly Comparison<SparseSet> ByIndex;
 
-			public SetComparer(BitSets bitSets)
+			public SetComparer(Sets sets)
 			{
-				_bitSets = bitSets;
+				_sets = sets;
 				ByIndex = Compare;
 			}
 
-			private int Compare(BitSet a, BitSet b)
+			private int Compare(SparseSet a, SparseSet b)
 			{
-				return _bitSets.IndexOf(a).CompareTo(_bitSets.IndexOf(b));
+				return _sets.IndexOf(a).CompareTo(_sets.IndexOf(b));
 			}
 		}
 	}

@@ -56,7 +56,7 @@ namespace Massive
 
 			var cloneId = world.Create();
 
-			var sets = world.BitSets;
+			var sets = world.Sets;
 			var buffer = world.Components.Buffer;
 			var componentCount = world.Components.GetAll(id, buffer);
 
@@ -105,12 +105,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldSet);
@@ -136,12 +136,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			return candidate.Add(id);
@@ -163,12 +163,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			return candidate.Remove(id);
@@ -187,12 +187,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			return candidate.Has(id);
@@ -212,12 +212,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldGet);

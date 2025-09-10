@@ -41,7 +41,7 @@ namespace Massive
 
 		private Output CreateSparseSet<T>()
 		{
-			var bitSet = new BitSet();
+			var bitSet = new SparseSet();
 			var cloner = new SparseSetCloner<T>(bitSet);
 			return new Output(bitSet, cloner);
 		}
@@ -91,16 +91,16 @@ namespace Massive
 
 		public readonly struct Output
 		{
-			public readonly BitSet Set;
+			public readonly SparseSet Set;
 			public readonly SetCloner Cloner;
 
-			public Output(BitSet set, SetCloner cloner)
+			public Output(SparseSet set, SetCloner cloner)
 			{
 				Set = set;
 				Cloner = cloner;
 			}
 
-			public void Deconstruct(out BitSet set, out SetCloner cloner)
+			public void Deconstruct(out SparseSet set, out SetCloner cloner)
 			{
 				set = Set;
 				cloner = Cloner;

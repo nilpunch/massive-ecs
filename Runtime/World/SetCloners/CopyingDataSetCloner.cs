@@ -13,9 +13,9 @@ namespace Massive
 			_dataSet = dataSet;
 		}
 
-		public override void CopyTo(BitSets bitSets)
+		public override void CopyTo(Sets sets)
 		{
-			_dataSet.CopyToCopyable((DataSet<T>)bitSets.Get<T>());
+			_dataSet.CopyToCopyable((DataSet<T>)sets.Get<T>());
 		}
 	}
 }

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Massive.Tests
 {
 	[TestFixture]
-	public class BitSetTests
+	public class SparseSetTests
 	{
 		public int[] IdsToAssign =
 		{
@@ -22,7 +22,7 @@ namespace Massive.Tests
 		[TestCase(5)]
 		public void WhenIsAssigned_AndNotAssigned_ThenReturnFalse(int id)
 		{
-			var sparseSet = new BitSet();
+			var sparseSet = new SparseSet();
 
 			var isAssigned = sparseSet.Has(id);
 
@@ -33,7 +33,7 @@ namespace Massive.Tests
 		[TestCase(-1)]
 		public void WhenAssigned_AndNegativeIndex_ThenThrow(int id)
 		{
-			var sparseSet = new BitSet();
+			var sparseSet = new SparseSet();
 
 			Assert.Throws<NegativeArgumentException>(() =>
 			{

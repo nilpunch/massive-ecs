@@ -70,7 +70,7 @@ namespace Massive
 			var clone = world.Entifiers.Create();
 			var cloneId = clone.Id;
 
-			var sets = world.BitSets;
+			var sets = world.Sets;
 			var buffer = world.Components.Buffer;
 			var componentCount = world.Components.GetAll(entityId, buffer);
 
@@ -119,12 +119,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldSet);
@@ -150,12 +150,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			return candidate.Add(entifier.Id);
@@ -177,12 +177,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			return candidate.Remove(entifier.Id);
@@ -201,12 +201,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			return candidate.Has(entifier.Id);
@@ -226,12 +226,12 @@ namespace Massive
 
 			var info = ComponentId<T>.Info;
 
-			world.BitSets.EnsureLookupAt(info.Index);
-			var candidate = world.BitSets.Lookup[info.Index];
+			world.Sets.EnsureLookupAt(info.Index);
+			var candidate = world.Sets.Lookup[info.Index];
 
 			if (candidate == null)
 			{
-				candidate = world.BitSets.Get<T>();
+				candidate = world.Sets.Get<T>();
 			}
 
 			NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldGet);

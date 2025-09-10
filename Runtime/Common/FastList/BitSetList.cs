@@ -9,7 +9,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class BitSetList
 	{
-		private BitSet[] _items = Array.Empty<BitSet>();
+		private SparseSet[] _items = Array.Empty<SparseSet>();
 
 		public int Count { get; private set; }
 
@@ -21,32 +21,32 @@ namespace Massive
 			set => Array.Resize(ref _items, value);
 		}
 
-		public Span<BitSet> Span
+		public Span<SparseSet> Span
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new Span<BitSet>(_items, 0, Count);
+			get => new Span<SparseSet>(_items, 0, Count);
 		}
 
-		public ReadOnlySpan<BitSet> ReadOnlySpan
+		public ReadOnlySpan<SparseSet> ReadOnlySpan
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new ReadOnlySpan<BitSet>(_items, 0, Count);
+			get => new ReadOnlySpan<SparseSet>(_items, 0, Count);
 		}
 
-		public BitSet[] Items
+		public SparseSet[] Items
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _items;
 		}
 
-		public ref BitSet this[int index]
+		public ref SparseSet this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => ref _items[index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add(BitSet item)
+		public void Add(SparseSet item)
 		{
 			EnsureCapacity(Count + 1);
 
@@ -54,7 +54,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Remove(BitSet item)
+		public bool Remove(SparseSet item)
 		{
 			var index = IndexOf(item);
 			if (index >= 0)
@@ -80,13 +80,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(BitSet item)
+		public int IndexOf(SparseSet item)
 		{
 			return Array.IndexOf(_items, item, 0, Count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Insert(int index, BitSet item)
+		public void Insert(int index, SparseSet item)
 		{
 			EnsureCapacity(Count + 1);
 
@@ -100,27 +100,27 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int BinarySearch(BitSet item)
+		public int BinarySearch(SparseSet item)
 		{
 			return BinarySearch(0, Count, item, null);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int BinarySearch(BitSet item, IComparer<BitSet> comparer)
+		public int BinarySearch(SparseSet item, IComparer<SparseSet> comparer)
 		{
 			return BinarySearch(0, Count, item, comparer);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int BinarySearch(int index, int count, BitSet item, IComparer<BitSet> comparer)
+		public int BinarySearch(int index, int count, SparseSet item, IComparer<SparseSet> comparer)
 		{
-			return Array.BinarySearch(_items, index, count, item, comparer ?? Comparer<BitSet>.Default);
+			return Array.BinarySearch(_items, index, count, item, comparer ?? Comparer<SparseSet>.Default);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Span<BitSet>.Enumerator GetEnumerator()
+		public Span<SparseSet>.Enumerator GetEnumerator()
 		{
-			return new Span<BitSet>(_items, 0, Count).GetEnumerator();
+			return new Span<SparseSet>(_items, 0, Count).GetEnumerator();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

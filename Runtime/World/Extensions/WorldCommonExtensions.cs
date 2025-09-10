@@ -16,7 +16,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Clear<T>(this World world)
 		{
-			world.BitSet<T>().Clear();
+			world.SparseSet<T>().Clear();
 		}
 	}
 }

@@ -54,7 +54,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static BitsBase GetMinBits(BitSet[] bits, int count)
+		public static BitsBase GetMinBits(SparseSet[] bits, int count)
 		{
 			var minimal = bits[0];
 			for (var i = 1; i < count; i++)
@@ -82,7 +82,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static BitsBase GetMinBits(BitsBase first, BitSet[] bits, int count)
+		public static BitsBase GetMinBits(BitsBase first, SparseSet[] bits, int count)
 		{
 			var minimal = first;
 			for (var i = 0; i < count; i++)

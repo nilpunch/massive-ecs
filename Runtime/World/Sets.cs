@@ -11,9 +11,9 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class BitSets
+	public class Sets
 	{
-		private Dictionary<string, BitSet> SetsByIdentifiers { get; } = new Dictionary<string, BitSet>();
+		private Dictionary<string, SparseSet> SetsByIdentifiers { get; } = new Dictionary<string, SparseSet>();
 
 		private FastList<int> Hashes { get; } = new FastList<int>();
 
@@ -23,7 +23,7 @@ namespace Massive
 
 		public BitSetList AllSets { get; } = new BitSetList();
 
-		public BitSet[] Lookup { get; private set; } = Array.Empty<BitSet>();
+		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
 
 		public int LookupCapacity { get; private set; }
 
@@ -31,14 +31,14 @@ namespace Massive
 
 		public Components Components { get; }
 
-		public BitSets(SetFactory setFactory, Components components)
+		public Sets(SetFactory setFactory, Components components)
 		{
 			SetFactory = setFactory;
 			Components = components;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet GetExisting(string setId)
+		public SparseSet GetExisting(string setId)
 		{
 			if (SetsByIdentifiers.TryGetValue(setId, out var set))
 			{
@@ -49,7 +49,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet Get<T>()
+		public SparseSet Get<T>()
 		{
 			var info = ComponentId<T>.Info;
 
@@ -73,7 +73,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet GetReflected(Type setType)
+		public SparseSet GetReflected(Type setType)
 		{
 			if (ComponentId.TryGetInfo(setType, out var info))
 			{
@@ -86,9 +86,9 @@ namespace Massive
 				}
 			}
 
-			var createMethod = typeof(BitSets).GetMethod(nameof(Get));
+			var createMethod = typeof(Sets).GetMethod(nameof(Get));
 			var genericMethod = createMethod?.MakeGenericMethod(setType);
-			return (BitSet)genericMethod?.Invoke(this, new object[] { });
+			return (SparseSet)genericMethod?.Invoke(this, new object[] { });
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -103,7 +103,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		private void InsertSet(string setId, BitSet set, SetCloner cloner)
+		private void InsertSet(string setId, SparseSet set, SetCloner cloner)
 		{
 			// Maintain items sorted.
 			var itemIndex = Identifiers.BinarySearch(setId);
@@ -123,19 +123,19 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(BitSet bitSet)
+		public int IndexOf(SparseSet sparseSet)
 		{
-			return bitSet.ComponentId;
+			return sparseSet.ComponentId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Type TypeOf(BitSet bitSet)
+		public Type TypeOf(SparseSet sparseSet)
 		{
-			return ComponentId.GetTypeByIndex(bitSet.ComponentId);
+			return ComponentId.GetTypeByIndex(sparseSet.ComponentId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetOrderedHashCode(BitSet[] orderedSets)
+		public int GetOrderedHashCode(SparseSet[] orderedSets)
 		{
 			var hash = 17;
 			for (var i = 0; i < orderedSets.Length; i++)
@@ -155,7 +155,7 @@ namespace Massive
 		/// Throws if the set factories are incompatible.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(BitSets other)
+		public void CopyTo(Sets other)
 		{
 			IncompatibleConfigsException.ThrowIfIncompatible(SetFactory, other.SetFactory);
 

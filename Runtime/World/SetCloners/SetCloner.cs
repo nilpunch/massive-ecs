@@ -2,6 +2,6 @@
 {
 	public abstract class SetCloner
 	{
-		public abstract void CopyTo(BitSets bitSets);
+		public abstract void CopyTo(Sets sets);
 	}
 }
