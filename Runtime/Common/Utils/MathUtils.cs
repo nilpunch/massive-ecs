@@ -6,7 +6,7 @@ namespace Massive
 	[Il2CppEagerStaticClassConstruction]
 	public static class MathUtils
 	{
-		private static byte[] DeBruijn =
+		public static readonly byte[] DeBruijn =
 		{
 			0, 1, 17, 2, 18, 50, 3, 57, 47, 19, 22, 51, 29, 4, 33, 58,
 			15, 48, 20, 27, 25, 23, 52, 41, 54, 30, 38, 5, 43, 34, 59, 8,
