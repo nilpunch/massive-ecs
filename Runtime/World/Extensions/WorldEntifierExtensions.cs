@@ -71,8 +71,8 @@ namespace Massive
 			var cloneId = clone.Id;
 
 			var sets = world.Sets;
-			var buffer = world.Masks.Buffer;
-			var componentCount = world.Masks.GetAll(entityId, buffer);
+			var buffer = world.Components.Buffer;
+			var componentCount = world.Components.GetAll(entityId, buffer);
 
 			for (int i = 0; i < componentCount; i++)
 			{

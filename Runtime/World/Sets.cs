@@ -17,17 +17,11 @@ namespace Massive
 
 		private FastList<int> Hashes { get; } = new FastList<int>();
 
-		private FastList<bool> IsNegative { get; } = new FastList<bool>();
-
 		private FastList<string> Identifiers { get; } = new FastList<string>();
-
-		private FastList<string> NegativeIdentifiers { get; } = new FastList<string>();
 
 		private FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
 
 		public SparseSetList AllSets { get; } = new SparseSetList();
-
-		public SparseSetList NegativeSets { get; } = new SparseSetList();
 
 		public SparseSet[] Lookup { get; private set; } = Array.Empty<SparseSet>();
 
@@ -37,7 +31,7 @@ namespace Massive
 
 		public Entifiers Entifiers { get; set; }
 
-		public Masks Masks { get; set; }
+		public Components Components { get; set; }
 
 		public Sets(SetFactory setFactory)
 		{
@@ -68,24 +62,13 @@ namespace Massive
 				return candidate;
 			}
 
-			var collapsedInfo = ComponentId.GetInfo(NegativeUtils.CollapseNegations(info.Type));
-			if (collapsedInfo.Type != info.Type)
-			{
-				var collapsedSet = GetReflected(collapsedInfo.Type);
-				Lookup[info.Index] = collapsedSet;
-				return collapsedSet;
-			}
-
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
 			set.ComponentId = info.Index;
-			set.Masks = Masks;
+			set.Components = Components;
 
-			var isNegative = NegativeUtils.IsNegative(info.Type);
-			InsertSet(info.FullName, set, cloner, isNegative);
+			InsertSet(info.FullName, set, cloner);
 			Lookup[info.Index] = set;
-
-			PairComplementarySet(set, info);
 
 			return set;
 		}
@@ -116,12 +99,12 @@ namespace Massive
 			{
 				LookupCapacity = MathUtils.NextPowerOf2(index + 1);
 				Lookup = Lookup.Resize(LookupCapacity);
-				Masks.EnsureComponentsCapacity(LookupCapacity);
+				Components.EnsureComponentsCapacity(LookupCapacity);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		private void InsertSet(string setId, SparseSet set, SetCloner cloner, bool isNegative = false)
+		private void InsertSet(string setId, SparseSet set, SetCloner cloner)
 		{
 			// Maintain items sorted.
 			var itemIndex = Identifiers.BinarySearch(setId);
@@ -136,64 +119,7 @@ namespace Massive
 				AllSets.Insert(insertionIndex, set);
 				Cloners.Insert(insertionIndex, cloner);
 				Hashes.Insert(insertionIndex, setId.GetHashCode());
-				IsNegative.Insert(insertionIndex, isNegative);
 				SetsByIdentifiers.Add(setId, set);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		private void PairComplementarySet(SparseSet set, TypeIdInfo typeInfo)
-		{
-			var type = typeInfo.Type;
-
-			if (NegativeUtils.IsNegative(type))
-			{
-				var itemIndex = NegativeIdentifiers.BinarySearch(typeInfo.FullName);
-				if (itemIndex >= 0)
-				{
-					return;
-				}
-				var insertionIndex = ~itemIndex;
-				NegativeIdentifiers.Insert(insertionIndex, typeInfo.FullName);
-				NegativeSets.Insert(insertionIndex, set);
-
-				var positiveSet = GetReflected(type.GetGenericArguments()[0]);
-
-				SetUtils.PopulateFromEntifiers(set, Entifiers);
-				foreach (var id in positiveSet)
-				{
-					set.Remove(id, updateMasksAndNegative: false);
-				}
-				foreach (var id in set)
-				{
-					Masks.Set(id, typeInfo.Index);
-				}
-				set.Negative = positiveSet;
-				positiveSet.Negative = set;
-			}
-			else if (type.IsDefined(typeof(StoreNegativeAttribute), false))
-			{
-				var negativeType = typeof(Not<>).MakeGenericType(type);
-				var negativeInfo = ComponentId.GetInfo(negativeType);
-
-				var itemIndex = NegativeIdentifiers.BinarySearch(negativeInfo.FullName);
-				if (itemIndex >= 0)
-				{
-					return;
-				}
-				var insertionIndex = ~itemIndex;
-				NegativeIdentifiers.Insert(insertionIndex, negativeInfo.FullName);
-
-				var negativeSet = GetReflected(negativeType);
-				NegativeSets.Insert(insertionIndex, negativeSet);
-
-				SetUtils.PopulateFromEntifiers(negativeSet, Entifiers);
-				foreach (var id in negativeSet)
-				{
-					Masks.Set(id, negativeInfo.Index);
-				}
-				set.Negative = negativeSet;
-				negativeSet.Negative = set;
 			}
 		}
 
@@ -231,7 +157,6 @@ namespace Massive
 			var hashes = Hashes;
 			var otherHashes = other.Hashes;
 			var otherSets = other.AllSets;
-			var otherIsNegative = other.IsNegative;
 
 			if (hashes.Count == otherHashes.Count)
 			{
@@ -244,19 +169,7 @@ namespace Massive
 			{
 				if (index >= hashes.Count || otherHashes[otherIndex] != hashes[index])
 				{
-					var otherSet = otherSets[otherIndex];
-					if (otherIsNegative[otherIndex])
-					{
-						SetUtils.PopulateFromEntifiers(otherSet, other.Entifiers);
-						foreach (var id in otherSet.Negative)
-						{
-							otherSet.Remove(id, updateMasksAndNegative: false);
-						}
-					}
-					else
-					{
-						otherSet.ClearWithoutNotify();
-					}
+					otherSets[otherIndex].ClearWithoutNotify();
 				}
 				else
 				{

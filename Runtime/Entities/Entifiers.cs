@@ -131,7 +131,6 @@ namespace Massive
 			}
 
 			AfterCreated?.Invoke(entifier.Id);
-			WorldContext?.EntityCreated(entifier.Id);
 			return entifier;
 		}
 
@@ -198,7 +197,6 @@ namespace Massive
 				NextHoleId = ~Packed[index];
 				Packed[index] = id;
 				AfterCreated?.Invoke(id);
-				WorldContext?.EntityCreated(id);
 			}
 
 			while (Count < UsedIds && needToCreate > 0)
@@ -206,7 +204,6 @@ namespace Massive
 				needToCreate -= 1;
 				Count += 1;
 				AfterCreated?.Invoke(Packed[Count - 1]);
-				WorldContext?.EntityCreated(Packed[Count - 1]);
 			}
 
 			for (var i = 0; i < needToCreate; i++)
@@ -215,7 +212,6 @@ namespace Massive
 				UsedIds += 1;
 				Count += 1;
 				AfterCreated?.Invoke(UsedIds - 1);
-				WorldContext?.EntityCreated(UsedIds - 1);
 			}
 		}
 
@@ -303,7 +299,7 @@ namespace Massive
 				var newCapacity = MathUtils.NextPowerOf2(index + 1);
 				ResizePacked(newCapacity);
 				ResizeSparse(newCapacity);
-				WorldContext?.Masks.EnsureEntitiesCapacity(newCapacity);
+				WorldContext?.Components.EnsureEntitiesCapacity(newCapacity);
 			}
 		}
 

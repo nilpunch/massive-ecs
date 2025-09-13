@@ -24,12 +24,18 @@ namespace Massive
 		{
 			return new FilterView(view.World, view.World.GetFilter<Include<T1, T2, T3>, None>(), view.PackingWhenIterating);
 		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static FilterView Include<T1, T2, T3, T4>(this View view)
+		{
+			return new FilterView(view.World, view.World.GetFilter<Include<T1, T2, T3, T4>, None>(), view.PackingWhenIterating);
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Include<T1, T2, T3, TInclude>(this View view)
+		public static FilterView Include<T1, T2, T3, T4, TInclude>(this View view)
 			where TInclude : IIncludeSelector, new()
 		{
-			return new FilterView(view.World, view.World.GetFilter<Include<T1, T2, T3, TInclude>, None>(), view.PackingWhenIterating);
+			return new FilterView(view.World, view.World.GetFilter<Include<T1, T2, T3, T4, TInclude>, None>(), view.PackingWhenIterating);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,12 +55,18 @@ namespace Massive
 		{
 			return new FilterView(view.World, view.World.GetFilter<None, Exclude<T1, T2, T3>>(), view.PackingWhenIterating);
 		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static FilterView Exclude<T1, T2, T3, T4>(this View view)
+		{
+			return new FilterView(view.World, view.World.GetFilter<None, Exclude<T1, T2, T3, T4>>(), view.PackingWhenIterating);
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Exclude<T1, T2, T3, TExclude>(this View view)
+		public static FilterView Exclude<T1, T2, T3, T4, TExclude>(this View view)
 			where TExclude : IExcludeSelector, new()
 		{
-			return new FilterView(view.World, view.World.GetFilter<None, Exclude<T1, T2, T3, TExclude>>(), view.PackingWhenIterating);
+			return new FilterView(view.World, view.World.GetFilter<None, Exclude<T1, T2, T3, T4, TExclude>>(), view.PackingWhenIterating);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

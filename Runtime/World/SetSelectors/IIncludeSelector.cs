@@ -16,7 +16,11 @@
 	{
 	}
 
-	public class Include<T1, T2, T3, TInclude> : Selector<T1, T2, T3, TInclude>, IIncludeSelector
+	public class Include<T1, T2, T3, T4> : Selector<T1, T2, T3, T4>, IIncludeSelector
+	{
+	}
+
+	public class Include<T1, T2, T3, T4, TInclude> : Selector<T1, T2, T3, T4, TInclude>, IIncludeSelector
 		where TInclude : IIncludeSelector, new()
 	{
 	}

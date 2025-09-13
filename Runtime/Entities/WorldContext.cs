@@ -11,46 +11,31 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorldContext
 	{
-		private SparseSetList NegativeSets { get; }
-
 		public Sets Sets { get; }
 
-		public Masks Masks { get; }
+		public Components Components { get; }
 
 		public Allocators Allocators { get; }
 
-		public WorldContext(Sets sets, Allocators allocators, Masks masks)
+		public WorldContext(Sets sets, Allocators allocators, Components components)
 		{
 			Sets = sets;
-			Masks = masks;
-			NegativeSets = sets.NegativeSets;
+			Components = components;
 			Allocators = allocators;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EntityDestroyed(int id)
 		{
-			var buffer = Masks.Buffer;
-			var componentCount = Masks.GetAllAndRemove(id, buffer);
+			var buffer = Components.Buffer;
+			var componentCount = Components.GetAllAndRemove(id, buffer);
 
 			for (var i = 0; i < componentCount; i++)
 			{
-				Sets.Lookup[buffer[i]].Remove(id, updateMasksAndNegative: false);
+				Sets.Lookup[buffer[i]].Remove(id, updateComponents: false);
 			}
 
 			Allocators.Free(id);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EntityCreated(int id)
-		{
-			var setCount = NegativeSets.Count;
-			var sets = NegativeSets.Items;
-			for (var i = setCount - 1; i >= 0; i--)
-			{
-				sets[i].Add(id, updateMasksAndNegative: false);
-				Masks.Set(id, sets[i].ComponentId);
-			}
 		}
 	}
 }

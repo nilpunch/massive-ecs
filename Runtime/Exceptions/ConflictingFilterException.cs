@@ -30,13 +30,6 @@ namespace Massive
 						throw new ConflictingFilterException("Filter has conflicting included and excluded components.");
 					}
 				}
-				for (var j = 0; j < included.Length; j++)
-				{
-					if (included[i] == included[j].Negative)
-					{
-						throw new ConflictingFilterException("Filter has conflicting including components.");
-					}
-				}
 			}
 		}
 

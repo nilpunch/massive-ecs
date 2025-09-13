@@ -68,7 +68,7 @@ namespace Massive
 					_index = _packedSet.Count - 1;
 				}
 
-				while (_index >= 0 && !_rentedMask.ContainsId(_packedSet.Packed[_index]))
+				while (_index >= 0 && (_packedSet.Packed[_index] < 0 || !_rentedMask.ContainsId(_packedSet.Packed[_index])))
 				{
 					--_index;
 				}

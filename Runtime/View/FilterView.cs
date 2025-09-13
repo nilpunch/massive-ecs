@@ -40,7 +40,7 @@ namespace Massive
 				}
 
 				var id = packedSet.Packed[i];
-				if (mask.ContainsId(id))
+				if (id >= 0 && mask.ContainsId(id))
 				{
 					if (!action.Apply(id))
 					{
@@ -65,8 +65,8 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(dataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var mask = World.Masks.RentMaskCopy(Filter.Mask);
-			mask.Include(dataSet.ComponentId);
+			var mask = World.Components.RentMaskCopy(Filter.Mask);
+			mask.Include(dataSet);
 
 			if (minSet == dataSet)
 			{
@@ -82,7 +82,7 @@ namespace Massive
 						}
 
 						var id = dataSet.Packed[page.Offset + index];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							if (!action.Apply(id, ref dataPage[index]))
 							{
@@ -103,7 +103,7 @@ namespace Massive
 					}
 
 					var id = minSet.Packed[i];
-					if (mask.ContainsId(id))
+					if (id >= 0 && mask.ContainsId(id))
 					{
 						var index = dataSet.Sparse[id];
 						if (!action.Apply(id, ref data[index]))
@@ -136,9 +136,9 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var mask = World.Masks.RentMaskCopy(Filter.Mask);
-			mask.Include(dataSet1.ComponentId);
-			mask.Include(dataSet2.ComponentId);
+			var mask = World.Components.RentMaskCopy(Filter.Mask);
+			mask.Include(dataSet1);
+			mask.Include(dataSet2);
 
 			if (minSet == dataSet1)
 			{
@@ -154,7 +154,7 @@ namespace Massive
 						}
 
 						var id = dataSet1.Packed[page.Offset + index1];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							var index2 = dataSet2.Sparse[id];
 							if (!action.Apply(id, ref page1[index1], ref data2[index2]))
@@ -179,7 +179,7 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[page.Offset + index2];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							var index1 = dataSet1.Sparse[id];
 							if (!action.Apply(id, ref data1[index1], ref page2[index2]))
@@ -201,7 +201,7 @@ namespace Massive
 					}
 
 					var id = minSet.Packed[i];
-					if (mask.ContainsId(id))
+					if (id >= 0 && mask.ContainsId(id))
 					{
 						var index1 = dataSet1.Sparse[id];
 						var index2 = dataSet2.Sparse[id];
@@ -239,10 +239,10 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var mask = World.Masks.RentMaskCopy(Filter.Mask);
-			mask.Include(dataSet1.ComponentId);
-			mask.Include(dataSet2.ComponentId);
-			mask.Include(dataSet3.ComponentId);
+			var mask = World.Components.RentMaskCopy(Filter.Mask);
+			mask.Include(dataSet1);
+			mask.Include(dataSet2);
+			mask.Include(dataSet3);
 
 			if (minSet == dataSet1)
 			{
@@ -258,7 +258,7 @@ namespace Massive
 						}
 
 						var id = dataSet1.Packed[page.Offset + index1];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							var index2 = dataSet2.Sparse[id];
 							var index3 = dataSet3.Sparse[id];
@@ -284,7 +284,7 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[page.Offset + index2];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							var index1 = dataSet1.Sparse[id];
 							var index3 = dataSet3.Sparse[id];
@@ -310,7 +310,7 @@ namespace Massive
 						}
 
 						var id = dataSet3.Packed[page.Offset + index3];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							var index1 = dataSet1.Sparse[id];
 							var index2 = dataSet2.Sparse[id];
@@ -333,7 +333,7 @@ namespace Massive
 					}
 
 					var id = minSet.Packed[i];
-					if (mask.ContainsId(id))
+					if (id >= 0 && mask.ContainsId(id))
 					{
 						var index1 = dataSet1.Sparse[id];
 						var index2 = dataSet2.Sparse[id];
@@ -376,11 +376,11 @@ namespace Massive
 
 			var minSet = SetUtils.GetMinimalSet(minDataSet, Filter.Included);
 			var originalPacking = minSet.ExchangeToStricterPacking(PackingWhenIterating);
-			var mask = World.Masks.RentMaskCopy(Filter.Mask);
-			mask.Include(dataSet1.ComponentId);
-			mask.Include(dataSet2.ComponentId);
-			mask.Include(dataSet3.ComponentId);
-			mask.Include(dataSet4.ComponentId);
+			var mask = World.Components.RentMaskCopy(Filter.Mask);
+			mask.Include(dataSet1);
+			mask.Include(dataSet2);
+			mask.Include(dataSet3);
+			mask.Include(dataSet4);
 
 			if (minSet == dataSet1)
 			{
@@ -396,7 +396,7 @@ namespace Massive
 						}
 
 						var id = dataSet1.Packed[page.Offset + index1];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							var index2 = dataSet2.Sparse[id];
 							var index3 = dataSet3.Sparse[id];
@@ -423,7 +423,7 @@ namespace Massive
 						}
 
 						var id = dataSet2.Packed[page.Offset + index2];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							var index1 = dataSet1.Sparse[id];
 							var index3 = dataSet3.Sparse[id];
@@ -450,7 +450,7 @@ namespace Massive
 						}
 
 						var id = dataSet3.Packed[page.Offset + index3];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							var index1 = dataSet1.Sparse[id];
 							var index2 = dataSet2.Sparse[id];
@@ -477,7 +477,7 @@ namespace Massive
 						}
 
 						var id = dataSet4.Packed[page.Offset + index4];
-						if (mask.ContainsId(id))
+						if (id >= 0 && mask.ContainsId(id))
 						{
 							var index1 = dataSet1.Sparse[id];
 							var index2 = dataSet2.Sparse[id];
@@ -501,7 +501,7 @@ namespace Massive
 					}
 
 					var id = minSet.Packed[i];
-					if (mask.ContainsId(id))
+					if (id >= 0 && mask.ContainsId(id))
 					{
 						var index1 = dataSet1.Sparse[id];
 						var index2 = dataSet2.Sparse[id];
@@ -524,12 +524,12 @@ namespace Massive
 		{
 			if (Filter.Included.Length == 0)
 			{
-				return new PackedMaskedEnumerator(World.Entifiers, World.Masks.RentMaskCopy(Filter.Mask), PackingWhenIterating);
+				return new PackedMaskedEnumerator(World.Entifiers, World.Components.RentMaskCopy(Filter.Mask), PackingWhenIterating);
 			}
 			else
 			{
 				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
-				return new PackedMaskedEnumerator(minimalSet, World.Masks.RentMaskCopy(Filter.Mask), PackingWhenIterating);
+				return new PackedMaskedEnumerator(minimalSet, World.Components.RentMaskCopy(Filter.Mask), PackingWhenIterating);
 			}
 		}
 
@@ -538,12 +538,12 @@ namespace Massive
 		{
 			if (Filter.Included.Length == 0)
 			{
-				return new PackedMaskedEntityEnumerable(World.Entifiers, World.Masks.RentMaskCopy(Filter.Mask), World, PackingWhenIterating);
+				return new PackedMaskedEntityEnumerable(World.Entifiers, World.Components.RentMaskCopy(Filter.Mask), World, PackingWhenIterating);
 			}
 			else
 			{
 				var minimalSet = SetUtils.GetMinimalSet(Filter.Included);
-				return new PackedMaskedEntityEnumerable(minimalSet, World.Masks.RentMaskCopy(Filter.Mask), World, PackingWhenIterating);
+				return new PackedMaskedEntityEnumerable(minimalSet, World.Components.RentMaskCopy(Filter.Mask), World, PackingWhenIterating);
 			}
 		}
 	}

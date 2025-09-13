@@ -41,11 +41,6 @@ namespace Massive
 		protected int NextHole { get; set; } = EndHole;
 
 		/// <summary>
-		/// Represents the complementary set. Adding an element to this set removes it from the current one, and vice versa.
-		/// </summary>
-		public SparseSet Negative { get; set; }
-
-		/// <summary>
 		/// Associated component index. Session-dependent, used for lookups.<br/>
 		/// </summary>
 		public int ComponentId { get; set; } = -1;
@@ -53,7 +48,7 @@ namespace Massive
 		/// <summary>
 		/// Shortcut to access masks.
 		/// </summary>
-		public Masks Masks { get; set; }
+		public Components Components { get; set; }
 
 		public SparseSet(Packing packing = Packing.Continuous)
 		{
@@ -115,7 +110,7 @@ namespace Massive
 		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Add(int id, bool updateMasksAndNegative = true)
+		public bool Add(int id, bool updateComponents = true)
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
@@ -149,10 +144,9 @@ namespace Massive
 			UsedIds = MathUtils.Max(UsedIds, id + 1);
 
 			AfterAdded?.Invoke(id);
-			if (updateMasksAndNegative)
+			if (updateComponents)
 			{
-				Masks?.Set(id, ComponentId);
-				Negative?.Remove(id);
+				Components?.Set(id, ComponentId);
 			}
 
 			return true;
@@ -168,7 +162,7 @@ namespace Massive
 		/// Throws if provided ID is negative.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Remove(int id, bool updateMasksAndNegative = true)
+		public bool Remove(int id, bool updateComponents = true)
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
@@ -179,10 +173,9 @@ namespace Massive
 			}
 
 			BeforeRemoved?.Invoke(id);
-			if (updateMasksAndNegative)
+			if (updateComponents)
 			{
-				Masks?.Remove(id, ComponentId);
-				Negative?.Add(id);
+				Components?.Remove(id, ComponentId);
 			}
 
 			var index = Sparse[id];
@@ -217,7 +210,6 @@ namespace Massive
 				{
 					var id = Packed[i];
 					BeforeRemoved?.Invoke(id);
-					Negative?.Add(id);
 					Sparse[id] = Constants.InvalidId;
 				}
 			}
@@ -229,7 +221,6 @@ namespace Massive
 					if (id >= 0)
 					{
 						BeforeRemoved?.Invoke(id);
-						Negative?.Add(id);
 						Sparse[id] = Constants.InvalidId;
 					}
 				}

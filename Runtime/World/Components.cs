@@ -13,7 +13,7 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Masks
+	public class Components
 	{
 		private readonly byte[] DeBruijn =
 		{
@@ -23,18 +23,14 @@ namespace Massive
 			62, 55, 45, 31, 13, 39, 36, 6, 61, 44, 12, 35, 60, 11, 10, 9,
 		};
 
-		private Mask[] MaskPool { get; set; } = Array.Empty<Mask>();
-
-		private int MaskCount { get; set; }
-
-		public long[] BitMap { get; private set; } = Array.Empty<long>();
+		public ulong[] BitMap { get; private set; } = Array.Empty<ulong>();
 
 		/// <summary>
 		/// Has capacity of MaskLenght * 64.
 		/// </summary>
 		public int[] Buffer { get; private set; } = Array.Empty<int>();
 
-		public int BitMapCapcity { get; private set; }
+		public int BitMapCapacity { get; private set; }
 
 		public int MaskLength { get; private set; }
 
@@ -45,7 +41,7 @@ namespace Massive
 		{
 			var index = componentId >> 6; // div 64.
 			var bit = componentId & 63; // mod 64.
-			BitMap[entityId * MaskLength + index] |= 1L << bit;
+			BitMap[entityId * MaskLength + index] |= 1UL << bit;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -53,7 +49,7 @@ namespace Massive
 		{
 			var index = componentId >> 6; // div 64.
 			var bit = componentId & 63; // mod 64.
-			BitMap[entityId * MaskLength + index] &= ~(1L << bit);
+			BitMap[entityId * MaskLength + index] &= ~(1UL << bit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -61,7 +57,7 @@ namespace Massive
 		{
 			var index = componentId >> 6; // div 64.
 			var bit = componentId & 63; // mod 64.
-			return (BitMap[entityId * MaskLength + index] & (1L << bit)) != 0;
+			return (BitMap[entityId * MaskLength + index] & (1UL << bit)) != 0;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -76,11 +72,11 @@ namespace Massive
 
 				// Algorithm adapted from StaticEcs
 				// Source: https://github.com/Felid-Force-Studios/StaticEcs/blob/be8bb1c668309294aeecef80313677da368d7703/Src/Utils/BitMask.cs#L432
-				while (mask != 0L)
+				while (mask != 0UL)
 				{
-					var componentIndex = DeBruijn[((ulong)(mask & -mask) * 0x37E84A99DAE458F) >> 58]; // LSB(v).
+					var componentIndex = DeBruijn[((mask & (~mask + 1UL)) * 0x37E84A99DAE458F) >> 58]; // LSB(v).
 					buffer[componentCount++] = componentOffset + componentIndex;
-					mask &= mask - 1L;
+					mask &= mask - 1UL;
 				}
 			}
 
@@ -99,7 +95,7 @@ namespace Massive
 
 				while (mask != 0L)
 				{
-					var componentIndex = DeBruijn[((ulong)(mask & -mask) * 0x37E84A99DAE458F) >> 58]; // LSB(v).
+					var componentIndex = DeBruijn[((mask & (~mask + 1UL)) * 0x37E84A99DAE458F) >> 58]; // LSB(v).
 					buffer[componentCount++] = componentOffset + componentIndex;
 					mask &= mask - 1L;
 				}
@@ -116,8 +112,8 @@ namespace Massive
 			if (capacity > EntitiesCapacity)
 			{
 				EntitiesCapacity = MathUtils.NextPowerOf2(capacity);
-				BitMapCapcity = MaskLength * EntitiesCapacity;
-				BitMap = BitMap.Resize(BitMapCapcity);
+				BitMapCapacity = MaskLength * EntitiesCapacity;
+				BitMap = BitMap.Resize(BitMapCapacity);
 			}
 		}
 
@@ -129,7 +125,7 @@ namespace Massive
 			if (maskLength > MaskLength)
 			{
 				var oldMaskLength = MaskLength;
-				var newBitMap = new long[maskLength * EntitiesCapacity];
+				var newBitMap = new ulong[maskLength * EntitiesCapacity];
 
 				for (var entityId = 0; entityId < EntitiesCapacity; entityId++)
 				{
@@ -144,57 +140,18 @@ namespace Massive
 
 				BitMap = newBitMap;
 				MaskLength = maskLength;
-				BitMapCapcity = BitMap.Length;
+				BitMapCapacity = BitMap.Length;
 				Buffer = Buffer.Resize(maskLength * 64);
 			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Mask RentMask()
-		{
-			if (MaskCount > 0)
-			{
-				var mask = MaskPool[--MaskCount];
-				mask.Clear();
-				mask.Masks = this;
-				return mask;
-			}
-
-			return Mask.New(this);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Mask RentMaskCopy(Mask maskToCopy)
-		{
-			if (MaskCount > 0)
-			{
-				var mask = MaskPool[--MaskCount];
-				maskToCopy.CopyTo(ref mask);
-				mask.Masks = this;
-				return mask;
-			}
-
-			return Mask.New(this);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ReturnMask(Mask mask)
-		{
-			if (MaskCount >= MaskPool.Length)
-			{
-				MaskPool = MaskPool.Resize(MathUtils.NextPowerOf2(MaskCount + 1));
-			}
-
-			MaskPool[MaskCount++] = mask;
 		}
 
 		/// <summary>
 		/// Creates and returns a new sparse set that is an exact copy of this one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Masks Clone()
+		public Components Clone()
 		{
-			var clone = new Masks();
+			var clone = new Components();
 			CopyTo(clone);
 			return clone;
 		}
@@ -203,10 +160,10 @@ namespace Massive
 		/// Copies all sparse state from this set into the specified one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(Masks other)
+		public void CopyTo(Components other)
 		{
-			var bitmapCapacity = BitMapCapcity;
-			var otherBitmapCapacity = other.BitMapCapcity;
+			var bitmapCapacity = BitMapCapacity;
+			var otherBitmapCapacity = other.BitMapCapacity;
 
 			if (other.MaskLength != MaskLength)
 			{
@@ -217,16 +174,16 @@ namespace Massive
 
 			if (otherBitmapCapacity < bitmapCapacity)
 			{
-				other.BitMap = new long[bitmapCapacity];
+				other.BitMap = new ulong[bitmapCapacity];
 				other.EntitiesCapacity = EntitiesCapacity;
-				other.BitMapCapcity = bitmapCapacity;
+				other.BitMapCapacity = bitmapCapacity;
 			}
 
 			Array.Copy(BitMap, other.BitMap, bitmapCapacity);
 
 			if (bitmapCapacity < otherBitmapCapacity)
 			{
-				Array.Fill(other.BitMap, 0L, bitmapCapacity, otherBitmapCapacity - bitmapCapacity);
+				Array.Fill(other.BitMap, 0UL, bitmapCapacity, otherBitmapCapacity - bitmapCapacity);
 			}
 		}
 	}

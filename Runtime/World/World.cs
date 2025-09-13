@@ -13,7 +13,7 @@ namespace Massive
 		public Entifiers Entifiers { get; }
 
 		public Sets Sets { get; }
-		public Masks Masks { get; }
+		public Components Components { get; }
 		public Filters Filters { get; }
 		public Allocators Allocators { get; }
 
@@ -26,16 +26,16 @@ namespace Massive
 
 		public World(WorldConfig worldConfig)
 		{
-			Masks = new Masks();
+			Components = new Components();
 			Entifiers = new Entifiers();
 			Sets = new Sets(new SetFactory(worldConfig));
-			Filters = new Filters(Sets, Masks, worldConfig.OptimizeExludeFilter);
+			Filters = new Filters(Sets, Components);
 			Allocators = new Allocators();
 			Config = worldConfig;
 
 			Sets.Entifiers = Entifiers;
-			Sets.Masks = Masks;
-			Entifiers.WorldContext = new WorldContext(Sets, Allocators, Masks);
+			Sets.Components = Components;
+			Entifiers.WorldContext = new WorldContext(Sets, Allocators, Components);
 		}
 	}
 }

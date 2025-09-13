@@ -84,8 +84,8 @@
 
 			// Chain any number of components in filters.
 			var filter = world.Filter<
-				Include<int, string, bool, Include<short, byte, uint, Include<ushort>>>,
-				Exclude<long, char, float, Exclude<double>>>();
+				Include<int, string, bool, short, Include<short, byte, uint, ushort>>,
+				Exclude<long, char, float, double, Exclude<ulong>>>();
 
 			// Reuse the same filter view to iterate over different components.
 			filter.ForEach((ref int n, ref bool b) => { });

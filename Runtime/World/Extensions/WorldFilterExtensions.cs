@@ -52,12 +52,8 @@ namespace Massive
 				return candidate;
 			}
 
-			var included = world.Config.OptimizeExludeFilter
-				? new TInclude().Select(world.Sets).Concat(new TExclude().Select(world.Sets, negative: true)).ToArray()
-				: new TInclude().Select(world.Sets);
-			var excluded = world.Config.OptimizeExludeFilter
-				? Array.Empty<SparseSet>()
-				: new TExclude().Select(world.Sets);
+			var included = new TInclude().Select(world.Sets);
+			var excluded = new TExclude().Select(world.Sets);
 
 			var filter = filters.Get(included, excluded);
 
@@ -85,12 +81,18 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Include<T1, T2, T3, TInclude>(this World world)
-			where TInclude : IIncludeSelector, new()
+		public static FilterView Include<T1, T2, T3, T4>(this World world)
 		{
-			return new FilterView(world, world.GetFilter<Include<T1, T2, T3, TInclude>, None>(), world.Config.PackingWhenIterating);
+			return new FilterView(world, world.GetFilter<Include<T1, T2, T3, T4>, None>(), world.Config.PackingWhenIterating);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static FilterView Include<T1, T2, T3, T4, TInclude>(this World world)
+			where TInclude : IIncludeSelector, new()
+		{
+			return new FilterView(world, world.GetFilter<Include<T1, T2, T3, T4, TInclude>, None>(), world.Config.PackingWhenIterating);
+		}
+		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static FilterView Exclude<T>(this World world)
 		{
@@ -108,12 +110,18 @@ namespace Massive
 		{
 			return new FilterView(world, world.GetFilter<None, Exclude<T1, T2, T3>>(), world.Config.PackingWhenIterating);
 		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static FilterView Exclude<T1, T2, T3, T4>(this World world)
+		{
+			return new FilterView(world, world.GetFilter<None, Exclude<T1, T2, T3, T4>>(), world.Config.PackingWhenIterating);
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Exclude<T1, T2, T3, TExclude>(this World world)
+		public static FilterView Exclude<T1, T2, T3, T4, TExclude>(this World world)
 			where TExclude : IExcludeSelector, new()
 		{
-			return new FilterView(world, world.GetFilter<None, Exclude<T1, T2, T3, TExclude>>(), world.Config.PackingWhenIterating);
+			return new FilterView(world, world.GetFilter<None, Exclude<T1, T2, T3, T4, TExclude>>(), world.Config.PackingWhenIterating);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

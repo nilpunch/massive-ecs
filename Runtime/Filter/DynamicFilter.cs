@@ -13,7 +13,7 @@ namespace Massive
 	{
 		public Sets Sets { get; }
 
-		public DynamicFilter(World world) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>(), world.Masks)
+		public DynamicFilter(World world) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>(), world.Components)
 		{
 			Sets = world.Sets;
 		}
@@ -31,13 +31,13 @@ namespace Massive
 
 			if (IncludedCount >= Included.Length)
 			{
-				Included = Included.Resize(MathUtils.NextPowerOf2(IncludedCount + 1));
+				Included = Included.ResizeToNextPowOf2(IncludedCount + 1);
 			}
 
 			Included[IncludedCount] = set;
 			IncludedCount += 1;
 			var mask = Mask;
-			mask.Include(set.ComponentId);
+			mask.Include(set);
 			Mask = mask;
 
 			return this;
@@ -56,13 +56,13 @@ namespace Massive
 
 			if (ExcludedCount >= Excluded.Length)
 			{
-				Excluded = Excluded.Resize(MathUtils.NextPowerOf2(ExcludedCount + 1));
+				Excluded = Excluded.ResizeToNextPowOf2(ExcludedCount + 1);
 			}
 
 			Excluded[ExcludedCount] = set;
 			ExcludedCount += 1;
 			var mask = Mask;
-			mask.Exclude(set.ComponentId);
+			mask.Exclude(set);
 			Mask = mask;
 
 			return this;

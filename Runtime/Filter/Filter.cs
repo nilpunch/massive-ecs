@@ -17,27 +17,28 @@ namespace Massive
 
 		public SparseSet[] Included { get; protected set; }
 		public SparseSet[] Excluded { get; protected set; }
-		public Mask Mask { get; protected set; }
 
-		public Filter(Masks masks)
-			: this(Array.Empty<SparseSet>(), Array.Empty<SparseSet>(), masks)
+		public Mask Mask;
+
+		public Filter(Components components)
+			: this(Array.Empty<SparseSet>(), Array.Empty<SparseSet>(), components)
 		{
 		}
 
-		public Filter(SparseSet[] included, SparseSet[] excluded, Masks masks)
+		public Filter(SparseSet[] included, SparseSet[] excluded, Components components)
 		{
 			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
 
-			Mask = Mask.New(masks);
+			Mask = Mask.New(components);
 
 			foreach (var include in included)
 			{
-				Mask.Include(include.ComponentId);
+				Mask.Include(include);
 			}
 
 			foreach (var exclude in excluded)
 			{
-				Mask.Exclude(exclude.ComponentId);
+				Mask.Exclude(exclude);
 			}
 
 			Included = included;

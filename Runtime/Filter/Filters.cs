@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -15,9 +14,8 @@ namespace Massive
 	public class Filters
 	{
 		private Sets Sets { get; }
-		private Masks Masks { get; }
+		private Components Components { get; }
 		private SetComparer Comparer { get; }
-		private bool OptimizeExludeFilter { get; }
 
 		private Dictionary<int, Filter> CombinationLookup { get; } = new Dictionary<int, Filter>();
 
@@ -25,13 +23,12 @@ namespace Massive
 
 		public Filter Empty { get; }
 
-		public Filters(Sets sets, Masks masks, bool optimizeExludeFilter)
+		public Filters(Sets sets, Components components)
 		{
 			Sets = sets;
-			Masks = masks;
-			OptimizeExludeFilter = optimizeExludeFilter;
+			Components = components;
 			Comparer = new SetComparer(Sets);
-			Empty = new Filter(masks);
+			Empty = new Filter(components);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,12 +46,8 @@ namespace Massive
 				return candidate;
 			}
 
-			var included = OptimizeExludeFilter
-				? new TInclude().Select(Sets).Concat(new TExclude().Select(Sets, negative: true)).ToArray()
-				: new TInclude().Select(Sets);
-			var excluded = OptimizeExludeFilter
-				? Array.Empty<SparseSet>()
-				: new TExclude().Select(Sets);
+			var included = new TInclude().Select(Sets);
+			var excluded = new TExclude().Select(Sets);
 
 			var filter = Get(included, excluded);
 
@@ -85,12 +78,10 @@ namespace Massive
 				return filter;
 			}
 
-			(included, excluded) = MoveNegativeToIncluded(included, excluded);
-
 			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Both);
 
 			filter = included.Length != 0 || excluded.Length != 0
-				? new Filter(included, excluded, Masks)
+				? new Filter(included, excluded, Components)
 				: Empty;
 			CombinationLookup.Add(fullCode, filter);
 			return filter;
@@ -103,26 +94,6 @@ namespace Massive
 			{
 				Lookup = Lookup.Resize(MathUtils.NextPowerOf2(index + 1));
 			}
-		}
-
-		private (SparseSet[] Included, SparseSet[] Excluded) MoveNegativeToIncluded(SparseSet[] included, SparseSet[] excluded)
-		{
-			var includedList = new List<SparseSet>(included);
-			var excludedList = new List<SparseSet>();
-
-			foreach (var set in excluded)
-			{
-				if (set.Negative != null)
-				{
-					includedList.Add(set.Negative);
-				}
-				else
-				{
-					excludedList.Add(set);
-				}
-			}
-
-			return (includedList.ToArray(), excludedList.ToArray());
 		}
 
 		private class SetComparer
