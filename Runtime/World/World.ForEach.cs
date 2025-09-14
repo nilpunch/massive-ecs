@@ -30,11 +30,30 @@ namespace Massive
 					var current0 = offset1 + index1;
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
-					while (bits0 != 0UL)
+					var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+
+					var runEnd = MathUtils.ApproximateMSB(bits0);
+					var setBits = MathUtils.PopCount(bits0);
+					if (setBits << 1 > runEnd - index0)
 					{
-						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
-						action.Apply(offset0 + index0);
-						bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+						for (; index0 < runEnd; index0++)
+						{
+							if ((resultBits.Bits0[current0] & (1UL << index0)) == 0UL)
+							{
+								continue;
+							}
+
+							action.Apply(offset0 + index0);
+						}
+					}
+					else
+					{
+						do
+						{
+							action.Apply(offset0 + index0);
+							bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+							index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+						} while (bits0 != 0UL);
 					}
 
 					bits1 &= (bits1 - 1UL) & resultBits.Bits0[current0];
@@ -67,14 +86,34 @@ namespace Massive
 					var current0 = offset1 + index1;
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
+					var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
 					var dataOffset = offset0 & Constants.PageSizeMinusOne;
 					var dataPage = dataSet1.PagedData[offset0 >> Constants.PageSizePower];
-					while (bits0 != 0UL)
+
+					var runEnd = MathUtils.ApproximateMSB(bits0);
+					var setBits = MathUtils.PopCount(bits0);
+					if (setBits << 1 > runEnd - index0)
 					{
-						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
-						action.Apply(offset0 + index0,
-							ref dataPage[dataOffset + index0]);
-						bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+						for (; index0 < runEnd; index0++)
+						{
+							if ((resultBits.Bits0[current0] & (1UL << index0)) == 0UL)
+							{
+								continue;
+							}
+
+							action.Apply(offset0 + index0,
+								ref dataPage[dataOffset + index0]);
+						}
+					}
+					else
+					{
+						do
+						{
+							action.Apply(offset0 + index0,
+								ref dataPage[dataOffset + index0]);
+							bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+							index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+						} while (bits0 != 0UL);
 					}
 
 					bits1 &= (bits1 - 1UL) & resultBits.Bits1[current1];
@@ -111,18 +150,40 @@ namespace Massive
 					var current0 = offset1 + index1;
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
+					var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
 					var dataOffset = offset0 & Constants.PageSizeMinusOne;
 					var pageIndex = offset0 >> Constants.PageSizePower;
 					var dataPage1 = dataSet1.PagedData[pageIndex];
 					var dataPage2 = dataSet2.PagedData[pageIndex];
-					while (bits0 != 0UL)
+
+					var runEnd = MathUtils.ApproximateMSB(bits0);
+					var setBits = MathUtils.PopCount(bits0);
+					if (setBits << 1 > runEnd - index0)
 					{
-						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
-						var dataIndex = dataOffset + index0;
-						action.Apply(offset0 + index0,
-							ref dataPage1[dataIndex],
-							ref dataPage2[dataIndex]);
-						bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+						for (; index0 < runEnd; index0++)
+						{
+							if ((resultBits.Bits0[current0] & (1UL << index0)) == 0UL)
+							{
+								continue;
+							}
+
+							var dataIndex = dataOffset + index0;
+							action.Apply(offset0 + index0,
+								ref dataPage1[dataIndex],
+								ref dataPage2[dataIndex]);
+						}
+					}
+					else
+					{
+						do
+						{
+							var dataIndex = dataOffset + index0;
+							action.Apply(offset0 + index0,
+								ref dataPage1[dataIndex],
+								ref dataPage2[dataIndex]);
+							bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+							index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+						} while (bits0 != 0UL);
 					}
 
 					bits1 &= (bits1 - 1UL) & resultBits.Bits1[current1];
@@ -164,20 +225,43 @@ namespace Massive
 					var current0 = offset1 + index1;
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
+					var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
 					var dataOffset = offset0 & Constants.PageSizeMinusOne;
 					var pageIndex = offset0 >> Constants.PageSizePower;
 					var dataPage1 = dataSet1.PagedData[pageIndex];
 					var dataPage2 = dataSet2.PagedData[pageIndex];
 					var dataPage3 = dataSet3.PagedData[pageIndex];
-					while (bits0 != 0UL)
+
+					var runEnd = MathUtils.ApproximateMSB(bits0);
+					var setBits = MathUtils.PopCount(bits0);
+					if (setBits << 1 > runEnd - index0)
 					{
-						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
-						var dataIndex = dataOffset + index0;
-						action.Apply(offset0 + index0,
-							ref dataPage1[dataIndex],
-							ref dataPage2[dataIndex],
-							ref dataPage3[dataIndex]);
-						bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+						for (; index0 < runEnd; index0++)
+						{
+							if ((resultBits.Bits0[current0] & (1UL << index0)) == 0UL)
+							{
+								continue;
+							}
+
+							var dataIndex = dataOffset + index0;
+							action.Apply(offset0 + index0,
+								ref dataPage1[dataIndex],
+								ref dataPage2[dataIndex],
+								ref dataPage3[dataIndex]);
+						}
+					}
+					else
+					{
+						do
+						{
+							var dataIndex = dataOffset + index0;
+							action.Apply(offset0 + index0,
+								ref dataPage1[dataIndex],
+								ref dataPage2[dataIndex],
+								ref dataPage3[dataIndex]);
+							bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+							index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+						} while (bits0 != 0UL);
 					}
 
 					bits1 &= (bits1 - 1UL) & resultBits.Bits1[current1];
@@ -223,22 +307,46 @@ namespace Massive
 					var current0 = offset1 + index1;
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
+					var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
 					var dataOffset = offset0 & Constants.PageSizeMinusOne;
 					var pageIndex = offset0 >> Constants.PageSizePower;
 					var dataPage1 = dataSet1.PagedData[pageIndex];
 					var dataPage2 = dataSet2.PagedData[pageIndex];
 					var dataPage3 = dataSet3.PagedData[pageIndex];
 					var dataPage4 = dataSet4.PagedData[pageIndex];
-					while (bits0 != 0UL)
+
+					var runEnd = MathUtils.ApproximateMSB(bits0);
+					var setBits = MathUtils.PopCount(bits0);
+					if (setBits << 1 > runEnd - index0)
 					{
-						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
-						var dataIndex = dataOffset + index0;
-						action.Apply(offset0 + index0,
-							ref dataPage1[dataIndex],
-							ref dataPage2[dataIndex],
-							ref dataPage3[dataIndex],
-							ref dataPage4[dataIndex]);
-						bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+						for (; index0 < runEnd; index0++)
+						{
+							if ((resultBits.Bits0[current0] & (1UL << index0)) == 0UL)
+							{
+								continue;
+							}
+
+							var dataIndex = dataOffset + index0;
+							action.Apply(offset0 + index0,
+								ref dataPage1[dataIndex],
+								ref dataPage2[dataIndex],
+								ref dataPage3[dataIndex],
+								ref dataPage4[dataIndex]);
+						}
+					}
+					else
+					{
+						do
+						{
+							var dataIndex = dataOffset + index0;
+							action.Apply(offset0 + index0,
+								ref dataPage1[dataIndex],
+								ref dataPage2[dataIndex],
+								ref dataPage3[dataIndex],
+								ref dataPage4[dataIndex]);
+							bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
+							index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+						} while (bits0 != 0UL);
 					}
 
 					bits1 &= (bits1 - 1UL) & resultBits.Bits1[current1];
