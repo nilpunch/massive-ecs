@@ -25,19 +25,19 @@ namespace Massive
 				var offset1 = current1 << 6;
 				while (bits1 != 0UL)
 				{
-					var index1 = deBruijn[((bits1 & (~bits1 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
 					while (bits0 != 0UL)
 					{
-						var index0 = deBruijn[((bits0 & (~bits0 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
 						action.Apply(offset0 + index0);
-						bits0 &= (bits0 - 1UL);
+						bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
 					}
 
-					bits1 &= (bits1 - 1UL);
+					bits1 &= (bits1 - 1UL) & resultBits.Bits0[current0];
 				}
 			}
 
@@ -62,7 +62,7 @@ namespace Massive
 				var offset1 = current1 << 6;
 				while (bits1 != 0UL)
 				{
-					var index1 = deBruijn[((bits1 & (~bits1 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
 					var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
@@ -71,7 +71,7 @@ namespace Massive
 					var offset0 = current0 << 6;
 					while (bits0 != 0UL)
 					{
-						var index0 = deBruijn[((bits0 & (~bits0 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
 						action.Apply(offset0 + index0,
 							ref dataPage1[dataOffset1 + index0]);
 						bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
@@ -106,7 +106,7 @@ namespace Massive
 				var offset1 = current1 << 6;
 				while (bits1 != 0UL)
 				{
-					var index1 = deBruijn[((bits1 & (~bits1 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
 					var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
@@ -117,7 +117,7 @@ namespace Massive
 					var offset0 = current0 << 6;
 					while (bits0 != 0UL)
 					{
-						var index0 = deBruijn[((bits0 & (~bits0 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
 						action.Apply(offset0 + index0,
 							ref dataPage1[dataOffset1 + index0],
 							ref dataPage2[dataOffset2 + index0]);
@@ -158,7 +158,7 @@ namespace Massive
 				var offset1 = current1 << 6;
 				while (bits1 != 0UL)
 				{
-					var index1 = deBruijn[((bits1 & (~bits1 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
 					var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
@@ -171,7 +171,7 @@ namespace Massive
 					var offset0 = current0 << 6;
 					while (bits0 != 0UL)
 					{
-						var index0 = deBruijn[((bits0 & (~bits0 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
 						action.Apply(offset0 + index0,
 							ref dataPage1[dataOffset1 + index0],
 							ref dataPage2[dataOffset2 + index0],
@@ -217,7 +217,7 @@ namespace Massive
 				var offset1 = current1 << 6;
 				while (bits1 != 0UL)
 				{
-					var index1 = deBruijn[((bits1 & (~bits1 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
 					var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
@@ -232,7 +232,7 @@ namespace Massive
 					var offset0 = current0 << 6;
 					while (bits0 != 0UL)
 					{
-						var index0 = deBruijn[((bits0 & (~bits0 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
 						action.Apply(offset0 + index0,
 							ref dataPage1[dataOffset1 + index0],
 							ref dataPage2[dataOffset2 + index0],

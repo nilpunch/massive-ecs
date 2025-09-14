@@ -111,7 +111,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int LSB(ulong x)
 		{
-			return DeBruijn[((x & (~x + 1)) * 0x37E84A99DAE458F) >> 58];
+			return DeBruijn[(int)(((x & (ulong)-(long)x) * 0x37E84A99DAE458FUL) >> 58)];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -162,72 +162,40 @@ namespace Massive
 		{
 			var bits1Length = Bits1.Length;
 
+			var deBruijn = MathUtils.DeBruijn;
 			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
+				var bits1 = Bits1[current1];
 				var offset1 = current1 << 6;
-				var iterated1 = 0;
-
-				while (Bits1[current1] != 0UL && iterated1 < 64)
+				while (bits1 != 0UL)
 				{
-					var bits1Result = Bits1[current1] >> iterated1;
+					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
-					var skip1 = MathUtils.LSB(bits1Result);
-					iterated1 += skip1;
-					bits1Result >>= skip1;
-
-					if (bits1Result == 0UL)
+					var current0 = offset1 + index1;
+					var bits0 = Bits0[current0];
+					var offset0 = current0 << 6;
+					while (bits0 != 0UL)
 					{
-						break;
+						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+
+						var id = offset0 + index0;
+						BeforeDestroyed?.Invoke(id);
+						RemoveBit(id);
+						WorldContext?.EntityDestroyed(id);
+
+						EnsurePoolAt(PooledIds);
+						Pool[PooledIds++] = id;
+						MathUtils.IncrementWrapTo1(ref Versions[id]);
+
+						bits0 &= (bits0 - 1UL);
 					}
 
-					var runLength1 = bits1Result == ulong.MaxValue ? 64 : MathUtils.LSB(~bits1Result);
-					var runEnd1 = iterated1 + runLength1;
-					for (; iterated1 < runEnd1; iterated1++)
-					{
-						if ((Bits1[current1] & (1UL << iterated1)) == 0)
-						{
-							continue;
-						}
+					bits1 &= (bits1 - 1UL);
 
-						var current0 = offset1 + iterated1;
-
-						var offset0 = current0 << 6;
-						var iterated0 = 0;
-
-						while (Bits0[current0] != 0UL && iterated0 < 64)
-						{
-							var bits0Result = Bits0[current0] >> iterated0;
-
-							var skip0 = MathUtils.LSB(bits0Result);
-							iterated0 += skip0;
-							bits0Result >>= skip0;
-
-							if (bits0Result == 0UL)
-							{
-								break;
-							}
-
-							var runLength0 = bits0Result == ulong.MaxValue ? 64 : MathUtils.LSB(~bits0Result);
-							var runEnd0 = iterated0 + runLength0;
-							for (; iterated0 < runEnd0; iterated0++)
-							{
-								if ((Bits0[current0] & (1UL << iterated0)) == 0)
-								{
-									continue;
-								}
-
-								var id = offset0 + iterated0;
-								BeforeDestroyed?.Invoke(id);
-								RemoveBit(id);
-								WorldContext?.EntityDestroyed(id);
-
-								EnsurePoolAt(PooledIds);
-								Pool[PooledIds++] = id;
-								MathUtils.IncrementWrapTo1(ref Versions[id]);
-							}
-						}
-					}
+					Bits0[current0] = 0UL;
 				}
+
+				Bits1[current1] = 0UL;
 			}
 		}
 

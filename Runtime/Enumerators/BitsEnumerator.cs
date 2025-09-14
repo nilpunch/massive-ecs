@@ -36,11 +36,6 @@ namespace Massive
 			_deBruijn = MathUtils.DeBruijn;
 
 			Current = default;
-			
-			if (_bits1Length == 0)
-			{
-				return;
-			}
 
 			while (++_current1 < _bits1Length)
 			{
@@ -49,7 +44,7 @@ namespace Massive
 					_offset1 = _current1 << 6;
 					_bits1 = _rentedBits.Bits1[_current1];
 
-					_current0 = _offset1 + _deBruijn[((_bits1 & (~_bits1 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+					_current0 = _offset1 + _deBruijn[(int)(((_bits1 & (ulong)-(long)_bits1) * 0x37E84A99DAE458FUL) >> 58)];
 					_bits1 &= _bits1 - 1UL;
 					_offset0 = _current0 << 6;
 
@@ -74,7 +69,7 @@ namespace Massive
 			_bits0 &= _rentedBits.Bits0[_current0];
 			if (_bits0 != 0UL)
 			{
-				Current = _offset0 + _deBruijn[((_bits0 & (~_bits0 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+				Current = _offset0 + _deBruijn[(int)(((_bits0 & (ulong)-(long)_bits0) * 0x37E84A99DAE458FUL) >> 58)];
 				_bits0 &= _bits0 - 1UL;
 				return true;
 			}
@@ -82,12 +77,12 @@ namespace Massive
 			_bits1 &= _rentedBits.Bits1[_current1];
 			if (_bits1 != 0UL)
 			{
-				_current0 = _offset1 + _deBruijn[((_bits1 & (~_bits1 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+				_current0 = _offset1 + _deBruijn[(int)(((_bits1 & (ulong)-(long)_bits1) * 0x37E84A99DAE458FUL) >> 58)];
 				_bits1 &= _bits1 - 1UL;
 				_offset0 = _current0 << 6;
 
 				_bits0 = _rentedBits.Bits0[_current0];
-				Current = _offset0 + _deBruijn[((_bits0 & (~_bits0 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+				Current = _offset0 + _deBruijn[(int)(((_bits0 & (ulong)-(long)_bits0) * 0x37E84A99DAE458FUL) >> 58)];
 				_bits0 &= _bits0 - 1UL;
 				return true;
 			}
@@ -99,12 +94,12 @@ namespace Massive
 					_offset1 = _current1 << 6;
 					_bits1 = _rentedBits.Bits1[_current1];
 
-					_current0 = _offset1 + _deBruijn[((_bits1 & (~_bits1 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+					_current0 = _offset1 + _deBruijn[(int)(((_bits1 & (ulong)-(long)_bits1) * 0x37E84A99DAE458FUL) >> 58)];
 					_bits1 &= _bits1 - 1UL;
 					_offset0 = _current0 << 6;
 
 					_bits0 = _rentedBits.Bits0[_current0];
-					Current = _offset0 + _deBruijn[((_bits0 & (~_bits0 + 1UL)) * 0x37E84A99DAE458FUL) >> 58];
+					Current = _offset0 + _deBruijn[(int)(((_bits0 & (ulong)-(long)_bits0) * 0x37E84A99DAE458FUL) >> 58)];
 					_bits0 &= _bits0 - 1UL;
 					return true;
 				}
