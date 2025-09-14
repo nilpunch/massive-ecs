@@ -13,7 +13,7 @@ namespace Massive
 	{
 		public T DefaultValue { get; }
 
-		public UnmanagedDataSet(int pageSize = Constants.DefaultPageSize, T defaultValue = default)
+		public UnmanagedDataSet(int pageSize = Constants.PageSize, T defaultValue = default)
 			: base(pageSize)
 		{
 			DefaultValue = defaultValue;
@@ -24,7 +24,7 @@ namespace Massive
 		/// </summary>
 		protected override void PrepareData(int id)
 		{
-			PagedData[id >> PageSizePower][id & PageSizeMinusOne] = DefaultValue;
+			PagedData[id >> Constants.PageSizePower][id & Constants.PageSizeMinusOne] = DefaultValue;
 		}
 	}
 }

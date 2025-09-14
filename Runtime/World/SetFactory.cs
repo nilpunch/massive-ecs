@@ -14,7 +14,7 @@ namespace Massive
 		{
 		}
 
-		public SetFactory(bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.DefaultPageSize)
+		public SetFactory(bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.PageSize)
 		{
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 			_pageSize = pageSize;

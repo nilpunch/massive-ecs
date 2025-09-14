@@ -23,39 +23,12 @@ namespace Massive
 		/// <summary>
 		/// Associated component index. Session-dependent, used for lookups.<br/>
 		/// </summary>
-		public int PageSize { get; set; }
-		
-		public int PageSizePower { get; }
-
-		public int PageSizeMinusOne { get; }
-
-		protected ulong PageMask1 { get; }
-
-		protected int PagesInBits1MinusOne { get; }
-
-		protected int MaskShiftPower { get; }
-
-		/// <summary>
-		/// Associated component index. Session-dependent, used for lookups.<br/>
-		/// </summary>
 		public int ComponentId { get; set; } = -1;
 
 		/// <summary>
 		/// Shortcut to access masks.
 		/// </summary>
 		public Components Components { get; set; }
-
-		public SparseSet(int pageSize = Constants.DefaultPageSize)
-		{
-			PageSize = pageSize;
-			
-			PageSizePower = MathUtils.FastLog2(pageSize);
-			PageSizeMinusOne = pageSize - 1;
-
-			MaskShiftPower = PageSizePower - 6;
-			PagesInBits1MinusOne = ((1 << 12) >> PageSizePower) - 1;
-			PageMask1 = (1UL << (PageSize >> 6)) - 1;
-		}
 
 		/// <summary>
 		/// Shoots only after <see cref="Add"/> call, when the ID was not already present.
@@ -99,8 +72,8 @@ namespace Massive
 				return false;
 			}
 
-			var pageIndex = id >> PageSizePower;
-			var pageMask1 = PageMask1 << ((pageIndex & PagesInBits1MinusOne) << MaskShiftPower);
+			var pageIndex = id >> Constants.PageSizePower;
+			var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
 			if ((Bits1[id1] & pageMask1) == 0UL)
 			{
 				AllocPage(pageIndex);
@@ -164,8 +137,8 @@ namespace Massive
 				Bits1[id1] &= ~bit1;
 			}
 
-			var pageIndex = id >> PageSizePower;
-			var pageMask1 = PageMask1 << ((pageIndex & PagesInBits1MinusOne) << MaskShiftPower);
+			var pageIndex = id >> Constants.PageSizePower;
+			var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
 			if ((Bits1[id1] & pageMask1) == 0UL)
 			{
 				FreePage(pageIndex);

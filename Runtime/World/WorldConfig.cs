@@ -4,7 +4,7 @@ namespace Massive
 {
 	public class WorldConfig
 	{
-		public readonly int PageSize = Constants.DefaultPageSize;
+		public readonly int PageSize = Constants.PageSize;
 
 		public readonly bool StoreEmptyTypesAsDataSets = false;
 

@@ -23,7 +23,7 @@ namespace Massive
 
 		private int PoolCount { get; set; }
 
-		public DataSet(int pageSize = Constants.DefaultPageSize) : base(pageSize)
+		public DataSet(int pageSize = Constants.PageSize)
 		{
 			InvalidPageSizeException.ThrowIfNotPowerOf2<T>(pageSize);
 			InvalidPageSizeException.ThrowIfTooLargeOrTooSmall<T>(pageSize);
@@ -35,7 +35,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
-			return ref PagedData[id >> PageSizePower][id & PageSizeMinusOne];
+			return ref PagedData[id >> Constants.PageSizePower][id & Constants.PageSizeMinusOne];
 		}
 
 		/// <summary>
@@ -59,8 +59,8 @@ namespace Massive
 			var bit0 = 1UL << mod64;
 			var bit1 = 1UL << (id0 & 63);
 
-			var pageIndex = id >> PageSizePower;
-			var pageMask1 = PageMask1 << ((pageIndex & PagesInBits1MinusOne) << MaskShiftPower);
+			var pageIndex = id >> Constants.PageSizePower;
+			var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
 			if ((Bits1[id1] & pageMask1) == 0UL)
 			{
 				EnsurePage(pageIndex);
@@ -72,7 +72,7 @@ namespace Massive
 			}
 			Bits0[id0] |= bit0;
 
-			PagedData[id >> PageSizePower][id & PageSizeMinusOne] = data;
+			PagedData[pageIndex][id & Constants.PageSizeMinusOne] = data;
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
@@ -113,7 +113,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePageAt(int id)
 		{
-			EnsurePage(id >> PageSizePower);
+			EnsurePage(id >> Constants.PageSizePower);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -129,7 +129,7 @@ namespace Massive
 
 		private T[] CreatePage()
 		{
-			return PoolCount > 0 ? DataPagePool[--PoolCount] : new T[PageSize];
+			return PoolCount > 0 ? DataPagePool[--PoolCount] : new T[Constants.PageSize];
 		}
 
 		/// <summary>
@@ -145,6 +145,8 @@ namespace Massive
 			return PagedData[page];
 		}
 
+		int IDataSet.PageSize => Constants.PageSize;
+
 		Type IDataSet.ElementType => typeof(T);
 
 		object IDataSet.GetRaw(int id) => Get(id);
@@ -158,7 +160,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DataSet<T> Clone()
 		{
-			var clone = new DataSet<T>(PageSize);
+			var clone = new DataSet<T>(Constants.PageSize);
 			CopyTo(clone);
 			return clone;
 		}
@@ -183,7 +185,7 @@ namespace Massive
 					var sourcePage = PagedData[i];
 					var destinationPage = other.PagedData[i];
 
-					Array.Copy(sourcePage, destinationPage, PageSize);
+					Array.Copy(sourcePage, destinationPage, Constants.PageSize);
 				}
 			}
 		}

@@ -19,7 +19,7 @@ namespace Massive
 		private int PageSizePower { get; }
 		private int PageSizeMinusOne { get; }
 
-		public PagedArray(int pageSize = Constants.DefaultPageSize)
+		public PagedArray(int pageSize = Constants.PageSize)
 		{
 			InvalidPageSizeException.ThrowIfNotPowerOf2<T>(pageSize);
 

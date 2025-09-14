@@ -17,7 +17,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class CopyingDataSet<T> : DataSet<T> where T : ICopyable<T>
 	{
-		public CopyingDataSet(int pageSize = Constants.DefaultPageSize)
+		public CopyingDataSet(int pageSize = Constants.PageSize)
 			: base(pageSize)
 		{
 		}
@@ -37,7 +37,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CopyingDataSet<T> CloneCopyable()
 		{
-			var clone = new CopyingDataSet<T>(PageSize);
+			var clone = new CopyingDataSet<T>(Constants.PageSize);
 			CopyToCopyable(clone);
 			return clone;
 		}
@@ -65,11 +65,12 @@ namespace Massive
 					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
-					var sourceOffset = current0 & PageSizeMinusOne;
-					var destinationOffset = current0 & other.PageSizeMinusOne;
-					var sourcePage = PagedData[current0 >> PageSizePower];
-					other.EnsurePage(current0 >> other.PageSizePower);
-					var destinationPage = other.PagedData[current0 >> other.PageSizePower];
+					var offset0 = current0 << 6;
+					var sourceOffset = offset0 & Constants.PageSizeMinusOne;
+					var destinationOffset = offset0 & Constants.PageSizeMinusOne;
+					var sourcePage = PagedData[offset0 >> Constants.PageSizePower];
+					other.EnsurePage(offset0 >> Constants.PageSizePower);
+					var destinationPage = other.PagedData[offset0 >> Constants.PageSizePower];
 					var bits0 = Bits0[current0];
 					while (bits0 != 0UL)
 					{
