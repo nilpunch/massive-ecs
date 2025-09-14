@@ -58,16 +58,16 @@ namespace Massive
 			var mod64 = id & 63;
 			var bit0 = 1UL << mod64;
 			var bit1 = 1UL << (id0 & 63);
-
 			var pageIndex = id >> Constants.PageSizePower;
-			var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
-			if ((Bits1[id1] & pageMask1) == 0UL)
-			{
-				EnsurePage(pageIndex);
-			}
 
 			if (Bits0[id0] == 0UL)
 			{
+				var pageMask = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
+				if ((Bits1[id1] & pageMask) == 0UL)
+				{
+					EnsurePage(pageIndex);
+				}
+
 				Bits1[id1] |= bit1;
 			}
 			Bits0[id0] |= bit0;

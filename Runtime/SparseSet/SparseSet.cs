@@ -72,15 +72,15 @@ namespace Massive
 				return false;
 			}
 
-			var pageIndex = id >> Constants.PageSizePower;
-			var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
-			if ((Bits1[id1] & pageMask1) == 0UL)
-			{
-				AllocPage(pageIndex);
-			}
-
 			if (Bits0[id0] == 0UL)
 			{
+				var pageIndex = id >> Constants.PageSizePower;
+				var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
+				if ((Bits1[id1] & pageMask1) == 0UL)
+				{
+					AllocPage(pageIndex);
+				}
+
 				Bits1[id1] |= bit1;
 			}
 			Bits0[id0] |= bit0;
@@ -130,18 +130,18 @@ namespace Massive
 
 			BeforeRemoved?.Invoke(id);
 			Components?.Remove(id, ComponentId);
-			
+
 			Bits0[id0] &= ~bit0;
 			if (Bits0[id0] == 0UL)
 			{
 				Bits1[id1] &= ~bit1;
-			}
 
-			var pageIndex = id >> Constants.PageSizePower;
-			var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
-			if ((Bits1[id1] & pageMask1) == 0UL)
-			{
-				FreePage(pageIndex);
+				var pageIndex = id >> Constants.PageSizePower;
+				var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
+				if ((Bits1[id1] & pageMask1) == 0UL)
+				{
+					FreePage(pageIndex);
+				}
 			}
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)
