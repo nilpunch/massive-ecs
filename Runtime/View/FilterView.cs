@@ -91,14 +91,14 @@ namespace Massive
 					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
-					var dataOffset = dataSet1.Blocks[current0].StartInPage;
-					var dataPage = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
+					var dataOffset1 = offset0 & dataSet1.PageSizeMinusOne;
+					var dataPage1 = dataSet1.PagedData[offset0 >> dataSet1.PageSizePower];
 					while (bits0 != 0UL)
 					{
 						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
-						action.Apply(offset0 + index0, ref dataPage[dataOffset + index0]);
+						action.Apply(offset0 + index0, ref dataPage1[dataOffset1 + index0]);
 						bits0 &= (bits0 - 1UL) & resultBits.Bits0[current0];
 					}
 
@@ -137,12 +137,12 @@ namespace Massive
 					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
-					var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
-					var dataOffset2 = dataSet2.Blocks[current0].StartInPage;
-					var dataPage1 = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
-					var dataPage2 = dataSet2.PagedData[dataSet2.Blocks[current0].PageIndex];
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
+					var dataOffset1 = offset0 & dataSet1.PageSizeMinusOne;
+					var dataOffset2 = offset0 & dataSet2.PageSizeMinusOne;
+					var dataPage1 = dataSet1.PagedData[offset0 >> dataSet1.PageSizePower];
+					var dataPage2 = dataSet2.PagedData[offset0 >> dataSet2.PageSizePower];
 					while (bits0 != 0UL)
 					{
 						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
@@ -191,14 +191,14 @@ namespace Massive
 					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
-					var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
-					var dataOffset2 = dataSet2.Blocks[current0].StartInPage;
-					var dataOffset3 = dataSet3.Blocks[current0].StartInPage;
-					var dataPage1 = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
-					var dataPage2 = dataSet2.PagedData[dataSet2.Blocks[current0].PageIndex];
-					var dataPage3 = dataSet3.PagedData[dataSet3.Blocks[current0].PageIndex];
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
+					var dataOffset1 = offset0 & dataSet1.PageSizeMinusOne;
+					var dataOffset2 = offset0 & dataSet2.PageSizeMinusOne;
+					var dataOffset3 = offset0 & dataSet3.PageSizeMinusOne;
+					var dataPage1 = dataSet1.PagedData[offset0 >> dataSet1.PageSizePower];
+					var dataPage2 = dataSet2.PagedData[offset0 >> dataSet2.PageSizePower];
+					var dataPage3 = dataSet3.PagedData[offset0 >> dataSet3.PageSizePower];
 					while (bits0 != 0UL)
 					{
 						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
@@ -252,16 +252,16 @@ namespace Massive
 					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var current0 = offset1 + index1;
-					var dataOffset1 = dataSet1.Blocks[current0].StartInPage;
-					var dataOffset2 = dataSet2.Blocks[current0].StartInPage;
-					var dataOffset3 = dataSet3.Blocks[current0].StartInPage;
-					var dataOffset4 = dataSet4.Blocks[current0].StartInPage;
-					var dataPage1 = dataSet1.PagedData[dataSet1.Blocks[current0].PageIndex];
-					var dataPage2 = dataSet2.PagedData[dataSet2.Blocks[current0].PageIndex];
-					var dataPage3 = dataSet3.PagedData[dataSet3.Blocks[current0].PageIndex];
-					var dataPage4 = dataSet4.PagedData[dataSet4.Blocks[current0].PageIndex];
 					var bits0 = resultBits.Bits0[current0];
 					var offset0 = current0 << 6;
+					var dataOffset1 = offset0 & dataSet1.PageSizeMinusOne;
+					var dataOffset2 = offset0 & dataSet2.PageSizeMinusOne;
+					var dataOffset3 = offset0 & dataSet3.PageSizeMinusOne;
+					var dataOffset4 = offset0 & dataSet4.PageSizeMinusOne;
+					var dataPage1 = dataSet1.PagedData[offset0 >> dataSet1.PageSizePower];
+					var dataPage2 = dataSet2.PagedData[offset0 >> dataSet2.PageSizePower];
+					var dataPage3 = dataSet3.PagedData[offset0 >> dataSet3.PageSizePower];
+					var dataPage4 = dataSet4.PagedData[offset0 >> dataSet4.PageSizePower];
 					while (bits0 != 0UL)
 					{
 						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];

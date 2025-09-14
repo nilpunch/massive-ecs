@@ -21,11 +21,16 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfTooSmall<T>(int pageSize)
+		public static void ThrowIfTooLargeOrTooSmall<T>(int pageSize)
 		{
 			if (pageSize < 64)
 			{
 				throw new InvalidPageSizeException($"Page size must be at least 64! Type:{typeof(T).GetGenericName()}.");
+			}
+
+			if (pageSize > 4096)
+			{
+				throw new InvalidPageSizeException($"Page size must be at most 4096! Type:{typeof(T).GetGenericName()}.");
 			}
 		}
 	}

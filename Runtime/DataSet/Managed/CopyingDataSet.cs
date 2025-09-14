@@ -53,28 +53,34 @@ namespace Massive
 
 			CopyBitsTo(other);
 
-			foreach (var page in new PageSequence(PageSize, UsedBlocks << 6))
+			var bits1Length = Bits1.Length;
+
+			var deBruijn = MathUtils.DeBruijn;
+			for (var current1 = 0; current1 < bits1Length; current1++)
 			{
-				other.EnsurePage(page.Index);
-
-				var sourcePage = PagedData[page.Index];
-				var destinationPage = other.PagedData[page.Index];
-
-				for (var i = 0; i < page.Length; i++)
+				var bits1 = Bits1[current1];
+				var offset1 = current1 << 6;
+				while (bits1 != 0UL)
 				{
-					sourcePage[i].CopyTo(ref destinationPage[i]);
+					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
+
+					var current0 = offset1 + index1;
+					var sourceOffset = current0 & PageSizeMinusOne;
+					var destinationOffset = current0 & other.PageSizeMinusOne;
+					var sourcePage = PagedData[current0 >> PageSizePower];
+					other.EnsurePage(current0 >> other.PageSizePower);
+					var destinationPage = other.PagedData[current0 >> other.PageSizePower];
+					var bits0 = Bits0[current0];
+					while (bits0 != 0UL)
+					{
+						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+						sourcePage[sourceOffset + index0].CopyTo(ref destinationPage[destinationOffset + index0]);
+						bits0 &= bits0 - 1UL;
+					}
+
+					bits1 &= bits1 - 1UL;
 				}
 			}
-
-			if (UsedBlocks > other.Blocks.Length)
-			{
-				other.Blocks = other.Blocks.ResizeToNextPowOf2(UsedBlocks);
-			}
-
-			Array.Copy(Blocks, other.Blocks, UsedBlocks);
-
-			other.UsedBlocks = UsedBlocks;
-			other.NextFreeBlock = NextFreeBlock;
 		}
 	}
 }

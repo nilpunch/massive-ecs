@@ -187,10 +187,10 @@ namespace Massive
 						Pool[PooledIds++] = id;
 						MathUtils.IncrementWrapTo1(ref Versions[id]);
 
-						bits0 &= (bits0 - 1UL);
+						bits0 &= bits0 - 1UL;
 					}
 
-					bits1 &= (bits1 - 1UL);
+					bits1 &= bits1 - 1UL;
 
 					Bits0[current0] = 0UL;
 				}

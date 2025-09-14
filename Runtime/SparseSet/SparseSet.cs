@@ -13,10 +13,27 @@ namespace Massive
 	public class SparseSet : BitsBase, IBitsBacktrack
 	{
 		protected Bits[] RemoveOnAdd { get; private set; } = Array.Empty<Bits>();
+
 		protected int RemoveOnAddCount { get; private set; }
 
 		private Bits[] RemoveOnRemove { get; set; } = Array.Empty<Bits>();
+
 		private int RemoveOnRemoveCount { get; set; }
+
+		/// <summary>
+		/// Associated component index. Session-dependent, used for lookups.<br/>
+		/// </summary>
+		public int PageSize { get; set; }
+		
+		public int PageSizePower { get; }
+
+		public int PageSizeMinusOne { get; }
+
+		protected ulong PageMask1 { get; }
+
+		protected int PagesInBits1MinusOne { get; }
+
+		protected int MaskShiftPower { get; }
 
 		/// <summary>
 		/// Associated component index. Session-dependent, used for lookups.<br/>
@@ -27,6 +44,18 @@ namespace Massive
 		/// Shortcut to access masks.
 		/// </summary>
 		public Components Components { get; set; }
+
+		public SparseSet(int pageSize = Constants.DefaultPageSize)
+		{
+			PageSize = pageSize;
+			
+			PageSizePower = MathUtils.FastLog2(pageSize);
+			PageSizeMinusOne = pageSize - 1;
+
+			MaskShiftPower = PageSizePower - 6;
+			PagesInBits1MinusOne = ((1 << 12) >> PageSizePower) - 1;
+			PageMask1 = (1UL << (PageSize >> 6)) - 1;
+		}
 
 		/// <summary>
 		/// Shoots only after <see cref="Add"/> call, when the ID was not already present.
@@ -70,14 +99,20 @@ namespace Massive
 				return false;
 			}
 
+			var pageIndex = id >> PageSizePower;
+			var pageMask1 = PageMask1 << ((pageIndex & PagesInBits1MinusOne) << MaskShiftPower);
+			if ((Bits1[id1] & pageMask1) == 0UL)
+			{
+				AllocPage(pageIndex);
+			}
+
 			if (Bits0[id0] == 0UL)
 			{
 				Bits1[id1] |= bit1;
-				AllocBlock(id0);
 			}
 			Bits0[id0] |= bit0;
 
-			PrepareData(id0, mod64);
+			PrepareData(id);
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
@@ -122,12 +157,18 @@ namespace Massive
 
 			BeforeRemoved?.Invoke(id);
 			Components?.Remove(id, ComponentId);
-
+			
 			Bits0[id0] &= ~bit0;
 			if (Bits0[id0] == 0UL)
 			{
 				Bits1[id1] &= ~bit1;
-				FreeBlock(id0);
+			}
+
+			var pageIndex = id >> PageSizePower;
+			var pageMask1 = PageMask1 << ((pageIndex & PagesInBits1MinusOne) << MaskShiftPower);
+			if ((Bits1[id1] & pageMask1) == 0UL)
+			{
+				FreePage(pageIndex);
 			}
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)
@@ -173,16 +214,16 @@ namespace Massive
 							RemoveOnRemove[i].Remove(id);
 						}
 
-						bits0 &= (bits0 - 1UL);
+						bits0 &= bits0 - 1UL;
 					}
 
-					bits1 &= (bits1 - 1UL);
+					bits1 &= bits1 - 1UL;
 
 					Bits0[current0] = 0UL;
 
 					if (needToRemovePage)
 					{
-						FreeBlock(current0);
+						FreePage(current0);
 					}
 				}
 				Bits1[current1] = 0UL;
@@ -197,7 +238,7 @@ namespace Massive
 		{
 			Array.Fill(Bits1, 0UL);
 			Array.Fill(Bits0, 0UL);
-			FreeAllBlocks();
+			FreeAllPages();
 		}
 
 		/// <summary>
@@ -262,19 +303,19 @@ namespace Massive
 		{
 		}
 
-		protected virtual void AllocBlock(int block)
+		protected virtual void AllocPage(int page)
 		{
 		}
 
-		protected virtual void FreeBlock(int block)
+		protected virtual void FreePage(int page)
 		{
 		}
 
-		protected virtual void FreeAllBlocks()
+		protected virtual void FreeAllPages()
 		{
 		}
 
-		protected virtual void PrepareData(int blockIndex, int mod64)
+		protected virtual void PrepareData(int id)
 		{
 		}
 

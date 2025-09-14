@@ -22,10 +22,9 @@ namespace Massive
 		/// <summary>
 		/// Resets data at the specified index.
 		/// </summary>
-		protected override void PrepareData(int blockIndex, int mod64)
+		protected override void PrepareData(int id)
 		{
-			var block = Blocks[blockIndex];
-			PagedData[block.PageIndex][block.StartInPage + mod64] = DefaultValue;
+			PagedData[id >> PageSizePower][id & PageSizeMinusOne] = DefaultValue;
 		}
 	}
 }
