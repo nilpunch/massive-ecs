@@ -89,7 +89,7 @@ namespace Massive
 		{
 			if (index >= Lookup.Length)
 			{
-				Lookup = Lookup.Resize(MathUtils.NextPowerOf2(index + 1));
+				Lookup = Lookup.ResizeToNextPowOf2(index + 1);
 			}
 		}
 

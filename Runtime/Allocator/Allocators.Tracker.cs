@@ -114,11 +114,8 @@ namespace Massive
 		{
 			if (index >= HeadCapacity)
 			{
-				var newCapacity = MathUtils.NextPowerOf2(index + 1);
-
-				Heads = Heads.Resize(newCapacity);
-				Array.Fill(Heads, Constants.InvalidId, HeadCapacity, newCapacity - HeadCapacity);
-				HeadCapacity = newCapacity;
+				Heads = Heads.ResizeToNextPowOf2(index + 1, Constants.InvalidId);
+				HeadCapacity = Heads.Length;
 			}
 		}
 

@@ -57,7 +57,7 @@ namespace Massive
 
 			if (id1 >= Bits1.Length)
 			{
-				Bits1 = Bits1.Resize(MathUtils.NextPowerOf2(id1 + 1));
+				Bits1 = Bits1.ResizeToNextPowOf2(id1 + 1);
 				Bits0 = Bits0.Resize(Bits1.Length << 6);
 			}
 
@@ -215,21 +215,6 @@ namespace Massive
 
 			var bit0 = 1UL << (id & 63);
 			return (Bits0[id0] & bit0) != 0UL;
-		}
-
-		/// <summary>
-		/// Ensures the sparse array has sufficient capacity for the specified index.
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureBitsAt(int index)
-		{
-			var id1 = index >> 12;
-
-			if (id1 >= Bits1.Length)
-			{
-				Bits1 = Bits1.Resize(MathUtils.NextPowerOf2(id1 + 1));
-				Bits0 = Bits0.Resize(Bits1.Length << 6);
-			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

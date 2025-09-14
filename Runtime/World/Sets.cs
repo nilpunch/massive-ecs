@@ -96,8 +96,8 @@ namespace Massive
 		{
 			if (index >= LookupCapacity)
 			{
-				LookupCapacity = MathUtils.NextPowerOf2(index + 1);
-				Lookup = Lookup.Resize(LookupCapacity);
+				Lookup = Lookup.ResizeToNextPowOf2(index + 1);
+				LookupCapacity = Lookup.Length;
 				Components.EnsureComponentsCapacity(LookupCapacity);
 			}
 		}

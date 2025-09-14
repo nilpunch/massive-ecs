@@ -67,7 +67,7 @@ namespace Massive
 
 			if (info.Index >= s_types.Length)
 			{
-				Array.Resize(ref s_types, MathUtils.NextPowerOf2(info.Index + 1));
+				s_types = s_types.ResizeToNextPowOf2(info.Index + 1);
 			}
 			s_types[info.Index] = type;
 		}

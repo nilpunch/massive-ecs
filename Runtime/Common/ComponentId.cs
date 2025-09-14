@@ -70,7 +70,7 @@ namespace Massive
 
 			if (info.Index >= s_components.Length)
 			{
-				Array.Resize(ref s_components, MathUtils.NextPowerOf2(info.Index + 1));
+				s_components = s_components.ResizeToNextPowOf2(info.Index + 1);
 			}
 			s_components[info.Index] = type;
 		}

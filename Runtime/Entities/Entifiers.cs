@@ -269,7 +269,7 @@ namespace Massive
 
 			if (id1 >= Bits1.Length)
 			{
-				Bits1 = Bits1.Resize(MathUtils.NextPowerOf2(id1 + 1));
+				Bits1 = Bits1.ResizeToNextPowOf2(id1 + 1);
 				Bits0 = Bits0.Resize(Bits1.Length << 6);
 			}
 
