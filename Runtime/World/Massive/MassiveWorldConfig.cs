@@ -2,7 +2,7 @@
 {
 	public class MassiveWorldConfig : WorldConfig
 	{
-		private const int DefaultMassivePageSize = 1024;
+		private const int DefaultMassivePageSize = 256;
 
 		public readonly int FramesCapacity = Constants.DefaultFramesCapacity;
 
