@@ -12,6 +12,8 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Filter
 	{
+		public static Filter Empty { get; } = new Filter();
+
 		public int IncludedCount { get; protected set; }
 		public int ExcludedCount { get; protected set; }
 

@@ -63,74 +63,74 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Include<T>(this World world)
+		public static FilteredWorld Include<T>(this World world)
 		{
-			return new FilterView(world, world.GetFilter<Include<T>, None>());
+			return new FilteredWorld(world, world.GetFilter<Include<T>, None>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Include<T1, T2>(this World world)
+		public static FilteredWorld Include<T1, T2>(this World world)
 		{
-			return new FilterView(world, world.GetFilter<Include<T1, T2>, None>());
+			return new FilteredWorld(world, world.GetFilter<Include<T1, T2>, None>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Include<T1, T2, T3>(this World world)
+		public static FilteredWorld Include<T1, T2, T3>(this World world)
 		{
-			return new FilterView(world, world.GetFilter<Include<T1, T2, T3>, None>());
+			return new FilteredWorld(world, world.GetFilter<Include<T1, T2, T3>, None>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Include<T1, T2, T3, TInclude>(this World world)
+		public static FilteredWorld Include<T1, T2, T3, TInclude>(this World world)
 			where TInclude : IIncludeSelector, new()
 		{
-			return new FilterView(world, world.GetFilter<Include<T1, T2, T3, TInclude>, None>());
+			return new FilteredWorld(world, world.GetFilter<Include<T1, T2, T3, TInclude>, None>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Exclude<T>(this World world)
+		public static FilteredWorld Exclude<T>(this World world)
 		{
-			return new FilterView(world, world.GetFilter<None, Exclude<T>>());
+			return new FilteredWorld(world, world.GetFilter<None, Exclude<T>>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Exclude<T1, T2>(this World world)
+		public static FilteredWorld Exclude<T1, T2>(this World world)
 		{
-			return new FilterView(world, world.GetFilter<None, Exclude<T1, T2>>());
+			return new FilteredWorld(world, world.GetFilter<None, Exclude<T1, T2>>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Exclude<T1, T2, T3>(this World world)
+		public static FilteredWorld Exclude<T1, T2, T3>(this World world)
 		{
-			return new FilterView(world, world.GetFilter<None, Exclude<T1, T2, T3>>());
+			return new FilteredWorld(world, world.GetFilter<None, Exclude<T1, T2, T3>>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Exclude<T1, T2, T3, TExclude>(this World world)
+		public static FilteredWorld Exclude<T1, T2, T3, TExclude>(this World world)
 			where TExclude : IExcludeSelector, new()
 		{
-			return new FilterView(world, world.GetFilter<None, Exclude<T1, T2, T3, TExclude>>());
+			return new FilteredWorld(world, world.GetFilter<None, Exclude<T1, T2, T3, TExclude>>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Filter(this World world, Filter filter = null)
+		public static FilteredWorld Filter(this World world, Filter filter = null)
 		{
-			return new FilterView(world, filter);
+			return new FilteredWorld(world, filter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Filter<TInclude>(this World world)
+		public static FilteredWorld Filter<TInclude>(this World world)
 			where TInclude : IIncludeSelector, new()
 		{
-			return new FilterView(world, world.GetFilter<TInclude, None>());
+			return new FilteredWorld(world, world.GetFilter<TInclude, None>());
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static FilterView Filter<TInclude, TExclude>(this World world)
+		public static FilteredWorld Filter<TInclude, TExclude>(this World world)
 			where TInclude : IIncludeSelector, new()
 			where TExclude : IExcludeSelector, new()
 		{
-			return new FilterView(world, world.GetFilter<TInclude, TExclude>());
+			return new FilteredWorld(world, world.GetFilter<TInclude, TExclude>());
 		}
 	}
 }

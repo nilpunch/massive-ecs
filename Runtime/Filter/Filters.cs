@@ -21,13 +21,10 @@ namespace Massive
 
 		public Filter[] Lookup { get; private set; } = Array.Empty<Filter>();
 
-		public Filter Empty { get; }
-
 		public Filters(Sets sets)
 		{
 			Sets = sets;
 			Comparer = new SetComparer(Sets);
-			Empty = new Filter();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -79,7 +76,7 @@ namespace Massive
 
 			filter = included.Length != 0 || excluded.Length != 0
 				? new Filter(included, excluded)
-				: Empty;
+				: Filter.Empty;
 			CombinationLookup.Add(fullCode, filter);
 			return filter;
 		}
