@@ -13,8 +13,7 @@ namespace Massive
 	{
 		public T DefaultValue { get; }
 
-		public UnmanagedDataSet(int pageSize = Constants.PageSize, T defaultValue = default)
-			: base(pageSize)
+		public UnmanagedDataSet(T defaultValue = default)
 		{
 			DefaultValue = defaultValue;
 		}

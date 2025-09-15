@@ -21,8 +21,6 @@ namespace Massive
 
 		public PagedArray(int pageSize = Constants.PageSize)
 		{
-			InvalidPageSizeException.ThrowIfNotPowerOf2<T>(pageSize);
-
 			PageSize = pageSize;
 			PageSizePower = MathUtils.FastLog2(pageSize);
 			PageSizeMinusOne = pageSize - 1;

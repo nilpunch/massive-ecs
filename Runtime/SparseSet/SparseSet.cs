@@ -74,13 +74,7 @@ namespace Massive
 
 			if (Bits0[id0] == 0UL)
 			{
-				var pageIndex = id >> Constants.PageSizePower;
-				var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
-				if ((Bits1[id1] & pageMask1) == 0UL)
-				{
-					AllocPage(pageIndex);
-				}
-
+				EnsurePage(id >> Constants.PageSizePower);
 				Bits1[id1] |= bit1;
 			}
 			Bits0[id0] |= bit0;
@@ -137,8 +131,8 @@ namespace Massive
 				Bits1[id1] &= ~bit1;
 
 				var pageIndex = id >> Constants.PageSizePower;
-				var pageMask1 = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
-				if ((Bits1[id1] & pageMask1) == 0UL)
+				var pageMask = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.PageMaskShiftPower);
+				if ((Bits1[id1] & pageMask) == 0UL)
 				{
 					FreePage(pageIndex);
 				}
@@ -172,7 +166,6 @@ namespace Massive
 					var current0 = offset1 + index1;
 					var bits0 = Bits0[current0];
 					var offset0 = current0 << 6;
-					var needToRemovePage = bits0 != 0UL;
 
 					while (bits0 != 0UL)
 					{
@@ -193,14 +186,11 @@ namespace Massive
 					bits1 &= bits1 - 1UL;
 
 					Bits0[current0] = 0UL;
-
-					if (needToRemovePage)
-					{
-						FreePage(current0);
-					}
 				}
 				Bits1[current1] = 0UL;
 			}
+
+			FreeAllPages();
 		}
 
 		/// <summary>
@@ -276,7 +266,7 @@ namespace Massive
 		{
 		}
 
-		protected virtual void AllocPage(int page)
+		public virtual void EnsurePage(int page)
 		{
 		}
 

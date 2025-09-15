@@ -4,21 +4,17 @@ namespace Massive
 {
 	public class WorldConfig
 	{
-		public readonly int PageSize = Constants.PageSize;
-
 		public readonly bool StoreEmptyTypesAsDataSets = false;
 
-		public WorldConfig(int? pageSize = default, bool? storeEmptyTypesAsDataSets = default)
+		public WorldConfig(bool? storeEmptyTypesAsDataSets = default)
 		{
-			PageSize = pageSize ?? PageSize;
 			StoreEmptyTypesAsDataSets = storeEmptyTypesAsDataSets ?? StoreEmptyTypesAsDataSets;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool CompatibleWith(WorldConfig other)
 		{
-			return PageSize == other.PageSize
-				&& StoreEmptyTypesAsDataSets == other.StoreEmptyTypesAsDataSets;
+			return StoreEmptyTypesAsDataSets == other.StoreEmptyTypesAsDataSets;
 		}
 	}
 }

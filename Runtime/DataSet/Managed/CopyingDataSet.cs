@@ -18,7 +18,6 @@ namespace Massive
 	public class CopyingDataSet<T> : DataSet<T> where T : ICopyable<T>
 	{
 		public CopyingDataSet(int pageSize = Constants.PageSize)
-			: base(pageSize)
 		{
 		}
 
@@ -49,8 +48,6 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToCopyable(DataSet<T> other)
 		{
-			IncompatiblePageSizeException.ThrowIfIncompatible(this, other);
-
 			CopyBitsTo(other);
 
 			var bits1Length = Bits1.Length;
@@ -66,16 +63,18 @@ namespace Massive
 
 					var current0 = offset1 + index1;
 					var offset0 = current0 << 6;
-					var sourceOffset = offset0 & Constants.PageSizeMinusOne;
-					var destinationOffset = offset0 & Constants.PageSizeMinusOne;
-					var sourcePage = PagedData[offset0 >> Constants.PageSizePower];
-					other.EnsurePage(offset0 >> Constants.PageSizePower);
-					var destinationPage = other.PagedData[offset0 >> Constants.PageSizePower];
+					var dataOffset = offset0 & Constants.PageSizeMinusOne;
+					var pageIndex = offset0 >> Constants.PageSizePower;
+
+					other.EnsurePage(pageIndex);
+					var sourcePage = PagedData[pageIndex];
+					var destinationPage = other.PagedData[pageIndex];
+
 					var bits0 = Bits0[current0];
 					while (bits0 != 0UL)
 					{
 						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
-						sourcePage[sourceOffset + index0].CopyTo(ref destinationPage[destinationOffset + index0]);
+						sourcePage[dataOffset + index0].CopyTo(ref destinationPage[dataOffset + index0]);
 						bits0 &= bits0 - 1UL;
 					}
 

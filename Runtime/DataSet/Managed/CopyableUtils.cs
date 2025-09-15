@@ -14,9 +14,9 @@ namespace Massive
 		/// <summary>
 		/// Create <see cref="CopyingDataSet{T}"/> bypassing <see cref="ICopyable{T}"/> constraint.
 		/// </summary>
-		public static DataSet<T> CreateCopyingDataSet<T>(int pageSize = Constants.PageSize)
+		public static DataSet<T> CreateCopyingDataSet<T>()
 		{
-			return (DataSet<T>)ReflectionUtils.CreateGeneric(typeof(CopyingDataSet<>), typeof(T), pageSize);
+			return (DataSet<T>)ReflectionUtils.CreateGeneric(typeof(CopyingDataSet<>), typeof(T));
 		}
 
 		/// <summary>

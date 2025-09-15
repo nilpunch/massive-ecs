@@ -23,12 +23,6 @@ namespace Massive
 
 		private int PoolCount { get; set; }
 
-		public DataSet(int pageSize = Constants.PageSize)
-		{
-			InvalidPageSizeException.ThrowIfNotPowerOf2<T>(pageSize);
-			InvalidPageSizeException.ThrowIfTooLargeOrTooSmall<T>(pageSize);
-		}
-
 		/// <summary>
 		/// Gets a reference to the data associated with the specified ID.
 		/// </summary>
@@ -62,12 +56,7 @@ namespace Massive
 
 			if (Bits0[id0] == 0UL)
 			{
-				var pageMask = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.MaskShiftPower);
-				if ((Bits1[id1] & pageMask) == 0UL)
-				{
-					EnsurePage(pageIndex);
-				}
-
+				EnsurePageInternal(pageIndex);
 				Bits1[id1] |= bit1;
 			}
 			Bits0[id0] |= bit0;
@@ -83,53 +72,9 @@ namespace Massive
 			NotifyAfterAdded(id);
 		}
 
-		protected override void AllocPage(int page)
+		public override void EnsurePage(int page)
 		{
-			EnsurePage(page);
-		}
-
-		protected override void FreePage(int page)
-		{
-			if (PoolCount >= DataPagePool.Length)
-			{
-				DataPagePool = DataPagePool.ResizeToNextPowOf2(PoolCount + 1);
-			}
-
-			DataPagePool[PoolCount++] = PagedData[page];
-			PagedData[page] = null;
-		}
-
-		protected override void FreeAllPages()
-		{
-			for (var i = 0; i < PagedData.Length; i++)
-			{
-				if (PagedData[i] != null)
-				{
-					FreePage(i);
-				}
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsurePageAt(int id)
-		{
-			EnsurePage(id >> Constants.PageSizePower);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsurePage(int page)
-		{
-			if (page >= PagedData.Length)
-			{
-				PagedData = PagedData.Resize(page + 1);
-			}
-
-			PagedData[page] ??= CreatePage();
-		}
-
-		private T[] CreatePage()
-		{
-			return PoolCount > 0 ? DataPagePool[--PoolCount] : new T[Constants.PageSize];
+			EnsurePageInternal(page);
 		}
 
 		/// <summary>
@@ -140,18 +85,50 @@ namespace Massive
 			Get(destinationId) = Get(sourceId);
 		}
 
-		Array IDataSet.GetPage(int page)
+		protected override void FreePage(int page)
 		{
-			return PagedData[page];
+			FreePageInternal(page);
 		}
 
-		int IDataSet.PageSize => Constants.PageSize;
+		protected override void FreeAllPages()
+		{
+			for (var i = 0; i < PagedData.Length; i++)
+			{
+				if (PagedData[i] != null)
+				{
+					FreePageInternal(i);
+				}
+			}
+		}
 
-		Type IDataSet.ElementType => typeof(T);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void EnsurePageInternal(int page)
+		{
+			if (page >= PagedData.Length)
+			{
+				PagedData = PagedData.Resize(page + 1);
+			}
 
-		object IDataSet.GetRaw(int id) => Get(id);
+			PagedData[page] ??= CreatePage();
+		}
 
-		void IDataSet.SetRaw(int id, object value) => Set(id, (T)value);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void FreePageInternal(int page)
+		{
+			if (PoolCount >= DataPagePool.Length)
+			{
+				DataPagePool = DataPagePool.ResizeToNextPowOf2(PoolCount + 1);
+			}
+
+			DataPagePool[PoolCount++] = PagedData[page];
+			PagedData[page] = null;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private T[] CreatePage()
+		{
+			return PoolCount > 0 ? DataPagePool[--PoolCount] : new T[Constants.PageSize];
+		}
 
 		/// <summary>
 		/// Creates and returns a new data set that is an exact copy of this one.
@@ -160,7 +137,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DataSet<T> Clone()
 		{
-			var clone = new DataSet<T>(Constants.PageSize);
+			var clone = new DataSet<T>();
 			CopyTo(clone);
 			return clone;
 		}
@@ -172,8 +149,6 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(DataSet<T> other)
 		{
-			IncompatiblePageSizeException.ThrowIfIncompatible(this, other);
-
 			CopyBitsTo(other);
 
 			for (var i = 0; i < PagedData.Length; i++)
@@ -189,5 +164,13 @@ namespace Massive
 				}
 			}
 		}
+
+		Array IDataSet.GetPage(int page) => PagedData[page];
+
+		Type IDataSet.ElementType => typeof(T);
+
+		object IDataSet.GetRaw(int id) => Get(id);
+
+		void IDataSet.SetRaw(int id, object value) => Set(id, (T)value);
 	}
 }

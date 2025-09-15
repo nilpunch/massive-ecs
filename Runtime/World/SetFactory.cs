@@ -6,25 +6,21 @@ namespace Massive
 	public class SetFactory
 	{
 		private readonly bool _storeEmptyTypesAsDataSets;
-		private readonly int _pageSize;
 
 		public SetFactory(WorldConfig worldConfig)
-			: this(worldConfig.StoreEmptyTypesAsDataSets,
-				worldConfig.PageSize)
+			: this(worldConfig.StoreEmptyTypesAsDataSets)
 		{
 		}
 
-		public SetFactory(bool storeEmptyTypesAsDataSets = false, int pageSize = Constants.PageSize)
+		public SetFactory(bool storeEmptyTypesAsDataSets = false)
 		{
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
-			_pageSize = pageSize;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool CompatibleWith(SetFactory other)
 		{
-			return _storeEmptyTypesAsDataSets == other._storeEmptyTypesAsDataSets
-				&& _pageSize == other._pageSize;
+			return _storeEmptyTypesAsDataSets == other._storeEmptyTypesAsDataSets;
 		}
 
 		public Output CreateAppropriateSet<T>()
@@ -51,19 +47,19 @@ namespace Massive
 			var type = typeof(T);
 			if (CopyableUtils.IsImplementedFor(type))
 			{
-				var dataSet = CopyableUtils.CreateCopyingDataSet<T>(GetPageSizeFor(type));
+				var dataSet = CopyableUtils.CreateCopyingDataSet<T>();
 				var cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else if (type.IsManaged())
 			{
-				var dataSet = new DataSet<T>(GetPageSizeFor(type));
+				var dataSet = new DataSet<T>();
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else
 			{
-				var dataSet = new UnmanagedDataSet<T>(GetPageSizeFor(type), DefaultValueUtils.GetDefaultValueFor<T>());
+				var dataSet = new UnmanagedDataSet<T>(DefaultValueUtils.GetDefaultValueFor<T>());
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
@@ -77,16 +73,6 @@ namespace Massive
 		public bool TypeHasNoData(Type type)
 		{
 			return type.IsValueType && ReflectionUtils.HasNoFields(type) && !_storeEmptyTypesAsDataSets;
-		}
-
-		public int GetPageSizeFor(Type type)
-		{
-			if (Attribute.GetCustomAttribute(type, typeof(PageSizeAttribute)) is PageSizeAttribute attribute)
-			{
-				return attribute.PageSize;
-			}
-
-			return _pageSize;
 		}
 
 		public readonly struct Output

@@ -4,8 +4,6 @@ namespace Massive
 {
 	public interface IDataSet
 	{
-		public int PageSize { get; }
-
 		Type ElementType { get; }
 
 		Array GetPage(int page);
