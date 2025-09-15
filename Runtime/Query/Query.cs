@@ -15,24 +15,18 @@ namespace Massive
 		public static void ForEach<TAction>(this Context context, ref TAction action)
 			where TAction : IEntityAction
 		{
-			var resultBitSet = BitsPool.Rent();
+			var minBitSet = BitSetBase.GetMinBitSet(context.World.Entifiers, context.Filter.Included, context.Filter.IncludedCount);
 
-			int blocksLength;
+			var resultBitSet = BitsPool.RentClone(minBitSet);
 
-			if (context.Filter.IncludedCount == 0)
+			if (minBitSet == context.World.Entifiers)
 			{
-				context.World.Entifiers.CopyBitsTo(resultBitSet);
 				resultBitSet.RemoveOnRemove(context.World.Entifiers);
-				blocksLength = context.World.Entifiers.NonEmptyBlocks.Length;
-			}
-			else
-			{
-				var minBits = BitSetBase.GetMinBitSet(context.Filter.Included, context.Filter.IncludedCount);
-				minBits.CopyBitsTo(resultBitSet);
-				blocksLength = minBits.NonEmptyBlocks.Length;
 			}
 
 			ApplyFilter(context.Filter, resultBitSet);
+
+			var blocksLength = minBitSet.NonEmptyBlocks.Length;
 
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)

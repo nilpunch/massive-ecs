@@ -46,64 +46,60 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(int id)
 		{
-			var id0 = id >> 6;
-			var id1 = id >> 12;
+			var bitsIndex = id >> 6;
+			var blockIndex = id >> 12;
 
-			if (id1 >= NonEmptyBlocks.Length)
+			EnsureBlocksCapacityAt(blockIndex);
+
+			var bitsBit = 1UL << (id & 63);
+			var blockBit = 1UL << (bitsIndex & 63);
+
+			if (Bits[bitsIndex] == 0UL)
 			{
-				NonEmptyBlocks = NonEmptyBlocks.Resize(MathUtils.NextPowerOf2(id1 + 1));
-				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
+				NonEmptyBlocks[blockIndex] |= blockBit;
 			}
-
-			var bit0 = 1UL << (id & 63);
-			var bit1 = 1UL << (id0 & 63);
-
-			if (Bits[id0] == 0UL)
-			{
-				NonEmptyBlocks[id1] |= bit1;
-			}
-			Bits[id0] |= bit0;
+			Bits[bitsIndex] |= bitsBit;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Remove(int id)
 		{
-			var id0 = id >> 6;
-			var id1 = id >> 12;
+			var bitsIndex = id >> 6;
+			var blockIndex = id >> 12;
 
-			if (id0 >= Bits.Length)
+			if (bitsIndex >= Bits.Length)
 			{
 				return;
 			}
 
-			var bit0 = 1UL << (id & 63);
-			var bit1 = 1UL << (id0 & 63);
+			var bitsBit = 1UL << (id & 63);
+			var blockBit = 1UL << (bitsIndex & 63);
 
-			Bits[id0] &= ~bit0;
-			if (Bits[id0] == 0UL)
+			Bits[bitsIndex] &= ~bitsBit;
+			if (Bits[bitsIndex] == 0UL)
 			{
-				NonEmptyBlocks[id1] &= ~bit1;
+				NonEmptyBlocks[blockIndex] &= ~blockBit;
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has(int id)
 		{
-			var id0 = id >> 6;
+			var bitsIndex = id >> 6;
 
-			if (id < 0 || id0 >= Bits.Length)
+			if (id < 0 || bitsIndex >= Bits.Length)
 			{
 				return false;
 			}
 
-			var bit0 = 1UL << (id & 63);
-			return (Bits[id0] & bit0) != 0UL;
+			var bit = 1UL << (id & 63);
+			return (Bits[bitsIndex] & bit) != 0UL;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitSet AndBits(BitSetBase other)
 		{
-			var minBits = GetMinBitSet(this, other);
+			var minBitSet = GetMinBitSet(this, other);
 
 			if (NonEmptyBlocks.Length > other.NonEmptyBlocks.Length)
 			{
@@ -111,12 +107,12 @@ namespace Massive
 				Array.Fill(Bits, 0UL, other.Bits.Length, Bits.Length - other.Bits.Length);
 			}
 
-			for (var i = 0; i < minBits.NonEmptyBlocks.Length; i++)
+			for (var i = 0; i < minBitSet.NonEmptyBlocks.Length; i++)
 			{
 				NonEmptyBlocks[i] &= other.NonEmptyBlocks[i];
 			}
 
-			for (var j = 0; j < minBits.Bits.Length; j++)
+			for (var j = 0; j < minBitSet.Bits.Length; j++)
 			{
 				Bits[j] &= other.Bits[j];
 			}
@@ -127,14 +123,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitSet NotBits(BitSetBase other)
 		{
-			var minBits = GetMinBitSet(this, other);
+			var minBitSet = GetMinBitSet(this, other);
 
-			for (var i = 0; i < minBits.NonEmptyBlocks.Length; i++)
+			for (var i = 0; i < minBitSet.NonEmptyBlocks.Length; i++)
 			{
 				NonEmptyBlocks[i] &= ~other.NonEmptyBlocks[i];
 			}
 
-			for (var j = 0; j < minBits.Bits.Length; j++)
+			for (var j = 0; j < minBitSet.Bits.Length; j++)
 			{
 				Bits[j] &= ~other.Bits[j];
 			}

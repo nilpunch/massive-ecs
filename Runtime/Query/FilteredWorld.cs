@@ -77,20 +77,16 @@ namespace Massive
 
 		private BitSet RentAndPrepareBits(out int blocksLength)
 		{
-			var resultBitSet = BitsPool.Rent();
+			var minBitSet = BitSetBase.GetMinBitSet(World.Entifiers, Filter.Included, Filter.IncludedCount);
 
-			if (Filter.IncludedCount == 0)
+			var resultBitSet = BitsPool.RentClone(minBitSet);
+
+			if (minBitSet == World.Entifiers)
 			{
-				World.Entifiers.CopyBitsTo(resultBitSet);
 				resultBitSet.RemoveOnRemove(World.Entifiers);
-				blocksLength = World.Entifiers.NonEmptyBlocks.Length;
 			}
-			else
-			{
-				var minBits = BitSetBase.GetMinBitSet(Filter.Included, Filter.IncludedCount);
-				minBits.CopyBitsTo(resultBitSet);
-				blocksLength = minBits.NonEmptyBlocks.Length;
-			}
+
+			blocksLength = minBitSet.NonEmptyBlocks.Length;
 
 			for (var i = 0; i < Filter.IncludedCount; i++)
 			{
