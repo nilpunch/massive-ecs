@@ -2,7 +2,6 @@
 #define MASSIVE_ASSERT
 #endif
 
-using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -17,10 +16,6 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class CopyingDataSet<T> : DataSet<T> where T : ICopyable<T>
 	{
-		public CopyingDataSet(int pageSize = Constants.PageSize)
-		{
-		}
-
 		/// <summary>
 		/// Copies the data from one index to another.
 		/// </summary>
@@ -36,7 +31,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CopyingDataSet<T> CloneCopyable()
 		{
-			var clone = new CopyingDataSet<T>(Constants.PageSize);
+			var clone = new CopyingDataSet<T>();
 			CopyToCopyable(clone);
 			return clone;
 		}
