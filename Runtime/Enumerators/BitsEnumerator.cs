@@ -10,7 +10,7 @@ namespace Massive
 	{
 		private readonly BitSet _rentedBitSet;
 
-		private readonly int _bits1Length;
+		private readonly int _blocksLength;
 		private readonly byte[] _deBruijn;
 
 		private int _blockIndex;
@@ -24,7 +24,7 @@ namespace Massive
 		public BitsEnumerator(BitSet rentedBitSet, int blocksLength)
 		{
 			_rentedBitSet = rentedBitSet;
-			_bits1Length = blocksLength;
+			_blocksLength = blocksLength;
 
 			_blockIndex = -1;
 			_blockOffset = default;
@@ -37,7 +37,7 @@ namespace Massive
 
 			Current = default;
 
-			while (++_blockIndex < _bits1Length)
+			while (++_blockIndex < _blocksLength)
 			{
 				if (_rentedBitSet.NonEmptyBlocks[_blockIndex] != 0UL)
 				{
@@ -53,7 +53,7 @@ namespace Massive
 				}
 			}
 
-			_bits1Length = 0;
+			_blocksLength = 0;
 		}
 
 		public int Current { get; private set; }
@@ -61,7 +61,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			if (_bits1Length == 0)
+			if (_blocksLength == 0)
 			{
 				return false;
 			}
@@ -87,7 +87,7 @@ namespace Massive
 				return true;
 			}
 
-			while (++_blockIndex < _bits1Length)
+			while (++_blockIndex < _blocksLength)
 			{
 				if (_rentedBitSet.NonEmptyBlocks[_blockIndex] != 0UL)
 				{

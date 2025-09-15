@@ -10,19 +10,19 @@ namespace Massive
 	{
 		private readonly BitSet _rentedBitSet;
 		private readonly World _world;
-		private readonly int _bits1Length;
+		private readonly int _blocksLength;
 
 		public EntityEnumerable(BitSet rentedBitSet, World world, int blocksLength)
 		{
 			_rentedBitSet = rentedBitSet;
 			_world = world;
-			_bits1Length = blocksLength;
+			_blocksLength = blocksLength;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
-			return new Enumerator(_rentedBitSet, _world, _bits1Length);
+			return new Enumerator(_rentedBitSet, _world, _blocksLength);
 		}
 
 		[Il2CppSetOption(Option.NullChecks, false)]
@@ -33,7 +33,7 @@ namespace Massive
 			private readonly World _world;
 			private readonly Entifiers _entifiers;
 
-			private readonly int _bits1Length;
+			private readonly int _blocksLength;
 			private readonly byte[] _deBruijn;
 
 			private int _current;
@@ -51,7 +51,7 @@ namespace Massive
 				_rentedBitSet = rentedBitSet;
 				_world = world;
 				_entifiers = world.Entifiers;
-				_bits1Length = blocksLength;
+				_blocksLength = blocksLength;
 
 				_blockIndex = -1;
 				_blockOffset = default;
@@ -64,7 +64,7 @@ namespace Massive
 
 				_current = default;
 
-				while (++_blockIndex < _bits1Length)
+				while (++_blockIndex < _blocksLength)
 				{
 					if (_rentedBitSet.NonEmptyBlocks[_blockIndex] != 0UL)
 					{
@@ -80,7 +80,7 @@ namespace Massive
 					}
 				}
 
-				_bits1Length = 0;
+				_blocksLength = 0;
 			}
 
 			public Entity Current
@@ -92,7 +92,7 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool MoveNext()
 			{
-				if (_bits1Length == 0)
+				if (_blocksLength == 0)
 				{
 					return false;
 				}
@@ -118,7 +118,7 @@ namespace Massive
 					return true;
 				}
 
-				while (++_blockIndex < _bits1Length)
+				while (++_blockIndex < _blocksLength)
 				{
 					if (_rentedBitSet.NonEmptyBlocks[_blockIndex] != 0UL)
 					{

@@ -64,49 +64,49 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitsEnumerator GetEnumerator()
 		{
-			var resultBits = RentAndPrepareBits(out var blocksLength);
-			return new BitsEnumerator(resultBits, blocksLength);
+			var resultBitSet = RentAndPrepareBits(out var blocksLength);
+			return new BitsEnumerator(resultBitSet, blocksLength);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EntityEnumerable Entities()
 		{
-			var resultBits = RentAndPrepareBits(out var blocksLength);
-			return new EntityEnumerable(resultBits, World, blocksLength);
+			var resultBitSet = RentAndPrepareBits(out var blocksLength);
+			return new EntityEnumerable(resultBitSet, World, blocksLength);
 		}
 
 		private BitSet RentAndPrepareBits(out int blocksLength)
 		{
-			var resultBits = BitsPool.Rent();
+			var resultBitSet = BitsPool.Rent();
 
 			if (Filter.IncludedCount == 0)
 			{
-				World.Entifiers.CopyBitsTo(resultBits);
-				resultBits.RemoveOnRemove(World.Entifiers);
+				World.Entifiers.CopyBitsTo(resultBitSet);
+				resultBitSet.RemoveOnRemove(World.Entifiers);
 				blocksLength = World.Entifiers.NonEmptyBlocks.Length;
 			}
 			else
 			{
 				var minBits = BitSetBase.GetMinBitSet(Filter.Included, Filter.IncludedCount);
-				minBits.CopyBitsTo(resultBits);
+				minBits.CopyBitsTo(resultBitSet);
 				blocksLength = minBits.NonEmptyBlocks.Length;
 			}
 
 			for (var i = 0; i < Filter.IncludedCount; i++)
 			{
 				var included = Filter.Included[i];
-				resultBits.AndBits(included);
-				resultBits.RemoveOnRemove(included);
+				resultBitSet.AndBits(included);
+				resultBitSet.RemoveOnRemove(included);
 			}
 
 			for (var i = 0; i < Filter.ExcludedCount; i++)
 			{
 				var excluded = Filter.Excluded[i];
-				resultBits.NotBits(excluded);
-				resultBits.RemoveOnAdd(excluded);
+				resultBitSet.NotBits(excluded);
+				resultBitSet.RemoveOnAdd(excluded);
 			}
 
-			return resultBits;
+			return resultBitSet;
 		}
 	}
 }

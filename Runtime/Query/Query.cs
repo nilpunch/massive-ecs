@@ -15,36 +15,36 @@ namespace Massive
 		public static void ForEach<TAction>(this Context context, ref TAction action)
 			where TAction : IEntityAction
 		{
-			var resultBits = BitsPool.Rent();
+			var resultBitSet = BitsPool.Rent();
 
 			int blocksLength;
 
 			if (context.Filter.IncludedCount == 0)
 			{
-				context.World.Entifiers.CopyBitsTo(resultBits);
-				resultBits.RemoveOnRemove(context.World.Entifiers);
+				context.World.Entifiers.CopyBitsTo(resultBitSet);
+				resultBitSet.RemoveOnRemove(context.World.Entifiers);
 				blocksLength = context.World.Entifiers.NonEmptyBlocks.Length;
 			}
 			else
 			{
 				var minBits = BitSetBase.GetMinBitSet(context.Filter.Included, context.Filter.IncludedCount);
-				minBits.CopyBitsTo(resultBits);
+				minBits.CopyBitsTo(resultBitSet);
 				blocksLength = minBits.NonEmptyBlocks.Length;
 			}
 
-			ApplyFilter(context.Filter, resultBits);
+			ApplyFilter(context.Filter, resultBitSet);
 
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
-				var block = resultBits.NonEmptyBlocks[blockIndex];
+				var block = resultBitSet.NonEmptyBlocks[blockIndex];
 				var blockOffset = blockIndex << 6;
 				while (block != 0UL)
 				{
 					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var bitsIndex = blockOffset + blockBit;
-					var bits = resultBits.Bits[bitsIndex];
+					var bits = resultBitSet.Bits[bitsIndex];
 					var bitsOffset = bitsIndex << 6;
 					var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 
@@ -54,7 +54,7 @@ namespace Massive
 					{
 						for (; bit < runEnd; bit++)
 						{
-							if ((resultBits.Bits[bitsIndex] & (1UL << bit)) == 0UL)
+							if ((resultBitSet.Bits[bitsIndex] & (1UL << bit)) == 0UL)
 							{
 								continue;
 							}
@@ -67,16 +67,16 @@ namespace Massive
 						do
 						{
 							action.Apply(bitsOffset + bit);
-							bits &= (bits - 1UL) & resultBits.Bits[bitsIndex];
+							bits &= (bits - 1UL) & resultBitSet.Bits[bitsIndex];
 							bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 						} while (bits != 0UL);
 					}
 
-					block &= (block - 1UL) & resultBits.NonEmptyBlocks[blockIndex];
+					block &= (block - 1UL) & resultBitSet.NonEmptyBlocks[blockIndex];
 				}
 			}
 
-			BitsPool.ReturnAndPop(resultBits);
+			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
 		public static void ForEach<T, TAction>(this Context context, ref TAction action)
@@ -86,23 +86,23 @@ namespace Massive
 
 			var dataSet1 = context.World.DataSet<T>();
 
-			var resultBits = BitsPool.RentClone(dataSet1).RemoveOnRemove(dataSet1);
+			var resultBitSet = BitsPool.RentClone(dataSet1).RemoveOnRemove(dataSet1);
 
-			ApplyFilter(context.Filter, resultBits);
+			ApplyFilter(context.Filter, resultBitSet);
 
 			var blocksLength = dataSet1.NonEmptyBlocks.Length;
 
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
-				var block = resultBits.NonEmptyBlocks[blockIndex];
+				var block = resultBitSet.NonEmptyBlocks[blockIndex];
 				var blockOffset = blockIndex << 6;
 				while (block != 0UL)
 				{
 					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var bitsIndex = blockOffset + blockBit;
-					var bits = resultBits.Bits[bitsIndex];
+					var bits = resultBitSet.Bits[bitsIndex];
 					var bitsOffset = bitsIndex << 6;
 					var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
@@ -115,7 +115,7 @@ namespace Massive
 					{
 						for (; bit < runEnd; bit++)
 						{
-							if ((resultBits.Bits[bitsIndex] & (1UL << bit)) == 0UL)
+							if ((resultBitSet.Bits[bitsIndex] & (1UL << bit)) == 0UL)
 							{
 								continue;
 							}
@@ -132,16 +132,16 @@ namespace Massive
 							var dataIndex = dataOffset + bit;
 							action.Apply(bitsOffset + bit,
 								ref dataPage1[dataIndex]);
-							bits &= (bits - 1UL) & resultBits.Bits[bitsIndex];
+							bits &= (bits - 1UL) & resultBitSet.Bits[bitsIndex];
 							bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 						} while (bits != 0UL);
 					}
 
-					block &= (block - 1UL) & resultBits.NonEmptyBlocks[blockIndex];
+					block &= (block - 1UL) & resultBitSet.NonEmptyBlocks[blockIndex];
 				}
 			}
 
-			BitsPool.ReturnAndPop(resultBits);
+			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
 		public static void ForEach<T1, T2, TAction>(this Context context, ref TAction action)
@@ -153,26 +153,26 @@ namespace Massive
 			var dataSet1 = context.World.DataSet<T1>();
 			var dataSet2 = context.World.DataSet<T2>();
 
-			var resultBits = BitsPool.RentClone(dataSet1)
+			var resultBitSet = BitsPool.RentClone(dataSet1)
 				.AndBits(dataSet2)
 				.RemoveOnRemove(dataSet1)
 				.RemoveOnRemove(dataSet2);
 
-			ApplyFilter(context.Filter, resultBits);
+			ApplyFilter(context.Filter, resultBitSet);
 
 			var blocksLength = BitSetBase.GetMinBitSet(dataSet1, dataSet2).NonEmptyBlocks.Length;
 
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
-				var block = resultBits.NonEmptyBlocks[blockIndex];
+				var block = resultBitSet.NonEmptyBlocks[blockIndex];
 				var blockOffset = blockIndex << 6;
 				while (block != 0UL)
 				{
 					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var bitsIndex = blockOffset + blockBit;
-					var bits = resultBits.Bits[bitsIndex];
+					var bits = resultBitSet.Bits[bitsIndex];
 					var bitsOffset = bitsIndex << 6;
 					var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
@@ -186,7 +186,7 @@ namespace Massive
 					{
 						for (; bit < runEnd; bit++)
 						{
-							if ((resultBits.Bits[bitsIndex] & (1UL << bit)) == 0UL)
+							if ((resultBitSet.Bits[bitsIndex] & (1UL << bit)) == 0UL)
 							{
 								continue;
 							}
@@ -205,16 +205,16 @@ namespace Massive
 							action.Apply(bitsOffset + bit,
 								ref dataPage1[dataIndex],
 								ref dataPage2[dataIndex]);
-							bits &= (bits - 1UL) & resultBits.Bits[bitsIndex];
+							bits &= (bits - 1UL) & resultBitSet.Bits[bitsIndex];
 							bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 						} while (bits != 0UL);
 					}
 
-					block &= (block - 1UL) & resultBits.NonEmptyBlocks[blockIndex];
+					block &= (block - 1UL) & resultBitSet.NonEmptyBlocks[blockIndex];
 				}
 			}
 
-			BitsPool.ReturnAndPop(resultBits);
+			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
 		public static void ForEach<T1, T2, T3, TAction>(this Context context, ref TAction action)
@@ -228,28 +228,28 @@ namespace Massive
 			var dataSet2 = context.World.DataSet<T2>();
 			var dataSet3 = context.World.DataSet<T3>();
 
-			var resultBits = BitsPool.RentClone(dataSet1)
+			var resultBitSet = BitsPool.RentClone(dataSet1)
 				.AndBits(dataSet2)
 				.AndBits(dataSet3)
 				.RemoveOnRemove(dataSet1)
 				.RemoveOnRemove(dataSet2)
 				.RemoveOnRemove(dataSet3);
 
-			ApplyFilter(context.Filter, resultBits);
+			ApplyFilter(context.Filter, resultBitSet);
 
 			var blocksLength = BitSetBase.GetMinBitSet(dataSet1, dataSet2, dataSet3).NonEmptyBlocks.Length;
 
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
-				var block = resultBits.NonEmptyBlocks[blockIndex];
+				var block = resultBitSet.NonEmptyBlocks[blockIndex];
 				var blockOffset = blockIndex << 6;
 				while (block != 0UL)
 				{
 					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var bitsIndex = blockOffset + blockBit;
-					var bits = resultBits.Bits[bitsIndex];
+					var bits = resultBitSet.Bits[bitsIndex];
 					var bitsOffset = bitsIndex << 6;
 					var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
@@ -264,7 +264,7 @@ namespace Massive
 					{
 						for (; bit < runEnd; bit++)
 						{
-							if ((resultBits.Bits[bitsIndex] & (1UL << bit)) == 0UL)
+							if ((resultBitSet.Bits[bitsIndex] & (1UL << bit)) == 0UL)
 							{
 								continue;
 							}
@@ -285,16 +285,16 @@ namespace Massive
 								ref dataPage1[dataIndex],
 								ref dataPage2[dataIndex],
 								ref dataPage3[dataIndex]);
-							bits &= (bits - 1UL) & resultBits.Bits[bitsIndex];
+							bits &= (bits - 1UL) & resultBitSet.Bits[bitsIndex];
 							bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 						} while (bits != 0UL);
 					}
 
-					block &= (block - 1UL) & resultBits.NonEmptyBlocks[blockIndex];
+					block &= (block - 1UL) & resultBitSet.NonEmptyBlocks[blockIndex];
 				}
 			}
 
-			BitsPool.ReturnAndPop(resultBits);
+			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
 		public static void ForEach<T1, T2, T3, T4, TAction>(this Context context, ref TAction action)
@@ -310,7 +310,7 @@ namespace Massive
 			var dataSet3 = context.World.DataSet<T3>();
 			var dataSet4 = context.World.DataSet<T4>();
 
-			var resultBits = BitsPool.RentClone(dataSet1)
+			var resultBitSet = BitsPool.RentClone(dataSet1)
 				.AndBits(dataSet2)
 				.AndBits(dataSet3)
 				.AndBits(dataSet4)
@@ -319,21 +319,21 @@ namespace Massive
 				.RemoveOnRemove(dataSet3)
 				.RemoveOnRemove(dataSet4);
 
-			ApplyFilter(context.Filter, resultBits);
+			ApplyFilter(context.Filter, resultBitSet);
 
 			var blocksLength = BitSetBase.GetMinBitSet(dataSet1, dataSet2, dataSet3, dataSet4).NonEmptyBlocks.Length;
 
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
-				var block = resultBits.NonEmptyBlocks[blockIndex];
+				var block = resultBitSet.NonEmptyBlocks[blockIndex];
 				var blockOffset = blockIndex << 6;
 				while (block != 0UL)
 				{
 					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var bitsIndex = blockOffset + blockBit;
-					var bits = resultBits.Bits[bitsIndex];
+					var bits = resultBitSet.Bits[bitsIndex];
 					var bitsOffset = bitsIndex << 6;
 					var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
@@ -349,7 +349,7 @@ namespace Massive
 					{
 						for (; bit < runEnd; bit++)
 						{
-							if ((resultBits.Bits[bitsIndex] & (1UL << bit)) == 0UL)
+							if ((resultBitSet.Bits[bitsIndex] & (1UL << bit)) == 0UL)
 							{
 								continue;
 							}
@@ -372,16 +372,16 @@ namespace Massive
 								ref dataPage2[dataIndex],
 								ref dataPage3[dataIndex],
 								ref dataPage4[dataIndex]);
-							bits &= (bits - 1UL) & resultBits.Bits[bitsIndex];
+							bits &= (bits - 1UL) & resultBitSet.Bits[bitsIndex];
 							bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 						} while (bits != 0UL);
 					}
 
-					block &= (block - 1UL) & resultBits.NonEmptyBlocks[blockIndex];
+					block &= (block - 1UL) & resultBitSet.NonEmptyBlocks[blockIndex];
 				}
 			}
 
-			BitsPool.ReturnAndPop(resultBits);
+			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
 		private static void ApplyFilter(Filter filter, BitSet resultBitSet)
