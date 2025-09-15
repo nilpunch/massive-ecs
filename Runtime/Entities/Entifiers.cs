@@ -10,12 +10,12 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Entifiers : BitsBase, IBitsBacktrack
+	public class Entifiers : BitSetBase, IBitSetObservable
 	{
-		private Bits[] RemoveOnAdd { get; set; } = Array.Empty<Bits>();
+		private BitSet[] RemoveOnAdd { get; set; } = Array.Empty<BitSet>();
 		private int RemoveOnAddCount { get; set; }
 
-		private Bits[] RemoveOnRemove { get; set; } = Array.Empty<Bits>();
+		private BitSet[] RemoveOnRemove { get; set; } = Array.Empty<BitSet>();
 		private int RemoveOnRemoveCount { get; set; }
 
 		public int[] Pool { get; protected set; } = Array.Empty<int>();
@@ -111,7 +111,7 @@ namespace Massive
 			NegativeArgumentException.ThrowIfNegative(id);
 
 			// If entity is not alive, nothing to be done.
-			if (id >= UsedIds || (Bits0[id >> 6] & (1UL << (id & 63))) == 0UL)
+			if (id >= UsedIds || (Bits[id >> 6] & (1UL << (id & 63))) == 0UL)
 			{
 				return false;
 			}
@@ -160,25 +160,25 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			var bits1Length = Bits1.Length;
+			var blocksLength = NonEmptyBlocks.Length;
 
 			var deBruijn = MathUtils.DeBruijn;
-			for (var current1 = 0; current1 < bits1Length; current1++)
+			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
-				var bits1 = Bits1[current1];
-				var offset1 = current1 << 6;
-				while (bits1 != 0UL)
+				var block = NonEmptyBlocks[blockIndex];
+				var blockOffset = blockIndex << 6;
+				while (block != 0UL)
 				{
-					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
+					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
-					var current0 = offset1 + index1;
-					var bits0 = Bits0[current0];
-					var offset0 = current0 << 6;
-					while (bits0 != 0UL)
+					var bitsIndex = blockOffset + blockBit;
+					var bits = Bits[bitsIndex];
+					var bitsOffset = bitsIndex << 6;
+					while (bits != 0UL)
 					{
-						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+						var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 
-						var id = offset0 + index0;
+						var id = bitsOffset + bit;
 						BeforeDestroyed?.Invoke(id);
 						RemoveBit(id);
 						WorldContext?.EntityDestroyed(id);
@@ -187,15 +187,15 @@ namespace Massive
 						Pool[PooledIds++] = id;
 						MathUtils.IncrementWrapTo1(ref Versions[id]);
 
-						bits0 &= bits0 - 1UL;
+						bits &= bits - 1UL;
 					}
 
-					bits1 &= bits1 - 1UL;
+					block &= block - 1UL;
 
-					Bits0[current0] = 0UL;
+					Bits[bitsIndex] = 0UL;
 				}
 
-				Bits1[current1] = 0UL;
+				NonEmptyBlocks[blockIndex] = 0UL;
 			}
 		}
 
@@ -224,7 +224,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool IsAlive(int id)
 		{
-			return id >= 0 && id < UsedIds && (Bits0[id >> 6] & (1UL << (id & 63))) != 0UL;
+			return id >= 0 && id < UsedIds && (Bits[id >> 6] & (1UL << (id & 63))) != 0UL;
 		}
 
 		/// <summary>
@@ -258,7 +258,7 @@ namespace Massive
 		public BitsEnumerator GetEnumerator()
 		{
 			var bits = BitsPool.RentClone(this).RemoveOnRemove(this);
-			return new BitsEnumerator(bits, Bits1.Length);
+			return new BitsEnumerator(bits, NonEmptyBlocks.Length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -267,20 +267,20 @@ namespace Massive
 			var id0 = id >> 6;
 			var id1 = id >> 12;
 
-			if (id1 >= Bits1.Length)
+			if (id1 >= NonEmptyBlocks.Length)
 			{
-				Bits1 = Bits1.ResizeToNextPowOf2(id1 + 1);
-				Bits0 = Bits0.Resize(Bits1.Length << 6);
+				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(id1 + 1);
+				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
 			}
 
 			var bit0 = 1UL << (id & 63);
 			var bit1 = 1UL << (id0 & 63);
 
-			if (Bits0[id0] == 0UL)
+			if (Bits[id0] == 0UL)
 			{
-				Bits1[id1] |= bit1;
+				NonEmptyBlocks[id1] |= bit1;
 			}
-			Bits0[id0] |= bit0;
+			Bits[id0] |= bit0;
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
@@ -294,7 +294,7 @@ namespace Massive
 			var id0 = id >> 6;
 			var id1 = id >> 12;
 
-			if (id0 >= Bits0.Length)
+			if (id0 >= Bits.Length)
 			{
 				return;
 			}
@@ -302,10 +302,10 @@ namespace Massive
 			var bit0 = 1UL << (id & 63);
 			var bit1 = 1UL << (id0 & 63);
 
-			Bits0[id0] &= ~bit0;
-			if (Bits0[id0] == 0UL)
+			Bits[id0] &= ~bit0;
+			if (Bits[id0] == 0UL)
 			{
-				Bits1[id1] &= ~bit1;
+				NonEmptyBlocks[id1] &= ~bit1;
 			}
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)
@@ -315,35 +315,35 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitsBacktrack.PushRemoveOnAdd(Bits bits)
+		void IBitSetObservable.PushRemoveOnAdd(BitSet bitSet)
 		{
 			if (RemoveOnAddCount >= RemoveOnAdd.Length)
 			{
 				RemoveOnAdd = RemoveOnAdd.ResizeToNextPowOf2(RemoveOnAddCount + 1);
 			}
 
-			RemoveOnAdd[RemoveOnAddCount++] = bits;
+			RemoveOnAdd[RemoveOnAddCount++] = bitSet;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitsBacktrack.PopRemoveOnAdd()
+		void IBitSetObservable.PopRemoveOnAdd()
 		{
 			RemoveOnAddCount--;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitsBacktrack.PushRemoveOnRemove(Bits bits)
+		void IBitSetObservable.PushRemoveOnRemove(BitSet bitSet)
 		{
 			if (RemoveOnRemoveCount >= RemoveOnRemove.Length)
 			{
 				RemoveOnRemove = RemoveOnRemove.ResizeToNextPowOf2(RemoveOnRemoveCount + 1);
 			}
 
-			RemoveOnRemove[RemoveOnRemoveCount++] = bits;
+			RemoveOnRemove[RemoveOnRemoveCount++] = bitSet;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitsBacktrack.PopRemoveOnRemove()
+		void IBitSetObservable.PopRemoveOnRemove()
 		{
 			RemoveOnRemoveCount--;
 		}

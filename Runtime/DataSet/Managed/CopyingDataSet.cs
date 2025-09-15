@@ -45,35 +45,35 @@ namespace Massive
 		{
 			CopyBitsTo(other);
 
-			var bits1Length = Bits1.Length;
+			var blocksLength = NonEmptyBlocks.Length;
 
 			var deBruijn = MathUtils.DeBruijn;
-			for (var current1 = 0; current1 < bits1Length; current1++)
+			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
-				var bits1 = Bits1[current1];
-				var offset1 = current1 << 6;
-				while (bits1 != 0UL)
+				var block = NonEmptyBlocks[blockIndex];
+				var blockOffset = blockIndex << 6;
+				while (block != 0UL)
 				{
-					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
+					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
-					var current0 = offset1 + index1;
-					var offset0 = current0 << 6;
-					var dataOffset = offset0 & Constants.PageSizeMinusOne;
-					var pageIndex = offset0 >> Constants.PageSizePower;
+					var bitsIndex = blockOffset + blockBit;
+					var bitsOffset = bitsIndex << 6;
+					var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
+					var pageIndex = bitsOffset >> Constants.PageSizePower;
 
 					other.EnsurePage(pageIndex);
 					var sourcePage = PagedData[pageIndex];
 					var destinationPage = other.PagedData[pageIndex];
 
-					var bits0 = Bits0[current0];
-					while (bits0 != 0UL)
+					var bits = Bits[bitsIndex];
+					while (bits != 0UL)
 					{
-						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
-						sourcePage[dataOffset + index0].CopyTo(ref destinationPage[dataOffset + index0]);
-						bits0 &= bits0 - 1UL;
+						var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+						sourcePage[dataOffset + bit].CopyTo(ref destinationPage[dataOffset + bit]);
+						bits &= bits - 1UL;
 					}
 
-					bits1 &= bits1 - 1UL;
+					block &= block - 1UL;
 				}
 			}
 		}

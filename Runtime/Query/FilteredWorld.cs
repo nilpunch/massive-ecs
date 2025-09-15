@@ -64,18 +64,18 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitsEnumerator GetEnumerator()
 		{
-			var resultBits = RentAndPrepareBits(out var bits1Length);
-			return new BitsEnumerator(resultBits, bits1Length);
+			var resultBits = RentAndPrepareBits(out var blocksLength);
+			return new BitsEnumerator(resultBits, blocksLength);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EntityEnumerable Entities()
 		{
-			var resultBits = RentAndPrepareBits(out var bits1Length);
-			return new EntityEnumerable(resultBits, World, bits1Length);
+			var resultBits = RentAndPrepareBits(out var blocksLength);
+			return new EntityEnumerable(resultBits, World, blocksLength);
 		}
 
-		private Bits RentAndPrepareBits(out int bits1Length)
+		private BitSet RentAndPrepareBits(out int blocksLength)
 		{
 			var resultBits = BitsPool.Rent();
 
@@ -83,13 +83,13 @@ namespace Massive
 			{
 				World.Entifiers.CopyBitsTo(resultBits);
 				resultBits.RemoveOnRemove(World.Entifiers);
-				bits1Length = World.Entifiers.Bits1.Length;
+				blocksLength = World.Entifiers.NonEmptyBlocks.Length;
 			}
 			else
 			{
-				var minBits = BitsBase.GetMinBits(Filter.Included, Filter.IncludedCount);
+				var minBits = BitSetBase.GetMinBitSet(Filter.Included, Filter.IncludedCount);
 				minBits.CopyBitsTo(resultBits);
-				bits1Length = minBits.Bits1.Length;
+				blocksLength = minBits.NonEmptyBlocks.Length;
 			}
 
 			for (var i = 0; i < Filter.IncludedCount; i++)

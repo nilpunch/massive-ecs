@@ -8,47 +8,47 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct BitsEnumerator : IDisposable
 	{
-		private readonly Bits _rentedBits;
+		private readonly BitSet _rentedBitSet;
 
 		private readonly int _bits1Length;
 		private readonly byte[] _deBruijn;
 
-		private int _current1;
-		private int _offset1;
-		private ulong _bits1;
+		private int _blockIndex;
+		private int _blockOffset;
+		private ulong _block;
 
-		private int _current0;
-		private int _offset0;
-		private ulong _bits0;
+		private int _bitsIndex;
+		private int _bitsOffset;
+		private ulong _bits;
 
-		public BitsEnumerator(Bits rentedBits, int bits1Length)
+		public BitsEnumerator(BitSet rentedBitSet, int blocksLength)
 		{
-			_rentedBits = rentedBits;
-			_bits1Length = bits1Length;
+			_rentedBitSet = rentedBitSet;
+			_bits1Length = blocksLength;
 
-			_current1 = -1;
-			_offset1 = default;
-			_bits1 = default;
-			_current0 = default;
-			_offset0 = default;
-			_bits0 = default;
+			_blockIndex = -1;
+			_blockOffset = default;
+			_block = default;
+			_bitsIndex = default;
+			_bitsOffset = default;
+			_bits = default;
 
 			_deBruijn = MathUtils.DeBruijn;
 
 			Current = default;
 
-			while (++_current1 < _bits1Length)
+			while (++_blockIndex < _bits1Length)
 			{
-				if (_rentedBits.Bits1[_current1] != 0UL)
+				if (_rentedBitSet.NonEmptyBlocks[_blockIndex] != 0UL)
 				{
-					_offset1 = _current1 << 6;
-					_bits1 = _rentedBits.Bits1[_current1];
+					_blockOffset = _blockIndex << 6;
+					_block = _rentedBitSet.NonEmptyBlocks[_blockIndex];
 
-					_current0 = _offset1 + _deBruijn[(int)(((_bits1 & (ulong)-(long)_bits1) * 0x37E84A99DAE458FUL) >> 58)];
-					_bits1 &= _bits1 - 1UL;
-					_offset0 = _current0 << 6;
+					_bitsIndex = _blockOffset + _deBruijn[(int)(((_block & (ulong)-(long)_block) * 0x37E84A99DAE458FUL) >> 58)];
+					_block &= _block - 1UL;
+					_bitsOffset = _bitsIndex << 6;
 
-					_bits0 = _rentedBits.Bits0[_current0];
+					_bits = _rentedBitSet.Bits[_bitsIndex];
 					return;
 				}
 			}
@@ -66,41 +66,41 @@ namespace Massive
 				return false;
 			}
 
-			_bits0 &= _rentedBits.Bits0[_current0];
-			if (_bits0 != 0UL)
+			_bits &= _rentedBitSet.Bits[_bitsIndex];
+			if (_bits != 0UL)
 			{
-				Current = _offset0 + _deBruijn[(int)(((_bits0 & (ulong)-(long)_bits0) * 0x37E84A99DAE458FUL) >> 58)];
-				_bits0 &= _bits0 - 1UL;
+				Current = _bitsOffset + _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
+				_bits &= _bits - 1UL;
 				return true;
 			}
 
-			_bits1 &= _rentedBits.Bits1[_current1];
-			if (_bits1 != 0UL)
+			_block &= _rentedBitSet.NonEmptyBlocks[_blockIndex];
+			if (_block != 0UL)
 			{
-				_current0 = _offset1 + _deBruijn[(int)(((_bits1 & (ulong)-(long)_bits1) * 0x37E84A99DAE458FUL) >> 58)];
-				_bits1 &= _bits1 - 1UL;
-				_offset0 = _current0 << 6;
+				_bitsIndex = _blockOffset + _deBruijn[(int)(((_block & (ulong)-(long)_block) * 0x37E84A99DAE458FUL) >> 58)];
+				_block &= _block - 1UL;
+				_bitsOffset = _bitsIndex << 6;
 
-				_bits0 = _rentedBits.Bits0[_current0];
-				Current = _offset0 + _deBruijn[(int)(((_bits0 & (ulong)-(long)_bits0) * 0x37E84A99DAE458FUL) >> 58)];
-				_bits0 &= _bits0 - 1UL;
+				_bits = _rentedBitSet.Bits[_bitsIndex];
+				Current = _bitsOffset + _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
+				_bits &= _bits - 1UL;
 				return true;
 			}
 
-			while (++_current1 < _bits1Length)
+			while (++_blockIndex < _bits1Length)
 			{
-				if (_rentedBits.Bits1[_current1] != 0UL)
+				if (_rentedBitSet.NonEmptyBlocks[_blockIndex] != 0UL)
 				{
-					_offset1 = _current1 << 6;
-					_bits1 = _rentedBits.Bits1[_current1];
+					_blockOffset = _blockIndex << 6;
+					_block = _rentedBitSet.NonEmptyBlocks[_blockIndex];
 
-					_current0 = _offset1 + _deBruijn[(int)(((_bits1 & (ulong)-(long)_bits1) * 0x37E84A99DAE458FUL) >> 58)];
-					_bits1 &= _bits1 - 1UL;
-					_offset0 = _current0 << 6;
+					_bitsIndex = _blockOffset + _deBruijn[(int)(((_block & (ulong)-(long)_block) * 0x37E84A99DAE458FUL) >> 58)];
+					_block &= _block - 1UL;
+					_bitsOffset = _bitsIndex << 6;
 
-					_bits0 = _rentedBits.Bits0[_current0];
-					Current = _offset0 + _deBruijn[(int)(((_bits0 & (ulong)-(long)_bits0) * 0x37E84A99DAE458FUL) >> 58)];
-					_bits0 &= _bits0 - 1UL;
+					_bits = _rentedBitSet.Bits[_bitsIndex];
+					Current = _bitsOffset + _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
+					_bits &= _bits - 1UL;
 					return true;
 				}
 			}
@@ -110,7 +110,7 @@ namespace Massive
 
 		public void Dispose()
 		{
-			BitsPool.ReturnAndPop(_rentedBits);
+			BitsPool.ReturnAndPop(_rentedBitSet);
 		}
 	}
 }

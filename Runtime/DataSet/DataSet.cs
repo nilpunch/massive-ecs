@@ -40,26 +40,21 @@ namespace Massive
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
-			var id0 = id >> 6;
-			var id1 = id >> 12;
+			var bitsIndex = id >> 6;
+			var blockIndex = id >> 12;
 
-			if (id1 >= Bits1.Length)
-			{
-				Bits1 = Bits1.ResizeToNextPowOf2(id1 + 1);
-				Bits0 = Bits0.Resize(Bits1.Length << 6);
-			}
+			EnsureBlocksCapacityAt(blockIndex);
 
-			var mod64 = id & 63;
-			var bit0 = 1UL << mod64;
-			var bit1 = 1UL << (id0 & 63);
+			var bitsBit = 1UL << (id & 63);
+			var blockBit = 1UL << (bitsIndex & 63);
 			var pageIndex = id >> Constants.PageSizePower;
 
-			if (Bits0[id0] == 0UL)
+			if (Bits[bitsIndex] == 0UL)
 			{
 				EnsurePageInternal(pageIndex);
-				Bits1[id1] |= bit1;
+				NonEmptyBlocks[blockIndex] |= blockBit;
 			}
-			Bits0[id0] |= bit0;
+			Bits[bitsIndex] |= bitsBit;
 
 			PagedData[pageIndex][id & Constants.PageSizeMinusOne] = data;
 

@@ -7,37 +7,37 @@ namespace Massive
 	{
 		public static int Count { get; set; }
 
-		public static Bits[] Pool { get; set; } = Array.Empty<Bits>();
+		public static BitSet[] Pool { get; set; } = Array.Empty<BitSet>();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Bits Rent()
+		public static BitSet Rent()
 		{
 			if (Count > 0)
 			{
 				return Pool[--Count];
 			}
 
-			return new Bits();
+			return new BitSet();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Bits RentClone(BitsBase other)
+		public static BitSet RentClone(BitSetBase other)
 		{
-			var bits = Count > 0 ? Pool[--Count] : new Bits();
+			var bits = Count > 0 ? Pool[--Count] : new BitSet();
 			other.CopyBitsTo(bits);
 			return bits;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ReturnAndPop(Bits bits)
+		public static void ReturnAndPop(BitSet bitSet)
 		{
 			if (Count >= Pool.Length)
 			{
 				Pool = Pool.Resize(MathUtils.NextPowerOf2(Count + 1));
 			}
 
-			Pool[Count++] = bits;
-			bits.PopAll();
+			Pool[Count++] = bitSet;
+			bitSet.PopAll();
 		}
 	}
 }

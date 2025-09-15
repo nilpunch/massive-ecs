@@ -54,14 +54,14 @@ namespace Massive
 		public BitsEnumerator GetEnumerator()
 		{
 			var bits = BitsPool.RentClone(Entifiers).RemoveOnRemove(Entifiers);
-			return new BitsEnumerator(bits, Entifiers.Bits1.Length);
+			return new BitsEnumerator(bits, Entifiers.NonEmptyBlocks.Length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EntityEnumerable Entities()
 		{
 			var bits = BitsPool.RentClone(Entifiers).RemoveOnRemove(Entifiers);
-			return new EntityEnumerable(bits, this, Entifiers.Bits1.Length);
+			return new EntityEnumerable(bits, this, Entifiers.NonEmptyBlocks.Length);
 		}
 	}
 }

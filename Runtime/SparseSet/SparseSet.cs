@@ -10,13 +10,13 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class SparseSet : BitsBase, IBitsBacktrack
+	public class SparseSet : BitSetBase, IBitSetObservable
 	{
-		protected Bits[] RemoveOnAdd { get; private set; } = Array.Empty<Bits>();
+		protected BitSet[] RemoveOnAdd { get; private set; } = Array.Empty<BitSet>();
 
 		protected int RemoveOnAddCount { get; private set; }
 
-		private Bits[] RemoveOnRemove { get; set; } = Array.Empty<Bits>();
+		private BitSet[] RemoveOnRemove { get; set; } = Array.Empty<BitSet>();
 
 		private int RemoveOnRemoveCount { get; set; }
 
@@ -54,30 +54,25 @@ namespace Massive
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
-			var id0 = id >> 6;
-			var id1 = id >> 12;
+			var bitsIndex = id >> 6;
+			var blockIndex = id >> 12;
 
-			if (id1 >= Bits1.Length)
-			{
-				Bits1 = Bits1.ResizeToNextPowOf2(id1 + 1);
-				Bits0 = Bits0.Resize(Bits1.Length << 6);
-			}
+			EnsureBlocksCapacityAt(blockIndex);
 
-			var mod64 = id & 63;
-			var bit0 = 1UL << mod64;
-			var bit1 = 1UL << (id0 & 63);
+			var bitsBit = 1UL << (id & 63);
+			var blockBit = 1UL << (bitsIndex & 63);
 
-			if ((Bits0[id0] & bit0) != 0UL)
+			if ((Bits[bitsIndex] & bitsBit) != 0UL)
 			{
 				return false;
 			}
 
-			if (Bits0[id0] == 0UL)
+			if (Bits[bitsIndex] == 0UL)
 			{
 				EnsurePage(id >> Constants.PageSizePower);
-				Bits1[id1] |= bit1;
+				NonEmptyBlocks[blockIndex] |= blockBit;
 			}
-			Bits0[id0] |= bit0;
+			Bits[bitsIndex] |= bitsBit;
 
 			PrepareData(id);
 
@@ -106,18 +101,18 @@ namespace Massive
 		{
 			NegativeArgumentException.ThrowIfNegative(id);
 
-			var id0 = id >> 6;
-			var id1 = id >> 12;
+			var bitsIndex = id >> 6;
+			var blockIndex = id >> 12;
 
-			if (id0 >= Bits0.Length)
+			if (bitsIndex >= Bits.Length)
 			{
 				return false;
 			}
 
-			var bit0 = 1UL << (id & 63);
-			var bit1 = 1UL << (id0 & 63);
+			var bitsBit = 1UL << (id & 63);
+			var blockBit = 1UL << (bitsIndex & 63);
 
-			if ((Bits0[id0] & bit0) == 0UL)
+			if ((Bits[bitsIndex] & bitsBit) == 0UL)
 			{
 				return false;
 			}
@@ -125,14 +120,14 @@ namespace Massive
 			BeforeRemoved?.Invoke(id);
 			Components?.Remove(id, ComponentId);
 
-			Bits0[id0] &= ~bit0;
-			if (Bits0[id0] == 0UL)
+			Bits[bitsIndex] &= ~bitsBit;
+			if (Bits[bitsIndex] == 0UL)
 			{
-				Bits1[id1] &= ~bit1;
+				NonEmptyBlocks[blockIndex] &= ~blockBit;
 
 				var pageIndex = id >> Constants.PageSizePower;
 				var pageMask = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.PageMaskShiftPower);
-				if ((Bits1[id1] & pageMask) == 0UL)
+				if ((NonEmptyBlocks[blockIndex] & pageMask) == 0UL)
 				{
 					FreePage(pageIndex);
 				}
@@ -152,26 +147,26 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			var bits1Length = Bits1.Length;
+			var blocksLength = NonEmptyBlocks.Length;
 
 			var deBruijn = MathUtils.DeBruijn;
-			for (var current1 = 0; current1 < bits1Length; current1++)
+			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
-				var bits1 = Bits1[current1];
-				var offset1 = current1 << 6;
-				while (bits1 != 0UL)
+				var block = NonEmptyBlocks[blockIndex];
+				var blockOffset = blockIndex << 6;
+				while (block != 0UL)
 				{
-					var index1 = deBruijn[(int)(((bits1 & (ulong)-(long)bits1) * 0x37E84A99DAE458FUL) >> 58)];
+					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
-					var current0 = offset1 + index1;
-					var bits0 = Bits0[current0];
-					var offset0 = current0 << 6;
+					var bitsIndex = blockOffset + blockBit;
+					var bits = Bits[bitsIndex];
+					var bitsOffset = bitsIndex << 6;
 
-					while (bits0 != 0UL)
+					while (bits != 0UL)
 					{
-						var index0 = deBruijn[(int)(((bits0 & (ulong)-(long)bits0) * 0x37E84A99DAE458FUL) >> 58)];
+						var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 
-						var id = offset0 + index0;
+						var id = bitsOffset + bit;
 						BeforeRemoved?.Invoke(id);
 						Components?.Remove(id, ComponentId);
 
@@ -180,14 +175,14 @@ namespace Massive
 							RemoveOnRemove[i].Remove(id);
 						}
 
-						bits0 &= bits0 - 1UL;
+						bits &= bits - 1UL;
 					}
 
-					bits1 &= bits1 - 1UL;
+					block &= block - 1UL;
 
-					Bits0[current0] = 0UL;
+					Bits[bitsIndex] = 0UL;
 				}
-				Bits1[current1] = 0UL;
+				NonEmptyBlocks[blockIndex] = 0UL;
 			}
 
 			FreeAllPages();
@@ -199,8 +194,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ClearWithoutNotify()
 		{
-			Array.Fill(Bits1, 0UL);
-			Array.Fill(Bits0, 0UL);
+			Array.Fill(NonEmptyBlocks, 0UL);
+			Array.Fill(Bits, 0UL);
 			FreeAllPages();
 		}
 
@@ -212,52 +207,52 @@ namespace Massive
 		{
 			var id0 = id >> 6;
 
-			if (id0 < 0 || id0 >= Bits0.Length)
+			if (id0 < 0 || id0 >= Bits.Length)
 			{
 				return false;
 			}
 
 			var bit0 = 1UL << (id & 63);
-			return (Bits0[id0] & bit0) != 0UL;
+			return (Bits[id0] & bit0) != 0UL;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitsEnumerator GetEnumerator()
 		{
 			var bits = BitsPool.RentClone(this).RemoveOnRemove(this);
-			return new BitsEnumerator(bits, Bits1.Length);
+			return new BitsEnumerator(bits, NonEmptyBlocks.Length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitsBacktrack.PushRemoveOnAdd(Bits bits)
+		void IBitSetObservable.PushRemoveOnAdd(BitSet bitSet)
 		{
 			if (RemoveOnAddCount >= RemoveOnAdd.Length)
 			{
 				RemoveOnAdd = RemoveOnAdd.ResizeToNextPowOf2(RemoveOnAddCount + 1);
 			}
 
-			RemoveOnAdd[RemoveOnAddCount++] = bits;
+			RemoveOnAdd[RemoveOnAddCount++] = bitSet;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitsBacktrack.PopRemoveOnAdd()
+		void IBitSetObservable.PopRemoveOnAdd()
 		{
 			RemoveOnAddCount--;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitsBacktrack.PushRemoveOnRemove(Bits bits)
+		void IBitSetObservable.PushRemoveOnRemove(BitSet bitSet)
 		{
 			if (RemoveOnRemoveCount >= RemoveOnRemove.Length)
 			{
 				RemoveOnRemove = RemoveOnRemove.ResizeToNextPowOf2(RemoveOnRemoveCount + 1);
 			}
 
-			RemoveOnRemove[RemoveOnRemoveCount++] = bits;
+			RemoveOnRemove[RemoveOnRemoveCount++] = bitSet;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitsBacktrack.PopRemoveOnRemove()
+		void IBitSetObservable.PopRemoveOnRemove()
 		{
 			RemoveOnRemoveCount--;
 		}

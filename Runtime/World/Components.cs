@@ -114,7 +114,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureComponentsCapacity(int capacity)
 		{
-			var maskLength = (capacity + 63) >> 6;
+			var maskLength = (capacity >> 6) + 1;
 
 			if (maskLength > MaskLength)
 			{
