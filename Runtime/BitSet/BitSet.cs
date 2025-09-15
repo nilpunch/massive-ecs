@@ -59,6 +59,10 @@ namespace Massive
 				NonEmptyBlocks[blockIndex] |= blockBit;
 			}
 			Bits[bitsIndex] |= bitsBit;
+			if (Bits[bitsIndex] == ulong.MaxValue)
+			{
+				SaturatedBlocks[blockIndex] |= blockBit;
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -75,6 +79,10 @@ namespace Massive
 			var bitsBit = 1UL << (id & 63);
 			var blockBit = 1UL << (bitsIndex & 63);
 
+			if (Bits[bitsIndex] == ulong.MaxValue)
+			{
+				SaturatedBlocks[blockIndex] &= ~bitsBit;
+			}
 			Bits[bitsIndex] &= ~bitsBit;
 			if (Bits[bitsIndex] == 0UL)
 			{

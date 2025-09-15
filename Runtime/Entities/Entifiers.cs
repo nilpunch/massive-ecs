@@ -264,23 +264,23 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void SetBit(int id)
 		{
-			var id0 = id >> 6;
-			var id1 = id >> 12;
+			var bitsIndex = id >> 6;
+			var blockIndex = id >> 12;
 
-			if (id1 >= NonEmptyBlocks.Length)
+			EnsureBlocksCapacityAt(blockIndex);
+
+			var bitsBit = 1UL << (id & 63);
+			var blockBit = 1UL << (bitsIndex & 63);
+
+			if (Bits[bitsIndex] == 0UL)
 			{
-				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(id1 + 1);
-				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
+				NonEmptyBlocks[blockIndex] |= blockBit;
 			}
-
-			var bit0 = 1UL << (id & 63);
-			var bit1 = 1UL << (id0 & 63);
-
-			if (Bits[id0] == 0UL)
+			Bits[bitsIndex] |= bitsBit;
+			if (Bits[bitsIndex] == ulong.MaxValue)
 			{
-				NonEmptyBlocks[id1] |= bit1;
+				SaturatedBlocks[blockIndex] |= blockBit;
 			}
-			Bits[id0] |= bit0;
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
@@ -291,21 +291,25 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void RemoveBit(int id)
 		{
-			var id0 = id >> 6;
-			var id1 = id >> 12;
+			var bitsIndex = id >> 6;
+			var blockIndex = id >> 12;
 
-			if (id0 >= Bits.Length)
+			if (bitsIndex >= Bits.Length)
 			{
 				return;
 			}
 
-			var bit0 = 1UL << (id & 63);
-			var bit1 = 1UL << (id0 & 63);
+			var bitsBit = 1UL << (id & 63);
+			var blockBit = 1UL << (bitsIndex & 63);
 
-			Bits[id0] &= ~bit0;
-			if (Bits[id0] == 0UL)
+			if (Bits[bitsIndex] == ulong.MaxValue)
 			{
-				NonEmptyBlocks[id1] &= ~bit1;
+				SaturatedBlocks[blockIndex] &= ~blockBit;
+			}
+			Bits[bitsIndex] &= ~bitsBit;
+			if (Bits[bitsIndex] == 0UL)
+			{
+				NonEmptyBlocks[blockIndex] &= ~blockBit;
 			}
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)

@@ -73,6 +73,10 @@ namespace Massive
 				NonEmptyBlocks[blockIndex] |= blockBit;
 			}
 			Bits[bitsIndex] |= bitsBit;
+			if (Bits[bitsIndex] == ulong.MaxValue)
+			{
+				SaturatedBlocks[blockIndex] |= blockBit;
+			}
 
 			PrepareData(id);
 
@@ -120,6 +124,10 @@ namespace Massive
 			BeforeRemoved?.Invoke(id);
 			Components?.Remove(id, ComponentId);
 
+			if (Bits[bitsIndex] == ulong.MaxValue)
+			{
+				SaturatedBlocks[blockIndex] &= ~blockBit;
+			}
 			Bits[bitsIndex] &= ~bitsBit;
 			if (Bits[bitsIndex] == 0UL)
 			{
@@ -205,15 +213,15 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has(int id)
 		{
-			var id0 = id >> 6;
+			var bitsIndex = id >> 6;
 
-			if (id0 < 0 || id0 >= Bits.Length)
+			if (bitsIndex < 0 || bitsIndex >= Bits.Length)
 			{
 				return false;
 			}
 
-			var bit0 = 1UL << (id & 63);
-			return (Bits[id0] & bit0) != 0UL;
+			var bit = 1UL << (id & 63);
+			return (Bits[bitsIndex] & bit) != 0UL;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

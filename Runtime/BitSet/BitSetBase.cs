@@ -24,6 +24,7 @@ namespace Massive
 			if (blocksCapacity > NonEmptyBlocks.Length)
 			{
 				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(blocksCapacity);
+				SaturatedBlocks = SaturatedBlocks.Resize(NonEmptyBlocks.Length);
 				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
 			}
 		}
@@ -34,6 +35,7 @@ namespace Massive
 			if (blockIndex >= NonEmptyBlocks.Length)
 			{
 				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(blockIndex + 1);
+				SaturatedBlocks = SaturatedBlocks.Resize(NonEmptyBlocks.Length);
 				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
 			}
 		}
@@ -47,6 +49,7 @@ namespace Massive
 			other.GrowToFit(this);
 
 			Array.Copy(NonEmptyBlocks, other.NonEmptyBlocks, NonEmptyBlocks.Length);
+			Array.Copy(SaturatedBlocks, other.SaturatedBlocks, SaturatedBlocks.Length);
 			Array.Copy(Bits, other.Bits, Bits.Length);
 		}
 
@@ -67,11 +70,6 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitSetBase GetMinBitSet(SparseSet[] bitSets, int count)
 		{
-			if (count == 0)
-			{
-				return null;
-			}
-
 			var minimal = bitSets[0];
 			for (var i = 1; i < count; i++)
 			{

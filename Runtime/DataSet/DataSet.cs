@@ -49,12 +49,22 @@ namespace Massive
 			var blockBit = 1UL << (bitsIndex & 63);
 			var pageIndex = id >> Constants.PageSizePower;
 
+			if ((Bits[bitsIndex] & bitsBit) != 0UL)
+			{
+				PagedData[pageIndex][id & Constants.PageSizeMinusOne] = data;
+				return;
+			}
+
 			if (Bits[bitsIndex] == 0UL)
 			{
 				EnsurePageInternal(pageIndex);
 				NonEmptyBlocks[blockIndex] |= blockBit;
 			}
 			Bits[bitsIndex] |= bitsBit;
+			if (Bits[bitsIndex] == ulong.MaxValue)
+			{
+				SaturatedBlocks[blockIndex] |= blockBit;
+			}
 
 			PagedData[pageIndex][id & Constants.PageSizeMinusOne] = data;
 
