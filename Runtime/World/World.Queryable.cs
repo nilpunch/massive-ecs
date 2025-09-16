@@ -7,9 +7,9 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public partial class World : IQueryable
 	{
-		Query.Context IQueryable.Context => Context;
+		Query IQueryable.Query => Query;
 
-		private Query.Context Context => new Query.Context()
+		private Query Query => new Query
 		{
 			World = this,
 			Filter = Filter.Empty
@@ -19,35 +19,35 @@ namespace Massive
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			Context.ForEach(ref action);
+			Query.ForEach(ref action);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach<T, TAction>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			Context.ForEach<T, TAction>(ref action);
+			Query.ForEach<T, TAction>(ref action);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach<T1, T2, TAction>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			Context.ForEach<T1, T2, TAction>(ref action);
+			Query.ForEach<T1, T2, TAction>(ref action);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach<T1, T2, T3, TAction>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			Context.ForEach<T1, T2, T3, TAction>(ref action);
+			Query.ForEach<T1, T2, T3, TAction>(ref action);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ForEach<T1, T2, T3, T4, TAction>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			Context.ForEach<T1, T2, T3, T4, TAction>(ref action);
+			Query.ForEach<T1, T2, T3, T4, TAction>(ref action);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

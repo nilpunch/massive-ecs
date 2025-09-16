@@ -2,11 +2,11 @@
 {
 	public interface IQueryable
 	{
-		public Query.Context Context { get; }
+		public Query Query { get; }
 
-		public World World => Context.World;
+		public World World => Query.World;
 
-		public Filter Filter => Context.Filter;
+		public Filter Filter => Query.Filter;
 
 		BitsEnumerator GetEnumerator();
 	}

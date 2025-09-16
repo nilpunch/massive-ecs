@@ -1,30 +1,36 @@
-﻿using Unity.IL2CPP.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public static class Query
+	public struct Query : IQueryable
 	{
-		public struct Context
+		public World World;
+		public Filter Filter;
+
+		public Query(World world, Filter filter = null)
 		{
-			public World World;
-			public Filter Filter;
+			World = world;
+			Filter = filter ?? Filter.Empty;
 		}
 
-		public static void ForEach<TAction>(this Context context, ref TAction action)
+		Query IQueryable.Query => this;
+
+		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			var minBitSet = BitSetBase.GetMinBitSet(context.World.Entifiers, context.Filter.Included, context.Filter.IncludedCount);
+			var minBitSet = BitSetBase.GetMinBitSet(World.Entifiers, Filter.Included, Filter.IncludedCount);
 
 			var resultBitSet = BitsPool.RentClone(minBitSet);
 
-			if (minBitSet == context.World.Entifiers)
+			if (minBitSet == World.Entifiers)
 			{
-				resultBitSet.RemoveOnRemove(context.World.Entifiers);
+				resultBitSet.RemoveOnRemove(World.Entifiers);
 			}
 
-			ApplyFilter(context.Filter, resultBitSet);
+			ApplyFilter(Filter, resultBitSet);
 
 			var blocksLength = minBitSet.NonEmptyBlocks.Length;
 
@@ -73,16 +79,16 @@ namespace Massive
 			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
-		public static void ForEach<T, TAction>(this Context context, ref TAction action)
+		public void ForEach<T, TAction>(ref TAction action)
 			where TAction : IEntityAction<T>
 		{
-			NoDataException.ThrowIfHasNoData<T>(context.World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T>(World, DataAccessContext.View);
 
-			var dataSet1 = context.World.DataSet<T>();
+			var dataSet1 = World.DataSet<T>();
 
 			var resultBitSet = BitsPool.RentClone(dataSet1).RemoveOnRemove(dataSet1);
 
-			ApplyFilter(context.Filter, resultBitSet);
+			ApplyFilter(Filter, resultBitSet);
 
 			var blocksLength = dataSet1.NonEmptyBlocks.Length;
 
@@ -138,21 +144,21 @@ namespace Massive
 			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
-		public static void ForEach<T1, T2, TAction>(this Context context, ref TAction action)
+		public void ForEach<T1, T2, TAction>(ref TAction action)
 			where TAction : IEntityAction<T1, T2>
 		{
-			NoDataException.ThrowIfHasNoData<T1>(context.World, DataAccessContext.View);
-			NoDataException.ThrowIfHasNoData<T2>(context.World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
 
-			var dataSet1 = context.World.DataSet<T1>();
-			var dataSet2 = context.World.DataSet<T2>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
 
 			var resultBitSet = BitsPool.RentClone(dataSet1)
 				.AndBits(dataSet2)
 				.RemoveOnRemove(dataSet1)
 				.RemoveOnRemove(dataSet2);
 
-			ApplyFilter(context.Filter, resultBitSet);
+			ApplyFilter(Filter, resultBitSet);
 
 			var blocksLength = BitSetBase.GetMinBitSet(dataSet1, dataSet2).NonEmptyBlocks.Length;
 
@@ -211,16 +217,16 @@ namespace Massive
 			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
-		public static void ForEach<T1, T2, T3, TAction>(this Context context, ref TAction action)
+		public void ForEach<T1, T2, T3, TAction>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3>
 		{
-			NoDataException.ThrowIfHasNoData<T1>(context.World, DataAccessContext.View);
-			NoDataException.ThrowIfHasNoData<T2>(context.World, DataAccessContext.View);
-			NoDataException.ThrowIfHasNoData<T3>(context.World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
 
-			var dataSet1 = context.World.DataSet<T1>();
-			var dataSet2 = context.World.DataSet<T2>();
-			var dataSet3 = context.World.DataSet<T3>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
 
 			var resultBitSet = BitsPool.RentClone(dataSet1)
 				.AndBits(dataSet2)
@@ -229,7 +235,7 @@ namespace Massive
 				.RemoveOnRemove(dataSet2)
 				.RemoveOnRemove(dataSet3);
 
-			ApplyFilter(context.Filter, resultBitSet);
+			ApplyFilter(Filter, resultBitSet);
 
 			var blocksLength = BitSetBase.GetMinBitSet(dataSet1, dataSet2, dataSet3).NonEmptyBlocks.Length;
 
@@ -291,18 +297,18 @@ namespace Massive
 			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
-		public static void ForEach<T1, T2, T3, T4, TAction>(this Context context, ref TAction action)
+		public void ForEach<T1, T2, T3, T4, TAction>(ref TAction action)
 			where TAction : IEntityAction<T1, T2, T3, T4>
 		{
-			NoDataException.ThrowIfHasNoData<T1>(context.World, DataAccessContext.View);
-			NoDataException.ThrowIfHasNoData<T2>(context.World, DataAccessContext.View);
-			NoDataException.ThrowIfHasNoData<T3>(context.World, DataAccessContext.View);
-			NoDataException.ThrowIfHasNoData<T4>(context.World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T4>(World, DataAccessContext.View);
 
-			var dataSet1 = context.World.DataSet<T1>();
-			var dataSet2 = context.World.DataSet<T2>();
-			var dataSet3 = context.World.DataSet<T3>();
-			var dataSet4 = context.World.DataSet<T4>();
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
+			var dataSet4 = World.DataSet<T4>();
 
 			var resultBitSet = BitsPool.RentClone(dataSet1)
 				.AndBits(dataSet2)
@@ -313,7 +319,7 @@ namespace Massive
 				.RemoveOnRemove(dataSet3)
 				.RemoveOnRemove(dataSet4);
 
-			ApplyFilter(context.Filter, resultBitSet);
+			ApplyFilter(Filter, resultBitSet);
 
 			var blocksLength = BitSetBase.GetMinBitSet(dataSet1, dataSet2, dataSet3, dataSet4).NonEmptyBlocks.Length;
 
@@ -378,7 +384,39 @@ namespace Massive
 			BitsPool.ReturnAndPop(resultBitSet);
 		}
 
-		private static void ApplyFilter(Filter filter, BitSet resultBitSet)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public BitsEnumerator GetEnumerator()
+		{
+			var resultBitSet = RentAndPrepareBits(out var blocksLength);
+			return new BitsEnumerator(resultBitSet, blocksLength);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public EntityEnumerable Entities()
+		{
+			var resultBitSet = RentAndPrepareBits(out var blocksLength);
+			return new EntityEnumerable(resultBitSet, World, blocksLength);
+		}
+
+		private BitSet RentAndPrepareBits(out int blocksLength)
+		{
+			var minBitSet = BitSetBase.GetMinBitSet(World.Entifiers, Filter.Included, Filter.IncludedCount);
+
+			var resultBitSet = BitsPool.RentClone(minBitSet);
+
+			if (minBitSet == World.Entifiers)
+			{
+				resultBitSet.RemoveOnRemove(World.Entifiers);
+			}
+
+			blocksLength = minBitSet.NonEmptyBlocks.Length;
+
+			ApplyFilter(Filter, resultBitSet);
+
+			return resultBitSet;
+		}
+
+		private void ApplyFilter(Filter filter, BitSet resultBitSet)
 		{
 			for (var i = 0; i < filter.IncludedCount; i++)
 			{

@@ -13,7 +13,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionAdapter = new IdActionAdapter { Action = action };
-			queryable.Context.ForEach(ref idActionAdapter);
+			queryable.Query.ForEach(ref idActionAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -21,7 +21,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionRefAdapter = new IdActionRefAdapter<T> { Action = action };
-			queryable.Context.ForEach<T, IdActionRefAdapter<T>>(ref idActionRefAdapter);
+			queryable.Query.ForEach<T, IdActionRefAdapter<T>>(ref idActionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -29,7 +29,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionRefAdapter = new IdActionRefAdapter<T1, T2> { Action = action };
-			queryable.Context.ForEach<T1, T2, IdActionRefAdapter<T1, T2>>(ref idActionRefAdapter);
+			queryable.Query.ForEach<T1, T2, IdActionRefAdapter<T1, T2>>(ref idActionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -37,7 +37,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionRefAdapter = new IdActionRefAdapter<T1, T2, T3> { Action = action };
-			queryable.Context.ForEach<T1, T2, T3, IdActionRefAdapter<T1, T2, T3>>(ref idActionRefAdapter);
+			queryable.Query.ForEach<T1, T2, T3, IdActionRefAdapter<T1, T2, T3>>(ref idActionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -45,7 +45,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionRefAdapter = new IdActionRefAdapter<T1, T2, T3, T4> { Action = action };
-			queryable.Context.ForEach<T1, T2, T3, T4, IdActionRefAdapter<T1, T2, T3, T4>>(ref idActionRefAdapter);
+			queryable.Query.ForEach<T1, T2, T3, T4, IdActionRefAdapter<T1, T2, T3, T4>>(ref idActionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -53,7 +53,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionArgsAdapter = new IdActionArgsAdapter<TArgs>() { Action = action, Args = args };
-			queryable.Context.ForEach(ref idActionArgsAdapter);
+			queryable.Query.ForEach(ref idActionArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -61,7 +61,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionRefArgsAdapter = new IdActionRefArgsAdapter<T, TArgs> { Action = action, Args = args };
-			queryable.Context.ForEach<T, IdActionRefArgsAdapter<T, TArgs>>(ref idActionRefArgsAdapter);
+			queryable.Query.ForEach<T, IdActionRefArgsAdapter<T, TArgs>>(ref idActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -69,7 +69,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionRefArgsAdapter = new IdActionRefArgsAdapter<T1, T2, TArgs> { Action = action, Args = args };
-			queryable.Context.ForEach<T1, T2, IdActionRefArgsAdapter<T1, T2, TArgs>>(ref idActionRefArgsAdapter);
+			queryable.Query.ForEach<T1, T2, IdActionRefArgsAdapter<T1, T2, TArgs>>(ref idActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,7 +77,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionRefArgsAdapter = new IdActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Args = args };
-			queryable.Context.ForEach<T1, T2, T3, IdActionRefArgsAdapter<T1, T2, T3, TArgs>>(ref idActionRefArgsAdapter);
+			queryable.Query.ForEach<T1, T2, T3, IdActionRefArgsAdapter<T1, T2, T3, TArgs>>(ref idActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -85,7 +85,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var idActionRefArgsAdapter = new IdActionRefArgsAdapter<T1, T2, T3, T4, TArgs> { Action = action, Args = args };
-			queryable.Context.ForEach<T1, T2, T3, T4, IdActionRefArgsAdapter<T1, T2, T3, T4, TArgs>>(ref idActionRefArgsAdapter);
+			queryable.Query.ForEach<T1, T2, T3, T4, IdActionRefArgsAdapter<T1, T2, T3, T4, TArgs>>(ref idActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -93,7 +93,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionAdapter = new EntityActionAdapter { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World };
-			queryable.Context.ForEach(ref entityActionAdapter);
+			queryable.Query.ForEach(ref entityActionAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -101,7 +101,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionRefAdapter = new EntityActionRefAdapter<T> { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World };
-			queryable.Context.ForEach<T, EntityActionRefAdapter<T>>(ref entityActionRefAdapter);
+			queryable.Query.ForEach<T, EntityActionRefAdapter<T>>(ref entityActionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -109,7 +109,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2> { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World };
-			queryable.Context.ForEach<T1, T2, EntityActionRefAdapter<T1, T2>>(ref entityActionRefAdapter);
+			queryable.Query.ForEach<T1, T2, EntityActionRefAdapter<T1, T2>>(ref entityActionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -117,7 +117,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3> { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World };
-			queryable.Context.ForEach<T1, T2, T3, EntityActionRefAdapter<T1, T2, T3>>(ref entityActionRefAdapter);
+			queryable.Query.ForEach<T1, T2, T3, EntityActionRefAdapter<T1, T2, T3>>(ref entityActionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -125,7 +125,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4> { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World };
-			queryable.Context.ForEach<T1, T2, T3, T4, EntityActionRefAdapter<T1, T2, T3, T4>>(ref entityActionRefAdapter);
+			queryable.Query.ForEach<T1, T2, T3, T4, EntityActionRefAdapter<T1, T2, T3, T4>>(ref entityActionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -133,7 +133,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionArgsAdapter = new EntityActionArgsAdapter<TArgs>() { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World, Args = args };
-			queryable.Context.ForEach(ref entityActionArgsAdapter);
+			queryable.Query.ForEach(ref entityActionArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -141,7 +141,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T, TArgs> { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World, Args = args };
-			queryable.Context.ForEach<T, EntityActionRefArgsAdapter<T, TArgs>>(ref entityActionRefArgsAdapter);
+			queryable.Query.ForEach<T, EntityActionRefArgsAdapter<T, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -149,7 +149,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, TArgs> { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World, Args = args };
-			queryable.Context.ForEach<T1, T2, EntityActionRefArgsAdapter<T1, T2, TArgs>>(ref entityActionRefArgsAdapter);
+			queryable.Query.ForEach<T1, T2, EntityActionRefArgsAdapter<T1, T2, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -157,7 +157,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World, Args = args };
-			queryable.Context.ForEach<T1, T2, T3, EntityActionRefArgsAdapter<T1, T2, T3, TArgs>>(ref entityActionRefArgsAdapter);
+			queryable.Query.ForEach<T1, T2, T3, EntityActionRefArgsAdapter<T1, T2, T3, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -165,7 +165,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs> { Action = action, Entifiers = queryable.World.Entifiers, World = queryable.World, Args = args };
-			queryable.Context.ForEach<T1, T2, T3, T4, EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs>>(ref entityActionRefArgsAdapter);
+			queryable.Query.ForEach<T1, T2, T3, T4, EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -173,7 +173,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var actionRefAdapter = new ActionRefAdapter<T> { Action = action };
-			queryable.Context.ForEach<T, ActionRefAdapter<T>>(ref actionRefAdapter);
+			queryable.Query.ForEach<T, ActionRefAdapter<T>>(ref actionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -181,7 +181,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var actionRefAdapter = new ActionRefAdapter<T1, T2> { Action = action };
-			queryable.Context.ForEach<T1, T2, ActionRefAdapter<T1, T2>>(ref actionRefAdapter);
+			queryable.Query.ForEach<T1, T2, ActionRefAdapter<T1, T2>>(ref actionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -189,7 +189,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var actionRefAdapter = new ActionRefAdapter<T1, T2, T3> { Action = action };
-			queryable.Context.ForEach<T1, T2, T3, ActionRefAdapter<T1, T2, T3>>(ref actionRefAdapter);
+			queryable.Query.ForEach<T1, T2, T3, ActionRefAdapter<T1, T2, T3>>(ref actionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -197,7 +197,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var actionRefAdapter = new ActionRefAdapter<T1, T2, T3, T4> { Action = action };
-			queryable.Context.ForEach<T1, T2, T3, T4, ActionRefAdapter<T1, T2, T3, T4>>(ref actionRefAdapter);
+			queryable.Query.ForEach<T1, T2, T3, T4, ActionRefAdapter<T1, T2, T3, T4>>(ref actionRefAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -205,7 +205,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var actionRefArgsAdapter = new ActionRefArgsAdapter<T, TArgs> { Action = action, Args = args };
-			queryable.Context.ForEach<T, ActionRefArgsAdapter<T, TArgs>>(ref actionRefArgsAdapter);
+			queryable.Query.ForEach<T, ActionRefArgsAdapter<T, TArgs>>(ref actionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -213,7 +213,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var actionRefArgsAdapter = new ActionRefArgsAdapter<T1, T2, TArgs> { Action = action, Args = args };
-			queryable.Context.ForEach<T1, T2, ActionRefArgsAdapter<T1, T2, TArgs>>(ref actionRefArgsAdapter);
+			queryable.Query.ForEach<T1, T2, ActionRefArgsAdapter<T1, T2, TArgs>>(ref actionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -221,7 +221,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var actionRefArgsAdapter = new ActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Args = args };
-			queryable.Context.ForEach<T1, T2, T3, ActionRefArgsAdapter<T1, T2, T3, TArgs>>(ref actionRefArgsAdapter);
+			queryable.Query.ForEach<T1, T2, T3, ActionRefArgsAdapter<T1, T2, T3, TArgs>>(ref actionRefArgsAdapter);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -229,7 +229,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var fillIds = new FillIds { Result = result };
-			queryable.Context.ForEach(ref fillIds);
+			queryable.Query.ForEach(ref fillIds);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -237,7 +237,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var fillEntifiers = new FillEntifiers { Result = result, Entifiers = queryable.World.Entifiers };
-			queryable.Context.ForEach(ref fillEntifiers);
+			queryable.Query.ForEach(ref fillEntifiers);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -269,7 +269,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var destroyEntities = new DestroyAll { Entifiers = queryable.World.Entifiers };
-			queryable.Context.ForEach(ref destroyEntities);
+			queryable.Query.ForEach(ref destroyEntities);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -277,7 +277,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var countEntities = new CountAll();
-			queryable.Context.ForEach(ref countEntities);
+			queryable.Query.ForEach(ref countEntities);
 			return countEntities.Result;
 		}
 	}

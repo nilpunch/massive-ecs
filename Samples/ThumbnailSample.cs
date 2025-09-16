@@ -78,13 +78,13 @@
 			}
 
 			// Chain any number of components in filters.
-			var filter = world.Filter<
+			var query = world.Filter<
 				Include<int, string, bool, Include<short, byte, uint, Include<ushort>>>,
 				Exclude<long, char, float, Exclude<double>>>();
 
 			// Reuse the same filter view to iterate over different components.
-			filter.ForEach((ref int n, ref bool b) => { });
-			filter.ForEach((ref string str) => { });
+			query.ForEach((ref int n, ref bool b) => { });
+			query.ForEach((ref string str) => { });
 		}
 	}
 }
