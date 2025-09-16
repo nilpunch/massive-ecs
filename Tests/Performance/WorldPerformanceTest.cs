@@ -6,14 +6,12 @@ using Unity.PerformanceTesting;
 
 namespace Massive.PerformanceTests
 {
-	[TestFixture(WorldFilling.x50Components, WorldStability.FullStability)]
-	[TestFixture(WorldFilling.x50Components, WorldStability.DefaultStability)]
-	[TestFixture(WorldFilling.SingleComponent, WorldStability.DefaultStability)]
-	[TestFixture(WorldFilling.x50Tags, WorldStability.DefaultStability)]
+	[TestFixture(WorldFilling.x50Components)]
+	[TestFixture(WorldFilling.SingleComponent)]
+	[TestFixture(WorldFilling.x50Tags)]
 	public class WorldPerformanceTest
 	{
 		private readonly WorldFilling _worldFilling;
-		private readonly bool _fullStability;
 
 		public enum WorldFilling
 		{
@@ -22,28 +20,21 @@ namespace Massive.PerformanceTests
 			x50Tags,
 		}
 
-		public enum WorldStability
-		{
-			DefaultStability,
-			FullStability,
-		}
-
 		private const int EntitiesCount = 1000;
 		private const int MeasurementCount = 100;
 		private const int IterationsPerMeasurement = 120;
 
 		private readonly World _world;
 
-		public WorldPerformanceTest(WorldFilling worldFilling, WorldStability worldStability)
+		public WorldPerformanceTest(WorldFilling worldFilling)
 		{
 			_worldFilling = worldFilling;
-			_fullStability = worldStability == WorldStability.FullStability;
-			_world = PrepareTestRegistry(_worldFilling, _fullStability);
+			_world = PrepareTestRegistry(_worldFilling);
 			_world.Clear();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static World PrepareTestRegistry(WorldFilling worldFilling, bool fullStability)
+		public static World PrepareTestRegistry(WorldFilling worldFilling)
 		{
 			var config = new WorldConfig();
 			return worldFilling switch
@@ -58,7 +49,7 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Registry_Initialization()
 		{
-			Measure.Method(() => { PrepareTestRegistry(_worldFilling, _fullStability); })
+			Measure.Method(() => { PrepareTestRegistry(_worldFilling); })
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(1)
 				.CleanUp(GC.Collect)
@@ -218,6 +209,8 @@ namespace Massive.PerformanceTests
 		[Test, Performance]
 		public void Registry_RemoveAndAddComponent()
 		{
+			_world.Clear();
+			
 			for (int i = 0; i < EntitiesCount; i++)
 			{
 				_world.Create(new PositionComponent() { X = i, Y = i });
@@ -225,10 +218,13 @@ namespace Massive.PerformanceTests
 
 			Measure.Method(() =>
 				{
-					foreach (var entityId in _world)
+					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_world.Remove<PositionComponent>(entityId);
-						_world.Set(entityId, new PositionComponent() { X = entityId, Y = entityId });
+						_world.Remove<PositionComponent>(i);
+					}
+					for (int i = 0; i < EntitiesCount; i++)
+					{
+						_world.Set(i, new PositionComponent() { X = i, Y = i });
 					}
 				})
 				.MeasurementCount(MeasurementCount)
@@ -249,10 +245,13 @@ namespace Massive.PerformanceTests
 			Measure.Method(() =>
 				{
 					var positions = _world.DataSet<PositionComponent>();
-					foreach (var entityId in _world)
+					for (int i = 0; i < EntitiesCount; i++)
 					{
-						positions.Remove(entityId);
-						positions.Set(entityId, new PositionComponent() { X = entityId, Y = entityId });
+						positions.Remove(i);
+					}
+					for (int i = 0; i < EntitiesCount; i++)
+					{
+						positions.Set(i, new PositionComponent() { X = i, Y = i });
 					}
 				})
 				.MeasurementCount(MeasurementCount)

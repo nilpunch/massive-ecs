@@ -134,7 +134,7 @@ namespace Massive
 				NonEmptyBlocks[blockIndex] &= ~blockBit;
 
 				var pageIndex = id >> Constants.PageSizePower;
-				var pageMask = Constants.PageMask << ((pageIndex & Constants.PagesInBits1MinusOne) << Constants.PageMaskShiftPower);
+				var pageMask = Constants.PageMask << ((pageIndex & Constants.PagesInBlockMinusOne) << Constants.PageMaskShift);
 				if ((NonEmptyBlocks[blockIndex] & pageMask) == 0UL)
 				{
 					FreePage(pageIndex);

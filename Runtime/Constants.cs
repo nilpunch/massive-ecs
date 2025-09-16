@@ -13,7 +13,7 @@
 		public const int PageSizePower = 8;
 		public const int PageSizeMinusOne = PageSize - 1;
 		public const ulong PageMask = (1UL << (PageSize >> 6)) - 1;
-		public const int PagesInBits1MinusOne = ((1 << 12) >> PageSizePower) - 1;
-		public const int PageMaskShiftPower = PageSizePower - 6;
+		public const int PagesInBlockMinusOne = ((1 << 12) >> PageSizePower) - 1;
+		public const int PageMaskShift = PageSizePower - 6;
 	}
 }
