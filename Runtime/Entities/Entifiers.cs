@@ -278,7 +278,7 @@ namespace Massive
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
-				RemoveOnAdd[i].RemoveBit(id);
+				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsBit);
 			}
 		}
 
@@ -308,7 +308,7 @@ namespace Massive
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)
 			{
-				RemoveOnRemove[i].RemoveBit(id);
+				RemoveOnRemove[i].RemoveBit(bitsIndex, bitsBit);
 			}
 		}
 

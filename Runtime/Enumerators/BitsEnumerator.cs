@@ -9,11 +9,12 @@ namespace Massive
 	public struct BitsEnumerator : IDisposable
 	{
 		private readonly QueryCache _cache;
+		private readonly ulong[] _cachedBits;
+		private readonly int[] _nonEmptyBitsIndices;
+		private readonly int _nonEmptyBitsCount;
 
 		private readonly byte[] _deBruijn;
 
-		private readonly int[] _nonEmptyBitsIndices;
-		private readonly int _nonEmptyBitsCount;
 		private int _nonEmptyBitsIndex;
 		private bool _useRange;
 
@@ -27,6 +28,7 @@ namespace Massive
 		public BitsEnumerator(QueryCache cache)
 		{
 			_cache = cache;
+			_cachedBits = cache.Bits;
 			_nonEmptyBitsCount = cache.NonEmptyBitsCount;
 			_nonEmptyBitsIndices = cache.NonEmptyBitsIndices;
 
@@ -44,10 +46,10 @@ namespace Massive
 			while (++_nonEmptyBitsIndex < _nonEmptyBitsCount)
 			{
 				_bitsIndex = _nonEmptyBitsIndices[_nonEmptyBitsIndex];
-				if (_cache.Bits[_bitsIndex] != 0UL)
+				if (_cachedBits[_bitsIndex] != 0UL)
 				{
-					_bits = _cache.Bits[_bitsIndex];
 					_bitsOffset = _bitsIndex << 6;
+					_bits = _cachedBits[_bitsIndex];
 					_bit = _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
 
 					_runEnd = MathUtils.ApproximateMSB(_bits);
@@ -70,7 +72,7 @@ namespace Massive
 			{
 				while (_bit < _runEnd)
 				{
-					if ((_cache.Bits[_bitsIndex] & (1UL << _bit)) == 0UL)
+					if ((_cachedBits[_bitsIndex] & (1UL << _bit)) == 0UL)
 					{
 						_bit++;
 						continue;
@@ -82,7 +84,7 @@ namespace Massive
 			}
 			else
 			{
-				_bits &= _cache.Bits[_bitsIndex];
+				_bits &= _cachedBits[_bitsIndex];
 				if (_bits != 0UL)
 				{
 					_bit = _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
@@ -95,10 +97,10 @@ namespace Massive
 			while (++_nonEmptyBitsIndex < _nonEmptyBitsCount)
 			{
 				_bitsIndex = _nonEmptyBitsIndices[_nonEmptyBitsIndex];
-				if (_cache.Bits[_bitsIndex] != 0UL)
+				if (_cachedBits[_bitsIndex] != 0UL)
 				{
-					_bits = _cache.Bits[_bitsIndex];
 					_bitsOffset = _bitsIndex << 6;
+					_bits = _cachedBits[_bitsIndex];
 					_bit = _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
 
 					_runEnd = MathUtils.ApproximateMSB(_bits);

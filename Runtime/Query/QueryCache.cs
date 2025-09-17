@@ -78,16 +78,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void RemoveBit(int id)
+		public void RemoveBit(int bitsIndex, ulong bitsBit)
 		{
-			var bitsIndex = id >> 6;
-
 			if (bitsIndex >= Bits.Length)
 			{
 				return;
 			}
-
-			var bitsBit = 1UL << (id & 63);
 
 			Bits[bitsIndex] &= ~bitsBit;
 		}
@@ -95,7 +91,6 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public QueryCache Update()
 		{
-			// There always must be at least 1 included.
 			var minIncluded = BitSetBase.GetMinBitSet(Included.Items, Included.Count);
 			var minBlocksLength = minIncluded.NonEmptyBlocks.Length;
 
