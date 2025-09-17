@@ -137,11 +137,31 @@ namespace Massive
 				}
 
 				var blockOffset = blockIndex << 6;
-				while (block != 0UL)
+
+				var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
+
+				var runEnd = MathUtils.ApproximateMSB(block);
+				var setBits = MathUtils.PopCount(block);
+				if (setBits << 1 > runEnd - blockBit)
 				{
-					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
-					block &= block - 1UL;
-					NonEmptyBitsIndices[NonEmptyBitsCount++] = blockOffset + blockBit;
+					for (; blockBit < runEnd; blockBit++)
+					{
+						if ((NonEmptyBlocks[blockIndex] & (1UL << blockBit)) == 0UL)
+						{
+							continue;
+						}
+
+						NonEmptyBitsIndices[NonEmptyBitsCount++] = blockOffset + blockBit;
+					}
+				}
+				else
+				{
+					do
+					{
+						NonEmptyBitsIndices[NonEmptyBitsCount++] = blockOffset + blockBit;
+						block &= block - 1UL;
+						blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
+					} while (block != 0UL);
 				}
 			}
 
