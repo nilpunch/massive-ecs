@@ -6,7 +6,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class BitSetBase
+	public partial class BitSetBase
 	{
 		public ulong[] Bits { get; protected set; } = Array.Empty<ulong>();
 		public ulong[] NonEmptyBlocks { get; protected set; } = Array.Empty<ulong>();
@@ -68,7 +68,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static BitSetBase GetMinBitSet(SparseSet[] bitSets, int count)
+		public static BitSetBase GetMinBitSet(BitSetBase[] bitSets, int count)
 		{
 			var minimal = bitSets[0];
 			for (var i = 1; i < count; i++)

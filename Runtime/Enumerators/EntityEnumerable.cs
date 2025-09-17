@@ -8,79 +8,81 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct EntityEnumerable
 	{
-		private readonly BitSet _rentedBitSet;
+		private readonly QueryCache _cache;
 		private readonly World _world;
-		private readonly int _blocksLength;
 
-		public EntityEnumerable(BitSet rentedBitSet, World world, int blocksLength)
+		public EntityEnumerable(QueryCache cache, World world)
 		{
-			_rentedBitSet = rentedBitSet;
+			_cache = cache;
 			_world = world;
-			_blocksLength = blocksLength;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator()
 		{
-			return new Enumerator(_rentedBitSet, _world, _blocksLength);
+			return new Enumerator(_cache, _world);
 		}
 
 		[Il2CppSetOption(Option.NullChecks, false)]
 		[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 		public struct Enumerator : IDisposable
 		{
-			private readonly BitSet _rentedBitSet;
 			private readonly World _world;
 			private readonly Entifiers _entifiers;
+			private readonly QueryCache _cache;
+			private readonly ulong[] _cachedBits;
+			private readonly int[] _nonEmptyBitsIndices;
+			private readonly int _nonEmptyBitsCount;
 
-			private readonly int _blocksLength;
 			private readonly byte[] _deBruijn;
 
 			private int _current;
-
-			private int _blockIndex;
-			private int _blockOffset;
-			private ulong _block;
-
+			private int _nonEmptyBitsIndex;
+			private bool _useRange;
+			private int _bit;
+			private int _runEnd;
 			private int _bitsIndex;
 			private int _bitsOffset;
 			private ulong _bits;
 
-			public Enumerator(BitSet rentedBitSet, World world, int blocksLength)
+			public Enumerator(QueryCache cache, World world)
 			{
-				_rentedBitSet = rentedBitSet;
+				_cache = cache;
+				_cachedBits = cache.Bits;
+				_nonEmptyBitsCount = cache.NonEmptyBitsCount;
+				_nonEmptyBitsIndices = cache.NonEmptyBitsIndices;
 				_world = world;
 				_entifiers = world.Entifiers;
-				_blocksLength = blocksLength;
 
-				_blockIndex = -1;
-				_blockOffset = default;
-				_block = default;
+				_deBruijn = MathUtils.DeBruijn;
+
+				_nonEmptyBitsIndex = -1;
+				_bit = default;
+				_runEnd = default;
 				_bitsIndex = default;
 				_bitsOffset = default;
 				_bits = default;
 
-				_deBruijn = MathUtils.DeBruijn;
-
 				_current = default;
 
-				while (++_blockIndex < _blocksLength)
+				while (++_nonEmptyBitsIndex < _nonEmptyBitsCount)
 				{
-					if (_rentedBitSet.NonEmptyBlocks[_blockIndex] != 0UL)
+					_bitsIndex = _nonEmptyBitsIndices[_nonEmptyBitsIndex];
+					if (_cachedBits[_bitsIndex] != 0UL)
 					{
-						_blockOffset = _blockIndex << 6;
-						_block = _rentedBitSet.NonEmptyBlocks[_blockIndex];
-
-						_bitsIndex = _blockOffset + _deBruijn[(int)(((_block & (ulong)-(long)_block) * 0x37E84A99DAE458FUL) >> 58)];
-						_block &= _block - 1UL;
 						_bitsOffset = _bitsIndex << 6;
+						_bits = _cachedBits[_bitsIndex];
+						_bit = _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
 
-						_bits = _rentedBitSet.Bits[_bitsIndex];
+						_runEnd = MathUtils.ApproximateMSB(_bits);
+						var setBits = MathUtils.PopCount(_bits);
+
+						_useRange = setBits << 1 > _runEnd - _bit;
 						return;
 					}
 				}
 
-				_blocksLength = 0;
+				_useRange = true;
 			}
 
 			public Entity Current
@@ -92,45 +94,44 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool MoveNext()
 			{
-				if (_blocksLength == 0)
+				if (_useRange)
 				{
-					return false;
-				}
-
-				_bits &= _rentedBitSet.Bits[_bitsIndex];
-				if (_bits != 0UL)
-				{
-					_current = _bitsOffset + _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
-					_bits &= _bits - 1UL;
-					return true;
-				}
-
-				_block &= _rentedBitSet.NonEmptyBlocks[_blockIndex];
-				if (_block != 0UL)
-				{
-					_bitsIndex = _blockOffset + _deBruijn[(int)(((_block & (ulong)-(long)_block) * 0x37E84A99DAE458FUL) >> 58)];
-					_block &= _block - 1UL;
-					_bitsOffset = _bitsIndex << 6;
-
-					_bits = _rentedBitSet.Bits[_bitsIndex];
-					_current = _bitsOffset + _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
-					_bits &= _bits - 1UL;
-					return true;
-				}
-
-				while (++_blockIndex < _blocksLength)
-				{
-					if (_rentedBitSet.NonEmptyBlocks[_blockIndex] != 0UL)
+					while (_bit < _runEnd)
 					{
-						_blockOffset = _blockIndex << 6;
-						_block = _rentedBitSet.NonEmptyBlocks[_blockIndex];
-
-						_bitsIndex = _blockOffset + _deBruijn[(int)(((_block & (ulong)-(long)_block) * 0x37E84A99DAE458FUL) >> 58)];
-						_block &= _block - 1UL;
-						_bitsOffset = _bitsIndex << 6;
-
-						_bits = _rentedBitSet.Bits[_bitsIndex];
+						if ((_cachedBits[_bitsIndex] & (1UL << _bit)) != 0UL)
+						{
+							_current = _bitsOffset + _bit++;
+							return true;
+						}
+						_bit++;
+					}
+				}
+				else
+				{
+					_bits &= _cachedBits[_bitsIndex];
+					if (_bits != 0UL)
+					{
 						_current = _bitsOffset + _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
+						_bits &= _bits - 1UL;
+						return true;
+					}
+				}
+
+				while (++_nonEmptyBitsIndex < _nonEmptyBitsCount)
+				{
+					_bitsIndex = _nonEmptyBitsIndices[_nonEmptyBitsIndex];
+					if (_cachedBits[_bitsIndex] != 0UL)
+					{
+						_bitsOffset = _bitsIndex << 6;
+						_bits = _cachedBits[_bitsIndex];
+						_bit = _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
+
+						_runEnd = MathUtils.ApproximateMSB(_bits);
+						var setBits = MathUtils.PopCount(_bits);
+
+						_useRange = setBits << 1 > _runEnd - _bit;
+
+						_current = _bitsOffset + _bit++;
 						_bits &= _bits - 1UL;
 						return true;
 					}
@@ -141,7 +142,7 @@ namespace Massive
 
 			public void Dispose()
 			{
-				BitsPool.ReturnAndPop(_rentedBitSet);
+				QueryCache.ReturnAndPop(_cache);
 			}
 		}
 	}

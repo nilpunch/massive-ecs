@@ -10,14 +10,8 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Entifiers : BitSetBase, IBitSetObservable
+	public class Entifiers : BitSetBase
 	{
-		private BitSet[] RemoveOnAdd { get; set; } = Array.Empty<BitSet>();
-		private int RemoveOnAddCount { get; set; }
-
-		private BitSet[] RemoveOnRemove { get; set; } = Array.Empty<BitSet>();
-		private int RemoveOnRemoveCount { get; set; }
-
 		public int[] Pool { get; protected set; } = Array.Empty<int>();
 
 		public int PooledIds { get; protected set; }
@@ -257,8 +251,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitsEnumerator GetEnumerator()
 		{
-			var bits = BitsPool.RentClone(this).RemoveOnRemove(this);
-			return new BitsEnumerator(bits, NonEmptyBlocks.Length);
+			var bits = QueryCache.Rent().AddInclude(this).Update();
+			return new BitsEnumerator(bits);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -284,7 +278,7 @@ namespace Massive
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
-				RemoveOnAdd[i].Remove(id);
+				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsBit);
 			}
 		}
 
@@ -314,42 +308,8 @@ namespace Massive
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)
 			{
-				RemoveOnRemove[i].Remove(id);
+				RemoveOnRemove[i].RemoveBit(bitsIndex, bitsBit);
 			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitSetObservable.PushRemoveOnAdd(BitSet bitSet)
-		{
-			if (RemoveOnAddCount >= RemoveOnAdd.Length)
-			{
-				RemoveOnAdd = RemoveOnAdd.ResizeToNextPowOf2(RemoveOnAddCount + 1);
-			}
-
-			RemoveOnAdd[RemoveOnAddCount++] = bitSet;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitSetObservable.PopRemoveOnAdd()
-		{
-			RemoveOnAddCount--;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitSetObservable.PushRemoveOnRemove(BitSet bitSet)
-		{
-			if (RemoveOnRemoveCount >= RemoveOnRemove.Length)
-			{
-				RemoveOnRemove = RemoveOnRemove.ResizeToNextPowOf2(RemoveOnRemoveCount + 1);
-			}
-
-			RemoveOnRemove[RemoveOnRemoveCount++] = bitSet;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IBitSetObservable.PopRemoveOnRemove()
-		{
-			RemoveOnRemoveCount--;
 		}
 
 		/// <summary>

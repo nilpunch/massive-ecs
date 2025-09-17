@@ -53,15 +53,15 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitsEnumerator GetEnumerator()
 		{
-			var bits = BitsPool.RentClone(Entifiers).RemoveOnRemove(Entifiers);
-			return new BitsEnumerator(bits, Entifiers.NonEmptyBlocks.Length);
+			var bits = QueryCache.Rent().AddInclude(Entifiers).Update();
+			return new BitsEnumerator(bits);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EntityEnumerable Entities()
 		{
-			var bits = BitsPool.RentClone(Entifiers).RemoveOnRemove(Entifiers);
-			return new EntityEnumerable(bits, this, Entifiers.NonEmptyBlocks.Length);
+			var bits = QueryCache.Rent().AddInclude(Entifiers).Update();
+			return new EntityEnumerable(bits, this);
 		}
 	}
 }

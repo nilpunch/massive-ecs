@@ -94,6 +94,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Clear()
+		{
+			Count = 0;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int BinarySearch(T item)
 		{
 			return BinarySearch(0, Count, item, null);
