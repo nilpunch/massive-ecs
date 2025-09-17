@@ -70,7 +70,7 @@ namespace Massive
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
-				RemoveOnAdd[i].Remove(id);
+				RemoveOnAdd[i].RemoveBit(id);
 			}
 
 			Components?.Set(id, ComponentId);

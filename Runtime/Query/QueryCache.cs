@@ -78,54 +78,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void GrowToFit(BitSetBase other)
-		{
-			EnsureBlocksCapacity(other.NonEmptyBlocks.Length);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureBlocksCapacity(int blocksCapacity)
-		{
-			if (blocksCapacity > NonEmptyBlocks.Length)
-			{
-				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(blocksCapacity);
-				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureBlocksCapacityAt(int blockIndex)
-		{
-			if (blockIndex >= NonEmptyBlocks.Length)
-			{
-				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(blockIndex + 1);
-				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Add(int id)
+		public void RemoveBit(int id)
 		{
 			var bitsIndex = id >> 6;
-			var blockIndex = id >> 12;
-
-			EnsureBlocksCapacityAt(blockIndex);
-
-			var bitsBit = 1UL << (id & 63);
-			var blockBit = 1UL << (bitsIndex & 63);
-
-			if (Bits[bitsIndex] == 0UL)
-			{
-				NonEmptyBlocks[blockIndex] |= blockBit;
-			}
-			Bits[bitsIndex] |= bitsBit;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove(int id)
-		{
-			var bitsIndex = id >> 6;
-			var blockIndex = id >> 12;
 
 			if (bitsIndex >= Bits.Length)
 			{
@@ -133,37 +88,18 @@ namespace Massive
 			}
 
 			var bitsBit = 1UL << (id & 63);
-			var blockBit = 1UL << (bitsIndex & 63);
 
 			Bits[bitsIndex] &= ~bitsBit;
-			if (Bits[bitsIndex] == 0UL)
-			{
-				NonEmptyBlocks[blockIndex] &= ~blockBit;
-			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Has(int id)
-		{
-			var bitsIndex = id >> 6;
-
-			if (id < 0 || bitsIndex >= Bits.Length)
-			{
-				return false;
-			}
-
-			var bit = 1UL << (id & 63);
-			return (Bits[bitsIndex] & bit) != 0UL;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public QueryCache Update()
 		{
 			// There always must be at least 1 included.
 			var minIncluded = BitSetBase.GetMinBitSet(Included.Items, Included.Count);
 			var minBlocksLength = minIncluded.NonEmptyBlocks.Length;
 
-			GrowToFit(minIncluded);
+			EnsureBlocksCapacity(minBlocksLength);
 			Array.Copy(minIncluded.NonEmptyBlocks, NonEmptyBlocks, minBlocksLength);
 
 			foreach (var included in Included)
@@ -240,6 +176,16 @@ namespace Massive
 
 			IncludedWithoutMin.Clear();
 			return this;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsureBlocksCapacity(int blocksCapacity)
+		{
+			if (blocksCapacity > NonEmptyBlocks.Length)
+			{
+				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(blocksCapacity);
+				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
+			}
 		}
 	}
 }
