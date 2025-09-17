@@ -22,7 +22,7 @@ namespace Massive
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
-			var cache = RentAndUpdateCache();
+			var cache = RentCacheAndPrepare();
 
 			var deBruijn = MathUtils.DeBruijn;
 			var nonEmptyBitsCount = cache.NonEmptyBitsCount;
@@ -370,18 +370,18 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitsEnumerator GetEnumerator()
 		{
-			var cache = RentAndUpdateCache();
+			var cache = RentCacheAndPrepare();
 			return new BitsEnumerator(cache);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EntityEnumerable Entities()
 		{
-			var cache = RentAndUpdateCache();
+			var cache = RentCacheAndPrepare();
 			return new EntityEnumerable(cache, World);
 		}
 
-		private QueryCache RentAndUpdateCache()
+		private QueryCache RentCacheAndPrepare()
 		{
 			var cache = QueryCache.Rent();
 

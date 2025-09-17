@@ -17,10 +17,8 @@ namespace Massive
 
 		private int _nonEmptyBitsIndex;
 		private bool _useRange;
-
 		private int _bit;
 		private int _runEnd;
-
 		private int _bitsIndex;
 		private int _bitsOffset;
 		private ulong _bits;
@@ -72,14 +70,12 @@ namespace Massive
 			{
 				while (_bit < _runEnd)
 				{
-					if ((_cachedBits[_bitsIndex] & (1UL << _bit)) == 0UL)
+					if ((_cachedBits[_bitsIndex] & (1UL << _bit)) != 0UL)
 					{
-						_bit++;
-						continue;
+						Current = _bitsOffset + _bit++;
+						return true;
 					}
-
-					Current = _bitsOffset + _bit++;
-					return true;
+					_bit++;
 				}
 			}
 			else
@@ -87,9 +83,8 @@ namespace Massive
 				_bits &= _cachedBits[_bitsIndex];
 				if (_bits != 0UL)
 				{
-					_bit = _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
+					Current = _bitsOffset + _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
 					_bits &= _bits - 1UL;
-					Current = _bitsOffset + _bit;
 					return true;
 				}
 			}
