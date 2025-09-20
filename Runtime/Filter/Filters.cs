@@ -53,10 +53,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public Filter Get(SparseSet[] included = null, SparseSet[] excluded = null)
+		public Filter Get(BitSet[] included = null, BitSet[] excluded = null)
 		{
-			included ??= Array.Empty<SparseSet>();
-			excluded ??= Array.Empty<SparseSet>();
+			included ??= Array.Empty<BitSet>();
+			excluded ??= Array.Empty<BitSet>();
 
 			ConflictingFilterException.ThrowIfHasConflicts(included, excluded);
 			ConflictingFilterException.ThrowIfHasDuplicates(included, ConflictingFilterException.FilterType.Include);
@@ -94,7 +94,7 @@ namespace Massive
 		{
 			private readonly Sets _sets;
 
-			public readonly Comparison<SparseSet> ByIndex;
+			public readonly Comparison<BitSet> ByIndex;
 
 			public SetComparer(Sets sets)
 			{
@@ -102,7 +102,7 @@ namespace Massive
 				ByIndex = Compare;
 			}
 
-			private int Compare(SparseSet a, SparseSet b)
+			private int Compare(BitSet a, BitSet b)
 			{
 				return _sets.IndexOf(a).CompareTo(_sets.IndexOf(b));
 			}

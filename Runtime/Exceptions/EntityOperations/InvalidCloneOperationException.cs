@@ -11,9 +11,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfEntityDead(Entifiers entifiers, Entifier entifier)
+		public static void ThrowIfEntityDead(Entities entities, Entifier entifier)
 		{
-			if (!entifiers.IsAlive(entifier))
+			if (!entities.IsAlive(entifier))
 			{
 				throw new InvalidCloneOperationException($"You are trying to clone the dead entity {entifier}.");
 			}
@@ -21,9 +21,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfEntityDead(Entifiers entifiers, int entityId)
+		public static void ThrowIfEntityDead(Entities entities, int entityId)
 		{
-			if (!entifiers.IsAlive(entityId))
+			if (!entities.IsAlive(entityId))
 			{
 				throw new InvalidCloneOperationException($"You are trying to clone the dead entity with id:{entityId}.");
 			}

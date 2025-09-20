@@ -17,7 +17,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Create(this World world)
 		{
-			return world.Entifiers.Create().Id;
+			return world.Entities.Create().Id;
 		}
 
 		/// <summary>
@@ -52,7 +52,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Clone(this World world, int id)
 		{
-			InvalidCloneOperationException.ThrowIfEntityDead(world.Entifiers, id);
+			InvalidCloneOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			var cloneId = world.Create();
 
@@ -79,7 +79,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Destroy(this World world, int id)
 		{
-			return world.Entifiers.Destroy(id);
+			return world.Entities.Destroy(id);
 		}
 
 		/// <summary>
@@ -88,7 +88,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAlive(this World world, int id)
 		{
-			return world.Entifiers.IsAlive(id);
+			return world.Entities.IsAlive(id);
 		}
 
 		/// <summary>
@@ -101,7 +101,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set<T>(this World world, int id, T data)
 		{
-			InvalidSetOperationException.ThrowIfEntityDead(world.Entifiers, id);
+			InvalidSetOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			var info = ComponentId<T>.Info;
 
@@ -132,7 +132,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Add<T>(this World world, int id)
 		{
-			InvalidAddOperationException.ThrowIfEntityDead(world.Entifiers, id);
+			InvalidAddOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			var info = ComponentId<T>.Info;
 
@@ -159,7 +159,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Remove<T>(this World world, int id)
 		{
-			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entifiers, id);
+			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			var info = ComponentId<T>.Info;
 
@@ -183,7 +183,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Has<T>(this World world, int id)
 		{
-			InvalidHasOperationException.ThrowIfEntityDead(world.Entifiers, id);
+			InvalidHasOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			var info = ComponentId<T>.Info;
 
@@ -208,7 +208,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ref T Get<T>(this World world, int id)
 		{
-			InvalidGetOperationException.ThrowIfEntityDead(world.Entifiers, id);
+			InvalidGetOperationException.ThrowIfEntityDead(world.Entities, id);
 
 			var info = ComponentId<T>.Info;
 

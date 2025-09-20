@@ -61,7 +61,7 @@ namespace Massive
 		public bool IsAlive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => World.Entifiers.IsAlive(Entifier);
+			get => World.Entities.IsAlive(Entifier);
 		}
 
 		public Entifier Entifier

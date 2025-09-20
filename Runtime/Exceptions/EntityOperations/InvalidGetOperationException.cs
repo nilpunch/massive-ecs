@@ -11,9 +11,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfNotAdded(SparseSet sparseSet, int id)
+		public static void ThrowIfNotAdded(BitSet bitSet, int id)
 		{
-			if (!sparseSet.Has(id))
+			if (!bitSet.Has(id))
 			{
 				throw new InvalidGetOperationException($"You are trying to get data from the entity with id:{id} that is not added.");
 			}
@@ -21,9 +21,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfEntityDead(Entifiers entifiers, Entifier entifier)
+		public static void ThrowIfEntityDead(Entities entities, Entifier entifier)
 		{
-			if (!entifiers.IsAlive(entifier))
+			if (!entities.IsAlive(entifier))
 			{
 				throw new InvalidGetOperationException($"You are trying to get a component from the dead entity {entifier}.");
 			}
@@ -31,9 +31,9 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfEntityDead(Entifiers entifiers, int entityId)
+		public static void ThrowIfEntityDead(Entities entities, int entityId)
 		{
-			if (!entifiers.IsAlive(entityId))
+			if (!entities.IsAlive(entityId))
 			{
 				throw new InvalidGetOperationException($"You are trying to get a component from the dead entity with id:{entityId}.");
 			}

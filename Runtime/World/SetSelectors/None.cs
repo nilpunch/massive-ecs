@@ -4,6 +4,6 @@ namespace Massive
 {
 	public class None : IIncludeSelector, IExcludeSelector
 	{
-		public SparseSet[] Select(Sets sets) => Array.Empty<SparseSet>();
+		public BitSet[] Select(Sets sets) => Array.Empty<BitSet>();
 	}
 }

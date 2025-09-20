@@ -6,7 +6,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public struct BitsEnumerator : IDisposable
+	public struct IdsEnumerator : IDisposable
 	{
 		private readonly QueryCache _cache;
 		private readonly ulong[] _cachedBits;
@@ -23,7 +23,7 @@ namespace Massive
 		private int _bitsOffset;
 		private ulong _bits;
 
-		public BitsEnumerator(QueryCache cache)
+		public IdsEnumerator(QueryCache cache)
 		{
 			_cache = cache;
 			_cachedBits = cache.Bits;

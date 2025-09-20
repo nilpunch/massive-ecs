@@ -33,27 +33,27 @@ namespace Massive
 	public struct EntityActionRefAdapter<T> : IEntityAction<T>
 	{
 		public EntityActionRef<T> Action;
-		public Entifiers Entifiers;
+		public Entities Entities;
 		public World World;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id, ref T a)
 		{
-			Action.Invoke(new Entity(id, Entifiers.Versions[id], World), ref a);
+			Action.Invoke(new Entity(id, Entities.Versions[id], World), ref a);
 		}
 	}
 
 	public struct EntityActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
 	{
 		public EntityActionRefArgs<T, TArgs> Action;
-		public Entifiers Entifiers;
+		public Entities Entities;
 		public World World;
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id, ref T a)
 		{
-			Action.Invoke(new Entity(id, Entifiers.Versions[id], World), ref a, Args);
+			Action.Invoke(new Entity(id, Entities.Versions[id], World), ref a, Args);
 		}
 	}
 

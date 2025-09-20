@@ -16,7 +16,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity GetEntity(this World world, int id)
 		{
-			return new Entity(world.Entifiers.GetEntifier(id), world);
+			return new Entity(world.Entities.GetEntifier(id), world);
 		}
 
 		/// <summary>
@@ -25,7 +25,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Entity CreateEntity(this World world)
 		{
-			return new Entity(world.Entifiers.Create(), world);
+			return new Entity(world.Entities.Create(), world);
 		}
 
 		/// <summary>

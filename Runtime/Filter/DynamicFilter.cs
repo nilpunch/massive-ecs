@@ -13,7 +13,7 @@ namespace Massive
 	{
 		public Sets Sets { get; }
 
-		public DynamicFilter(World world) : base(Array.Empty<SparseSet>(), Array.Empty<SparseSet>())
+		public DynamicFilter(World world) : base(Array.Empty<BitSet>(), Array.Empty<BitSet>())
 		{
 			Sets = world.Sets;
 		}

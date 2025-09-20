@@ -71,7 +71,7 @@
 			}
 
 			// Or iterate over rich entities. (simpler)
-			foreach (var entity in world.Include<Player>().Entities())
+			foreach (var entity in world.Include<Player>().Entities)
 			{
 				ref Position position = ref entity.Get<Position>();
 				// ...

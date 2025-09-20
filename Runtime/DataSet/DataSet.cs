@@ -9,13 +9,13 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="SparseSet"/>.
+	/// Data extension for <see cref="BitSet"/>.
 	/// Does not reset the data for added elements.
 	/// Does not preserve data when elements are moved.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class DataSet<T> : SparseSet, IDataSet
+	public class DataSet<T> : BitSet, IDataSet
 	{
 		public T[][] PagedData { get; private set; } = Array.Empty<T[]>();
 

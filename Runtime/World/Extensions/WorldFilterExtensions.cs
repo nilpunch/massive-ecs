@@ -26,7 +26,7 @@ namespace Massive
 			}
 
 			var included = new TInclude().Select(world.Sets);
-			var excluded = Array.Empty<SparseSet>();
+			var excluded = Array.Empty<BitSet>();
 
 			var filter = filters.Get(included, excluded);
 

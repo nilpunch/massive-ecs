@@ -10,7 +10,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Entifiers : BitSetBase
+	public class Entities : BitSetBase
 	{
 		public int[] Pool { get; protected set; } = Array.Empty<int>();
 
@@ -34,7 +34,21 @@ namespace Massive
 		/// <summary>
 		/// Shortcut to access world.
 		/// </summary>
-		public WorldContext? WorldContext { get; set; }
+		public World World { get; }
+
+		private Sets Sets { get; }
+
+		private Components Components { get; }
+
+		private Allocators Allocators { get; }
+
+		public Entities(World world = default)
+		{
+			World = world ?? new World();
+			Sets = World.Sets;
+			Components = World.Components;
+			Allocators = World.Allocators;
+		}
 
 		/// <summary>
 		/// Shoots after entity is created.
@@ -112,7 +126,7 @@ namespace Massive
 
 			BeforeDestroyed?.Invoke(id);
 			RemoveBit(id);
-			WorldContext?.EntityDestroyed(id);
+			DestroyInWorld(id);
 
 			EnsurePoolAt(PooledIds);
 			Pool[PooledIds++] = id;
@@ -175,7 +189,7 @@ namespace Massive
 						var id = bitsOffset + bit;
 						BeforeDestroyed?.Invoke(id);
 						RemoveBit(id);
-						WorldContext?.EntityDestroyed(id);
+						DestroyInWorld(id);
 
 						EnsurePoolAt(PooledIds);
 						Pool[PooledIds++] = id;
@@ -190,6 +204,7 @@ namespace Massive
 				}
 
 				NonEmptyBlocks[blockIndex] = 0UL;
+				SaturatedBlocks[blockIndex] = 0UL;
 			}
 		}
 
@@ -202,6 +217,17 @@ namespace Massive
 			EntityNotAliveException.ThrowIfEntityDead(this, id);
 
 			return new Entifier(id, Versions[id]);
+		}
+
+		/// <remarks>
+		/// Throws if the entity with this ID is not alive.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Entity GetEntity(int id)
+		{
+			EntityNotAliveException.ThrowIfEntityDead(this, id);
+
+			return new Entity(id, Versions[id], World);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -235,7 +261,7 @@ namespace Massive
 					Array.Fill(Versions, 1U, VersionsCapacity, Versions.Length - VersionsCapacity);
 				}
 				VersionsCapacity = Versions.Length;
-				WorldContext?.Components.EnsureEntitiesCapacity(VersionsCapacity);
+				Components.EnsureEntitiesCapacity(VersionsCapacity);
 			}
 		}
 
@@ -249,10 +275,24 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitsEnumerator GetEnumerator()
+		public EntityEnumerator GetEnumerator()
 		{
-			var bits = QueryCache.Rent().AddInclude(this).Update();
-			return new BitsEnumerator(bits);
+			var bitSet = QueryCache.Rent().AddInclude(this).Update();
+			return new EntityEnumerator(bitSet, World);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void DestroyInWorld(int id)
+		{
+			var buffer = Components.Buffer;
+			var componentCount = Components.GetAllAndRemove(id, buffer);
+
+			for (var i = 0; i < componentCount; i++)
+			{
+				Sets.Lookup[buffer[i]].Remove(id);
+			}
+
+			Allocators.Free(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -316,9 +356,9 @@ namespace Massive
 		/// Creates and returns a new entities collection that is an exact copy of this one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entifiers Clone()
+		public Entities Clone()
 		{
-			var clone = new Entifiers();
+			var clone = new Entities();
 			CopyTo(clone);
 			return clone;
 		}
@@ -327,7 +367,7 @@ namespace Massive
 		/// Copies all entities and state from this entities collection into the specified one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(Entifiers other)
+		public void CopyTo(Entities other)
 		{
 			CopyBitsTo(other);
 

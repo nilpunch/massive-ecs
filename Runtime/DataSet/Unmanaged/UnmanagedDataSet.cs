@@ -3,7 +3,7 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Data extension for <see cref="SparseSet"/>.
+	/// Data extension for <see cref="BitSet"/>.
 	/// Resets data to default value for added elements.
 	/// Used for unmanaged components.
 	/// </summary>

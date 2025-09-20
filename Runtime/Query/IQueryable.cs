@@ -8,6 +8,6 @@
 
 		public Filter Filter => Query.Filter;
 
-		BitsEnumerator GetEnumerator();
+		IdsEnumerator GetEnumerator();
 	}
 }

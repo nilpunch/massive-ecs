@@ -19,6 +19,12 @@ namespace Massive
 
 		Query IQueryable.Query => this;
 
+		public EntityEnumerable Entities
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new EntityEnumerable(RentCacheAndPrepare(), World);
+		}
+
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
 		{
@@ -368,17 +374,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitsEnumerator GetEnumerator()
+		public IdsEnumerator GetEnumerator()
 		{
-			var cache = RentCacheAndPrepare();
-			return new BitsEnumerator(cache);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public EntityEnumerable Entities()
-		{
-			var cache = RentCacheAndPrepare();
-			return new EntityEnumerable(cache, World);
+			return new IdsEnumerator(RentCacheAndPrepare());
 		}
 
 		private QueryCache RentCacheAndPrepare()
@@ -387,7 +385,7 @@ namespace Massive
 
 			if (Filter.IncludedCount == 0)
 			{
-				cache.AddInclude(World.Entifiers);
+				cache.AddInclude(World.Entities);
 			}
 
 			ApplyFilter(Filter, cache);

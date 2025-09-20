@@ -10,7 +10,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public partial class World
 	{
-		public Entifiers Entifiers { get; }
+		public Entities Entities { get; }
 
 		public Sets Sets { get; }
 		public Components Components { get; }
@@ -27,13 +27,11 @@ namespace Massive
 		public World(WorldConfig worldConfig)
 		{
 			Components = new Components();
-			Entifiers = new Entifiers();
 			Sets = new Sets(new SetFactory(worldConfig), Components);
 			Filters = new Filters(Sets);
 			Allocators = new Allocators();
 			Config = worldConfig;
-
-			Entifiers.WorldContext = new WorldContext(Sets, Allocators, Components);
+			Entities = new Entities(this);
 		}
 	}
 }

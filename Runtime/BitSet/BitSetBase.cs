@@ -96,7 +96,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static BitSetBase GetMinBitSet(BitSetBase first, SparseSet[] bitSets, int count)
+		public static BitSetBase GetMinBitSet(BitSetBase first, BitSet[] bitSets, int count)
 		{
 			var minimal = first;
 			for (var i = 0; i < count; i++)

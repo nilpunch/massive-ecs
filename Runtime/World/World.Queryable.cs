@@ -51,17 +51,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitsEnumerator GetEnumerator()
+		public IdsEnumerator GetEnumerator()
 		{
-			var bits = QueryCache.Rent().AddInclude(Entifiers).Update();
-			return new BitsEnumerator(bits);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public EntityEnumerable Entities()
-		{
-			var bits = QueryCache.Rent().AddInclude(Entifiers).Update();
-			return new EntityEnumerable(bits, this);
+			var bits = QueryCache.Rent().AddInclude(Entities).Update();
+			return new IdsEnumerator(bits);
 		}
 	}
 }

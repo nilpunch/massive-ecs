@@ -34,27 +34,27 @@ namespace Massive
 	public struct EntityActionAdapter : IEntityAction
 	{
 		public EntityAction Action;
-		public Entifiers Entifiers;
+		public Entities Entities;
 		public World World;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id)
 		{
-			Action.Invoke(new Entity(id, Entifiers.Versions[id], World));
+			Action.Invoke(new Entity(id, Entities.Versions[id], World));
 		}
 	}
 
 	public struct EntityActionArgsAdapter<TArgs> : IEntityAction
 	{
 		public EntityActionArgs<TArgs> Action;
-		public Entifiers Entifiers;
+		public Entities Entities;
 		public World World;
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id)
 		{
-			Action.Invoke(new Entity(id, Entifiers.Versions[id], World), Args);
+			Action.Invoke(new Entity(id, Entities.Versions[id], World), Args);
 		}
 	}
 
@@ -72,23 +72,23 @@ namespace Massive
 	public struct FillEntifiers : IEntityAction
 	{
 		public IList<Entifier> Result;
-		public Entifiers Entifiers;
+		public Entities Entities;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id)
 		{
-			Result.Add(new Entifier(id, Entifiers.Versions[id]));
+			Result.Add(new Entifier(id, Entities.Versions[id]));
 		}
 	}
 
 	public struct DestroyAll : IEntityAction
 	{
-		public Entifiers Entifiers;
+		public Entities Entities;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id)
 		{
-			Entifiers.Destroy(id);
+			Entities.Destroy(id);
 		}
 	}
 

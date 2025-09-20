@@ -10,7 +10,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class SparseSet : BitSetBase
+	public class BitSet : BitSetBase
 	{
 		/// <summary>
 		/// Associated component index. Session-dependent, used for lookups.<br/>
@@ -18,7 +18,7 @@ namespace Massive
 		public int ComponentId { get; set; } = -1;
 
 		/// <summary>
-		/// Shortcut to access masks.
+		/// Shortcut to access components.
 		/// </summary>
 		public Components Components { get; set; }
 
@@ -183,6 +183,7 @@ namespace Massive
 					Bits[bitsIndex] = 0UL;
 				}
 				NonEmptyBlocks[blockIndex] = 0UL;
+				SaturatedBlocks[blockIndex] = 0UL;
 			}
 
 			FreeAllPages();
@@ -217,10 +218,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitsEnumerator GetEnumerator()
+		public IdsEnumerator GetEnumerator()
 		{
 			var cache = QueryCache.Rent().AddInclude(this).Update();
-			return new BitsEnumerator(cache);
+			return new IdsEnumerator(cache);
 		}
 
 		public virtual void CopyData(int sourceId, int destinationId)
@@ -253,9 +254,9 @@ namespace Massive
 		/// Creates and returns a new sparse set that is an exact copy of this one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public SparseSet CloneBits()
+		public BitSet CloneBits()
 		{
-			var clone = new SparseSet();
+			var clone = new BitSet();
 			CopyBitsTo(clone);
 			return clone;
 		}
