@@ -165,7 +165,6 @@ namespace Massive
 		/// <summary>
 		/// Destroys all entities and triggers the <see cref="BeforeDestroyed"/> event for each one.
 		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
 			var blocksLength = NonEmptyBlocks.Length;
@@ -274,7 +273,6 @@ namespace Massive
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EntityEnumerator GetEnumerator()
 		{
 			var bitSet = QueryCache.Rent().AddToAll(this).Update();

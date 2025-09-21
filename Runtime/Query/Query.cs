@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Unity.IL2CPP.CompilerServices;
+﻿using Unity.IL2CPP.CompilerServices;
 
 // ReSharper disable FieldHidesInterfacePropertyWithDefaultImplementation
 

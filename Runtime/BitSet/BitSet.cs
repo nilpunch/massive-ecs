@@ -144,7 +144,6 @@ namespace Massive
 		/// <summary>
 		/// Removes all IDs and triggers the <see cref="BeforeRemoved"/> event for each one.
 		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
 			var blocksLength = NonEmptyBlocks.Length;
@@ -217,7 +216,6 @@ namespace Massive
 			return (Bits[bitsIndex] & bit) != 0UL;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IdsEnumerator GetEnumerator()
 		{
 			var cache = QueryCache.Rent().AddToAll(this).Update();
