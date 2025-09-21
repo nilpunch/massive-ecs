@@ -75,7 +75,7 @@ namespace Massive
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
-				PooledIds = value.ReusedIds;
+				PooledIds = value.PooledIds;
 				UsedIds = value.UsedIds;
 			}
 		}
@@ -385,12 +385,12 @@ namespace Massive
 
 		public readonly struct State
 		{
-			public readonly int ReusedIds;
+			public readonly int PooledIds;
 			public readonly int UsedIds;
 
-			public State(int reusedIds, int usedIds)
+			public State(int pooledIds, int usedIds)
 			{
-				ReusedIds = reusedIds;
+				PooledIds = pooledIds;
 				UsedIds = usedIds;
 			}
 		}
