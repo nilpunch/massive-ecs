@@ -12,8 +12,8 @@ namespace Massive
 		public const int InvalidId = -1;
 
 		// Must be power of 2 in range [64, 4096].
-		public const int PageSize = 1024;
-		public const int PageSizePower = 10;
+		public const int PageSize = 256;
+		public const int PageSizePower = 8;
 		public const int PageSizeMinusOne = PageSize - 1;
 		public const ulong BasePageMask = (1UL << (PageSize >> 6)) - 1;
 		public const int PagesInBlockMinusOne = ((1 << 12) >> PageSizePower) - 1;
