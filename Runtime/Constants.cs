@@ -15,7 +15,7 @@ namespace Massive
 		public const int PageSize = 256;
 		public const int PageSizePower = 8;
 		public const int PageSizeMinusOne = PageSize - 1;
-		public const ulong BasePageMask = (1UL << (PageSize >> 6)) - 1;
+		public const ulong BasePageMask = ~0UL >> (64 - (PageSize >> 6));
 		public const int PagesInBlockMinusOne = ((1 << 12) >> PageSizePower) - 1;
 		public const int PageMaskShift = PageSizePower - 6;
 		public const int PagesInBlockPower = 12 - PageSizePower;

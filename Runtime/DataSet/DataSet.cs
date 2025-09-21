@@ -107,7 +107,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsurePageInternal(int page)
+		protected internal void EnsurePageInternal(int page)
 		{
 			if (page >= PagedData.Length)
 			{
@@ -170,7 +170,7 @@ namespace Massive
 					var pageIndexMod = blockBit >> Constants.PageMaskShift;
 
 					var pageIndex = pageOffset + pageIndexMod;
-					other.EnsurePage(pageIndex);
+					other.EnsurePageInternal(pageIndex);
 					Array.Copy(PagedData[pageIndex], other.PagedData[pageIndex], Constants.PageSize);
 
 					block &= ~pageMasks[pageIndexMod];

@@ -61,7 +61,7 @@ namespace Massive
 					var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 					var pageIndex = bitsOffset >> Constants.PageSizePower;
 
-					other.EnsurePage(pageIndex);
+					other.EnsurePageInternal(pageIndex);
 					var sourcePage = PagedData[pageIndex];
 					var destinationPage = other.PagedData[pageIndex];
 
