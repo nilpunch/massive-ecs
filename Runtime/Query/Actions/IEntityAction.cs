@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
@@ -8,6 +9,8 @@ namespace Massive
 		void Apply(int id);
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct IdActionAdapter : IEntityAction
 	{
 		public IdAction Action;
@@ -19,6 +22,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct IdActionArgsAdapter<TArgs> : IEntityAction
 	{
 		public IdActionArgs<TArgs> Action;
@@ -31,6 +36,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct EntityActionAdapter : IEntityAction
 	{
 		public EntityAction Action;
@@ -44,6 +51,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct EntityActionArgsAdapter<TArgs> : IEntityAction
 	{
 		public EntityActionArgs<TArgs> Action;
@@ -58,6 +67,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct FillIds : IEntityAction
 	{
 		public IList<int> Result;
@@ -69,6 +80,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct FillEntifiers : IEntityAction
 	{
 		public IList<Entifier> Result;
@@ -81,6 +94,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct DestroyAll : IEntityAction
 	{
 		public Entities Entities;
@@ -92,6 +107,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct CountAll : IEntityAction
 	{
 		public int Result;

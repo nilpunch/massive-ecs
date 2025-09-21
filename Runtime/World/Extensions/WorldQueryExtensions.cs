@@ -12,11 +12,11 @@ namespace Massive
 		public static Query All<T1, T2>(this World world) => new Query(world).All<T1, T2>();
 
 		public static Query All<T1, T2, T3>(this World world) => new Query(world).All<T1, T2, T3>();
-		
+
 		public static Query All<T1, T2, T3, T4>(this World world) => new Query(world).All<T1, T2, T3, T4>();
-		
+
 		public static Query All<T1, T2, T3, T4, T5>(this World world) => new Query(world).All<T1, T2, T3, T4, T5>();
-		
+
 		public static Query All<T1, T2, T3, T4, T5, T6>(this World world) => new Query(world).All<T1, T2, T3, T4, T5, T6>();
 
 		public static Query All<T1, T2, T3, T4, T5, T6, TAnd>(this World world)
@@ -27,11 +27,11 @@ namespace Massive
 		public static Query None<T1, T2>(this World world) => new Query(world).None<T1, T2>();
 
 		public static Query None<T1, T2, T3>(this World world) => new Query(world).None<T1, T2, T3>();
-		
+
 		public static Query None<T1, T2, T3, T4>(this World world) => new Query(world).None<T1, T2, T3, T4>();
-		
+
 		public static Query None<T1, T2, T3, T4, T5>(this World world) => new Query(world).None<T1, T2, T3, T4, T5>();
-		
+
 		public static Query None<T1, T2, T3, T4, T5, T6>(this World world) => new Query(world).None<T1, T2, T3, T4, T5, T6>();
 
 		public static Query None<T1, T2, T3, T4, T5, T6, TAnd>(this World world)

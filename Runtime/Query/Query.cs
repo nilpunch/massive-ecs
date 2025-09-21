@@ -393,6 +393,205 @@ namespace Massive
 			QueryCache.ReturnAndPop(cache);
 		}
 
+		public void ForEach<T1, T2, T3, T4, T5, TAction>(ref TAction action)
+			where TAction : IEntityAction<T1, T2, T3, T4, T5>
+		{
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T4>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T5>(World, DataAccessContext.View);
+
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
+			var dataSet4 = World.DataSet<T4>();
+			var dataSet5 = World.DataSet<T5>();
+
+			FilterException.ThrowIfCantQuery<T1>(Filter, dataSet1);
+			FilterException.ThrowIfCantQuery<T2>(Filter, dataSet2);
+			FilterException.ThrowIfCantQuery<T3>(Filter, dataSet3);
+			FilterException.ThrowIfCantQuery<T4>(Filter, dataSet4);
+			FilterException.ThrowIfCantQuery<T5>(Filter, dataSet5);
+
+			var cache = QueryCache.Rent()
+				.AddToAll(dataSet1)
+				.AddToAll(dataSet2)
+				.AddToAll(dataSet3)
+				.AddToAll(dataSet4)
+				.AddToAll(dataSet5);
+
+			ApplyFilter(Filter, cache);
+
+			cache.Update();
+
+			var deBruijn = MathUtils.DeBruijn;
+			var nonEmptyBitsCount = cache.NonEmptyBitsCount;
+			var nonEmptyBitsIndices = cache.NonEmptyBitsIndices;
+			var cachedBits = cache.Bits;
+			for (var i = 0; i < nonEmptyBitsCount; i++)
+			{
+				var bitsIndex = nonEmptyBitsIndices[i];
+				var bits = cachedBits[bitsIndex];
+
+				if (bits == 0UL)
+				{
+					continue;
+				}
+
+				var bitsOffset = bitsIndex << 6;
+				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
+				var pageIndex = bitsOffset >> Constants.PageSizePower;
+				var dataPage1 = dataSet1.PagedData[pageIndex];
+				var dataPage2 = dataSet2.PagedData[pageIndex];
+				var dataPage3 = dataSet3.PagedData[pageIndex];
+				var dataPage4 = dataSet4.PagedData[pageIndex];
+				var dataPage5 = dataSet5.PagedData[pageIndex];
+
+				var runEnd = MathUtils.ApproximateMSB(bits);
+				var setBits = MathUtils.PopCount(bits);
+				if (setBits << 1 > runEnd - bit)
+				{
+					for (; bit < runEnd; bit++)
+					{
+						if ((cachedBits[bitsIndex] & (1UL << bit)) == 0UL)
+						{
+							continue;
+						}
+
+						var dataIndex = dataOffset + bit;
+						action.Apply(bitsOffset + bit,
+							ref dataPage1[dataIndex],
+							ref dataPage2[dataIndex],
+							ref dataPage3[dataIndex],
+							ref dataPage4[dataIndex],
+							ref dataPage5[dataIndex]);
+					}
+				}
+				else
+				{
+					do
+					{
+						var dataIndex = dataOffset + bit;
+						action.Apply(bitsOffset + bit,
+							ref dataPage1[dataIndex],
+							ref dataPage2[dataIndex],
+							ref dataPage3[dataIndex],
+							ref dataPage4[dataIndex],
+							ref dataPage5[dataIndex]);
+						bits &= (bits - 1UL) & cachedBits[bitsIndex];
+						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+					} while (bits != 0UL);
+				}
+			}
+
+			QueryCache.ReturnAndPop(cache);
+		}
+
+		public void ForEach<T1, T2, T3, T4, T5, T6, TAction>(ref TAction action)
+			where TAction : IEntityAction<T1, T2, T3, T4, T5, T6>
+		{
+			NoDataException.ThrowIfHasNoData<T1>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T2>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T3>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T4>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T5>(World, DataAccessContext.View);
+			NoDataException.ThrowIfHasNoData<T6>(World, DataAccessContext.View);
+
+			var dataSet1 = World.DataSet<T1>();
+			var dataSet2 = World.DataSet<T2>();
+			var dataSet3 = World.DataSet<T3>();
+			var dataSet4 = World.DataSet<T4>();
+			var dataSet5 = World.DataSet<T5>();
+			var dataSet6 = World.DataSet<T6>();
+
+			FilterException.ThrowIfCantQuery<T1>(Filter, dataSet1);
+			FilterException.ThrowIfCantQuery<T2>(Filter, dataSet2);
+			FilterException.ThrowIfCantQuery<T3>(Filter, dataSet3);
+			FilterException.ThrowIfCantQuery<T4>(Filter, dataSet4);
+			FilterException.ThrowIfCantQuery<T5>(Filter, dataSet5);
+			FilterException.ThrowIfCantQuery<T6>(Filter, dataSet6);
+
+			var cache = QueryCache.Rent()
+				.AddToAll(dataSet1)
+				.AddToAll(dataSet2)
+				.AddToAll(dataSet3)
+				.AddToAll(dataSet4)
+				.AddToAll(dataSet5)
+				.AddToAll(dataSet6);
+
+			ApplyFilter(Filter, cache);
+
+			cache.Update();
+
+			var deBruijn = MathUtils.DeBruijn;
+			var nonEmptyBitsCount = cache.NonEmptyBitsCount;
+			var nonEmptyBitsIndices = cache.NonEmptyBitsIndices;
+			var cachedBits = cache.Bits;
+			for (var i = 0; i < nonEmptyBitsCount; i++)
+			{
+				var bitsIndex = nonEmptyBitsIndices[i];
+				var bits = cachedBits[bitsIndex];
+
+				if (bits == 0UL)
+				{
+					continue;
+				}
+
+				var bitsOffset = bitsIndex << 6;
+				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
+				var pageIndex = bitsOffset >> Constants.PageSizePower;
+				var dataPage1 = dataSet1.PagedData[pageIndex];
+				var dataPage2 = dataSet2.PagedData[pageIndex];
+				var dataPage3 = dataSet3.PagedData[pageIndex];
+				var dataPage4 = dataSet4.PagedData[pageIndex];
+				var dataPage5 = dataSet5.PagedData[pageIndex];
+				var dataPage6 = dataSet6.PagedData[pageIndex];
+
+				var runEnd = MathUtils.ApproximateMSB(bits);
+				var setBits = MathUtils.PopCount(bits);
+				if (setBits << 1 > runEnd - bit)
+				{
+					for (; bit < runEnd; bit++)
+					{
+						if ((cachedBits[bitsIndex] & (1UL << bit)) == 0UL)
+						{
+							continue;
+						}
+
+						var dataIndex = dataOffset + bit;
+						action.Apply(bitsOffset + bit,
+							ref dataPage1[dataIndex],
+							ref dataPage2[dataIndex],
+							ref dataPage3[dataIndex],
+							ref dataPage4[dataIndex],
+							ref dataPage5[dataIndex],
+							ref dataPage6[dataIndex]);
+					}
+				}
+				else
+				{
+					do
+					{
+						var dataIndex = dataOffset + bit;
+						action.Apply(bitsOffset + bit,
+							ref dataPage1[dataIndex],
+							ref dataPage2[dataIndex],
+							ref dataPage3[dataIndex],
+							ref dataPage4[dataIndex],
+							ref dataPage5[dataIndex],
+							ref dataPage6[dataIndex]);
+						bits &= (bits - 1UL) & cachedBits[bitsIndex];
+						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+					} while (bits != 0UL);
+				}
+			}
+
+			QueryCache.ReturnAndPop(cache);
+		}
+
 		public IdsEnumerator GetEnumerator()
 		{
 			return new IdsEnumerator(RentCacheAndPrepare());

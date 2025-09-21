@@ -43,6 +43,20 @@ namespace Massive
 			queryable.Query.ForEach<T1, T2, T3, T4, IdActionRefAdapter<T1, T2, T3, T4>>(ref idActionRefAdapter);
 		}
 
+		public static void ForEach<TQueryable, T1, T2, T3, T4, T5>(this TQueryable queryable, IdActionRef<T1, T2, T3, T4, T5> action)
+			where TQueryable : IQueryable
+		{
+			var idActionRefAdapter = new IdActionRefAdapter<T1, T2, T3, T4, T5> { Action = action };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, IdActionRefAdapter<T1, T2, T3, T4, T5>>(ref idActionRefAdapter);
+		}
+
+		public static void ForEach<TQueryable, T1, T2, T3, T4, T5, T6>(this TQueryable queryable, IdActionRef<T1, T2, T3, T4, T5, T6> action)
+			where TQueryable : IQueryable
+		{
+			var idActionRefAdapter = new IdActionRefAdapter<T1, T2, T3, T4, T5, T6> { Action = action };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, T6, IdActionRefAdapter<T1, T2, T3, T4, T5, T6>>(ref idActionRefAdapter);
+		}
+
 		public static void ForEach<TQueryable, TArgs>(this TQueryable queryable, TArgs args, IdActionArgs<TArgs> action)
 			where TQueryable : IQueryable
 		{
@@ -76,6 +90,20 @@ namespace Massive
 		{
 			var idActionRefArgsAdapter = new IdActionRefArgsAdapter<T1, T2, T3, T4, TArgs> { Action = action, Args = args };
 			queryable.Query.ForEach<T1, T2, T3, T4, IdActionRefArgsAdapter<T1, T2, T3, T4, TArgs>>(ref idActionRefArgsAdapter);
+		}
+
+		public static void ForEach<TQueryable, TArgs, T1, T2, T3, T4, T5>(this TQueryable queryable, TArgs args, IdActionRefArgs<T1, T2, T3, T4, T5, TArgs> action)
+			where TQueryable : IQueryable
+		{
+			var idActionRefArgsAdapter = new IdActionRefArgsAdapter<T1, T2, T3, T4, T5, TArgs> { Action = action, Args = args };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, IdActionRefArgsAdapter<T1, T2, T3, T4, T5, TArgs>>(ref idActionRefArgsAdapter);
+		}
+
+		public static void ForEach<TQueryable, TArgs, T1, T2, T3, T4, T5, T6>(this TQueryable queryable, TArgs args, IdActionRefArgs<T1, T2, T3, T4, T5, T6, TArgs> action)
+			where TQueryable : IQueryable
+		{
+			var idActionRefArgsAdapter = new IdActionRefArgsAdapter<T1, T2, T3, T4, T5, T6, TArgs> { Action = action, Args = args };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, T6, IdActionRefArgsAdapter<T1, T2, T3, T4, T5, T6, TArgs>>(ref idActionRefArgsAdapter);
 		}
 
 		public static void ForEach<TQueryable>(this TQueryable queryable, EntityAction action)
@@ -113,6 +141,20 @@ namespace Massive
 			queryable.Query.ForEach<T1, T2, T3, T4, EntityActionRefAdapter<T1, T2, T3, T4>>(ref entityActionRefAdapter);
 		}
 
+		public static void ForEach<TQueryable, T1, T2, T3, T4, T5>(this TQueryable queryable, EntityActionRef<T1, T2, T3, T4, T5> action)
+			where TQueryable : IQueryable
+		{
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4, T5> { Action = action, Entities = queryable.World.Entities, World = queryable.World };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, EntityActionRefAdapter<T1, T2, T3, T4, T5>>(ref entityActionRefAdapter);
+		}
+
+		public static void ForEach<TQueryable, T1, T2, T3, T4, T5, T6>(this TQueryable queryable, EntityActionRef<T1, T2, T3, T4, T5, T6> action)
+			where TQueryable : IQueryable
+		{
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4, T5, T6> { Action = action, Entities = queryable.World.Entities, World = queryable.World };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, T6, EntityActionRefAdapter<T1, T2, T3, T4, T5, T6>>(ref entityActionRefAdapter);
+		}
+
 		public static void ForEach<TQueryable, TArgs>(this TQueryable queryable, TArgs args, EntityActionArgs<TArgs> action)
 			where TQueryable : IQueryable
 		{
@@ -148,6 +190,21 @@ namespace Massive
 			queryable.Query.ForEach<T1, T2, T3, T4, EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
+		public static void ForEach<TQueryable, TArgs, T1, T2, T3, T4, T5>(this TQueryable queryable, TArgs args, EntityActionRefArgs<T1, T2, T3, T4, T5, TArgs> action)
+			where TQueryable : IQueryable
+		{
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, T5, TArgs> { Action = action, Entities = queryable.World.Entities, World = queryable.World, Args = args };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, EntityActionRefArgsAdapter<T1, T2, T3, T4, T5, TArgs>>(ref entityActionRefArgsAdapter);
+		}
+
+		public static void ForEach<TQueryable, TArgs, T1, T2, T3, T4, T5, T6>(this TQueryable queryable, TArgs args, EntityActionRefArgs<T1, T2, T3, T4, T5, T6, TArgs> action)
+			where TQueryable : IQueryable
+		{
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, T5, T6, TArgs>
+				{ Action = action, Entities = queryable.World.Entities, World = queryable.World, Args = args };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, T6, EntityActionRefArgsAdapter<T1, T2, T3, T4, T5, T6, TArgs>>(ref entityActionRefArgsAdapter);
+		}
+
 		public static void ForEach<TQueryable, T>(this TQueryable queryable, ActionRef<T> action)
 			where TQueryable : IQueryable
 		{
@@ -176,6 +233,20 @@ namespace Massive
 			queryable.Query.ForEach<T1, T2, T3, T4, ActionRefAdapter<T1, T2, T3, T4>>(ref actionRefAdapter);
 		}
 
+		public static void ForEach<TQueryable, T1, T2, T3, T4, T5>(this TQueryable queryable, ActionRef<T1, T2, T3, T4, T5> action)
+			where TQueryable : IQueryable
+		{
+			var actionRefAdapter = new ActionRefAdapter<T1, T2, T3, T4, T5> { Action = action };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, ActionRefAdapter<T1, T2, T3, T4, T5>>(ref actionRefAdapter);
+		}
+
+		public static void ForEach<TQueryable, T1, T2, T3, T4, T5, T6>(this TQueryable queryable, ActionRef<T1, T2, T3, T4, T5, T6> action)
+			where TQueryable : IQueryable
+		{
+			var actionRefAdapter = new ActionRefAdapter<T1, T2, T3, T4, T5, T6> { Action = action };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, T6, ActionRefAdapter<T1, T2, T3, T4, T5, T6>>(ref actionRefAdapter);
+		}
+
 		public static void ForEach<TQueryable, TArgs, T>(this TQueryable queryable, TArgs args, ActionRefArgs<T, TArgs> action)
 			where TQueryable : IQueryable
 		{
@@ -195,6 +266,27 @@ namespace Massive
 		{
 			var actionRefArgsAdapter = new ActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Args = args };
 			queryable.Query.ForEach<T1, T2, T3, ActionRefArgsAdapter<T1, T2, T3, TArgs>>(ref actionRefArgsAdapter);
+		}
+
+		public static void ForEach<TQueryable, TArgs, T1, T2, T3, T4>(this TQueryable queryable, TArgs args, ActionRefArgs<T1, T2, T3, T4, TArgs> action)
+			where TQueryable : IQueryable
+		{
+			var actionRefArgsAdapter = new ActionRefArgsAdapter<T1, T2, T3, T4, TArgs> { Action = action, Args = args };
+			queryable.Query.ForEach<T1, T2, T3, T4, ActionRefArgsAdapter<T1, T2, T3, T4, TArgs>>(ref actionRefArgsAdapter);
+		}
+
+		public static void ForEach<TQueryable, TArgs, T1, T2, T3, T4, T5>(this TQueryable queryable, TArgs args, ActionRefArgs<T1, T2, T3, T4, T5, TArgs> action)
+			where TQueryable : IQueryable
+		{
+			var actionRefArgsAdapter = new ActionRefArgsAdapter<T1, T2, T3, T4, T5, TArgs> { Action = action, Args = args };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, ActionRefArgsAdapter<T1, T2, T3, T4, T5, TArgs>>(ref actionRefArgsAdapter);
+		}
+
+		public static void ForEach<TQueryable, TArgs, T1, T2, T3, T4, T5, T6>(this TQueryable queryable, TArgs args, ActionRefArgs<T1, T2, T3, T4, T5, T6, TArgs> action)
+			where TQueryable : IQueryable
+		{
+			var actionRefArgsAdapter = new ActionRefArgsAdapter<T1, T2, T3, T4, T5, T6, TArgs> { Action = action, Args = args };
+			queryable.Query.ForEach<T1, T2, T3, T4, T5, T6, ActionRefArgsAdapter<T1, T2, T3, T4, T5, T6, TArgs>>(ref actionRefArgsAdapter);
 		}
 
 		public static void Fill<TQueryable>(this TQueryable queryable, IList<int> result)

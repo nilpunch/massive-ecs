@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
@@ -7,6 +8,8 @@ namespace Massive
 		void Apply(int id, ref T a);
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct IdActionRefAdapter<T> : IEntityAction<T>
 	{
 		public IdActionRef<T> Action;
@@ -18,6 +21,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct IdActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
 	{
 		public IdActionRefArgs<T, TArgs> Action;
@@ -30,6 +35,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct EntityActionRefAdapter<T> : IEntityAction<T>
 	{
 		public EntityActionRef<T> Action;
@@ -43,6 +50,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct EntityActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
 	{
 		public EntityActionRefArgs<T, TArgs> Action;
@@ -57,6 +66,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct ActionRefAdapter<T> : IEntityAction<T>
 	{
 		public ActionRef<T> Action;
@@ -68,6 +79,8 @@ namespace Massive
 		}
 	}
 
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct ActionRefArgsAdapter<T, TArgs> : IEntityAction<T>
 	{
 		public ActionRefArgs<T, TArgs> Action;

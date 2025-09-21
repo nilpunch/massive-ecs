@@ -51,6 +51,20 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void ForEach<T1, T2, T3, T4, T5, TAction>(ref TAction action)
+			where TAction : IEntityAction<T1, T2, T3, T4, T5>
+		{
+			Query.ForEach<T1, T2, T3, T4, T5, TAction>(ref action);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void ForEach<T1, T2, T3, T4, T5, T6, TAction>(ref TAction action)
+			where TAction : IEntityAction<T1, T2, T3, T4, T5, T6>
+		{
+			Query.ForEach<T1, T2, T3, T4, T5, T6, TAction>(ref action);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IdsEnumerator GetEnumerator()
 		{
 			var bits = QueryCache.Rent().AddToAll(Entities).Update();
