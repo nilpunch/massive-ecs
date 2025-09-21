@@ -8,6 +8,8 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public partial class BitSetBase
 	{
+		protected ulong[] PageMasks { get; } = Constants.PageMasks;
+
 		public ulong[] Bits { get; protected set; } = Array.Empty<ulong>();
 		public ulong[] NonEmptyBlocks { get; protected set; } = Array.Empty<ulong>();
 		public ulong[] SaturatedBlocks { get; protected set; } = Array.Empty<ulong>();
@@ -41,10 +43,10 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Copies bits from this set into the specified one.
+		/// Copies bitset from this set into the specified one.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyBitsTo(BitSetBase other)
+		public void CopyBitSetTo(BitSetBase other)
 		{
 			other.GrowToFit(this);
 

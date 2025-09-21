@@ -154,18 +154,26 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(DataSet<T> other)
 		{
-			CopyBitsTo(other);
+			CopyBitSetTo(other);
 
-			for (var i = 0; i < PagedData.Length; i++)
+			var blocksLength = NonEmptyBlocks.Length;
+
+			var pageMasks = PageMasks;
+			var deBruijn = MathUtils.DeBruijn;
+			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
-				if (PagedData[i] != null)
+				var block = NonEmptyBlocks[blockIndex];
+				var pageOffset = blockIndex << Constants.PagesInBlockPower;
+				while (block != 0UL)
 				{
-					other.EnsurePage(i);
+					var blockBit = (int)deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
+					var pageIndexMod = blockBit >> Constants.PageMaskShift;
 
-					var sourcePage = PagedData[i];
-					var destinationPage = other.PagedData[i];
+					var pageIndex = pageOffset + pageIndexMod;
+					other.EnsurePage(pageIndex);
+					Array.Copy(PagedData[pageIndex], other.PagedData[pageIndex], Constants.PageSize);
 
-					Array.Copy(sourcePage, destinationPage, Constants.PageSize);
+					block &= ~pageMasks[pageIndexMod];
 				}
 			}
 		}

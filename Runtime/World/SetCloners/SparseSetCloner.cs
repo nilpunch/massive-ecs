@@ -15,7 +15,7 @@ namespace Massive
 
 		public override void CopyTo(Sets sets)
 		{
-			_bitSet.CopyBitsTo(sets.Get<T>());
+			_bitSet.CopyBitSetTo(sets.Get<T>());
 		}
 	}
 }

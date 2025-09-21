@@ -126,8 +126,7 @@ namespace Massive
 				NonEmptyBlocks[blockIndex] &= ~blockBit;
 
 				var pageIndex = id >> Constants.PageSizePower;
-				var pageMask = Constants.PageMask << ((pageIndex & Constants.PagesInBlockMinusOne) << Constants.PageMaskShift);
-				if ((NonEmptyBlocks[blockIndex] & pageMask) == 0UL)
+				if ((NonEmptyBlocks[blockIndex] & PageMasks[pageIndex & Constants.PagesInBlockMinusOne]) == 0UL)
 				{
 					FreePage(pageIndex);
 				}
@@ -255,7 +254,7 @@ namespace Massive
 		public BitSet CloneBits()
 		{
 			var clone = new BitSet();
-			CopyBitsTo(clone);
+			CopyBitSetTo(clone);
 			return clone;
 		}
 	}

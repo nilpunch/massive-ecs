@@ -43,7 +43,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToCopyable(DataSet<T> other)
 		{
-			CopyBitsTo(other);
+			CopyBitSetTo(other);
 
 			var blocksLength = NonEmptyBlocks.Length;
 

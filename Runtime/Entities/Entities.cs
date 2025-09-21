@@ -367,7 +367,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Entities other)
 		{
-			CopyBitsTo(other);
+			CopyBitSetTo(other);
 
 			other.EnsureEntityAt(UsedIds - 1);
 			other.EnsurePoolAt(PooledIds - 1);
