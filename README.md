@@ -18,7 +18,7 @@ Make sure you have standalone [Git](https://git-scm.com/downloads) installed fir
 In Unity, open "Window" -> "Package Manager".  
 Click the "+" sign at the top left corner -> "Add package from git URL..."  
 Paste link to the version:  
-Latest: `https://github.com/nilpunch/massive-ecs.git#v20.0.0-alpha.5`  
+Latest: `https://github.com/nilpunch/massive-ecs.git#v20.0.0-alpha.6`  
 Stable: `https://github.com/nilpunch/massive-ecs.git#v19.2.0`  
 See minimum required Unity version in the `package.json` file.
 
@@ -43,8 +43,8 @@ Features:
 
 - `Clone()` and `CopyTo(other)` methods for creating snapshots.  
   Ideal for implementing replays, undo/redo, or rollbacks.
-- Lightweight [views](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for fast iteration over entities and components.
-- Fully stable storage, no reference invalidation.
+- Lightweight [queries](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for fast iteration over entities and components.
+- Stable storage with no reference invalidation.
 - `Allocator` lets you use collections inside components and easily integrate external tools in rollback pipeline.
 
 ### Rollbacks ([wiki](https://github.com/nilpunch/massive-ecs/wiki/Rollbacks))
@@ -138,7 +138,7 @@ foreach (var entityId in world.All<Player, Position>())
 	// ...
 }
 
-// Or iterate over rich entities. (simpler)
+// Iterate over rich entities. (simpler)
 foreach (var entity in world.All<Player, Position>().Entities)
 {
 	ref Position position = ref entity.Get<Position>();
