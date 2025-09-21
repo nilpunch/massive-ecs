@@ -23,7 +23,9 @@ namespace Massive
 
 		public Filter(BitSet[] all, BitSet[] none, BitSet[] any)
 		{
-			ConflictingFilterException.ThrowIfHasConflicts(all, none);
+			FilterException.ThrowIfHasConflicts(all, none, FilterType.All, FilterType.None);
+			FilterException.ThrowIfHasConflicts(all, any, FilterType.All, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(none, any, FilterType.None, FilterType.Any);
 
 			All = all;
 			None = none;
@@ -37,18 +39,27 @@ namespace Massive
 		{
 			All = all;
 			AllCount = all.Length;
+
+			FilterException.ThrowIfHasConflicts(All, None, FilterType.All, FilterType.None);
+			FilterException.ThrowIfHasConflicts(All, Any, FilterType.All, FilterType.Any);
 		}
 
 		public void SetNone(BitSet[] none)
 		{
 			None = none;
 			NoneCount = none.Length;
+
+			FilterException.ThrowIfHasConflicts(All, None, FilterType.All, FilterType.None);
+			FilterException.ThrowIfHasConflicts(None, Any, FilterType.None, FilterType.Any);
 		}
-		
+
 		public void SetAny(BitSet[] any)
 		{
 			Any = any;
 			AnyCount = any.Length;
+
+			FilterException.ThrowIfHasConflicts(All, Any, FilterType.All, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(None, Any, FilterType.None, FilterType.Any);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
+
 // ReSharper disable FieldHidesInterfacePropertyWithDefaultImplementation
 
 namespace Massive
@@ -16,7 +17,7 @@ namespace Massive
 			World = world;
 			Filter = Filter.Empty;
 		}
-		
+
 		public Query(World world, Filter filter)
 		{
 			World = world;
@@ -25,11 +26,7 @@ namespace Massive
 
 		Query IQueryable.Query => this;
 
-		public EntityEnumerable Entities
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new EntityEnumerable(RentCacheAndPrepare(), World);
-		}
+		public EntityEnumerable Entities => new EntityEnumerable(RentCacheAndPrepare(), World);
 
 		public void ForEach<TAction>(ref TAction action)
 			where TAction : IEntityAction
@@ -87,6 +84,8 @@ namespace Massive
 			NoDataException.ThrowIfHasNoData<T>(World, DataAccessContext.View);
 
 			var dataSet1 = World.DataSet<T>();
+
+			FilterException.ThrowIfCantQuery<T>(Filter, dataSet1);
 
 			var cache = QueryCache.Rent()
 				.AddToAll(dataSet1);
@@ -153,6 +152,9 @@ namespace Massive
 
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
+
+			FilterException.ThrowIfCantQuery<T1>(Filter, dataSet1);
+			FilterException.ThrowIfCantQuery<T2>(Filter, dataSet2);
 
 			var cache = QueryCache.Rent()
 				.AddToAll(dataSet1)
@@ -227,6 +229,10 @@ namespace Massive
 			var dataSet1 = World.DataSet<T1>();
 			var dataSet2 = World.DataSet<T2>();
 			var dataSet3 = World.DataSet<T3>();
+
+			FilterException.ThrowIfCantQuery<T1>(Filter, dataSet1);
+			FilterException.ThrowIfCantQuery<T2>(Filter, dataSet2);
+			FilterException.ThrowIfCantQuery<T3>(Filter, dataSet3);
 
 			var cache = QueryCache.Rent()
 				.AddToAll(dataSet1)
@@ -308,6 +314,11 @@ namespace Massive
 			var dataSet3 = World.DataSet<T3>();
 			var dataSet4 = World.DataSet<T4>();
 
+			FilterException.ThrowIfCantQuery<T1>(Filter, dataSet1);
+			FilterException.ThrowIfCantQuery<T2>(Filter, dataSet2);
+			FilterException.ThrowIfCantQuery<T3>(Filter, dataSet3);
+			FilterException.ThrowIfCantQuery<T4>(Filter, dataSet4);
+
 			var cache = QueryCache.Rent()
 				.AddToAll(dataSet1)
 				.AddToAll(dataSet2)
@@ -379,7 +390,6 @@ namespace Massive
 			QueryCache.ReturnAndPop(cache);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IdsEnumerator GetEnumerator()
 		{
 			return new IdsEnumerator(RentCacheAndPrepare());

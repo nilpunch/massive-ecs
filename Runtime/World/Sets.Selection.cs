@@ -22,8 +22,8 @@ namespace Massive
 			}
 
 			var sets = new TSelector().Select(this);
-			
-			ConflictingFilterException.ThrowIfHasDuplicates(sets);
+
+			FilterException.ThrowIfHasDuplicates(sets);
 
 			SelectionLookup[info.Index] = sets;
 

@@ -66,7 +66,7 @@ namespace Massive
 
 			return sets.Select<Selector<T>>();
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitSet[] Select<T1, T2>(this World world)
 		{
@@ -83,7 +83,7 @@ namespace Massive
 
 			return sets.Select<Selector<T1, T2>>();
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitSet[] Select<T1, T2, T3>(this World world)
 		{
@@ -100,7 +100,7 @@ namespace Massive
 
 			return sets.Select<Selector<T1, T2, T3>>();
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitSet[] Select<T1, T2, T3, TSelector>(this World world)
 			where TSelector : ISetSelector, new()

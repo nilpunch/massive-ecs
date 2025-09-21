@@ -25,11 +25,9 @@ namespace Massive
 			return dynamicFilter._filter;
 		}
 
-		public DynamicFilter Include<T>()
+		public DynamicFilter AddToAll<T>()
 		{
 			var set = Sets.Get<T>();
-
-			ConflictingFilterException.ThrowIfConflictWithExcluded(this, set);
 
 			if (_filter.All.Contains(set))
 			{
@@ -44,14 +42,15 @@ namespace Massive
 			_filter.All[_filter.AllCount] = set;
 			_filter.AllCount += 1;
 
+			FilterException.ThrowIfHasConflicts(_filter.All, _filter.None, FilterType.All, FilterType.None);
+			FilterException.ThrowIfHasConflicts(_filter.All, _filter.Any, FilterType.All, FilterType.Any);
+
 			return this;
 		}
 
-		public DynamicFilter Exclude<T>()
+		public DynamicFilter AddToNone<T>()
 		{
 			var set = Sets.Get<T>();
-
-			ConflictingFilterException.ThrowIfConflictWithIncluded(this, set);
 
 			if (_filter.None.Contains(set))
 			{
@@ -65,6 +64,9 @@ namespace Massive
 
 			_filter.None[_filter.NoneCount] = set;
 			_filter.NoneCount += 1;
+
+			FilterException.ThrowIfHasConflicts(_filter.All, _filter.None, FilterType.All, FilterType.None);
+			FilterException.ThrowIfHasConflicts(_filter.None, _filter.Any, FilterType.None, FilterType.Any);
 
 			return this;
 		}
