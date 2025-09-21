@@ -25,7 +25,10 @@
 			// Or use feature-rich entity handle.
 			var npc = world.CreateEntity();
 			npc.Add<Position>();
-			npc.Destroy();
+			if (npc.Has<Position>())
+			{
+				npc.Destroy();
+			}
 
 			// Get full entity identifier from player ID.
 			// Useful for persistent storage of entities.
@@ -56,7 +59,7 @@
 
 			// Filter entities right in place.
 			// You don't have to cache anything.
-			world.Filter<Include<Player>, Exclude<Velocity>>()
+			world.All<Player>().None<Velocity>()
 				.ForEach((ref Position position) =>
 				{
 					// ...
@@ -64,25 +67,25 @@
 
 			// Iterate using foreach with data set. (faster)
 			var positions = world.DataSet<Position>();
-			foreach (var entityId in world.Include<Player, Position>())
+			foreach (var entityId in world.All<Player, Position>())
 			{
 				ref Position position = ref positions.Get(entityId);
 				// ...
 			}
 
 			// Or iterate over rich entities. (simpler)
-			foreach (var entity in world.Include<Player>().Entities)
+			foreach (var entity in world.All<Player>().Entities)
 			{
 				ref Position position = ref entity.Get<Position>();
 				// ...
 			}
 
-			// Chain any number of components in filters.
-			var query = world.Filter<
-				Include<int, string, bool, Include<short, byte, uint, Include<ushort>>>,
-				Exclude<long, char, float, Exclude<double>>>();
+			// Chain any number of components in queries.
+			var query = world
+				.All<int, string, bool, And<short, byte, uint, And<ushort>>>()
+				.None<long, char, float, And<double>>();
 
-			// Reuse the same filter view to iterate over different components.
+			// Reuse the same query to iterate over different components.
 			query.ForEach((ref int n, ref bool b) => { });
 			query.ForEach((ref string str) => { });
 		}

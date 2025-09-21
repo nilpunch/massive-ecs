@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Massive
@@ -35,7 +34,7 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfHasDuplicates(BitSet[] sets, FilterType filterType)
+		public static void ThrowIfHasDuplicates(BitSet[] sets)
 		{
 			for (var i = 0; i < sets.Length; i++)
 			{
@@ -44,15 +43,7 @@ namespace Massive
 				{
 					if (set == sets[j])
 					{
-						var filterName = filterType switch
-						{
-							FilterType.Include => "Included",
-							FilterType.Exclude => "Excluded",
-							FilterType.Both => "Filter",
-							_ => throw new ArgumentOutOfRangeException(nameof(filterType), filterType, null)
-						};
-
-						throw new ConflictingFilterException($"{filterName} contains duplicate sets.");
+						throw new ConflictingFilterException($"Component selection contains duplicate sets.");
 					}
 				}
 			}
@@ -62,7 +53,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static void ThrowIfCantInclude<T>(Filter filter, BitSet bitSet)
 		{
-			if (filter.Excluded.Contains(bitSet))
+			if (filter.None.Contains(bitSet))
 			{
 				throw new ConflictingFilterException($"You are trying include a set of type:{typeof(T).GetGenericName()} while filter want to exclude it.");
 			}
@@ -72,7 +63,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static void ThrowIfConflictWithIncluded(Filter filter, BitSet bitSet)
 		{
-			if (filter.Excluded.Contains(bitSet))
+			if (filter.None.Contains(bitSet))
 			{
 				throw new ConflictingFilterException("Conflict with excluded sets.");
 			}
@@ -82,7 +73,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static void ThrowIfConflictWithExcluded(Filter filter, BitSet bitSet)
 		{
-			if (filter.Included.Contains(bitSet))
+			if (filter.All.Contains(bitSet))
 			{
 				throw new ConflictingFilterException("Conflict with included sets.");
 			}

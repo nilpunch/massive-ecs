@@ -11,10 +11,16 @@ namespace Massive
 		public World World;
 		public Filter Filter;
 
-		public Query(World world, Filter filter = null)
+		public Query(World world)
 		{
 			World = world;
-			Filter = filter ?? Filter.Empty;
+			Filter = Filter.Empty;
+		}
+		
+		public Query(World world, Filter filter)
+		{
+			World = world;
+			Filter = filter;
 		}
 
 		Query IQueryable.Query => this;
@@ -45,7 +51,7 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 
 				var runEnd = MathUtils.ApproximateMSB(bits);
 				var setBits = MathUtils.PopCount(bits);
@@ -83,7 +89,7 @@ namespace Massive
 			var dataSet1 = World.DataSet<T>();
 
 			var cache = QueryCache.Rent()
-				.AddInclude(dataSet1);
+				.AddToAll(dataSet1);
 
 			ApplyFilter(Filter, cache);
 
@@ -104,7 +110,7 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
@@ -149,8 +155,8 @@ namespace Massive
 			var dataSet2 = World.DataSet<T2>();
 
 			var cache = QueryCache.Rent()
-				.AddInclude(dataSet1)
-				.AddInclude(dataSet2);
+				.AddToAll(dataSet1)
+				.AddToAll(dataSet2);
 
 			ApplyFilter(Filter, cache);
 
@@ -171,7 +177,7 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
@@ -223,9 +229,9 @@ namespace Massive
 			var dataSet3 = World.DataSet<T3>();
 
 			var cache = QueryCache.Rent()
-				.AddInclude(dataSet1)
-				.AddInclude(dataSet2)
-				.AddInclude(dataSet3);
+				.AddToAll(dataSet1)
+				.AddToAll(dataSet2)
+				.AddToAll(dataSet3);
 
 			ApplyFilter(Filter, cache);
 
@@ -246,7 +252,7 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
@@ -303,10 +309,10 @@ namespace Massive
 			var dataSet4 = World.DataSet<T4>();
 
 			var cache = QueryCache.Rent()
-				.AddInclude(dataSet1)
-				.AddInclude(dataSet2)
-				.AddInclude(dataSet3)
-				.AddInclude(dataSet4);
+				.AddToAll(dataSet1)
+				.AddToAll(dataSet2)
+				.AddToAll(dataSet3)
+				.AddToAll(dataSet4);
 
 			ApplyFilter(Filter, cache);
 
@@ -327,7 +333,7 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
@@ -383,9 +389,9 @@ namespace Massive
 		{
 			var cache = QueryCache.Rent();
 
-			if (Filter.IncludedCount == 0)
+			if (Filter.AllCount == 0)
 			{
-				cache.AddInclude(World.Entities);
+				cache.AddToAll(World.Entities);
 			}
 
 			ApplyFilter(Filter, cache);
@@ -397,16 +403,16 @@ namespace Massive
 
 		private void ApplyFilter(Filter filter, QueryCache resultQueryCache)
 		{
-			for (var i = 0; i < filter.IncludedCount; i++)
+			for (var i = 0; i < filter.AllCount; i++)
 			{
-				var included = filter.Included[i];
-				resultQueryCache.AddInclude(included);
+				var included = filter.All[i];
+				resultQueryCache.AddToAll(included);
 			}
 
-			for (var i = 0; i < filter.ExcludedCount; i++)
+			for (var i = 0; i < filter.NoneCount; i++)
 			{
-				var excluded = filter.Excluded[i];
-				resultQueryCache.AddExclude(excluded);
+				var excluded = filter.None[i];
+				resultQueryCache.AddToNone(excluded);
 			}
 		}
 	}

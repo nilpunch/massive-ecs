@@ -177,14 +177,14 @@ namespace Massive
 				var blockOffset = blockIndex << 6;
 				while (block != 0UL)
 				{
-					var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
+					var blockBit = (int)deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
 					var bitsIndex = blockOffset + blockBit;
 					var bits = Bits[bitsIndex];
 					var bitsOffset = bitsIndex << 6;
 					while (bits != 0UL)
 					{
-						var bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+						var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 
 						var id = bitsOffset + bit;
 						BeforeDestroyed?.Invoke(id);
@@ -277,7 +277,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public EntityEnumerator GetEnumerator()
 		{
-			var bitSet = QueryCache.Rent().AddInclude(this).Update();
+			var bitSet = QueryCache.Rent().AddToAll(this).Update();
 			return new EntityEnumerator(bitSet, World);
 		}
 

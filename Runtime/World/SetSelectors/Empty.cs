@@ -2,7 +2,7 @@
 
 namespace Massive
 {
-	public class None : IIncludeSelector, IExcludeSelector
+	public class Empty : IAndSelector, IOrSelector
 	{
 		public BitSet[] Select(Sets sets) => Array.Empty<BitSet>();
 	}

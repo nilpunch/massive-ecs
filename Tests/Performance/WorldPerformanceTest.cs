@@ -127,7 +127,7 @@ namespace Massive.PerformanceTests
 				_world.Create<TestState64>();
 			}
 
-			Measure.Method(() => { _world.Filter<Include<TestState64>>().Fill(result); })
+			Measure.Method(() => { _world.All<TestState64>().Fill(result); })
 				.CleanUp(result.Clear)
 				.MeasurementCount(MeasurementCount)
 				.IterationsPerMeasurement(IterationsPerMeasurement)
@@ -268,7 +268,7 @@ namespace Massive.PerformanceTests
 				{
 					for (int i = 0; i < EntitiesCount; i++)
 					{
-						_world.Include<PositionComponent, VelocityComponent>();
+						_world.All<PositionComponent, VelocityComponent>();
 					}
 				})
 				.MeasurementCount(MeasurementCount)

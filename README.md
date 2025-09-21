@@ -87,10 +87,13 @@ world.Get<Velocity>(player) = new Velocity() { Magnitude = 10f };
 
 world.Set(enemy, new Velocity()); // Adds component and sets its data.
 
-// Rich entity handle with simple syntax.
+// Or use feature-rich entity handle.
 var npc = world.CreateEntity();
 npc.Add<Position>();
-npc.Destroy();
+if (npc.Has<Position>())
+{
+	npc.Destroy();
+}
 
 // Get full entity identifier from player ID.
 // Useful for persistent storage of entities.
@@ -103,7 +106,7 @@ var deltaTime = 1f / 60f;
 world.ForEach((Entity entity, ref Position position, ref Velocity velocity) =>
 {
 	position.Y += velocity.Magnitude * deltaTime;
-    
+
 	if (position.Y > 5f)
 	{
 		// Create and destroy any amount of entities during iteration.
@@ -121,7 +124,7 @@ world.ForEach((world, deltaTime),
 
 // Filter entities right in place.
 // You don't have to cache anything.
-world.Filter<Include<Player>, Exclude<Velocity>>()
+world.All<Player>().None<Velocity>()
 	.ForEach((ref Position position) =>
 	{
 		// ...
@@ -129,25 +132,25 @@ world.Filter<Include<Player>, Exclude<Velocity>>()
 
 // Iterate using foreach with data set. (faster)
 var positions = world.DataSet<Position>();
-foreach (var entityId in world.Include<Player, Position>())
+foreach (var entityId in world.All<Player, Position>())
 {
 	ref Position position = ref positions.Get(entityId);
 	// ...
 }
 
-// Iterate over rich entities. (simpler)
-foreach (var entity in world.Include<Player>().Entities())
+// Or iterate over rich entities. (simpler)
+foreach (var entity in world.All<Player, Position>().Entities)
 {
 	ref Position position = ref entity.Get<Position>();
 	// ...
 }
 
-// Chain any number of components in filters.
-var filter = world.Filter<
-	Include<int, string, bool, Include<short, byte, uint, Include<ushort>>>,
-	Exclude<long, char, float, Exclude<double>>>();
+// Chain any number of components in queries.
+var query = world
+	.All<int, string, bool, And<short, byte, uint, And<ushort>>>()
+	.None<long, char, float, And<double>>();
 
-// Reuse the same filter view to iterate over different components.
-filter.ForEach((ref int n, ref bool b) => { });
-filter.ForEach((ref string str) => { });
+// Reuse the same query to iterate over different components.
+query.ForEach((ref int n, ref bool b) => { });
+query.ForEach((ref string str) => { });
 ```

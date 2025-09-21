@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -19,9 +18,9 @@ namespace Massive
 		public int[] NonEmptyBitsIndices { get; private set; } = Array.Empty<int>();
 		public int NonEmptyBitsCount { get; private set; }
 
-		private FastList<BitSetBase> Included { get; } = new FastList<BitSetBase>();
-		private FastList<BitSetBase> Excluded { get; } = new FastList<BitSetBase>();
-		private FastList<BitSetBase> IncludedWithoutMin { get; } = new FastList<BitSetBase>();
+		private FastList<BitSetBase> All { get; } = new FastList<BitSetBase>();
+		private FastList<BitSetBase> None { get; } = new FastList<BitSetBase>();
+		private FastList<BitSetBase> AllWithoutMin { get; } = new FastList<BitSetBase>();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static QueryCache Rent()
@@ -43,38 +42,38 @@ namespace Massive
 			}
 
 			CachePool[PoolCount++] = queryCache;
-			queryCache.PopAll();
+			queryCache.Pop();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public QueryCache AddInclude(BitSetBase bitSet)
+		public QueryCache AddToAll(BitSetBase bitSet)
 		{
-			Included.Add(bitSet);
+			All.Add(bitSet);
 			bitSet.PushRemoveOnRemove(this);
 			return this;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public QueryCache AddExclude(BitSetBase bitSet)
+		public QueryCache AddToNone(BitSetBase bitSet)
 		{
-			Excluded.Add(bitSet);
+			None.Add(bitSet);
 			bitSet.PushRemoveOnAdd(this);
 			return this;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void PopAll()
+		public void Pop()
 		{
-			foreach (var bitSet in Excluded)
+			foreach (var bitSet in None)
 			{
 				bitSet.PopRemoveOnAdd();
 			}
-			foreach (var bitSet in Included)
+			foreach (var bitSet in All)
 			{
 				bitSet.PopRemoveOnRemove();
 			}
-			Excluded.Clear();
-			Included.Clear();
+			None.Clear();
+			All.Clear();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -91,21 +90,21 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public QueryCache Update()
 		{
-			var minIncluded = BitSetBase.GetMinBitSet(Included.Items, Included.Count);
+			var minIncluded = BitSetBase.GetMinBitSet(All.Items, All.Count);
 			var minBlocksLength = minIncluded.NonEmptyBlocks.Length;
 
 			EnsureBlocksCapacity(minBlocksLength);
 			Array.Copy(minIncluded.NonEmptyBlocks, NonEmptyBlocks, minBlocksLength);
 
-			foreach (var included in Included)
+			foreach (var included in All)
 			{
 				if (included != minIncluded)
 				{
-					IncludedWithoutMin.Add(included);
+					AllWithoutMin.Add(included);
 				}
 			}
 
-			foreach (var included in IncludedWithoutMin)
+			foreach (var included in AllWithoutMin)
 			{
 				for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
 				{
@@ -113,7 +112,7 @@ namespace Massive
 				}
 			}
 
-			foreach (var excluded in Excluded)
+			foreach (var excluded in None)
 			{
 				for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
 				{
@@ -138,7 +137,7 @@ namespace Massive
 
 				var blockOffset = blockIndex << 6;
 
-				var blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
+				var blockBit = (int)deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
 
 				var runEnd = MathUtils.ApproximateMSB(block);
 				var setBits = MathUtils.PopCount(block);
@@ -171,7 +170,7 @@ namespace Massive
 				Bits[bitsIndex] = minIncluded.Bits[bitsIndex];
 			}
 
-			foreach (var included in IncludedWithoutMin)
+			foreach (var included in AllWithoutMin)
 			{
 				for (var i = 0; i < NonEmptyBitsCount; i++)
 				{
@@ -180,7 +179,7 @@ namespace Massive
 				}
 			}
 
-			foreach (var excluded in Excluded)
+			foreach (var excluded in None)
 			{
 				for (var i = 0; i < NonEmptyBitsCount; i++)
 				{
@@ -189,7 +188,7 @@ namespace Massive
 				}
 			}
 
-			IncludedWithoutMin.Clear();
+			AllWithoutMin.Clear();
 			return this;
 		}
 

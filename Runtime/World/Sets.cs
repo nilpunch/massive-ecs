@@ -11,7 +11,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class Sets
+	public partial class Sets
 	{
 		private Dictionary<string, BitSet> SetsByIdentifiers { get; } = new Dictionary<string, BitSet>();
 

@@ -14,7 +14,6 @@ namespace Massive
 
 		public Sets Sets { get; }
 		public Components Components { get; }
-		public Filters Filters { get; }
 		public Allocators Allocators { get; }
 
 		public WorldConfig Config { get; }
@@ -28,7 +27,6 @@ namespace Massive
 		{
 			Components = new Components();
 			Sets = new Sets(new SetFactory(worldConfig), Components);
-			Filters = new Filters(Sets);
 			Allocators = new Allocators();
 			Config = worldConfig;
 			Entities = new Entities(this);

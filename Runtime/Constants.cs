@@ -1,5 +1,8 @@
-﻿namespace Massive
+﻿using Unity.IL2CPP.CompilerServices;
+
+namespace Massive
 {
+	[Il2CppEagerStaticClassConstruction]
 	public static class Constants
 	{
 		public const int DefaultFramesCapacity = 121;

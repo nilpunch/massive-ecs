@@ -24,9 +24,13 @@ namespace Massive.PerformanceTests
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static Filter GetTestFilter(World world)
 		{
-			return world.GetFilter<
-				Include<TestState64, TestState64_2, TestState64_3>,
-				Exclude<TestState64<byte, int, int>, TestState64<int, byte, int>, TestState64<int, int, byte>>>();
+			return new DynamicFilter(world)
+				.Include<TestState64>()
+				.Include<TestState64_2>()
+				.Include<TestState64_3>()
+				.Exclude<TestState64<byte, int, int>>()
+				.Exclude<TestState64<int, byte, int>>()
+				.Exclude<TestState64<int, int, byte>>();
 		}
 
 		[Test, Performance]
