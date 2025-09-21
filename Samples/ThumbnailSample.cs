@@ -37,7 +37,7 @@
 			var deltaTime = 1f / 60f;
 
 			// Iterate using lightweight queries.
-			// ForEach will select only those entities that contain all the necessary components.
+			// ForEach will select only those entities that has all the necessary components.
 			world.ForEach((Entity entity, ref Position position, ref Velocity velocity) =>
 			{
 				position.Y += velocity.Magnitude * deltaTime;
@@ -73,7 +73,7 @@
 				// ...
 			}
 
-			// Or iterate over rich entities. (simpler)
+			// Iterate over rich entities. (simpler)
 			foreach (var entity in world.All<Player>().Entities)
 			{
 				ref Position position = ref entity.Get<Position>();
@@ -82,8 +82,8 @@
 
 			// Chain any number of components in queries.
 			var query = world
-				.All<int, string, bool, And<short, byte, uint, And<ushort>>>()
-				.None<long, char, float, And<double>>();
+				.All<int, string, bool, short, byte, uint, And<ushort, ulong>>()
+				.None<long, char, float, double, decimal, nint, And<nuint>>();
 
 			// Reuse the same query to iterate over different components.
 			query.ForEach((ref int n, ref bool b) => { });

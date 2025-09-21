@@ -1,4 +1,8 @@
-﻿using Unity.IL2CPP.CompilerServices;
+﻿#if !MASSIVE_DISABLE_ASSERT
+#define MASSIVE_ASSERT
+#endif
+
+using Unity.IL2CPP.CompilerServices;
 
 // ReSharper disable FieldHidesInterfacePropertyWithDefaultImplementation
 

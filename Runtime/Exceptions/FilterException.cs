@@ -51,22 +51,5 @@ namespace Massive
 				throw new FilterException($"You are trying query a component:{typeof(T).GetGenericName()} while filter marks it as None.");
 			}
 		}
-
-		[Conditional(Condition)]
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void ThrowIfHasDuplicates(BitSet[] sets)
-		{
-			for (var i = 0; i < sets.Length; i++)
-			{
-				var set = sets[i];
-				for (var j = i + 1; j < sets.Length; j++)
-				{
-					if (set == sets[j])
-					{
-						throw new FilterException($"Component selection contains duplicate sets.");
-					}
-				}
-			}
-		}
 	}
 }

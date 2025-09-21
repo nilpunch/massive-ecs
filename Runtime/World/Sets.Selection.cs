@@ -8,7 +8,7 @@ namespace Massive
 		public BitSet[][] SelectionLookup { get; private set; } = Array.Empty<BitSet[]>();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet[] Select<TSelector>()
+		public BitSet[] SelectSets<TSelector>()
 			where TSelector : ISetSelector, new()
 		{
 			var info = TypeId<TSelector>.Info;
@@ -22,8 +22,6 @@ namespace Massive
 			}
 
 			var sets = new TSelector().Select(this);
-
-			FilterException.ThrowIfHasDuplicates(sets);
 
 			SelectionLookup[info.Index] = sets;
 
