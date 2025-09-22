@@ -6,8 +6,8 @@ namespace Massive
 {
 	public enum FilterType
 	{
-		All,
-		None,
+		Included,
+		Excluded,
 		Any,
 	}
 
@@ -32,8 +32,8 @@ namespace Massive
 						string Name(FilterType type) =>
 							type switch
 							{
-								FilterType.All => "All",
-								FilterType.None => "None",
+								FilterType.Included => "Included",
+								FilterType.Excluded => "Excluded",
 								FilterType.Any => "Any",
 								_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 							};
@@ -46,7 +46,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static void ThrowIfCantQuery<T>(Filter filter, BitSet bitSet)
 		{
-			if (filter.None.Contains(bitSet))
+			if (filter.Excluded.Contains(bitSet))
 			{
 				throw new FilterException($"You are trying query a component:{typeof(T).GetGenericName()} while filter marks it as None.");
 			}

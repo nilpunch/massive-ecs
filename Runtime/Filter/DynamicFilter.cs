@@ -29,21 +29,21 @@ namespace Massive
 		{
 			var set = Sets.Get<T>();
 
-			if (_filter.All.Contains(set))
+			if (_filter.Included.Contains(set))
 			{
 				return this;
 			}
 
-			if (_filter.AllCount >= _filter.All.Length)
+			if (_filter.IncludeCount >= _filter.Included.Length)
 			{
-				_filter.All = _filter.All.ResizeToNextPowOf2(_filter.AllCount + 1);
+				_filter.Included = _filter.Included.ResizeToNextPowOf2(_filter.IncludeCount + 1);
 			}
 
-			_filter.All[_filter.AllCount] = set;
-			_filter.AllCount += 1;
+			_filter.Included[_filter.IncludeCount] = set;
+			_filter.IncludeCount += 1;
 
-			FilterException.ThrowIfHasConflicts(_filter.All, _filter.None, FilterType.All, FilterType.None);
-			FilterException.ThrowIfHasConflicts(_filter.All, _filter.Any, FilterType.All, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(_filter.Included, _filter.Excluded, FilterType.Included, FilterType.Excluded);
+			FilterException.ThrowIfHasConflicts(_filter.Included, _filter.Any, FilterType.Included, FilterType.Any);
 
 			return this;
 		}
@@ -52,21 +52,21 @@ namespace Massive
 		{
 			var set = Sets.Get<T>();
 
-			if (_filter.None.Contains(set))
+			if (_filter.Excluded.Contains(set))
 			{
 				return this;
 			}
 
-			if (_filter.NoneCount >= _filter.None.Length)
+			if (_filter.ExcludeCount >= _filter.Excluded.Length)
 			{
-				_filter.None = _filter.None.ResizeToNextPowOf2(_filter.NoneCount + 1);
+				_filter.Excluded = _filter.Excluded.ResizeToNextPowOf2(_filter.ExcludeCount + 1);
 			}
 
-			_filter.None[_filter.NoneCount] = set;
-			_filter.NoneCount += 1;
+			_filter.Excluded[_filter.ExcludeCount] = set;
+			_filter.ExcludeCount += 1;
 
-			FilterException.ThrowIfHasConflicts(_filter.All, _filter.None, FilterType.All, FilterType.None);
-			FilterException.ThrowIfHasConflicts(_filter.None, _filter.Any, FilterType.None, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(_filter.Included, _filter.Excluded, FilterType.Included, FilterType.Excluded);
+			FilterException.ThrowIfHasConflicts(_filter.Excluded, _filter.Any, FilterType.Excluded, FilterType.Any);
 
 			return this;
 		}

@@ -124,7 +124,7 @@ world.ForEach((world, deltaTime),
 
 // Filter entities right in place.
 // You don't have to cache anything.
-world.All<Player>().None<Velocity>()
+world.Include<Player>().Exclude<Velocity>()
 	.ForEach((ref Position position) =>
 	{
 		// ...
@@ -132,14 +132,14 @@ world.All<Player>().None<Velocity>()
 
 // Iterate using foreach with data set. (faster)
 var positions = world.DataSet<Position>();
-foreach (var entityId in world.All<Player, Position>())
+foreach (var entityId in world.Include<Player, Position>())
 {
 	ref Position position = ref positions.Get(entityId);
 	// ...
 }
 
 // Iterate over rich entities. (simpler)
-foreach (var entity in world.All<Player, Position>().Entities)
+foreach (var entity in world.Include<Player, Position>().Entities)
 {
 	ref Position position = ref entity.Get<Position>();
 	// ...
@@ -147,8 +147,8 @@ foreach (var entity in world.All<Player, Position>().Entities)
 
 // Chain any number of components in queries.
 var query = world
-	.All<int, string, bool, short, byte, uint, And<ushort, ulong>>()
-	.None<long, char, float, double, decimal, nint, And<nuint>>();
+	.Include<int, string, bool, short, byte, uint, And<ushort, ulong>>()
+	.Exclude<long, char, float, double, decimal, nint, And<nuint>>();
 
 // Reuse the same query to iterate over different components.
 query.ForEach((ref int n, ref bool b) => { });

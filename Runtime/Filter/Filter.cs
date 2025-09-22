@@ -13,44 +13,44 @@ namespace Massive
 	{
 		public static Filter Empty { get; } = new Filter(Array.Empty<BitSet>(), Array.Empty<BitSet>(), Array.Empty<BitSet>());
 
-		public int AllCount { get; internal set; }
-		public int NoneCount { get; internal set; }
+		public int IncludeCount { get; internal set; }
+		public int ExcludeCount { get; internal set; }
 		public int AnyCount { get; internal set; }
 
-		public BitSet[] All { get; internal set; }
-		public BitSet[] None { get; internal set; }
+		public BitSet[] Included { get; internal set; }
+		public BitSet[] Excluded { get; internal set; }
 		public BitSet[] Any { get; internal set; }
 
-		public Filter(BitSet[] all, BitSet[] none, BitSet[] any)
+		public Filter(BitSet[] included, BitSet[] excluded, BitSet[] any)
 		{
-			FilterException.ThrowIfHasConflicts(all, none, FilterType.All, FilterType.None);
-			FilterException.ThrowIfHasConflicts(all, any, FilterType.All, FilterType.Any);
-			FilterException.ThrowIfHasConflicts(none, any, FilterType.None, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(included, excluded, FilterType.Included, FilterType.Excluded);
+			FilterException.ThrowIfHasConflicts(included, any, FilterType.Included, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(excluded, any, FilterType.Excluded, FilterType.Any);
 
-			All = all;
-			None = none;
+			Included = included;
+			Excluded = excluded;
 			Any = any;
-			AllCount = all.Length;
-			NoneCount = none.Length;
+			IncludeCount = included.Length;
+			ExcludeCount = excluded.Length;
 			AnyCount = any.Length;
 		}
 
-		public void SetAll(BitSet[] all)
+		public void SetIncluded(BitSet[] all)
 		{
-			All = all;
-			AllCount = all.Length;
+			Included = all;
+			IncludeCount = all.Length;
 
-			FilterException.ThrowIfHasConflicts(All, None, FilterType.All, FilterType.None);
-			FilterException.ThrowIfHasConflicts(All, Any, FilterType.All, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(Included, Excluded, FilterType.Included, FilterType.Excluded);
+			FilterException.ThrowIfHasConflicts(Included, Any, FilterType.Included, FilterType.Any);
 		}
 
-		public void SetNone(BitSet[] none)
+		public void SetExcluded(BitSet[] none)
 		{
-			None = none;
-			NoneCount = none.Length;
+			Excluded = none;
+			ExcludeCount = none.Length;
 
-			FilterException.ThrowIfHasConflicts(All, None, FilterType.All, FilterType.None);
-			FilterException.ThrowIfHasConflicts(None, Any, FilterType.None, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(Included, Excluded, FilterType.Included, FilterType.Excluded);
+			FilterException.ThrowIfHasConflicts(Excluded, Any, FilterType.Excluded, FilterType.Any);
 		}
 
 		public void SetAny(BitSet[] any)
@@ -58,8 +58,8 @@ namespace Massive
 			Any = any;
 			AnyCount = any.Length;
 
-			FilterException.ThrowIfHasConflicts(All, Any, FilterType.All, FilterType.Any);
-			FilterException.ThrowIfHasConflicts(None, Any, FilterType.None, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(Included, Any, FilterType.Included, FilterType.Any);
+			FilterException.ThrowIfHasConflicts(Excluded, Any, FilterType.Excluded, FilterType.Any);
 		}
 	}
 }

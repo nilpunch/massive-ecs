@@ -29,7 +29,7 @@
 		void Use()
 		{
 			// Get the first entity that has an Inventory.
-			var entity = World.All<Inventory>().First();
+			var entity = World.Include<Inventory>().First();
 
 			// Get a reference to its Inventory component.
 			ref var inventory = ref World.Get<Inventory>(entity);

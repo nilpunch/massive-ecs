@@ -9,11 +9,11 @@
 			var colliders = world.DataSet<CircleCollider>();
 			var positions = world.DataSet<Position>();
 
-			foreach (var characterId in world.All<Character>().None<Dead>())
+			foreach (var characterId in world.Include<Character>().Exclude<Dead>())
 			{
 				ref var character = ref characters.Get(characterId);
 
-				foreach (var bulletId in world.All<Bullet>().None<Dead>())
+				foreach (var bulletId in world.Include<Bullet>().Exclude<Dead>())
 				{
 					ref var bullet = ref bullets.Get(bulletId);
 

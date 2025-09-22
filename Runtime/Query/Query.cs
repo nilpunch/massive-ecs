@@ -601,7 +601,7 @@ namespace Massive
 		{
 			var cache = QueryCache.Rent();
 
-			if (Filter.AllCount == 0)
+			if (Filter.IncludeCount == 0)
 			{
 				cache.AddToAll(World.Entities);
 			}
@@ -615,15 +615,15 @@ namespace Massive
 
 		private void ApplyFilter(Filter filter, QueryCache resultQueryCache)
 		{
-			for (var i = 0; i < filter.AllCount; i++)
+			for (var i = 0; i < filter.IncludeCount; i++)
 			{
-				var included = filter.All[i];
+				var included = filter.Included[i];
 				resultQueryCache.AddToAll(included);
 			}
 
-			for (var i = 0; i < filter.NoneCount; i++)
+			for (var i = 0; i < filter.ExcludeCount; i++)
 			{
-				var excluded = filter.None[i];
+				var excluded = filter.Excluded[i];
 				resultQueryCache.AddToNone(excluded);
 			}
 		}
