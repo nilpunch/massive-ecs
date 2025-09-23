@@ -56,7 +56,7 @@ Features:
   - 1000 entities, each with 150 components, can be saved 24 times in 6 ms.  
     The 150 components include 50 components of 64 bytes, 50 components of 4 bytes, and 50 tags.
   - Need more entities or reduced overhead? Adjust components or saving amount.  
-    For example, 10000 entities with 15 components each can be saved 12 times in 2.3 ms.
+    For example, 10000 entities with 15 components each can be saved 12 times in 3 ms.
 
 ### Addons
 
