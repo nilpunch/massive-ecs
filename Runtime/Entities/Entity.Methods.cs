@@ -9,7 +9,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly partial struct Entity
+	public partial struct Entity
 	{
 		/// <summary>
 		/// Creates a unique entity with components of another entity.<br/>
@@ -19,7 +19,7 @@ namespace Massive
 		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Entity Clone()
+		public readonly Entity Clone()
 		{
 			InvalidCloneOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
@@ -47,7 +47,7 @@ namespace Massive
 		/// True if the entity was destroyed; false if it was already not alive.
 		/// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Destroy()
+		public readonly bool Destroy()
 		{
 			return World.Entities.Destroy(Id);
 		}
@@ -60,7 +60,7 @@ namespace Massive
 		/// or if the component has no associated data set.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Set<T>(T data)
+		public readonly void Set<T>(T data)
 		{
 			InvalidSetOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
@@ -91,7 +91,7 @@ namespace Massive
 		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Add<T>()
+		public readonly bool Add<T>()
 		{
 			InvalidAddOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
@@ -118,7 +118,7 @@ namespace Massive
 		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Remove<T>()
+		public readonly bool Remove<T>()
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
@@ -142,7 +142,7 @@ namespace Massive
 		/// Throws if the entity is not alive.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Has<T>()
+		public readonly bool Has<T>()
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
@@ -167,7 +167,7 @@ namespace Massive
 		/// or if the component has no associated data set.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref T Get<T>()
+		public readonly ref T Get<T>()
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 

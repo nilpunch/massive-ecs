@@ -9,46 +9,25 @@ namespace Massive
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly partial struct Entity : IEquatable<Entifier>, IEquatable<Entity>
+	public partial struct Entity : IEquatable<Entifier>, IEquatable<Entity>
 	{
-		/// <summary>
-		/// 0 counted as invalid and dead.<br/>
-		/// [ Version: 32 bits | ID: 32 bits ]
-		/// </summary>
-		public readonly long VersionAndId;
+		public int Id;
+
+		public uint Version;
 
 		public readonly World World;
 
-		public int Id
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => (int)VersionAndId;
-		}
-
-		/// <summary>
-		/// Entities with version 0 are invalid and counted as dead.
-		/// </summary>
-		public uint Version
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => (uint)(VersionAndId >> 32);
-		}
-
 		public Entity(Entifier entifier, World world)
 		{
-			VersionAndId = entifier.VersionAndId;
-			World = world;
-		}
-
-		public Entity(long versionAndId, World world)
-		{
-			VersionAndId = versionAndId;
+			Id = entifier.Id;
+			Version = entifier.Version;
 			World = world;
 		}
 
 		public Entity(int id, uint version, World world)
 		{
-			VersionAndId = (uint)id | ((long)version << 32);
+			Id = id;
+			Version = version;
 			World = world;
 		}
 
@@ -58,16 +37,16 @@ namespace Massive
 		/// <remarks>
 		/// Throws if provided entity ID is negative.
 		/// </remarks>
-		public bool IsAlive
+		public readonly bool IsAlive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => World.Entities.IsAlive(Entifier);
 		}
 
-		public Entifier Entifier
+		public readonly Entifier Entifier
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new Entifier(VersionAndId);
+			get => new Entifier(Id, Version);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -106,31 +85,31 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Equals(Entifier other)
+		public readonly bool Equals(Entifier other)
 		{
-			return VersionAndId == other.VersionAndId;
+			return Id == other.Id && Version == other.Version;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Equals(Entity other)
+		public readonly bool Equals(Entity other)
 		{
-			return VersionAndId == other.VersionAndId;
+			return Id == other.Id && Version == other.Version;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override bool Equals(object obj)
+		public readonly override bool Equals(object obj)
 		{
 			return obj is Entifier other && Equals(other);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override int GetHashCode()
+		public readonly override int GetHashCode()
 		{
-			return VersionAndId.GetHashCode();
+			return MathUtils.CombineHashes(Id, (int)Version);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override string ToString()
+		public readonly override string ToString()
 		{
 			return $"(id:{Id} v:{Version})";
 		}

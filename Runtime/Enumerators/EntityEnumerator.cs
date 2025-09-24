@@ -8,7 +8,6 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public struct EntityEnumerator : IDisposable
 	{
-		private readonly World _world;
 		private readonly Entities _entities;
 		private readonly QueryCache _cache;
 		private readonly ulong[] _cachedBits;
@@ -17,6 +16,7 @@ namespace Massive
 
 		private readonly byte[] _deBruijn;
 
+		private Entity _currentEntity;
 		private int _current;
 		private int _nonEmptyBitsIndex;
 		private bool _useRange;
@@ -32,7 +32,6 @@ namespace Massive
 			_cachedBits = cache.Bits;
 			_nonEmptyBitsCount = cache.NonEmptyBitsCount;
 			_nonEmptyBitsIndices = cache.NonEmptyBitsIndices;
-			_world = world;
 			_entities = world.Entities;
 
 			_deBruijn = MathUtils.DeBruijn;
@@ -45,6 +44,8 @@ namespace Massive
 			_bits = default;
 
 			_current = default;
+
+			_currentEntity = new Entity(Entifier.Dead, world);
 
 			while (++_nonEmptyBitsIndex < _nonEmptyBitsCount)
 			{
@@ -69,7 +70,12 @@ namespace Massive
 		public Entity Current
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new Entity(_current, _entities.Versions[_current], _world);
+			get
+			{
+				_currentEntity.Id = _current;
+				_currentEntity.Version = _entities.Versions[_current];
+				return _currentEntity;
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
