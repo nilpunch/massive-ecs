@@ -42,12 +42,14 @@ namespace Massive
 	{
 		public EntityAction Action;
 		public Entities Entities;
-		public World World;
+		public Entity Entity;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id)
 		{
-			Action.Invoke(new Entity(id, Entities.Versions[id], World));
+			Entity.Id = id;
+			Entity.Version = Entities.Versions[id];
+			Action.Invoke(Entity);
 		}
 	}
 
@@ -57,13 +59,15 @@ namespace Massive
 	{
 		public EntityActionArgs<TArgs> Action;
 		public Entities Entities;
-		public World World;
+		public Entity Entity;
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id)
 		{
-			Action.Invoke(new Entity(id, Entities.Versions[id], World), Args);
+			Entity.Id = id;
+			Entity.Version = Entities.Versions[id];
+			Action.Invoke(Entity, Args);
 		}
 	}
 

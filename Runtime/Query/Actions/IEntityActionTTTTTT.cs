@@ -41,12 +41,14 @@ namespace Massive
 	{
 		public EntityActionRef<T1, T2, T3, T4, T5, T6> Action;
 		public Entities Entities;
-		public World World;
+		public Entity Entity;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d, ref T5 e, ref T6 f)
 		{
-			Action.Invoke(new Entity(id, Entities.Versions[id], World), ref a, ref b, ref c, ref d, ref e, ref f);
+            Entity.Id = id;
+			Entity.Version = Entities.Versions[id];
+			Action.Invoke(Entity, ref a, ref b, ref c, ref d, ref e, ref f);
 		}
 	}
 
@@ -56,13 +58,15 @@ namespace Massive
 	{
 		public EntityActionRefArgs<T1, T2, T3, T4, T5, T6, TArgs> Action;
 		public Entities Entities;
-		public World World;
+		public Entity Entity;
 		public TArgs Args;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id, ref T1 a, ref T2 b, ref T3 c, ref T4 d, ref T5 e, ref T6 f)
 		{
-			Action.Invoke(new Entity(id, Entities.Versions[id], World), ref a, ref b, ref c, ref d, ref e, ref f, Args);
+            Entity.Id = id;
+			Entity.Version = Entities.Versions[id];
+			Action.Invoke(Entity, ref a, ref b, ref c, ref d, ref e, ref f, Args);
 		}
 	}
 

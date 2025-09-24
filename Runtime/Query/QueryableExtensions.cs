@@ -109,91 +109,91 @@ namespace Massive
 		public static void ForEach<TQueryable>(this TQueryable queryable, EntityAction action)
 			where TQueryable : IQueryable
 		{
-			var entityActionAdapter = new EntityActionAdapter { Action = action, Entities = queryable.World.Entities, World = queryable.World };
+			var entityActionAdapter = new EntityActionAdapter { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World)};
 			queryable.Query.ForEach(ref entityActionAdapter);
 		}
 
 		public static void ForEach<TQueryable, T>(this TQueryable queryable, EntityActionRef<T> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T> { Action = action, Entities = queryable.World.Entities, World = queryable.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World) };
 			queryable.Query.ForEach<T, EntityActionRefAdapter<T>>(ref entityActionRefAdapter);
 		}
 
 		public static void ForEach<TQueryable, T1, T2>(this TQueryable queryable, EntityActionRef<T1, T2> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2> { Action = action, Entities = queryable.World.Entities, World = queryable.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World) };
 			queryable.Query.ForEach<T1, T2, EntityActionRefAdapter<T1, T2>>(ref entityActionRefAdapter);
 		}
 
 		public static void ForEach<TQueryable, T1, T2, T3>(this TQueryable queryable, EntityActionRef<T1, T2, T3> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3> { Action = action, Entities = queryable.World.Entities, World = queryable.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World) };
 			queryable.Query.ForEach<T1, T2, T3, EntityActionRefAdapter<T1, T2, T3>>(ref entityActionRefAdapter);
 		}
 
 		public static void ForEach<TQueryable, T1, T2, T3, T4>(this TQueryable queryable, EntityActionRef<T1, T2, T3, T4> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4> { Action = action, Entities = queryable.World.Entities, World = queryable.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World) };
 			queryable.Query.ForEach<T1, T2, T3, T4, EntityActionRefAdapter<T1, T2, T3, T4>>(ref entityActionRefAdapter);
 		}
 
 		public static void ForEach<TQueryable, T1, T2, T3, T4, T5>(this TQueryable queryable, EntityActionRef<T1, T2, T3, T4, T5> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4, T5> { Action = action, Entities = queryable.World.Entities, World = queryable.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4, T5> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World) };
 			queryable.Query.ForEach<T1, T2, T3, T4, T5, EntityActionRefAdapter<T1, T2, T3, T4, T5>>(ref entityActionRefAdapter);
 		}
 
 		public static void ForEach<TQueryable, T1, T2, T3, T4, T5, T6>(this TQueryable queryable, EntityActionRef<T1, T2, T3, T4, T5, T6> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4, T5, T6> { Action = action, Entities = queryable.World.Entities, World = queryable.World };
+			var entityActionRefAdapter = new EntityActionRefAdapter<T1, T2, T3, T4, T5, T6> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World) };
 			queryable.Query.ForEach<T1, T2, T3, T4, T5, T6, EntityActionRefAdapter<T1, T2, T3, T4, T5, T6>>(ref entityActionRefAdapter);
 		}
 
 		public static void ForEach<TQueryable, TArgs>(this TQueryable queryable, TArgs args, EntityActionArgs<TArgs> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionArgsAdapter = new EntityActionArgsAdapter<TArgs>() { Action = action, Entities = queryable.World.Entities, World = queryable.World, Args = args };
+			var entityActionArgsAdapter = new EntityActionArgsAdapter<TArgs>() { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World), Args = args };
 			queryable.Query.ForEach(ref entityActionArgsAdapter);
 		}
 
 		public static void ForEach<TQueryable, TArgs, T>(this TQueryable queryable, TArgs args, EntityActionRefArgs<T, TArgs> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T, TArgs> { Action = action, Entities = queryable.World.Entities, World = queryable.World, Args = args };
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T, TArgs> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World), Args = args };
 			queryable.Query.ForEach<T, EntityActionRefArgsAdapter<T, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
 		public static void ForEach<TQueryable, TArgs, T1, T2>(this TQueryable queryable, TArgs args, EntityActionRefArgs<T1, T2, TArgs> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, TArgs> { Action = action, Entities = queryable.World.Entities, World = queryable.World, Args = args };
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, TArgs> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World), Args = args };
 			queryable.Query.ForEach<T1, T2, EntityActionRefArgsAdapter<T1, T2, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
 		public static void ForEach<TQueryable, TArgs, T1, T2, T3>(this TQueryable queryable, TArgs args, EntityActionRefArgs<T1, T2, T3, TArgs> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Entities = queryable.World.Entities, World = queryable.World, Args = args };
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, TArgs> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World), Args = args };
 			queryable.Query.ForEach<T1, T2, T3, EntityActionRefArgsAdapter<T1, T2, T3, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
 		public static void ForEach<TQueryable, TArgs, T1, T2, T3, T4>(this TQueryable queryable, TArgs args, EntityActionRefArgs<T1, T2, T3, T4, TArgs> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs> { Action = action, Entities = queryable.World.Entities, World = queryable.World, Args = args };
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World), Args = args };
 			queryable.Query.ForEach<T1, T2, T3, T4, EntityActionRefArgsAdapter<T1, T2, T3, T4, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
 		public static void ForEach<TQueryable, TArgs, T1, T2, T3, T4, T5>(this TQueryable queryable, TArgs args, EntityActionRefArgs<T1, T2, T3, T4, T5, TArgs> action)
 			where TQueryable : IQueryable
 		{
-			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, T5, TArgs> { Action = action, Entities = queryable.World.Entities, World = queryable.World, Args = args };
+			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, T5, TArgs> { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World), Args = args };
 			queryable.Query.ForEach<T1, T2, T3, T4, T5, EntityActionRefArgsAdapter<T1, T2, T3, T4, T5, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
@@ -201,7 +201,7 @@ namespace Massive
 			where TQueryable : IQueryable
 		{
 			var entityActionRefArgsAdapter = new EntityActionRefArgsAdapter<T1, T2, T3, T4, T5, T6, TArgs>
-				{ Action = action, Entities = queryable.World.Entities, World = queryable.World, Args = args };
+				{ Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World), Args = args };
 			queryable.Query.ForEach<T1, T2, T3, T4, T5, T6, EntityActionRefArgsAdapter<T1, T2, T3, T4, T5, T6, TArgs>>(ref entityActionRefArgsAdapter);
 		}
 
