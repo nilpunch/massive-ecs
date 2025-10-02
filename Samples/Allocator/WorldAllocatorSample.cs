@@ -1,4 +1,4 @@
-﻿namespace Massive.Samples.Basic
+﻿namespace Massive.Samples.AllocatorUsage
 {
 	public struct Item { }
 

@@ -68,7 +68,7 @@ namespace Massive
 				// Source: https://github.com/Felid-Force-Studios/StaticEcs/blob/be8bb1c668309294aeecef80313677da368d7703/Src/Utils/BitMask.cs#L432
 				while (mask != 0UL)
 				{
-					var componentIndex = DeBruijn[(int)(((mask & (ulong)-(long)mask) * 0x37E84A99DAE458FUL) >> 58)];
+					var componentIndex = (int)DeBruijn[(int)(((mask & (ulong)-(long)mask) * 0x37E84A99DAE458FUL) >> 58)];
 					buffer[componentCount++] = componentOffset + componentIndex;
 					mask &= mask - 1UL;
 				}
@@ -89,7 +89,7 @@ namespace Massive
 
 				while (mask != 0L)
 				{
-					var componentIndex = DeBruijn[(int)(((mask & (ulong)-(long)mask) * 0x37E84A99DAE458FUL) >> 58)];
+					var componentIndex = (int)DeBruijn[(int)(((mask & (ulong)-(long)mask) * 0x37E84A99DAE458FUL) >> 58)];
 					buffer[componentCount++] = componentOffset + componentIndex;
 					mask &= mask - 1L;
 				}

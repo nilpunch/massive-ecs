@@ -3,6 +3,8 @@ using System.Numerics;
 
 namespace Massive.Samples.Shooter
 {
+	
+	
 	public class Shooter
 	{
 		public World World { get; } = new World();

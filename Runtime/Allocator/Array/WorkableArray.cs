@@ -10,7 +10,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly ref struct WorkableArray<T> where T : unmanaged
+	public readonly struct WorkableArray<T> where T : unmanaged
 	{
 		public readonly ChunkId ChunkId;
 		public readonly Allocator<T> Allocator;
