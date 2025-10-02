@@ -10,18 +10,24 @@ namespace Massive
 {
 	/// <summary>
 	/// Data extension for <see cref="BitSet"/>.
-	/// Does not reset the data for added elements.
-	/// Does not preserve data when elements are moved.
+	/// Resets data to default value for added elements.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class DataSet<T> : BitSet, IDataSet
 	{
+		public T DefaultValue { get; }
+
 		public T[][] PagedData { get; private set; } = Array.Empty<T[]>();
 
 		private T[][] DataPagePool { get; set; } = Array.Empty<T[]>();
 
 		private int PoolCount { get; set; }
+
+		public DataSet(T defaultValue = default)
+		{
+			DefaultValue = defaultValue;
+		}
 
 		/// <summary>
 		/// Gets a reference to the data associated with the specified ID.
@@ -82,12 +88,14 @@ namespace Massive
 			EnsurePageInternal(page);
 		}
 
-		/// <summary>
-		/// Copies the data from one index to another.
-		/// </summary>
 		public override void CopyData(int sourceId, int destinationId)
 		{
 			Get(destinationId) = Get(sourceId);
+		}
+		
+		protected override void PrepareData(int id)
+		{
+			PagedData[id >> Constants.PageSizePower][id & Constants.PageSizeMinusOne] = DefaultValue;
 		}
 
 		protected override void FreePage(int page)
@@ -148,7 +156,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Copies all data and sparse state from this set into the specified one.
+		/// Copies all data and bitset state from this set into the specified one.
 		/// All data is copied by value.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -42,9 +42,14 @@ namespace Massive
 			}
 		}
 
-		/// <summary>
-		/// Copies bitset from this set into the specified one.
-		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public BitSet CloneBitSet()
+		{
+			var clone = new BitSet();
+			CopyBitSetTo(clone);
+			return clone;
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyBitSetTo(BitSetBase other)
 		{

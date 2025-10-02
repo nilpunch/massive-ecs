@@ -139,9 +139,6 @@ namespace Massive
 			}
 		}
 
-		/// <summary>
-		/// Creates and returns a new sparse set that is an exact copy of this one.
-		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Components Clone()
 		{
@@ -150,9 +147,6 @@ namespace Massive
 			return clone;
 		}
 
-		/// <summary>
-		/// Copies all sparse state from this set into the specified one.
-		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Components other)
 		{

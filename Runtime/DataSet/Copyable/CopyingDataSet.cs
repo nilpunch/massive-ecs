@@ -8,16 +8,14 @@ using Unity.IL2CPP.CompilerServices;
 namespace Massive
 {
 	/// <summary>
-	/// Copying extension for <see cref="Massive.ManagedDataSet{T}"/>.
-	/// Swaps data when elements are moved.
-	/// Used for managed components to reduce allocations.
+	/// Copying extension for <see cref="Massive.DataSet{T}"/>.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class CopyingDataSet<T> : DataSet<T> where T : ICopyable<T>
 	{
 		/// <summary>
-		/// Copies the data from one index to another.
+		/// Copies the data from one index to another, using <see cref="ICopyable{T}"/>.
 		/// </summary>
 		public override void CopyData(int sourceId, int destinationId)
 		{
@@ -37,7 +35,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Copies all data and sparse state from this set into the specified one.
+		/// Copies all data and bitset state from this set into the specified one.
 		/// All data is copied using <see cref="ICopyable{T}"/>.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

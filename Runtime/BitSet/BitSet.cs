@@ -246,16 +246,5 @@ namespace Massive
 		{
 			AfterAdded?.Invoke(id);
 		}
-
-		/// <summary>
-		/// Creates and returns a new sparse set that is an exact copy of this one.
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet CloneBitSet()
-		{
-			var clone = new BitSet();
-			CopyBitSetTo(clone);
-			return clone;
-		}
 	}
 }

@@ -4,11 +4,11 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public sealed class SparseSetCloner<T> : SetCloner
+	public sealed class BitSetCloner<T> : SetCloner
 	{
 		private readonly BitSet _bitSet;
 
-		public SparseSetCloner(BitSet bitSet)
+		public BitSetCloner(BitSet bitSet)
 		{
 			_bitSet = bitSet;
 		}

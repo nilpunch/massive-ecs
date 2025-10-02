@@ -16,14 +16,8 @@ namespace Massive
 
 		public int PooledIds { get; protected set; }
 
-		/// <summary>
-		/// The sparse array, containing entities versions.<br/>
-		/// </summary>
 		public uint[] Versions { get; private set; } = Array.Empty<uint>();
 
-		/// <summary>
-		/// The current capacity of the versions array.
-		/// </summary>
 		public int VersionsCapacity { get; private set; }
 
 		/// <summary>

@@ -29,16 +29,16 @@ namespace Massive
 
 			if (TypeHasNoData(type))
 			{
-				return CreateSparseSet<T>();
+				return CreateBitSet<T>();
 			}
 
 			return CreateDataSet<T>();
 		}
 
-		private Output CreateSparseSet<T>()
+		private Output CreateBitSet<T>()
 		{
 			var bitSet = new BitSet();
-			var cloner = new SparseSetCloner<T>(bitSet);
+			var cloner = new BitSetCloner<T>(bitSet);
 			return new Output(bitSet, cloner);
 		}
 
@@ -51,15 +51,9 @@ namespace Massive
 				var cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
 				return new Output(dataSet, cloner);
 			}
-			else if (type.IsManaged())
-			{
-				var dataSet = new DataSet<T>();
-				var cloner = new DataSetCloner<T>(dataSet);
-				return new Output(dataSet, cloner);
-			}
 			else
 			{
-				var dataSet = new UnmanagedDataSet<T>(DefaultValueUtils.GetDefaultValueFor<T>());
+				var dataSet = new DataSet<T>(DefaultValueUtils.GetDefaultValueFor<T>());
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
