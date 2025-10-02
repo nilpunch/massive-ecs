@@ -217,7 +217,7 @@ namespace Massive
 
 		public IdsEnumerator GetEnumerator()
 		{
-			var cache = QueryCache.Rent().AddToAll(this).Update();
+			var cache = QueryCache.Rent().AddInclude(this).Update();
 			return new IdsEnumerator(cache);
 		}
 

@@ -22,9 +22,9 @@ namespace Massive
 		public int[] NonEmptyBitsIndices { get; private set; } = Array.Empty<int>();
 		public int NonEmptyBitsCount { get; private set; }
 
-		private FastList<BitSetBase> All { get; } = new FastList<BitSetBase>();
-		private FastList<BitSetBase> None { get; } = new FastList<BitSetBase>();
-		private FastList<BitSetBase> AllWithoutMin { get; } = new FastList<BitSetBase>();
+		private FastList<BitSetBase> Included { get; } = new FastList<BitSetBase>();
+		private FastList<BitSetBase> Excluded { get; } = new FastList<BitSetBase>();
+		private FastList<BitSetBase> IncludedWithoutMin { get; } = new FastList<BitSetBase>();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static QueryCache Rent()
@@ -50,17 +50,17 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public QueryCache AddToAll(BitSetBase bitSet)
+		public QueryCache AddInclude(BitSetBase bitSet)
 		{
-			All.Add(bitSet);
+			Included.Add(bitSet);
 			bitSet.PushRemoveOnRemove(this);
 			return this;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public QueryCache AddToNone(BitSetBase bitSet)
+		public QueryCache AddExclude(BitSetBase bitSet)
 		{
-			None.Add(bitSet);
+			Excluded.Add(bitSet);
 			bitSet.PushRemoveOnAdd(this);
 			return this;
 		}
@@ -68,16 +68,16 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Pop()
 		{
-			foreach (var bitSet in None)
+			foreach (var bitSet in Excluded)
 			{
 				bitSet.PopRemoveOnAdd();
 			}
-			foreach (var bitSet in All)
+			foreach (var bitSet in Included)
 			{
 				bitSet.PopRemoveOnRemove();
 			}
-			None.Clear();
-			All.Clear();
+			Excluded.Clear();
+			Included.Clear();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -94,21 +94,21 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public QueryCache Update()
 		{
-			var minIncluded = BitSetBase.GetMinBitSet(All.Items, All.Count);
+			var minIncluded = BitSetBase.GetMinBitSet(Included.Items, Included.Count);
 			var minBlocksLength = minIncluded.NonEmptyBlocks.Length;
 
 			EnsureBlocksCapacity(minBlocksLength);
 			Array.Copy(minIncluded.NonEmptyBlocks, NonEmptyBlocks, minBlocksLength);
 
-			foreach (var included in All)
+			foreach (var included in Included)
 			{
 				if (included != minIncluded)
 				{
-					AllWithoutMin.Add(included);
+					IncludedWithoutMin.Add(included);
 				}
 			}
 
-			foreach (var included in AllWithoutMin)
+			foreach (var included in IncludedWithoutMin)
 			{
 				for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
 				{
@@ -116,7 +116,7 @@ namespace Massive
 				}
 			}
 
-			foreach (var excluded in None)
+			foreach (var excluded in Excluded)
 			{
 				for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
 				{
@@ -174,7 +174,7 @@ namespace Massive
 				Bits[bitsIndex] = minIncluded.Bits[bitsIndex];
 			}
 
-			foreach (var included in AllWithoutMin)
+			foreach (var included in IncludedWithoutMin)
 			{
 				for (var i = 0; i < NonEmptyBitsCount; i++)
 				{
@@ -183,7 +183,7 @@ namespace Massive
 				}
 			}
 
-			foreach (var excluded in None)
+			foreach (var excluded in Excluded)
 			{
 				for (var i = 0; i < NonEmptyBitsCount; i++)
 				{
@@ -192,7 +192,7 @@ namespace Massive
 				}
 			}
 
-			AllWithoutMin.Clear();
+			IncludedWithoutMin.Clear();
 			return this;
 		}
 

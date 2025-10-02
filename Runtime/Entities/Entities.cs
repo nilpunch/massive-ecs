@@ -275,7 +275,7 @@ namespace Massive
 
 		public EntityEnumerator GetEnumerator()
 		{
-			var bitSet = QueryCache.Rent().AddToAll(this).Update();
+			var bitSet = QueryCache.Rent().AddInclude(this).Update();
 			return new EntityEnumerator(bitSet, World);
 		}
 

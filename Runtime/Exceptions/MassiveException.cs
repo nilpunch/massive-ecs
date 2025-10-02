@@ -8,7 +8,7 @@ namespace Massive
 	{
 		public const string Condition = "MASSIVE_ASSERT";
 
-		protected MassiveException(string message) : base($"[MASSIVE] {message}")
+		protected MassiveException(string message) : base($"[{Constants.LibraryName}] {message}")
 		{
 		}
 

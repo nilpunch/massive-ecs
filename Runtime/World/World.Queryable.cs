@@ -67,7 +67,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IdsEnumerator GetEnumerator()
 		{
-			var bits = QueryCache.Rent().AddToAll(Entities).Update();
+			var bits = QueryCache.Rent().AddInclude(Entities).Update();
 			return new IdsEnumerator(bits);
 		}
 	}

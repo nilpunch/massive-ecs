@@ -91,7 +91,7 @@ namespace Massive
 			FilterException.ThrowIfCantQuery<T>(Filter, dataSet1);
 
 			var cache = QueryCache.Rent()
-				.AddToAll(dataSet1);
+				.AddInclude(dataSet1);
 
 			ApplyFilter(Filter, cache);
 
@@ -160,8 +160,8 @@ namespace Massive
 			FilterException.ThrowIfCantQuery<T2>(Filter, dataSet2);
 
 			var cache = QueryCache.Rent()
-				.AddToAll(dataSet1)
-				.AddToAll(dataSet2);
+				.AddInclude(dataSet1)
+				.AddInclude(dataSet2);
 
 			ApplyFilter(Filter, cache);
 
@@ -238,9 +238,9 @@ namespace Massive
 			FilterException.ThrowIfCantQuery<T3>(Filter, dataSet3);
 
 			var cache = QueryCache.Rent()
-				.AddToAll(dataSet1)
-				.AddToAll(dataSet2)
-				.AddToAll(dataSet3);
+				.AddInclude(dataSet1)
+				.AddInclude(dataSet2)
+				.AddInclude(dataSet3);
 
 			ApplyFilter(Filter, cache);
 
@@ -323,10 +323,10 @@ namespace Massive
 			FilterException.ThrowIfCantQuery<T4>(Filter, dataSet4);
 
 			var cache = QueryCache.Rent()
-				.AddToAll(dataSet1)
-				.AddToAll(dataSet2)
-				.AddToAll(dataSet3)
-				.AddToAll(dataSet4);
+				.AddInclude(dataSet1)
+				.AddInclude(dataSet2)
+				.AddInclude(dataSet3)
+				.AddInclude(dataSet4);
 
 			ApplyFilter(Filter, cache);
 
@@ -415,11 +415,11 @@ namespace Massive
 			FilterException.ThrowIfCantQuery<T5>(Filter, dataSet5);
 
 			var cache = QueryCache.Rent()
-				.AddToAll(dataSet1)
-				.AddToAll(dataSet2)
-				.AddToAll(dataSet3)
-				.AddToAll(dataSet4)
-				.AddToAll(dataSet5);
+				.AddInclude(dataSet1)
+				.AddInclude(dataSet2)
+				.AddInclude(dataSet3)
+				.AddInclude(dataSet4)
+				.AddInclude(dataSet5);
 
 			ApplyFilter(Filter, cache);
 
@@ -514,12 +514,12 @@ namespace Massive
 			FilterException.ThrowIfCantQuery<T6>(Filter, dataSet6);
 
 			var cache = QueryCache.Rent()
-				.AddToAll(dataSet1)
-				.AddToAll(dataSet2)
-				.AddToAll(dataSet3)
-				.AddToAll(dataSet4)
-				.AddToAll(dataSet5)
-				.AddToAll(dataSet6);
+				.AddInclude(dataSet1)
+				.AddInclude(dataSet2)
+				.AddInclude(dataSet3)
+				.AddInclude(dataSet4)
+				.AddInclude(dataSet5)
+				.AddInclude(dataSet6);
 
 			ApplyFilter(Filter, cache);
 
@@ -603,7 +603,7 @@ namespace Massive
 
 			if (Filter.IncludeCount == 0)
 			{
-				cache.AddToAll(World.Entities);
+				cache.AddInclude(World.Entities);
 			}
 
 			ApplyFilter(Filter, cache);
@@ -618,13 +618,13 @@ namespace Massive
 			for (var i = 0; i < filter.IncludeCount; i++)
 			{
 				var included = filter.Included[i];
-				resultQueryCache.AddToAll(included);
+				resultQueryCache.AddInclude(included);
 			}
 
 			for (var i = 0; i < filter.ExcludeCount; i++)
 			{
 				var excluded = filter.Excluded[i];
-				resultQueryCache.AddToNone(excluded);
+				resultQueryCache.AddExclude(excluded);
 			}
 		}
 	}
