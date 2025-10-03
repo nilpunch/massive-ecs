@@ -25,7 +25,7 @@ namespace Massive
 			return dynamicFilter._filter;
 		}
 
-		public DynamicFilter AddToAll<T>()
+		public DynamicFilter Include<T>()
 		{
 			var set = Sets.Get<T>();
 
@@ -48,7 +48,7 @@ namespace Massive
 			return this;
 		}
 
-		public DynamicFilter AddToNone<T>()
+		public DynamicFilter Exclude<T>()
 		{
 			var set = Sets.Get<T>();
 

@@ -1,8 +1,11 @@
-﻿namespace Massive
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Massive
 {
 	public class SystemsBuilder
 	{
-		private readonly FastList<ISystemFactory> _systemFactories = new FastList<ISystemFactory>();
+		private readonly List<ISystemFactory> _systemFactories = new List<ISystemFactory>();
 
 		public SystemsBuilder Factory(ISystemFactory systemFactory)
 		{
@@ -25,7 +28,7 @@
 		public Systems Build(World world)
 		{
 			var systems = new Systems(world);
-			foreach (var systemFactory in _systemFactories)
+			foreach (var systemFactory in _systemFactories.OrderBy(factory => factory.Order))
 			{
 				systems.AddSystem(systemFactory.Create());
 			}

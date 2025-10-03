@@ -25,12 +25,12 @@ namespace Massive.PerformanceTests
 		private static Filter GetTestFilter(World world)
 		{
 			return new DynamicFilter(world)
-				.AddToAll<TestState64>()
-				.AddToAll<TestState64_2>()
-				.AddToAll<TestState64_3>()
-				.AddToNone<TestState64<byte, int, int>>()
-				.AddToNone<TestState64<int, byte, int>>()
-				.AddToNone<TestState64<int, int, byte>>();
+				.Include<TestState64>()
+				.Include<TestState64_2>()
+				.Include<TestState64_3>()
+				.Exclude<TestState64<byte, int, int>>()
+				.Exclude<TestState64<int, byte, int>>()
+				.Exclude<TestState64<int, int, byte>>();
 		}
 
 		[Test, Performance]
