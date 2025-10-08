@@ -74,13 +74,12 @@ namespace Massive
 
 			PagedData[pageIndex][id & Constants.PageSizeMinusOne] = data;
 
+			NotifyAfterAdded(id);
+
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
 				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsBit);
 			}
-
-			Components?.Set(id, ComponentId);
-			NotifyAfterAdded(id);
 		}
 
 		public override void EnsurePage(int page)
@@ -164,7 +163,7 @@ namespace Massive
 		{
 			CopyBitSetTo(other);
 
-			var blocksLength = NonEmptyBlocks.Length;
+			var blocksLength = BlocksCapacity;
 
 			var pageMasks = PageMasks;
 			var deBruijn = MathUtils.DeBruijn;

@@ -10,35 +10,39 @@ namespace Massive
 	{
 		protected ulong[] PageMasks { get; } = Constants.PageMasks;
 
-		public ulong[] Bits { get; protected set; } = Array.Empty<ulong>();
-		public ulong[] NonEmptyBlocks { get; protected set; } = Array.Empty<ulong>();
-		public ulong[] SaturatedBlocks { get; protected set; } = Array.Empty<ulong>();
+		public ulong[] Bits { get; private set; } = Array.Empty<ulong>();
+		public ulong[] NonEmptyBlocks { get; private set; } = Array.Empty<ulong>();
+		public ulong[] SaturatedBlocks { get; private set; } = Array.Empty<ulong>();
+
+		public int BlocksCapacity { get; private set; }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void GrowToFit(BitSetBase other)
 		{
-			EnsureBlocksCapacity(other.NonEmptyBlocks.Length);
+			EnsureBlocksCapacity(other.BlocksCapacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureBlocksCapacity(int blocksCapacity)
 		{
-			if (blocksCapacity > NonEmptyBlocks.Length)
+			if (blocksCapacity > BlocksCapacity)
 			{
-				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(blocksCapacity);
-				SaturatedBlocks = SaturatedBlocks.Resize(NonEmptyBlocks.Length);
-				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
+				BlocksCapacity = MathUtils.NextPowerOf2(blocksCapacity);
+				NonEmptyBlocks = NonEmptyBlocks.Resize(BlocksCapacity);
+				SaturatedBlocks = SaturatedBlocks.Resize(BlocksCapacity);
+				Bits = Bits.Resize(BlocksCapacity << 6);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureBlocksCapacityAt(int blockIndex)
 		{
-			if (blockIndex >= NonEmptyBlocks.Length)
+			if (blockIndex >= BlocksCapacity)
 			{
-				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(blockIndex + 1);
-				SaturatedBlocks = SaturatedBlocks.Resize(NonEmptyBlocks.Length);
-				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
+				BlocksCapacity = MathUtils.NextPowerOf2(blockIndex + 1);
+				NonEmptyBlocks = NonEmptyBlocks.Resize(BlocksCapacity);
+				SaturatedBlocks = SaturatedBlocks.Resize(BlocksCapacity);
+				Bits = Bits.Resize(BlocksCapacity << 6);
 			}
 		}
 
@@ -55,8 +59,8 @@ namespace Massive
 		{
 			other.GrowToFit(this);
 
-			Array.Copy(NonEmptyBlocks, other.NonEmptyBlocks, NonEmptyBlocks.Length);
-			Array.Copy(SaturatedBlocks, other.SaturatedBlocks, SaturatedBlocks.Length);
+			Array.Copy(NonEmptyBlocks, other.NonEmptyBlocks, BlocksCapacity);
+			Array.Copy(SaturatedBlocks, other.SaturatedBlocks, BlocksCapacity);
 			Array.Copy(Bits, other.Bits, Bits.Length);
 		}
 
@@ -66,7 +70,7 @@ namespace Massive
 			var minimal = bitSet[0];
 			for (var i = 1; i < bitSet.Length; i++)
 			{
-				if (minimal.NonEmptyBlocks.Length > bitSet[i].NonEmptyBlocks.Length)
+				if (minimal.BlocksCapacity > bitSet[i].BlocksCapacity)
 				{
 					minimal = bitSet[i];
 				}
@@ -80,7 +84,7 @@ namespace Massive
 			var minimal = bitSets[0];
 			for (var i = 1; i < count; i++)
 			{
-				if (minimal.NonEmptyBlocks.Length > bitSets[i].NonEmptyBlocks.Length)
+				if (minimal.BlocksCapacity > bitSets[i].BlocksCapacity)
 				{
 					minimal = bitSets[i];
 				}
@@ -94,7 +98,7 @@ namespace Massive
 			var minimal = first;
 			for (var i = 0; i < bitSets.Length; i++)
 			{
-				if (minimal.NonEmptyBlocks.Length > bitSets[i].NonEmptyBlocks.Length)
+				if (minimal.BlocksCapacity > bitSets[i].BlocksCapacity)
 				{
 					minimal = bitSets[i];
 				}
@@ -108,7 +112,7 @@ namespace Massive
 			var minimal = first;
 			for (var i = 0; i < count; i++)
 			{
-				if (minimal.NonEmptyBlocks.Length > bitSets[i].NonEmptyBlocks.Length)
+				if (minimal.BlocksCapacity > bitSets[i].BlocksCapacity)
 				{
 					minimal = bitSets[i];
 				}
@@ -119,7 +123,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitSetBase GetMinBitSet(BitSetBase bitSet1, BitSetBase bitSet2)
 		{
-			if (bitSet1.NonEmptyBlocks.Length <= bitSet2.NonEmptyBlocks.Length)
+			if (bitSet1.BlocksCapacity <= bitSet2.BlocksCapacity)
 			{
 				return bitSet1;
 			}
@@ -129,11 +133,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitSetBase GetMinBitSet(BitSetBase bitSet1, BitSetBase bitSet2, BitSetBase bitSet3)
 		{
-			if (bitSet1.NonEmptyBlocks.Length <= bitSet2.NonEmptyBlocks.Length && bitSet1.NonEmptyBlocks.Length <= bitSet3.NonEmptyBlocks.Length)
+			if (bitSet1.BlocksCapacity <= bitSet2.BlocksCapacity && bitSet1.BlocksCapacity <= bitSet3.BlocksCapacity)
 			{
 				return bitSet1;
 			}
-			if (bitSet2.NonEmptyBlocks.Length <= bitSet1.NonEmptyBlocks.Length && bitSet2.NonEmptyBlocks.Length <= bitSet3.NonEmptyBlocks.Length)
+			if (bitSet2.BlocksCapacity <= bitSet1.BlocksCapacity && bitSet2.BlocksCapacity <= bitSet3.BlocksCapacity)
 			{
 				return bitSet2;
 			}
@@ -143,15 +147,15 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitSetBase GetMinBitSet(BitSetBase bitSet1, BitSetBase bitSet2, BitSetBase bitSet3, BitSetBase bitSet4)
 		{
-			if (bitSet1.NonEmptyBlocks.Length <= bitSet2.NonEmptyBlocks.Length && bitSet1.NonEmptyBlocks.Length <= bitSet3.NonEmptyBlocks.Length && bitSet1.NonEmptyBlocks.Length <= bitSet4.NonEmptyBlocks.Length)
+			if (bitSet1.BlocksCapacity <= bitSet2.BlocksCapacity && bitSet1.BlocksCapacity <= bitSet3.BlocksCapacity && bitSet1.BlocksCapacity <= bitSet4.BlocksCapacity)
 			{
 				return bitSet1;
 			}
-			if (bitSet2.NonEmptyBlocks.Length <= bitSet1.NonEmptyBlocks.Length && bitSet2.NonEmptyBlocks.Length <= bitSet3.NonEmptyBlocks.Length && bitSet2.NonEmptyBlocks.Length <= bitSet4.NonEmptyBlocks.Length)
+			if (bitSet2.BlocksCapacity <= bitSet1.BlocksCapacity && bitSet2.BlocksCapacity <= bitSet3.BlocksCapacity && bitSet2.BlocksCapacity <= bitSet4.BlocksCapacity)
 			{
 				return bitSet2;
 			}
-			if (bitSet3.NonEmptyBlocks.Length <= bitSet1.NonEmptyBlocks.Length && bitSet3.NonEmptyBlocks.Length <= bitSet2.NonEmptyBlocks.Length && bitSet3.NonEmptyBlocks.Length <= bitSet4.NonEmptyBlocks.Length)
+			if (bitSet3.BlocksCapacity <= bitSet1.BlocksCapacity && bitSet3.BlocksCapacity <= bitSet2.BlocksCapacity && bitSet3.BlocksCapacity <= bitSet4.BlocksCapacity)
 			{
 				return bitSet3;
 			}

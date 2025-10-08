@@ -18,6 +18,7 @@ namespace Massive
 
 		public ulong[] Bits { get; private set; } = Array.Empty<ulong>();
 		public ulong[] NonEmptyBlocks { get; private set; } = Array.Empty<ulong>();
+		public int BitsCapacity { get; private set; }
 
 		public int[] NonEmptyBitsIndices { get; private set; } = Array.Empty<int>();
 		public int NonEmptyBitsCount { get; private set; }
@@ -83,7 +84,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void RemoveBit(int bitsIndex, ulong bitsBit)
 		{
-			if (bitsIndex >= Bits.Length)
+			if (bitsIndex >= BitsCapacity)
 			{
 				return;
 			}
@@ -95,7 +96,7 @@ namespace Massive
 		public QueryCache Update()
 		{
 			var minIncluded = BitSetBase.GetMinBitSet(Included.Items, Included.Count);
-			var minBlocksLength = minIncluded.NonEmptyBlocks.Length;
+			var minBlocksLength = minIncluded.BlocksCapacity;
 
 			EnsureBlocksCapacity(minBlocksLength);
 			Array.Copy(minIncluded.NonEmptyBlocks, NonEmptyBlocks, minBlocksLength);
@@ -149,7 +150,7 @@ namespace Massive
 				{
 					for (; blockBit < runEnd; blockBit++)
 					{
-						if ((NonEmptyBlocks[blockIndex] & (1UL << blockBit)) == 0UL)
+						if ((block & (1UL << blockBit)) == 0UL)
 						{
 							continue;
 						}
@@ -202,7 +203,8 @@ namespace Massive
 			if (blocksCapacity > NonEmptyBlocks.Length)
 			{
 				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(blocksCapacity);
-				Bits = Bits.Resize(NonEmptyBlocks.Length << 6);
+				BitsCapacity = NonEmptyBlocks.Length << 6;
+				Bits = Bits.Resize(BitsCapacity);
 			}
 		}
 	}

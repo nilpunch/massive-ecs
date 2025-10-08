@@ -43,7 +43,8 @@ namespace Massive
 			for (var i = 0; i < nonEmptyBitsCount; i++)
 			{
 				var bitsIndex = nonEmptyBitsIndices[i];
-				var bits = cachedBits[bitsIndex];
+				ref var bitsRef = ref cachedBits[bitsIndex];
+				var bits = bitsRef;
 
 				if (bits == 0UL)
 				{
@@ -59,7 +60,7 @@ namespace Massive
 				{
 					for (; bit < runEnd; bit++)
 					{
-						if ((cachedBits[bitsIndex] & (1UL << bit)) == 0UL)
+						if ((bitsRef & (1UL << bit)) == 0UL)
 						{
 							continue;
 						}
@@ -72,7 +73,7 @@ namespace Massive
 					do
 					{
 						action.Apply(bitsOffset + bit);
-						bits &= (bits - 1UL) & cachedBits[bitsIndex];
+						bits &= (bits - 1UL) & bitsRef;
 						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					} while (bits != 0UL);
 				}
@@ -104,7 +105,8 @@ namespace Massive
 			for (var i = 0; i < nonEmptyBitsCount; i++)
 			{
 				var bitsIndex = nonEmptyBitsIndices[i];
-				var bits = cachedBits[bitsIndex];
+				ref var bitsRef = ref cachedBits[bitsIndex];
+				var bits = bitsRef;
 
 				if (bits == 0UL)
 				{
@@ -123,7 +125,7 @@ namespace Massive
 				{
 					for (; bit < runEnd; bit++)
 					{
-						if ((cachedBits[bitsIndex] & (1UL << bit)) == 0UL)
+						if ((bitsRef & (1UL << bit)) == 0UL)
 						{
 							continue;
 						}
@@ -138,7 +140,7 @@ namespace Massive
 					{
 						action.Apply(bitsOffset + bit,
 							ref dataPage1[dataOffset + bit]);
-						bits &= (bits - 1UL) & cachedBits[bitsIndex];
+						bits &= (bits - 1UL) & bitsRef;
 						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					} while (bits != 0UL);
 				}
@@ -174,7 +176,8 @@ namespace Massive
 			for (var i = 0; i < nonEmptyBitsCount; i++)
 			{
 				var bitsIndex = nonEmptyBitsIndices[i];
-				var bits = cachedBits[bitsIndex];
+				ref var bitsRef = ref cachedBits[bitsIndex];
+				var bits = bitsRef;
 
 				if (bits == 0UL)
 				{
@@ -194,7 +197,7 @@ namespace Massive
 				{
 					for (; bit < runEnd; bit++)
 					{
-						if ((cachedBits[bitsIndex] & (1UL << bit)) == 0UL)
+						if ((bitsRef & (1UL << bit)) == 0UL)
 						{
 							continue;
 						}
@@ -213,7 +216,7 @@ namespace Massive
 						action.Apply(bitsOffset + bit,
 							ref dataPage1[dataIndex],
 							ref dataPage2[dataIndex]);
-						bits &= (bits - 1UL) & cachedBits[bitsIndex];
+						bits &= (bits - 1UL) & bitsRef;
 						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					} while (bits != 0UL);
 				}
@@ -253,7 +256,8 @@ namespace Massive
 			for (var i = 0; i < nonEmptyBitsCount; i++)
 			{
 				var bitsIndex = nonEmptyBitsIndices[i];
-				var bits = cachedBits[bitsIndex];
+				ref var bitsRef = ref cachedBits[bitsIndex];
+				var bits = bitsRef;
 
 				if (bits == 0UL)
 				{
@@ -274,7 +278,7 @@ namespace Massive
 				{
 					for (; bit < runEnd; bit++)
 					{
-						if ((cachedBits[bitsIndex] & (1UL << bit)) == 0UL)
+						if ((bitsRef & (1UL << bit)) == 0UL)
 						{
 							continue;
 						}
@@ -295,7 +299,7 @@ namespace Massive
 							ref dataPage1[dataIndex],
 							ref dataPage2[dataIndex],
 							ref dataPage3[dataIndex]);
-						bits &= (bits - 1UL) & cachedBits[bitsIndex];
+						bits &= (bits - 1UL) & bitsRef;
 						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					} while (bits != 0UL);
 				}
@@ -339,7 +343,8 @@ namespace Massive
 			for (var i = 0; i < nonEmptyBitsCount; i++)
 			{
 				var bitsIndex = nonEmptyBitsIndices[i];
-				var bits = cachedBits[bitsIndex];
+				ref var bitsRef = ref cachedBits[bitsIndex];
+				var bits = bitsRef;
 
 				if (bits == 0UL)
 				{
@@ -361,7 +366,7 @@ namespace Massive
 				{
 					for (; bit < runEnd; bit++)
 					{
-						if ((cachedBits[bitsIndex] & (1UL << bit)) == 0UL)
+						if ((bitsRef & (1UL << bit)) == 0UL)
 						{
 							continue;
 						}
@@ -384,7 +389,7 @@ namespace Massive
 							ref dataPage2[dataIndex],
 							ref dataPage3[dataIndex],
 							ref dataPage4[dataIndex]);
-						bits &= (bits - 1UL) & cachedBits[bitsIndex];
+						bits &= (bits - 1UL) & bitsRef;
 						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					} while (bits != 0UL);
 				}
@@ -432,7 +437,8 @@ namespace Massive
 			for (var i = 0; i < nonEmptyBitsCount; i++)
 			{
 				var bitsIndex = nonEmptyBitsIndices[i];
-				var bits = cachedBits[bitsIndex];
+				ref var bitsRef = ref cachedBits[bitsIndex];
+				var bits = bitsRef;
 
 				if (bits == 0UL)
 				{
@@ -455,7 +461,7 @@ namespace Massive
 				{
 					for (; bit < runEnd; bit++)
 					{
-						if ((cachedBits[bitsIndex] & (1UL << bit)) == 0UL)
+						if ((bitsRef & (1UL << bit)) == 0UL)
 						{
 							continue;
 						}
@@ -480,7 +486,7 @@ namespace Massive
 							ref dataPage3[dataIndex],
 							ref dataPage4[dataIndex],
 							ref dataPage5[dataIndex]);
-						bits &= (bits - 1UL) & cachedBits[bitsIndex];
+						bits &= (bits - 1UL) & bitsRef;
 						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					} while (bits != 0UL);
 				}
@@ -532,7 +538,8 @@ namespace Massive
 			for (var i = 0; i < nonEmptyBitsCount; i++)
 			{
 				var bitsIndex = nonEmptyBitsIndices[i];
-				var bits = cachedBits[bitsIndex];
+				ref var bitsRef = ref cachedBits[bitsIndex];
+				var bits = bitsRef;
 
 				if (bits == 0UL)
 				{
@@ -556,7 +563,7 @@ namespace Massive
 				{
 					for (; bit < runEnd; bit++)
 					{
-						if ((cachedBits[bitsIndex] & (1UL << bit)) == 0UL)
+						if ((bitsRef & (1UL << bit)) == 0UL)
 						{
 							continue;
 						}
@@ -583,7 +590,7 @@ namespace Massive
 							ref dataPage4[dataIndex],
 							ref dataPage5[dataIndex],
 							ref dataPage6[dataIndex]);
-						bits &= (bits - 1UL) & cachedBits[bitsIndex];
+						bits &= (bits - 1UL) & bitsRef;
 						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 					} while (bits != 0UL);
 				}

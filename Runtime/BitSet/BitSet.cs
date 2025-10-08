@@ -15,12 +15,12 @@ namespace Massive
 		/// <summary>
 		/// Associated component index. Session-dependent, used for lookups.<br/>
 		/// </summary>
-		public int ComponentId { get; set; } = -1;
+		internal int ComponentId { get; set; } = -1;
 
 		/// <summary>
 		/// Shortcut to access components.
 		/// </summary>
-		public Components Components { get; set; }
+		internal Components Components { get; set; }
 
 		/// <summary>
 		/// Shoots only after <see cref="Add"/> call, when the ID was not already present.
@@ -72,13 +72,13 @@ namespace Massive
 
 			PrepareData(id);
 
+			Components?.Set(id, ComponentId);
+			AfterAdded?.Invoke(id);
+
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
 				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsBit);
 			}
-
-			Components?.Set(id, ComponentId);
-			AfterAdded?.Invoke(id);
 
 			return true;
 		}
@@ -100,7 +100,7 @@ namespace Massive
 			var bitsIndex = id >> 6;
 			var blockIndex = id >> 12;
 
-			if (bitsIndex >= Bits.Length)
+			if (blockIndex >= BlocksCapacity)
 			{
 				return false;
 			}
@@ -145,7 +145,7 @@ namespace Massive
 		/// </summary>
 		public void Clear()
 		{
-			var blocksLength = NonEmptyBlocks.Length;
+			var blocksLength = BlocksCapacity;
 
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
@@ -244,6 +244,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected void NotifyAfterAdded(int id)
 		{
+			Components?.Set(id, ComponentId);
 			AfterAdded?.Invoke(id);
 		}
 	}

@@ -28,7 +28,7 @@ namespace Massive
 		/// <summary>
 		/// Shortcut to access world.
 		/// </summary>
-		public World World { get; }
+		private World World { get; }
 
 		private Sets Sets { get; }
 
@@ -161,7 +161,7 @@ namespace Massive
 		/// </summary>
 		public void Clear()
 		{
-			var blocksLength = NonEmptyBlocks.Length;
+			var blocksLength = BlocksCapacity;
 
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
@@ -320,7 +320,7 @@ namespace Massive
 			var bitsIndex = id >> 6;
 			var blockIndex = id >> 12;
 
-			if (bitsIndex >= Bits.Length)
+			if (blockIndex >= BlocksCapacity)
 			{
 				return;
 			}

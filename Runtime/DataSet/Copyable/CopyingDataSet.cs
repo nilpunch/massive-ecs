@@ -43,7 +43,7 @@ namespace Massive
 		{
 			CopyBitSetTo(other);
 
-			var blocksLength = NonEmptyBlocks.Length;
+			var blocksLength = BlocksCapacity;
 
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
