@@ -175,20 +175,46 @@ namespace Massive
 					var bitsIndex = blockOffset + blockBit;
 					var bits = Bits[bitsIndex];
 					var bitsOffset = bitsIndex << 6;
-					while (bits != 0UL)
+					var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+
+					var runEnd = MathUtils.ApproximateMSB(bits);
+					var setBits = MathUtils.PopCount(bits);
+					if (setBits << 1 > runEnd - bit)
 					{
-						var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+						for (; bit < runEnd; bit++)
+						{
+							var bitMask = 1UL << bit;
+							if ((bits & bitMask) == 0UL)
+							{
+								continue;
+							}
 
-						var id = bitsOffset + bit;
-						BeforeDestroyed?.Invoke(id);
-						RemoveBit(id);
-						DestroyInWorld(id);
+							var id = bitsOffset + bit;
+							BeforeDestroyed?.Invoke(id);
+							RemoveBit(id);
+							DestroyInWorld(id);
 
-						EnsurePoolAt(PooledIds);
-						Pool[PooledIds++] = id;
-						MathUtils.IncrementWrapTo1(ref Versions[id]);
+							EnsurePoolAt(PooledIds);
+							Pool[PooledIds++] = id;
+							MathUtils.IncrementWrapTo1(ref Versions[id]);
+						}
+					}
+					else
+					{
+						do
+						{
+							var id = bitsOffset + bit;
+							BeforeDestroyed?.Invoke(id);
+							RemoveBit(id);
+							DestroyInWorld(id);
 
-						bits &= bits - 1UL;
+							EnsurePoolAt(PooledIds);
+							Pool[PooledIds++] = id;
+							MathUtils.IncrementWrapTo1(ref Versions[id]);
+
+							bits &= bits - 1UL;
+							bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+						} while (bits != 0UL);
 					}
 
 					block &= block - 1UL;

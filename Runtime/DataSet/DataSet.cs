@@ -4,6 +4,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -91,7 +92,7 @@ namespace Massive
 		{
 			Get(destinationId) = Get(sourceId);
 		}
-		
+
 		protected override void PrepareData(int id)
 		{
 			PagedData[id >> Constants.PageSizePower][id & Constants.PageSizeMinusOne] = DefaultValue;
@@ -164,7 +165,6 @@ namespace Massive
 			CopyBitSetTo(other);
 
 			var blocksLength = BlocksCapacity;
-
 			var pageMasks = PageMasks;
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
@@ -178,7 +178,18 @@ namespace Massive
 
 					var pageIndex = pageOffset + pageIndexMod;
 					other.EnsurePageInternal(pageIndex);
-					Array.Copy(PagedData[pageIndex], other.PagedData[pageIndex], Constants.PageSize);
+
+					var page = PagedData[pageIndex];
+					var otherPage = other.PagedData[pageIndex];
+
+#if UNITY_EDITOR || NET
+					Array.Copy(page, otherPage, Constants.PageSize);
+#else
+					for (var i = 0; i < Constants.PageSize; i++)
+					{
+						otherPage[i] = page[i];
+					}
+#endif
 
 					block &= ~pageMasks[pageIndexMod];
 				}

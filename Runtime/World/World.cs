@@ -11,9 +11,9 @@ namespace Massive
 	public partial class World
 	{
 		public Entities Entities { get; }
+		public Components Components { get; }
 
 		public Sets Sets { get; }
-		public Components Components { get; }
 		public Allocators Allocators { get; }
 
 		public WorldConfig Config { get; }

@@ -16,6 +16,9 @@ namespace Massive
 		/// Associated component index. Session-dependent, used for lookups.<br/>
 		/// </summary>
 		internal int ComponentId { get; set; } = -1;
+		internal int ComponentIndex { get; set; } = -1;
+		internal ulong ComponentMask { get; set; } = 0;
+		internal ulong ComponentMaskNegative { get; set; } = 0;
 
 		/// <summary>
 		/// Shortcut to access components.
@@ -72,7 +75,10 @@ namespace Massive
 
 			PrepareData(id);
 
-			Components?.Set(id, ComponentId);
+			if (Components != null)
+			{
+				Components.BitMap[id * Components.MaskLength + ComponentIndex] |= ComponentMask;
+			}
 			AfterAdded?.Invoke(id);
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
@@ -114,7 +120,10 @@ namespace Massive
 			}
 
 			BeforeRemoved?.Invoke(id);
-			Components?.Remove(id, ComponentId);
+			if (Components != null)
+			{
+				Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
+			}
 
 			if (Bits[bitsIndex] == ulong.MaxValue)
 			{
@@ -159,21 +168,50 @@ namespace Massive
 					var bitsIndex = blockOffset + blockBit;
 					var bits = Bits[bitsIndex];
 					var bitsOffset = bitsIndex << 6;
+					var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 
-					while (bits != 0UL)
+					var runEnd = MathUtils.ApproximateMSB(bits);
+					var setBits = MathUtils.PopCount(bits);
+					if (setBits << 1 > runEnd - bit)
 					{
-						var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
-
-						var id = bitsOffset + bit;
-						BeforeRemoved?.Invoke(id);
-						Components?.Remove(id, ComponentId);
-
-						for (var i = 0; i < RemoveOnRemoveCount; i++)
+						for (; bit < runEnd; bit++)
 						{
-							RemoveOnRemove[i].RemoveBit(bitsIndex, 1UL << bit);
-						}
+							var bitMask = 1UL << bit;
+							if ((bits & bitMask) == 0UL)
+							{
+								continue;
+							}
 
-						bits &= bits - 1UL;
+							var id = bitsOffset + bit;
+							BeforeRemoved?.Invoke(id);
+							if (Components != null)
+							{
+								Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
+							}
+							for (var i = 0; i < RemoveOnRemoveCount; i++)
+							{
+								RemoveOnRemove[i].RemoveBit(bitsIndex, bitMask);
+							}
+						}
+					}
+					else
+					{
+						do
+						{
+							var id = bitsOffset + bit;
+							BeforeRemoved?.Invoke(id);
+							if (Components != null)
+							{
+								Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
+							}
+							for (var i = 0; i < RemoveOnRemoveCount; i++)
+							{
+								RemoveOnRemove[i].RemoveBit(bitsIndex, 1UL << bit);
+							}
+
+							bits &= bits - 1UL;
+							bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
+						} while (bits != 0UL);
 					}
 
 					block &= block - 1UL;

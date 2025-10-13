@@ -260,6 +260,33 @@ namespace Massive.PerformanceTests
 
 			_world.Clear();
 		}
+		
+		[Test, Performance]
+		public void Registry_RemoveAndAddTagFast()
+		{
+			for (int i = 0; i < EntitiesCount; i++)
+			{
+				_world.Create<TagComponent>();
+			}
+
+			Measure.Method(() =>
+				{
+					var tags = _world.BitSet<TagComponent>();
+					for (int i = 0; i < EntitiesCount; i++)
+					{
+						tags.Remove(i);
+					}
+					for (int i = 0; i < EntitiesCount; i++)
+					{
+						tags.Add(i);
+					}
+				})
+				.MeasurementCount(MeasurementCount)
+				.IterationsPerMeasurement(IterationsPerMeasurement)
+				.Run();
+
+			_world.Clear();
+		}
 
 		[Test, Performance]
 		public void Registry_ViewFiltation_Overhead()
@@ -301,6 +328,10 @@ namespace Massive.PerformanceTests
 		{
 			public float X;
 			public float Y;
+		}
+		
+		public struct TagComponent
+		{
 		}
 	}
 }

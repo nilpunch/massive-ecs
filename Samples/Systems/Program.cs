@@ -6,7 +6,7 @@
 
 		public Program()
 		{
-			_systems = new SystemsBuilder()
+			_systems = new Systems()
 				.Instance(new SpawnSystem(spawnAmount: 20))
 				.New<DamageSystem>()
 				.New<HealingBuffSystem>()

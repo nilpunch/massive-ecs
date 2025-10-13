@@ -1,29 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Massive
 {
-	public class Systems
+	public partial class Systems
 	{
-		private readonly List<ISystem> _systems = new List<ISystem>();
-		private readonly Dictionary<Type, IList> _systemsCache = new Dictionary<Type, IList>();
-
-		public World World { get; }
-
-		public Systems(World world)
-		{
-			World = world;
-		}
-
-		public void AddSystem(ISystem system)
-		{
-			system.World = World;
-			_systems.Add(system);
-
-			// Cache is invalid after modifying systems.
-			_systemsCache.Clear();
-		}
+		private readonly Dictionary<Type, Array> _systemsCache = new Dictionary<Type, Array>();
+		private ISystem[] _systems = Array.Empty<ISystem>();
 
 		public void Run<TSystemMethod>()
 			where TSystemMethod : ISystemMethod<TSystemMethod>
@@ -61,13 +44,13 @@ namespace Massive
 			}
 		}
 
-		private List<TSystemMethod> GetMethods<TSystemMethod>()
+		private TSystemMethod[] GetMethods<TSystemMethod>()
 		{
 			var type = typeof(TSystemMethod);
 
 			if (_systemsCache.TryGetValue(type, out var runMethodsList))
 			{
-				return (List<TSystemMethod>)runMethodsList;
+				return (TSystemMethod[])runMethodsList;
 			}
 
 			var systemMethods = new List<TSystemMethod>();
@@ -78,8 +61,9 @@ namespace Massive
 					systemMethods.Add(runMethod);
 				}
 			}
-			_systemsCache[type] = systemMethods;
-			return systemMethods;
+			var systemsArray = systemMethods.ToArray();
+			_systemsCache[type] = systemsArray;
+			return systemsArray;
 		}
 	}
 }

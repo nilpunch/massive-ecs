@@ -46,7 +46,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id, ref T a)
 		{
-            Entity.Id = id;
+			Entity.Id = id;
 			Entity.Version = Entities.Versions[id];
 			Action.Invoke(Entity, ref a);
 		}
@@ -64,7 +64,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Apply(int id, ref T a)
 		{
-            Entity.Id = id;
+			Entity.Id = id;
 			Entity.Version = Entities.Versions[id];
 			Action.Invoke(Entity, ref a, Args);
 		}

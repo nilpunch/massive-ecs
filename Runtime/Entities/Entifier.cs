@@ -46,6 +46,12 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Entity In(World world)
+		{
+			return new Entity(this, world);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool operator ==(Entifier a, Entifier b)
 		{
 			return a.Equals(b);

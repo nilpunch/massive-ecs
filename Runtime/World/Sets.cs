@@ -64,6 +64,9 @@ namespace Massive
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
 			set.ComponentId = info.Index;
+			set.ComponentIndex = set.ComponentId >> 6;
+			set.ComponentMask = 1UL << (set.ComponentId & 63);
+			set.ComponentMaskNegative = ~set.ComponentMask;
 			set.Components = Components;
 
 			InsertSet(info.FullName, set, cloner);

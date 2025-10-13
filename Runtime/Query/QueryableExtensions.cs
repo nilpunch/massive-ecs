@@ -109,7 +109,7 @@ namespace Massive
 		public static void ForEach<TQueryable>(this TQueryable queryable, EntityAction action)
 			where TQueryable : IQueryable
 		{
-			var entityActionAdapter = new EntityActionAdapter { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World)};
+			var entityActionAdapter = new EntityActionAdapter { Action = action, Entities = queryable.World.Entities, Entity = new Entity(Entifier.Dead, queryable.World) };
 			queryable.Query.ForEach(ref entityActionAdapter);
 		}
 
