@@ -7,7 +7,7 @@ namespace Massive
 	public partial class Allocators
 	{
 		/// <summary>
-		/// Session-dependent index, used for lookups.<br/>
+		/// Session-dependent index, used for lookups.
 		/// </summary>
 		public int IntId { get; } = AllocatorId<int>.Index;
 

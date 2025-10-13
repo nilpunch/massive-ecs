@@ -11,8 +11,7 @@ namespace Massive
 	public static class AllocatorId<T> where T : unmanaged
 	{
 		/// <summary>
-		/// Non-deterministic, used for lookups.<br/>
-		/// Don't store it in simulation.
+		/// Session-dependent index, used for lookups.
 		/// </summary>
 		public static readonly int Index;
 
@@ -77,7 +76,7 @@ namespace Massive
 	public readonly struct AllocatorIdInfo
 	{
 		/// <summary>
-		/// Session-dependent index, used for lookups.<br/>
+		/// Session-dependent index, used for lookups.
 		/// </summary>
 		public readonly int Index;
 

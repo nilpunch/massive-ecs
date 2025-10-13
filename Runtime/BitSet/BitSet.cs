@@ -13,7 +13,7 @@ namespace Massive
 	public class BitSet : BitSetBase
 	{
 		/// <summary>
-		/// Associated component index. Session-dependent, used for lookups.<br/>
+		/// Associated component index. Session-dependent index, used for lookups.
 		/// </summary>
 		internal int ComponentId { get; set; } = -1;
 		internal int ComponentIndex { get; set; } = -1;

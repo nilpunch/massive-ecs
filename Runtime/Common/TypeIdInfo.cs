@@ -8,7 +8,7 @@ namespace Massive
 	public readonly struct TypeIdInfo
 	{
 		/// <summary>
-		/// Session-dependent index, used for lookups.<br/>
+		/// Session-dependent index, used for lookups.
 		/// </summary>
 		public readonly int Index;
 
