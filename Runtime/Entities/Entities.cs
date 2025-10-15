@@ -118,13 +118,7 @@ namespace Massive
 				return false;
 			}
 
-			BeforeDestroyed?.Invoke(id);
-			RemoveBit(id);
-			DestroyInWorld(id);
-
-			EnsurePoolAt(PooledIds);
-			Pool[PooledIds++] = id;
-			MathUtils.IncrementWrapTo1(ref Versions[id]);
+			DestroyInternal(id);
 
 			return true;
 		}
@@ -189,29 +183,14 @@ namespace Massive
 								continue;
 							}
 
-							var id = bitsOffset + bit;
-							BeforeDestroyed?.Invoke(id);
-							RemoveBit(id);
-							DestroyInWorld(id);
-
-							EnsurePoolAt(PooledIds);
-							Pool[PooledIds++] = id;
-							MathUtils.IncrementWrapTo1(ref Versions[id]);
+							DestroyInternal(bitsOffset + bit);
 						}
 					}
 					else
 					{
 						do
 						{
-							var id = bitsOffset + bit;
-							BeforeDestroyed?.Invoke(id);
-							RemoveBit(id);
-							DestroyInWorld(id);
-
-							EnsurePoolAt(PooledIds);
-							Pool[PooledIds++] = id;
-							MathUtils.IncrementWrapTo1(ref Versions[id]);
-
+							DestroyInternal(bitsOffset + bit);
 							bits &= bits - 1UL;
 							bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 						} while (bits != 0UL);
@@ -300,6 +279,18 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void DestroyInternal(int id)
+		{
+			BeforeDestroyed?.Invoke(id);
+			RemoveBit(id);
+			DestroyInWorld(id);
+
+			EnsurePoolAt(PooledIds);
+			Pool[PooledIds++] = id;
+			MathUtils.IncrementWrapTo1(ref Versions[id]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void DestroyInWorld(int id)
 		{
 			var buffer = Components.Buffer;
@@ -321,22 +312,22 @@ namespace Massive
 
 			EnsureBlocksCapacityAt(blockIndex);
 
-			var bitsBit = 1UL << (id & 63);
-			var blockBit = 1UL << (bitsIndex & 63);
+			var bitsMask = 1UL << (id & 63);
+			var blockMask = 1UL << (bitsIndex & 63);
 
 			if (Bits[bitsIndex] == 0UL)
 			{
-				NonEmptyBlocks[blockIndex] |= blockBit;
+				NonEmptyBlocks[blockIndex] |= blockMask;
 			}
-			Bits[bitsIndex] |= bitsBit;
+			Bits[bitsIndex] |= bitsMask;
 			if (Bits[bitsIndex] == ulong.MaxValue)
 			{
-				SaturatedBlocks[blockIndex] |= blockBit;
+				SaturatedBlocks[blockIndex] |= blockMask;
 			}
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
-				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsBit);
+				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsMask);
 			}
 		}
 
@@ -345,28 +336,22 @@ namespace Massive
 		{
 			var bitsIndex = id >> 6;
 			var blockIndex = id >> 12;
-
-			if (blockIndex >= BlocksCapacity)
-			{
-				return;
-			}
-
-			var bitsBit = 1UL << (id & 63);
-			var blockBit = 1UL << (bitsIndex & 63);
+			var bitsMask = 1UL << (id & 63);
+			var blockMask = 1UL << (bitsIndex & 63);
 
 			if (Bits[bitsIndex] == ulong.MaxValue)
 			{
-				SaturatedBlocks[blockIndex] &= ~blockBit;
+				SaturatedBlocks[blockIndex] &= ~blockMask;
 			}
-			Bits[bitsIndex] &= ~bitsBit;
+			Bits[bitsIndex] &= ~bitsMask;
 			if (Bits[bitsIndex] == 0UL)
 			{
-				NonEmptyBlocks[blockIndex] &= ~blockBit;
+				NonEmptyBlocks[blockIndex] &= ~blockMask;
 			}
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)
 			{
-				RemoveOnRemove[i].RemoveBit(bitsIndex, bitsBit);
+				RemoveOnRemove[i].RemoveBit(bitsIndex, bitsMask);
 			}
 		}
 

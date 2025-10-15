@@ -52,11 +52,11 @@ namespace Massive
 
 			EnsureBlocksCapacityAt(blockIndex);
 
-			var bitsBit = 1UL << (id & 63);
-			var blockBit = 1UL << (bitsIndex & 63);
+			var bitsMask = 1UL << (id & 63);
+			var blockMask = 1UL << (bitsIndex & 63);
 			var pageIndex = id >> Constants.PageSizePower;
 
-			if ((Bits[bitsIndex] & bitsBit) != 0UL)
+			if ((Bits[bitsIndex] & bitsMask) != 0UL)
 			{
 				PagedData[pageIndex][id & Constants.PageSizeMinusOne] = data;
 				return;
@@ -65,12 +65,12 @@ namespace Massive
 			if (Bits[bitsIndex] == 0UL)
 			{
 				EnsurePageInternal(pageIndex);
-				NonEmptyBlocks[blockIndex] |= blockBit;
+				NonEmptyBlocks[blockIndex] |= blockMask;
 			}
-			Bits[bitsIndex] |= bitsBit;
+			Bits[bitsIndex] |= bitsMask;
 			if (Bits[bitsIndex] == ulong.MaxValue)
 			{
-				SaturatedBlocks[blockIndex] |= blockBit;
+				SaturatedBlocks[blockIndex] |= blockMask;
 			}
 
 			PagedData[pageIndex][id & Constants.PageSizeMinusOne] = data;
@@ -79,7 +79,7 @@ namespace Massive
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
-				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsBit);
+				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsMask);
 			}
 		}
 
@@ -150,7 +150,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public DataSet<T> Clone()
 		{
-			var clone = new DataSet<T>();
+			var clone = new DataSet<T>(DefaultValue);
 			CopyTo(clone);
 			return clone;
 		}

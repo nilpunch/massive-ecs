@@ -39,10 +39,6 @@ namespace Massive
 			return Factory(new NewSystemFactory<T>());
 		}
 
-		/// <summary>
-		/// For immutable systems only.<br/>
-		/// System instances will be shared across worlds when copying or cloning.<br/>
-		/// </summary>
 		public Systems Instance(ISystem system)
 		{
 			return Factory(new InstanceSystemFactory(system));

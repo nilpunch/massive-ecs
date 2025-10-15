@@ -14,6 +14,10 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class CopyingDataSet<T> : DataSet<T> where T : ICopyable<T>
 	{
+		public CopyingDataSet(T defaultValue = default) : base(defaultValue)
+		{
+		}
+
 		/// <summary>
 		/// Copies the data from one index to another, using <see cref="ICopyable{T}"/>.
 		/// </summary>
@@ -29,7 +33,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public CopyingDataSet<T> CloneCopyable()
 		{
-			var clone = new CopyingDataSet<T>();
+			var clone = new CopyingDataSet<T>(DefaultValue);
 			CopyToCopyable(clone);
 			return clone;
 		}

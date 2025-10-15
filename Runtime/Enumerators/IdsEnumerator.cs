@@ -16,7 +16,6 @@ namespace Massive
 		private readonly byte[] _deBruijn;
 
 		private int _nonEmptyBitsIndex;
-		private bool _useRange;
 		private int _bit;
 		private int _runEnd;
 		private int _bitsIndex;
@@ -52,13 +51,21 @@ namespace Massive
 
 					_runEnd = MathUtils.ApproximateMSB(_bits);
 					var setBits = MathUtils.PopCount(_bits);
+					var useRange = setBits << 1 > _runEnd - _bit;
 
-					_useRange = setBits << 1 > _runEnd - _bit;
+					if (useRange)
+					{
+						_bits = 0UL;
+					}
+					else
+					{
+						_runEnd = 0;
+					}
+
+					_bit--;
 					return;
 				}
 			}
-
-			_useRange = true;
 		}
 
 		public int Current { get; private set; }
@@ -66,27 +73,21 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			if (_useRange)
+			while (++_bit < _runEnd)
 			{
-				while (_bit < _runEnd)
+				if ((_cachedBits[_bitsIndex] & (1UL << _bit)) != 0UL)
 				{
-					if ((_cachedBits[_bitsIndex] & (1UL << _bit)) != 0UL)
-					{
-						Current = _bitsOffset + _bit++;
-						return true;
-					}
-					_bit++;
-				}
-			}
-			else
-			{
-				_bits &= _cachedBits[_bitsIndex];
-				if (_bits != 0UL)
-				{
-					Current = _bitsOffset + _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
-					_bits &= _bits - 1UL;
+					Current = _bitsOffset + _bit;
 					return true;
 				}
+			}
+
+			_bits &= _cachedBits[_bitsIndex];
+			if (_bits != 0UL)
+			{
+				Current = _bitsOffset + _deBruijn[(int)(((_bits & (ulong)-(long)_bits) * 0x37E84A99DAE458FUL) >> 58)];
+				_bits &= _bits - 1UL;
+				return true;
 			}
 
 			while (++_nonEmptyBitsIndex < _nonEmptyBitsCount)
@@ -100,11 +101,20 @@ namespace Massive
 
 					_runEnd = MathUtils.ApproximateMSB(_bits);
 					var setBits = MathUtils.PopCount(_bits);
+					var useRange = setBits << 1 > _runEnd - _bit;
 
-					_useRange = setBits << 1 > _runEnd - _bit;
-
-					Current = _bitsOffset + _bit++;
+					Current = _bitsOffset + _bit;
 					_bits &= _bits - 1UL;
+
+					if (useRange)
+					{
+						_bits = 0UL;
+					}
+					else
+					{
+						_runEnd = 0;
+					}
+
 					return true;
 				}
 			}

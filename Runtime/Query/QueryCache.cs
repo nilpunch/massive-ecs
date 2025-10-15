@@ -13,12 +13,12 @@ namespace Massive
 	[Il2CppEagerStaticClassConstruction]
 	public class QueryCache
 	{
-		public static QueryCache[] CachePool { get; set; } = Array.Empty<QueryCache>();
-		public static int PoolCount { get; set; }
+		private static QueryCache[] CachePool { get; set; } = Array.Empty<QueryCache>();
+		private static int PoolCount { get; set; }
 
-		public ulong[] Bits { get; private set; } = Array.Empty<ulong>();
-		public ulong[] NonEmptyBlocks { get; private set; } = Array.Empty<ulong>();
-		public int BitsCapacity { get; private set; }
+		public ulong[] Bits { get; private set; } = new ulong[1];
+		private ulong[] NonEmptyBlocks { get; set; } = Array.Empty<ulong>();
+		private int BitsCapacity { get; set; }
 
 		public int[] NonEmptyBitsIndices { get; private set; } = Array.Empty<int>();
 		public int NonEmptyBitsCount { get; private set; }
@@ -82,14 +82,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void RemoveBit(int bitsIndex, ulong bitsBit)
+		public void RemoveBit(int bitsIndex, ulong bitsMask)
 		{
 			if (bitsIndex >= BitsCapacity)
 			{
 				return;
 			}
 
-			Bits[bitsIndex] &= ~bitsBit;
+			Bits[bitsIndex] &= ~bitsMask;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]

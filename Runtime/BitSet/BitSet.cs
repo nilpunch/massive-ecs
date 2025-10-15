@@ -54,10 +54,10 @@ namespace Massive
 
 			EnsureBlocksCapacityAt(blockIndex);
 
-			var bitsBit = 1UL << (id & 63);
-			var blockBit = 1UL << (bitsIndex & 63);
+			var bitsMask = 1UL << (id & 63);
+			var blockMask = 1UL << (bitsIndex & 63);
 
-			if ((Bits[bitsIndex] & bitsBit) != 0UL)
+			if ((Bits[bitsIndex] & bitsMask) != 0UL)
 			{
 				return false;
 			}
@@ -65,25 +65,21 @@ namespace Massive
 			if (Bits[bitsIndex] == 0UL)
 			{
 				EnsurePage(id >> Constants.PageSizePower);
-				NonEmptyBlocks[blockIndex] |= blockBit;
+				NonEmptyBlocks[blockIndex] |= blockMask;
 			}
-			Bits[bitsIndex] |= bitsBit;
+			Bits[bitsIndex] |= bitsMask;
 			if (Bits[bitsIndex] == ulong.MaxValue)
 			{
-				SaturatedBlocks[blockIndex] |= blockBit;
+				SaturatedBlocks[blockIndex] |= blockMask;
 			}
 
 			PrepareData(id);
 
-			if (Components != null)
-			{
-				Components.BitMap[id * Components.MaskLength + ComponentIndex] |= ComponentMask;
-			}
-			AfterAdded?.Invoke(id);
+			NotifyAfterAdded(id);
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
 			{
-				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsBit);
+				RemoveOnAdd[i].RemoveBit(bitsIndex, bitsMask);
 			}
 
 			return true;
@@ -105,16 +101,10 @@ namespace Massive
 
 			var bitsIndex = id >> 6;
 			var blockIndex = id >> 12;
+			var bitsMask = 1UL << (id & 63);
+			var blockMask = 1UL << (bitsIndex & 63);
 
-			if (blockIndex >= BlocksCapacity)
-			{
-				return false;
-			}
-
-			var bitsBit = 1UL << (id & 63);
-			var blockBit = 1UL << (bitsIndex & 63);
-
-			if ((Bits[bitsIndex] & bitsBit) == 0UL)
+			if (blockIndex >= BlocksCapacity || (Bits[bitsIndex] & bitsMask) == 0UL)
 			{
 				return false;
 			}
@@ -127,12 +117,12 @@ namespace Massive
 
 			if (Bits[bitsIndex] == ulong.MaxValue)
 			{
-				SaturatedBlocks[blockIndex] &= ~blockBit;
+				SaturatedBlocks[blockIndex] &= ~blockMask;
 			}
-			Bits[bitsIndex] &= ~bitsBit;
+			Bits[bitsIndex] &= ~bitsMask;
 			if (Bits[bitsIndex] == 0UL)
 			{
-				NonEmptyBlocks[blockIndex] &= ~blockBit;
+				NonEmptyBlocks[blockIndex] &= ~blockMask;
 
 				var pageIndex = id >> Constants.PageSizePower;
 				if ((NonEmptyBlocks[blockIndex] & PageMasks[pageIndex & Constants.PagesInBlockMinusOne]) == 0UL)
@@ -143,7 +133,7 @@ namespace Massive
 
 			for (var i = 0; i < RemoveOnRemoveCount; i++)
 			{
-				RemoveOnRemove[i].RemoveBit(bitsIndex, bitsBit);
+				RemoveOnRemove[i].RemoveBit(bitsIndex, bitsMask);
 			}
 
 			return true;
@@ -282,7 +272,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected void NotifyAfterAdded(int id)
 		{
-			Components?.Set(id, ComponentId);
+			if (Components != null)
+			{
+				Components.BitMap[id * Components.MaskLength + ComponentIndex] |= ComponentMask;
+			}
 			AfterAdded?.Invoke(id);
 		}
 	}
