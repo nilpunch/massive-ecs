@@ -27,12 +27,13 @@ namespace Massive
 			var clone = World.CreateEntity();
 			var cloneId = clone.Id;
 
-			var setList = World.Sets.AllSets;
-			var setCount = setList.Count;
-			var sets = setList.Items;
-			for (var i = 0; i < setCount; i++)
+			var sets = World.Sets;
+			var buffer = World.Components.Buffer;
+			var componentCount = World.Components.GetAll(entityId, buffer);
+
+			for (var i = 0; i < componentCount; i++)
 			{
-				var set = sets[i];
+				var set = sets.LookupByComponentId[buffer[i]];
 				set.Add(cloneId);
 				set.CopyData(entityId, cloneId);
 			}
@@ -64,10 +65,10 @@ namespace Massive
 		{
 			InvalidSetOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = World.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{
@@ -95,10 +96,10 @@ namespace Massive
 		{
 			InvalidAddOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = World.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{
@@ -122,10 +123,10 @@ namespace Massive
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = World.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{
@@ -146,10 +147,10 @@ namespace Massive
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = World.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{
@@ -171,10 +172,10 @@ namespace Massive
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(World.Entities, Entifier);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			World.Sets.EnsureLookupAt(info.Index);
-			var candidate = World.Sets.Lookup[info.Index];
+			World.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = World.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{

@@ -43,7 +43,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static void ThrowIfLookupNotInitialized(int id, Sets sets, int typeIndex)
 		{
-			if (typeIndex >= sets.LookupCapacity || sets.Lookup[typeIndex] is null)
+			if (typeIndex >= sets.LookupCapacity || sets.LookupByTypeId[typeIndex] is null)
 			{
 				throw new InvalidGetOperationException($"You are trying to get data from the entity with id:{id} that is not added.");
 			}
@@ -53,7 +53,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static void ThrowIfLookupNotInitialized(Entifier entifier, Sets sets, int typeIndex)
 		{
-			if (typeIndex >= sets.LookupCapacity || sets.Lookup[typeIndex] is null)
+			if (typeIndex >= sets.LookupCapacity || sets.LookupByTypeId[typeIndex] is null)
 			{
 				throw new InvalidGetOperationException($"You are trying to get data from the entity {entifier} that is not added.");
 			}

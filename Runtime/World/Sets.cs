@@ -13,23 +13,25 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public partial class Sets
 	{
-		private Dictionary<string, BitSet> SetsByIdentifiers { get; } = new Dictionary<string, BitSet>();
+		private Dictionary<string, BitSet> SetsByNames { get; } = new Dictionary<string, BitSet>();
 
-		private FastList<int> Hashes { get; } = new FastList<int>();
-
-		private FastList<string> Identifiers { get; } = new FastList<string>();
+		private FastList<string> Names { get; } = new FastList<string>();
 
 		private FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
 
-		public BitSetList AllSets { get; } = new BitSetList();
+		public BitSetList Sorted { get; } = new BitSetList();
 
-		public BitSet[] Lookup { get; private set; } = Array.Empty<BitSet>();
+		public BitSet[] LookupByTypeId { get; private set; } = Array.Empty<BitSet>();
+
+		public BitSet[] LookupByComponentId { get; private set; } = Array.Empty<BitSet>();
 
 		public int LookupCapacity { get; private set; }
 
-		public SetFactory SetFactory { get; }
+		public int ComponentCount { get; private set; }
 
-		public Components Components { get; }
+		private SetFactory SetFactory { get; }
+
+		private Components Components { get; }
 
 		public Sets(SetFactory setFactory, Components components)
 		{
@@ -40,7 +42,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitSet GetExisting(string setId)
 		{
-			if (SetsByIdentifiers.TryGetValue(setId, out var set))
+			if (SetsByNames.TryGetValue(setId, out var set))
 			{
 				return set;
 			}
@@ -51,10 +53,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitSet Get<T>()
 		{
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			EnsureLookupAt(info.Index);
-			var candidate = Lookup[info.Index];
+			EnsureLookupByTypeAt(info.Index);
+			var candidate = LookupByTypeId[info.Index];
 
 			if (candidate != null)
 			{
@@ -63,14 +65,13 @@ namespace Massive
 
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
-			set.ComponentId = info.Index;
-			set.ComponentIndex = set.ComponentId >> 6;
-			set.ComponentMask = 1UL << (set.ComponentId & 63);
-			set.ComponentMaskNegative = ~set.ComponentMask;
-			set.Components = Components;
-
 			InsertSet(info.FullName, set, cloner);
-			Lookup[info.Index] = set;
+			LookupByTypeId[info.Index] = set;
+
+			var componentId = ComponentCount++;
+			EnsureLookupByComponentAt(componentId);
+			set.SetupComponent(Components, info.Index, componentId);
+			LookupByComponentId[componentId] = set;
 
 			return set;
 		}
@@ -78,10 +79,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitSet GetReflected(Type setType)
 		{
-			if (ComponentId.TryGetInfo(setType, out var info))
+			if (TypeId.TryGetInfo(setType, out var info))
 			{
-				EnsureLookupAt(info.Index);
-				var candidate = Lookup[info.Index];
+				EnsureLookupByTypeAt(info.Index);
+				var candidate = LookupByTypeId[info.Index];
 
 				if (candidate != null)
 				{
@@ -95,33 +96,41 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureLookupAt(int index)
+		public void EnsureLookupByTypeAt(int index)
 		{
 			if (index >= LookupCapacity)
 			{
-				Lookup = Lookup.ResizeToNextPowOf2(index + 1);
-				LookupCapacity = Lookup.Length;
-				Components.EnsureComponentsCapacity(LookupCapacity);
+				LookupByTypeId = LookupByTypeId.ResizeToNextPowOf2(index + 1);
+				LookupCapacity = LookupByTypeId.Length;
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void EnsureLookupByComponentAt(int index)
+		{
+			if (index >= LookupByComponentId.Length)
+			{
+				LookupByComponentId = LookupByComponentId.ResizeToNextPowOf2(index + 1);
+				Components.EnsureComponentsCapacity(LookupByComponentId.Length);
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		private void InsertSet(string setId, BitSet set, SetCloner cloner)
+		private void InsertSet(string setName, BitSet set, SetCloner cloner)
 		{
 			// Maintain items sorted.
-			var itemIndex = Identifiers.BinarySearch(setId);
+			var itemIndex = Names.BinarySearch(setName);
 			if (itemIndex >= 0)
 			{
-				MassiveException.Throw($"You are trying to insert already existing item:{setId}.");
+				MassiveException.Throw($"You are trying to insert already existing item:{setName}.");
 			}
 			else
 			{
 				var insertionIndex = ~itemIndex;
-				Identifiers.Insert(insertionIndex, setId);
-				AllSets.Insert(insertionIndex, set);
+				Names.Insert(insertionIndex, setName);
+				Sorted.Insert(insertionIndex, set);
 				Cloners.Insert(insertionIndex, cloner);
-				Hashes.Insert(insertionIndex, setId.GetHashCode());
-				SetsByIdentifiers.Add(setId, set);
+				SetsByNames.Add(setName, set);
 			}
 		}
 
@@ -134,7 +143,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Type TypeOf(BitSet bitSet)
 		{
-			return ComponentId.GetTypeByIndex(bitSet.ComponentId);
+			return TypeId.GetTypeByIndex(bitSet.ComponentId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -168,28 +177,29 @@ namespace Massive
 				cloner.CopyTo(other);
 			}
 
-			// Clear other sets.
-			var hashes = Hashes;
-			var otherHashes = other.Hashes;
-			var otherSets = other.AllSets;
+			other.EnsureLookupByComponentAt(ComponentCount - 1);
 
-			if (hashes.Count == otherHashes.Count)
+			// Sort lookup to match Components.
+			for (var i = 0; i < ComponentCount; i++)
 			{
-				// Skip clearing if target has exactly the same sets.
-				return;
+				var set = LookupByComponentId[i];
+				ref var otherSet = ref other.LookupByComponentId[i];
+
+				if (otherSet == null || otherSet.TypeId != set.TypeId)
+				{
+					ref var otherMatchedSet = ref other.LookupByComponentId[other.LookupByTypeId[set.TypeId].ComponentId];
+					(otherSet, otherMatchedSet) = (otherMatchedSet, otherSet);
+				}
+
+				otherSet.SetComponentId(i);
 			}
 
-			var index = 0;
-			for (var otherIndex = 0; otherIndex < otherSets.Count; otherIndex++)
+			// Clear other sets.
+			for (var i = ComponentCount; i < other.ComponentCount; i++)
 			{
-				if (index >= hashes.Count || otherHashes[otherIndex] != hashes[index])
-				{
-					otherSets[otherIndex].ClearWithoutNotify();
-				}
-				else
-				{
-					index++;
-				}
+				var otherSet = other.LookupByComponentId[i];
+				otherSet.SetComponentId(i);
+				otherSet.ClearWithoutNotify();
 			}
 		}
 	}

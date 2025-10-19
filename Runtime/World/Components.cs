@@ -106,8 +106,12 @@ namespace Massive
 			if (capacity > EntitiesCapacity)
 			{
 				EntitiesCapacity = MathUtils.NextPowerOf2(capacity);
-				BitMapCapacity = MaskLength * EntitiesCapacity;
-				BitMap = BitMap.Resize(BitMapCapacity);
+				var requiredCapacity = MaskLength * EntitiesCapacity;
+				if (requiredCapacity > BitMapCapacity)
+				{
+					BitMapCapacity = requiredCapacity;
+					BitMap = BitMap.Resize(BitMapCapacity);
+				}
 			}
 		}
 
@@ -155,7 +159,10 @@ namespace Massive
 
 			if (other.MaskLength != MaskLength)
 			{
-				other.Buffer = other.Buffer.Resize(MaskLength * 64);
+				if (MaskLength > other.MaskLength)
+				{
+					other.Buffer = other.Buffer.Resize(MaskLength * 64);
+				}
 				other.MaskLength = MaskLength;
 				other.EntitiesCapacity = otherBitmapCapacity / MaskLength;
 			}

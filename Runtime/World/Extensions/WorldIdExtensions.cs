@@ -63,7 +63,7 @@ namespace Massive
 
 			for (var i = 0; i < componentCount; i++)
 			{
-				var set = sets.Lookup[buffer[i]];
+				var set = sets.LookupByComponentId[buffer[i]];
 				set.Add(cloneId);
 				set.CopyData(id, cloneId);
 			}
@@ -104,10 +104,10 @@ namespace Massive
 		{
 			InvalidSetOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			world.Sets.EnsureLookupAt(info.Index);
-			var candidate = world.Sets.Lookup[info.Index];
+			world.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = world.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{
@@ -135,10 +135,10 @@ namespace Massive
 		{
 			InvalidAddOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			world.Sets.EnsureLookupAt(info.Index);
-			var candidate = world.Sets.Lookup[info.Index];
+			world.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = world.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{
@@ -162,10 +162,10 @@ namespace Massive
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			world.Sets.EnsureLookupAt(info.Index);
-			var candidate = world.Sets.Lookup[info.Index];
+			world.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = world.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{
@@ -186,10 +186,10 @@ namespace Massive
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			world.Sets.EnsureLookupAt(info.Index);
-			var candidate = world.Sets.Lookup[info.Index];
+			world.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = world.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{
@@ -211,10 +211,10 @@ namespace Massive
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = ComponentId<T>.Info;
+			var info = TypeId<T>.Info;
 
-			world.Sets.EnsureLookupAt(info.Index);
-			var candidate = world.Sets.Lookup[info.Index];
+			world.Sets.EnsureLookupByTypeAt(info.Index);
+			var candidate = world.Sets.LookupByTypeId[info.Index];
 
 			if (candidate == null)
 			{

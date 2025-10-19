@@ -11,7 +11,7 @@ namespace Massive
 		public BitSet[] SelectSets<TSelector>()
 			where TSelector : ISetSelector, new()
 		{
-			var info = TypeId<TSelector>.Info;
+			var info = MiscTypeId<TSelector>.Info;
 
 			EnsureSelectionLookupAt(info.Index);
 			var candidate = SelectionLookup[info.Index];

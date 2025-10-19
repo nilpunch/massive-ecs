@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Unity.IL2CPP.CompilerServices;
 
+// ReSharper disable all StaticMemberInGenericType
 namespace Massive
 {
 	[Il2CppEagerStaticClassConstruction]
@@ -15,6 +16,7 @@ namespace Massive
 		private static Type[] s_types = Array.Empty<Type>();
 		private static int s_typeCounter = -1;
 
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static TypeIdInfo GetInfo(Type type)
 		{
 			if (!s_typeInfo.TryGetValue(type, out var typeIdInfo))
@@ -26,6 +28,7 @@ namespace Massive
 			return typeIdInfo;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool TryGetInfo(Type type, out TypeIdInfo info)
 		{
 			return s_typeInfo.TryGetValue(type, out info);

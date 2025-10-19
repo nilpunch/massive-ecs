@@ -13,17 +13,23 @@ namespace Massive
 	public class BitSet : BitSetBase
 	{
 		/// <summary>
-		/// Associated component index. Session-dependent index, used for lookups.
+		/// Associated type index. Session-dependent.
 		/// </summary>
-		internal int ComponentId { get; set; } = -1;
-		internal int ComponentIndex { get; set; } = -1;
-		internal ulong ComponentMask { get; set; } = 0;
-		internal ulong ComponentMaskNegative { get; set; } = 0;
+		public int TypeId { get; private set; } = -1;
+
+		/// <summary>
+		/// Associated component index. World-dependent.
+		/// </summary>
+		public int ComponentId { get; private set; } = -1;
+
+		public int ComponentIndex { get; private set; } = -1;
+		public ulong ComponentMask { get; private set; }
+		public ulong ComponentMaskNegative { get; private set; }
 
 		/// <summary>
 		/// Shortcut to access components.
 		/// </summary>
-		internal Components Components { get; set; }
+		private Components Components { get; set; }
 
 		/// <summary>
 		/// Shoots only after <see cref="Add"/> call, when the ID was not already present.
@@ -277,6 +283,28 @@ namespace Massive
 				Components.BitMap[id * Components.MaskLength + ComponentIndex] |= ComponentMask;
 			}
 			AfterAdded?.Invoke(id);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetupComponent(Components components, int typeId, int componentId)
+		{
+			Components = components;
+			TypeId = typeId;
+			SetComponentId(componentId);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetComponentId(int componentId)
+		{
+			if (ComponentId == componentId)
+			{
+				return;
+			}
+
+			ComponentId = componentId;
+			ComponentIndex = componentId >> 6;
+			ComponentMask = 1UL << (componentId & 63);
+			ComponentMaskNegative = ~ComponentMask;
 		}
 	}
 }

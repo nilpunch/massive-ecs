@@ -298,7 +298,7 @@ namespace Massive
 
 			for (var i = 0; i < componentCount; i++)
 			{
-				Sets.Lookup[buffer[i]].Remove(id);
+				Sets.LookupByComponentId[buffer[i]].Remove(id);
 			}
 
 			Allocators.Free(id);
