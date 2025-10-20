@@ -15,7 +15,7 @@ namespace Massive
 
 		public uint Version;
 
-		public readonly World World;
+		public World World;
 
 		public Entity(Entifier entifier, World world)
 		{
@@ -31,16 +31,19 @@ namespace Massive
 			World = world;
 		}
 
+		public static Entity Dead
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new Entity(0, 0, null);
+		}
+
 		/// <summary>
 		/// Checks whether the entity is alive.
 		/// </summary>
-		/// <remarks>
-		/// Throws if provided entity ID is negative.
-		/// </remarks>
 		public readonly bool IsAlive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => World.Entities.IsAlive(Entifier);
+			get => World != null && World.Entities.IsAlive(Entifier);
 		}
 
 		public readonly Entifier Entifier

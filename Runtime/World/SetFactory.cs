@@ -47,7 +47,7 @@ namespace Massive
 			var type = typeof(T);
 			if (CopyableUtils.IsImplementedFor(type))
 			{
-				var dataSet = CopyableUtils.CreateCopyingDataSet<T>();
+				var dataSet = CopyableUtils.CreateCopyingDataSet(DefaultValueUtils.GetDefaultValueFor<T>());
 				var cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
 				return new Output(dataSet, cloner);
 			}

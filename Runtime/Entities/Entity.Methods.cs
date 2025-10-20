@@ -21,7 +21,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly Entity Clone()
 		{
-			InvalidCloneOperationException.ThrowIfEntityDead(World.Entities, Entifier);
+			InvalidCloneOperationException.ThrowIfEntityDead(this);
 
 			var entityId = Id;
 			var clone = World.CreateEntity();
@@ -50,7 +50,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool Destroy()
 		{
-			return World.Entities.Destroy(Id);
+			return World != null && World.Entities.Destroy(Id);
 		}
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly void Set<T>(T data)
 		{
-			InvalidSetOperationException.ThrowIfEntityDead(World.Entities, Entifier);
+			InvalidSetOperationException.ThrowIfEntityDead(this);
 
 			var info = TypeId<T>.Info;
 
@@ -94,7 +94,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool Add<T>()
 		{
-			InvalidAddOperationException.ThrowIfEntityDead(World.Entities, Entifier);
+			InvalidAddOperationException.ThrowIfEntityDead(this);
 
 			var info = TypeId<T>.Info;
 
@@ -121,7 +121,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool Remove<T>()
 		{
-			InvalidRemoveOperationException.ThrowIfEntityDead(World.Entities, Entifier);
+			InvalidRemoveOperationException.ThrowIfEntityDead(this);
 
 			var info = TypeId<T>.Info;
 
@@ -145,7 +145,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool Has<T>()
 		{
-			InvalidHasOperationException.ThrowIfEntityDead(World.Entities, Entifier);
+			InvalidHasOperationException.ThrowIfEntityDead(this);
 
 			var info = TypeId<T>.Info;
 
@@ -170,7 +170,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly ref T Get<T>()
 		{
-			InvalidGetOperationException.ThrowIfEntityDead(World.Entities, Entifier);
+			InvalidGetOperationException.ThrowIfEntityDead(this);
 
 			var info = TypeId<T>.Info;
 

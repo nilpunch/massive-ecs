@@ -36,6 +36,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Get(int id)
 		{
+			InvalidGetOperationException.ThrowIfNotAdded(this, id);
 			return ref PagedData[id >> Constants.PageSizePower][id & Constants.PageSizeMinusOne];
 		}
 

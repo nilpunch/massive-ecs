@@ -104,16 +104,11 @@ namespace Massive
 		/// <returns>
 		/// True if the entity was destroyed; false if it was already not alive.
 		/// </returns>
-		/// <remarks>
-		/// Throws if provided ID is negative.
-		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Destroy(int id)
 		{
-			NegativeArgumentException.ThrowIfNegative(id);
-
 			// If entity is not alive, nothing to be done.
-			if (id >= UsedIds || (Bits[id >> 6] & (1UL << (id & 63))) == 0UL)
+			if (id < 0 || id >= UsedIds || (Bits[id >> 6] & (1UL << (id & 63))) == 0UL)
 			{
 				return false;
 			}
