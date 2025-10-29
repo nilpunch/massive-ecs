@@ -17,7 +17,7 @@
 
 			// Allocates a list that's tied to this entity's lifetime.
 			// It will be freed automatically when the entity is destroyed.
-			var items = World.AllocAutoList<Entifier>(entity);
+			var items = World.AllocList<Entifier>().Track(entity);
 
 			// Assign the list handle to the Inventory component.
 			World.Set(entity, new Inventory()

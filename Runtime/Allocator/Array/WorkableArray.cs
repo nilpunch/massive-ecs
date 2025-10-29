@@ -12,149 +12,105 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorkableArray<T> where T : unmanaged
 	{
-		public readonly ChunkId ChunkId;
-		public readonly Allocator<T> Allocator;
+		private readonly ArrayHandle<T> _arrayHandle;
+		private readonly Allocator _allocator;
 
-		public WorkableArray(ChunkId chunkId, Allocator<T> allocator)
+		public WorkableArray(ArrayHandle<T> arrayHandle, Allocator allocator)
 		{
-			// Assert.
-			allocator.GetChunk(chunkId);
-
-			ChunkId = chunkId;
-			Allocator = allocator;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator AllocatorChunkId(WorkableArray<T> array)
-		{
-			return new AllocatorChunkId(array.ChunkId, array.Allocator.AllocatorId);
+			_arrayHandle = arrayHandle;
+			_allocator = allocator;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static implicit operator ArrayHandle<T>(WorkableArray<T> array)
 		{
-			return new ArrayHandle<T>(array.ChunkId);
+			return new ArrayHandle<T>(array._arrayHandle);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free()
 		{
-			Allocator.Free(ChunkId);
+			_arrayHandle.Free(_allocator);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public WorkableArray<T> Track(int id)
+		{
+			_arrayHandle.Track(_allocator, id);
+			return this;
 		}
 
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get
-			{
-				AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, Allocator.Chunks[ChunkId.Id].Length);
-
-				return ref Allocator.Data[Allocator.Chunks[ChunkId.Id].Offset + index];
-			}
+			get => ref _arrayHandle.GetAt(_allocator, index);
 		}
 
 		public int Length
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Allocator.Chunks[ChunkId.Id].Length;
+			get => _arrayHandle.Length(_allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T GetAtUnchecked(int index)
 		{
-			return ref Allocator.Data[Allocator.Chunks[ChunkId.Id].Offset + index];
+			return ref _arrayHandle.GetAtUnchecked(_allocator, index);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Resize(int minimalLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
-			Allocator.Resize(ChunkId, minimalLength, memoryInit);
+			_allocator.Resize<T>(_arrayHandle, minimalLength, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item)
 		{
-			return Array.IndexOf(Allocator.Data, item, Allocator.Chunks[ChunkId.Id].Offset, Allocator.Chunks[ChunkId.Id].Length);
+			throw new NotImplementedException();
+			// return Array.IndexOf(Allocator.Data, item, Allocator.GetChunk(ChunkId).AlignedOffsetInBytes, Allocator.GetChunk(ChunkId).LengthInBytes);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item, int startIndex, int count)
 		{
-			var chunk = Allocator.Chunks[ChunkId.Id];
+			throw new NotImplementedException();
 
-			if (startIndex + count >= chunk.Offset + chunk.Length)
+			var chunk = _allocator.GetChunk(_arrayHandle);
+
+			if ((startIndex + count) * Unmanaged<T>.SizeInBytes >= chunk.OffsetInBytes + chunk.LengthInBytes)
 			{
 				return -1;
 			}
 
-			return Array.IndexOf(Allocator.Data, item, chunk.Offset + startIndex, count);
+			return Array.IndexOf(_allocator.Data, item, chunk.OffsetInBytes + startIndex, count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(int sourceIndex, WorkableArray<T> destinationArray, int destinationIndex, int length)
 		{
-			Array.Copy(Allocator.Data, Allocator.Chunks[ChunkId.Id].Offset + sourceIndex,
-				destinationArray.Allocator.Data, destinationArray.Allocator.Chunks[ChunkId.Id].Offset + destinationIndex,
+			throw new NotImplementedException();
+			Array.Copy(_allocator.Data, _allocator.GetChunk(_arrayHandle).OffsetInBytes + sourceIndex * Unmanaged<T>.SizeInBytes,
+				destinationArray._allocator.Data, destinationArray._allocator.GetChunk(_arrayHandle).OffsetInBytes + destinationIndex * Unmanaged<T>.SizeInBytes,
 				length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToSelf(int sourceIndex, int destinationIndex, int length)
 		{
-			Array.Copy(Allocator.Data, Allocator.Chunks[ChunkId.Id].Offset + sourceIndex,
-				Allocator.Data, Allocator.Chunks[ChunkId.Id].Offset + destinationIndex,
-				length);
+			_arrayHandle.CopyToSelf(_allocator, sourceIndex, destinationIndex, length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureCapacity(int capacity)
 		{
-			if (capacity > Allocator.Chunks[ChunkId.Id].Length)
-			{
-				Allocator.Resize(ChunkId, capacity);
-			}
+			_arrayHandle.EnsureCapacity(_allocator, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Enumerator GetEnumerator()
+		public UnsafeEnumerator<T> GetEnumerator()
 		{
-			return new Enumerator(this);
-		}
-
-		public struct Enumerator
-		{
-			private readonly T[] _data;
-			private readonly int _offset;
-			private readonly int _length;
-			private int _index;
-
-			public Enumerator(WorkableArray<T> list)
-			{
-				_data = list.Allocator.Data;
-				_offset = list.Allocator.Chunks[list.ChunkId.Id].Offset;
-				_length = list.Allocator.Chunks[list.ChunkId.Id].Length;
-				_index = -1;
-			}
-
-			public Enumerator(WorkableArray<T> list, int start, int length)
-			{
-				_data = list.Allocator.Data;
-				_offset = list.Allocator.Chunks[list.ChunkId.Id].Offset + start;
-				_length = length;
-				_index = -1;
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool MoveNext()
-			{
-				return ++_index < _length;
-			}
-
-			public ref T Current
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => ref _data[_offset + _index];
-			}
+			return _arrayHandle.GetEnumerator(_allocator);
 		}
 	}
 }

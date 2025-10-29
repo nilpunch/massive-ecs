@@ -77,6 +77,41 @@ namespace Massive
 			return (lzc & 0x0000003f) - 1;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void NextPowerOf2AndLog2(int value, out int nextPowerOf2, out int log2)
+		{
+			var v = (uint)value;
+    
+			if (v == 0)
+			{
+				nextPowerOf2 = 0;
+				log2 = -1;
+				return; // log2(0) is undefined, return -1 as per your convention
+			}
+
+			// Calculate next power of 2
+			v--;
+			v |= v >> 1;
+			v |= v >> 2;
+			v |= v >> 4;
+			v |= v >> 8;
+			v |= v >> 16;
+			v++;
+    
+			nextPowerOf2 = (int)v;
+    
+			// Calculate log2 using the same bit pattern we already computed
+			// For a power of 2, v-1 gives us the mask we need for population count
+			uint lzc = v - 1;
+			lzc -= lzc >> 1 & 0x55555555;
+			lzc = (lzc >> 2 & 0x33333333) + (lzc & 0x33333333);
+			lzc = (lzc >> 4) + lzc & 0x0f0f0f0f;
+			lzc += lzc >> 8;
+			lzc += lzc >> 16;
+    
+			log2 = (int)(lzc & 0x0000003f);
+		}
+
 		/// <summary>
 		/// Fast module for powers of two only.
 		/// </summary>
@@ -181,6 +216,24 @@ namespace Massive
 		public static int Min(int a, int b)
 		{
 			return a < b ? a : b;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int AlignmentPadding(int offset, int alignment)
+		{
+			return -offset & (alignment - 1);
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static long AlignmentPadding(long offset, int alignment)
+		{
+			return -offset & (alignment - 1);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int Aligned(int offset, int alignment)
+		{
+			return (offset + (alignment - 1)) & -alignment;
 		}
 	}
 }

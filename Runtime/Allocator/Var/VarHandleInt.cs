@@ -5,23 +5,29 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly partial struct ArrayHandle<T> where T : unmanaged
+	public readonly partial struct VarHandleInt
 	{
 		public readonly ChunkId ChunkId;
 
-		public ArrayHandle(ChunkId chunkId)
+		public VarHandleInt(ChunkId chunkId)
 		{
 			ChunkId = chunkId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableArray<T> In(Allocator allocator)
+		public WorkableVarInt In(World world)
 		{
-			return new WorkableArray<T>(this, allocator);
+			return new WorkableVarInt(this, world.Allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ChunkId(ArrayHandle<T> handle)
+		public WorkableVarInt In(Allocator allocator)
+		{
+			return new WorkableVarInt(this, allocator);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator ChunkId(VarHandleInt handle)
 		{
 			return handle.ChunkId;
 		}

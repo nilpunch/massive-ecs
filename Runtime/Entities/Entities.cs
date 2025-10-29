@@ -34,14 +34,14 @@ namespace Massive
 
 		private Components Components { get; }
 
-		private Allocators Allocators { get; }
+		private Allocator Allocator { get; }
 
 		public Entities(World world = default)
 		{
 			World = world ?? new World();
 			Sets = World.Sets;
 			Components = World.Components;
-			Allocators = World.Allocators;
+			Allocator = World.Allocator;
 		}
 
 		/// <summary>
@@ -296,7 +296,7 @@ namespace Massive
 				Sets.LookupByComponentId[buffer[i]].Remove(id);
 			}
 
-			Allocators.Free(id);
+			Allocator.FreeTracked(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

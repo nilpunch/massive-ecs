@@ -2,15 +2,15 @@ namespace Massive.Samples.AllocatorUsage
 {
 	class PureAllocatorSample
 	{
-		Allocator<int> Allocator;
+		Allocator Allocator;
 		ArrayHandle<int> Values;
 
 		void Allocate()
 		{
-			Allocator = new Allocator<int>();
+			Allocator = new Allocator();
 
 			// Allocate an empty array (same as new int[0]).
-			var array = Allocator.AllocArray(0);
+			var array = Allocator.AllocArray<int>(0);
 
 			// Store the array using a handle.
 			// Handles are unmanaged and safe to store in simulation.

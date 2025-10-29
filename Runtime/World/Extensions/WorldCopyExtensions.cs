@@ -39,7 +39,7 @@ namespace Massive
 			world.Entities.CopyTo(other.Entities);
 			world.Components.CopyTo(other.Components);
 			world.Sets.CopyTo(other.Sets);
-			world.Allocators.CopyTo(other.Allocators);
+			world.Allocator.CopyTo(other.Allocator);
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public partial class Allocators
+	public partial class Allocator
 	{
 		public Allocation[] Allocations { get; private set; } = Array.Empty<Allocation>();
 		private int AllocationsCapacity { get; set; }
@@ -23,13 +23,7 @@ namespace Massive
 		public int UsedHeads { get; set; }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void TrackAllocation(int id, AllocatorChunkId allocatorChunkId)
-		{
-			TrackAllocation(id, allocatorChunkId.ChunkId, allocatorChunkId.AllocatorId);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void TrackAllocation(int id, ChunkId chunkId, int allocatorId)
+		public void Track(int id, ChunkId chunkId)
 		{
 			EnsureTrackerHeadAt(id);
 
@@ -50,7 +44,6 @@ namespace Massive
 			ref var allocation = ref Allocations[index];
 			allocation.ChunkId = chunkId;
 			allocation.NextAllocation = head;
-			allocation.AllocatorId = allocatorId;
 
 			head = index;
 
@@ -58,7 +51,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Free(int id)
+		public void FreeTracked(int id)
 		{
 			if (id >= HeadCapacity || Heads[id] == Constants.InvalidId)
 			{
@@ -69,7 +62,7 @@ namespace Massive
 			while (index != Constants.InvalidId)
 			{
 				ref var allocation = ref Allocations[index];
-				Lookup[allocation.AllocatorId].TryFree(allocation.ChunkId);
+				TryFree(allocation.ChunkId);
 
 				var next = allocation.NextAllocation;
 				allocation.NextAllocation = NextFreeAllocation;
@@ -93,7 +86,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTrackerTo(Allocators other)
+		public void CopyTrackerTo(Allocator other)
 		{
 			other.EnsureTrackerAllocationAt(UsedAllocations - 1);
 			other.EnsureTrackerHeadAt(UsedHeads - 1);
@@ -132,11 +125,6 @@ namespace Massive
 		public struct Allocation
 		{
 			public ChunkId ChunkId;
-
-			/// <summary>
-			/// Session-dependent index, used for lookups.
-			/// </summary>
-			public int AllocatorId;
 
 			/// <summary>
 			/// Next free or next allocation in list.

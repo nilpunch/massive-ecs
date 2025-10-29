@@ -5,19 +5,19 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct WorkableVar<T> where T : unmanaged
+	public readonly struct WorkableVarInt
 	{
-		private readonly VarHandle<T> _varHandle;
+		private readonly VarHandleInt _varHandle;
 		private readonly Allocator _allocator;
 
-		public WorkableVar(VarHandle<T> varHandle, Allocator allocator)
+		public WorkableVarInt(VarHandleInt varHandle, Allocator allocator)
 		{
 			_varHandle = varHandle;
 			_allocator = allocator;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator VarHandle<T>(WorkableVar<T> workableVar)
+		public static implicit operator VarHandleInt(WorkableVarInt workableVar)
 		{
 			return workableVar._varHandle;
 		}
@@ -29,13 +29,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableVar<T> Track(int id)
+		public WorkableVarInt Track(int id)
 		{
 			_varHandle.Track(_allocator, id);
 			return this;
 		}
 
-		public ref T Value
+		public ref int Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => ref _varHandle.Value(_allocator);

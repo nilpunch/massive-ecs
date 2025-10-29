@@ -14,13 +14,13 @@ namespace Massive.Tests
 
 		private static readonly int[] Sizes = new[] { 0, 1, 2, 4, 8, 16, 32, 64, 128 };
 
-		private Allocator<int> _allocator;
+		private Allocator _allocator;
 		private List<(ChunkId chunkId, int size)> _activeChunks;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_allocator = new Allocator<int>();
+			_allocator = new Allocator();
 			_activeChunks = new List<(ChunkId chunkId, int size)>();
 			var rnd = new Random(Seed);
 
@@ -34,7 +34,7 @@ namespace Massive.Tests
 						if (_activeChunks.Count < MaxActiveChunks)
 						{
 							var size = Sizes[rnd.Next(Sizes.Length)];
-							var chunkId = _allocator.Alloc(size);
+							var chunkId = _allocator.Alloc(size, 1);
 							Assert.GreaterOrEqual(chunkId.Id, 0);
 							Assert.GreaterOrEqual(chunkId.Version, 1U);
 							_activeChunks.Add((chunkId, size));
@@ -57,7 +57,7 @@ namespace Massive.Tests
 							var index = rnd.Next(_activeChunks.Count);
 							var chunk = _activeChunks[index];
 							var newSize = Sizes[rnd.Next(Sizes.Length)];
-							_allocator.Resize(chunk.chunkId, newSize);
+							_allocator.Resize(chunk.chunkId, newSize, 1);
 							_activeChunks[index] = (chunk.chunkId, newSize);
 						}
 						break;
@@ -115,7 +115,7 @@ namespace Massive.Tests
 			for (var i = 0; i < _allocator.ChunkCount; ++i)
 			{
 				ref var c = ref _allocator.Chunks[i];
-				Assert.LessOrEqual(c.Offset + c.Length, _allocator.UsedSpace);
+				Assert.LessOrEqual(c.OffsetInBytes + c.LengthInBytes, _allocator.UsedSpace);
 			}
 		}
 

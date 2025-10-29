@@ -5,42 +5,27 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct ListHandle<T> where T : unmanaged
+	public readonly partial struct ListHandle<T> where T : unmanaged
 	{
-		private readonly ChunkId _items;
-		private readonly ChunkId _count;
+		public readonly ArrayHandle<T> ItemsId;
+		public readonly VarHandleInt CountId;
 
-		public ListHandle(ChunkId items, ChunkId count)
+		public ListHandle(ArrayHandle<T> itemsId, VarHandleInt countId)
 		{
-			_items = items;
-			_count = count;
+			ItemsId = itemsId;
+			CountId = countId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableList<T> In(World world)
+		public WorkableList<T> In(Allocator allocator)
 		{
-			return new WorkableList<T>(_items, _count,
-				(Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index],
-				world.Allocators.IntAllocator);
+			return new WorkableList<T>(this, allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableList<T> In(AutoAllocator<T> allocator)
+		public static implicit operator ListId(ListHandle<T> handle)
 		{
-			return new WorkableList<T>(_items, _count, allocator.Allocator, allocator.Allocators.IntAllocator);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator AllocatorListId(ListHandle<T> handle)
-		{
-			return new AllocatorListId(handle._items, handle._count, AllocatorId<T>.Index);
-		}
-
-		[UnityEngine.Scripting.Preserve]
-		private static void ReflectionSupportForAOT()
-		{
-			_ = new Allocator<T>();
-			_ = new Allocator<int>();
+			return new ListId(handle.ItemsId, handle.CountId);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 #define MASSIVE_ASSERT
 #endif
 
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -14,7 +15,7 @@ namespace Massive
 		public Components Components { get; }
 
 		public Sets Sets { get; }
-		public Allocators Allocators { get; }
+		public Allocator Allocator { get; }
 
 		public WorldConfig Config { get; }
 
@@ -27,9 +28,15 @@ namespace Massive
 		{
 			Components = new Components();
 			Sets = new Sets(new SetFactory(worldConfig), Components);
-			Allocators = new Allocators();
+			Allocator = new Allocator();
 			Config = worldConfig;
 			Entities = new Entities(this);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator Allocator(World world)
+		{
+			return world.Allocator;
 		}
 	}
 }

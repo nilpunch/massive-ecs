@@ -11,131 +11,98 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorkableList<T> where T : unmanaged
 	{
-		private readonly WorkableArray<T> _items;
-		private readonly WorkableVar<int> _count;
+		private readonly ListHandle<T> _list;
+		private readonly Allocator _allocator;
 
-		public WorkableList(ChunkId items, ChunkId count, Allocator<T> itemsAllocator, Allocator<int> countAllocator)
+		public WorkableList(ListHandle<T> list, Allocator allocator)
 		{
-			_items = new WorkableArray<T>(items, itemsAllocator);
-			_count = new WorkableVar<int>(count, countAllocator);
+			_list = list;
+			_allocator = allocator;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator AllocatorListId(WorkableList<T> list)
+		public static implicit operator ListId(WorkableList<T> list)
 		{
-			return new AllocatorListId(list._items.ChunkId, list._count.ChunkId, list._items.Allocator.AllocatorId);
+			return list._list;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static implicit operator ListHandle<T>(WorkableList<T> list)
 		{
-			return new ListHandle<T>(list._items.ChunkId, list._count.ChunkId);
+			return list._list;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free()
 		{
-			_items.Free();
-			_count.Free();
+			_list.Free(_allocator);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public WorkableList<T> Track(int id)
+		{
+			_list.Track(_allocator, id);
+			return this;
 		}
 
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get
-			{
-				AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, _count.Value);
-
-				return ref _items.GetAtUnchecked(index);
-			}
+			get => ref _list.GetAtUnchecked(_allocator, index);
 		}
 
 		public int Count
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _count.Value;
+			get => _list.Count(_allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
-			ref var count = ref _count.Value;
-			EnsureCapacityAt(count);
-			_items[count++] = item;
+			_list.Add(_allocator, item);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(T item)
 		{
-			var index = IndexOf(item);
-			if (index >= 0)
-			{
-				RemoveAt(index);
-				return true;
-			}
-
-			return false;
+			return _list.Remove(_allocator, item);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Insert(int index, T item)
 		{
-			ref var count = ref _count.Value;
-			AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeInclusive(index, count);
-
-			EnsureCapacityAt(count);
-
-			_items.CopyToSelf(index, index + 1, count - index);
-			_items[index] = item;
-			count++;
+			_list.Insert(_allocator, index, item);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void RemoveAt(int index)
 		{
-			ref var count = ref _count.Value;
-			AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, count);
-
-			count--;
-			_items.CopyToSelf(index + 1, index, count - index);
+			_list.RemoveAt(_allocator, index);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void RemoveAtSwapBack(int index)
 		{
-			ref var count = ref _count.Value;
-			AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, count);
-
-			count--;
-			var lastIndex = count;
-			_items[index] = _items[lastIndex];
+			_list.RemoveAtSwapBack(_allocator, index);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item)
 		{
-			return _items.IndexOf(item, 0, Count);
+			return _list.IndexOf(_allocator, item);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
-			_count.Value = 0;
+			_list.Clear(_allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnsureCapacityAt(int index)
+		public UnsafeEnumerator<T> GetEnumerator()
 		{
-			if (index >= _items.Length)
-			{
-				_items.Resize(index + 1, MemoryInit.Uninitialized);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableArray<T>.Enumerator GetEnumerator()
-		{
-			return new WorkableArray<T>.Enumerator(_items, 0, Count);
+			return _list.Enumerate(_allocator);
 		}
 	}
 }

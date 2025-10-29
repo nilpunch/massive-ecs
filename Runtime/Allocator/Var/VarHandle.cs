@@ -5,43 +5,25 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly struct VarHandle<T> where T : unmanaged
+	public readonly partial struct VarHandle<T> where T : unmanaged
 	{
-		private readonly ChunkId _chunkId;
+		public readonly ChunkId ChunkId;
 
 		public VarHandle(ChunkId chunkId)
 		{
-			_chunkId = chunkId;
+			ChunkId = chunkId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableVar<T> In(World world)
+		public WorkableVar<T> In(Allocator allocator)
 		{
-			return new WorkableVar<T>(_chunkId, (Allocator<T>)world.Allocators.Lookup[AllocatorId<T>.Index]);
+			return new WorkableVar<T>(this, allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableVar<T> In(Allocator<T> allocator)
+		public static implicit operator ChunkId(VarHandle<T> handle)
 		{
-			return new WorkableVar<T>(_chunkId, allocator);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableVar<T> In(AutoAllocator<T> allocator)
-		{
-			return new WorkableVar<T>(_chunkId, allocator.Allocator);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator AllocatorChunkId(VarHandle<T> handle)
-		{
-			return new AllocatorChunkId(handle._chunkId, AllocatorId<T>.Index);
-		}
-
-		[UnityEngine.Scripting.Preserve]
-		private static void ReflectionSupportForAOT()
-		{
-			_ = new Allocator<T>();
+			return handle.ChunkId;
 		}
 	}
 }
