@@ -7,20 +7,19 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free(Allocator allocator)
 		{
-			allocator.Free(ChunkId);
+			allocator.Free(Pointer.AsPointer);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public VarHandle<T> Track(Allocator allocator, int id)
+		public void DeepFree(Allocator allocator)
 		{
-			allocator.Track(id, ChunkId);
-			return this;
+			AllocatorTypeSchema<T>.DeepFree(allocator, Pointer);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T Value(Allocator allocator)
 		{
-			return ref *(T*)(allocator.AlignedPtr + allocator.GetChunk(ChunkId).AlignedOffsetInBytes);
+			return ref *(T*)(allocator.GetPage(Pointer.AsPointer).AlignedPtr + Pointer.AsPointer.Offset);
 		}
 	}
 }

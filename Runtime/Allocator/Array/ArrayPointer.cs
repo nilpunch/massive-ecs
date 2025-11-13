@@ -5,13 +5,13 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly partial struct ArrayHandle<T> where T : unmanaged
+	public readonly partial struct ArrayPointer<T> where T : unmanaged
 	{
-		public readonly ChunkId ChunkId;
+		public readonly Pointer<ArrayModel<T>> ModelPointer;
 
-		public ArrayHandle(ChunkId chunkId)
+		public ArrayPointer(Pointer<ArrayModel<T>> modelPointer)
 		{
-			ChunkId = chunkId;
+			ModelPointer = modelPointer;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -21,9 +21,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ChunkId(ArrayHandle<T> handle)
+		public static implicit operator Pointer(ArrayPointer<T> pointer)
 		{
-			return handle.ChunkId;
+			return pointer.ModelPointer.AsPointer;
 		}
 	}
 }

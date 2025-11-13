@@ -1,4 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if !MASSIVE_DISABLE_ASSERT
+#define MASSIVE_ASSERT
+#endif
+
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -28,30 +32,29 @@ namespace Massive
 		public WorkableArray<T> AllocArray<T>(int length, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
 			var info = Unmanaged<T>.Info;
-			var arrayHandle = new ArrayHandle<T>(Alloc(length * info.Size, info.Alignment, memoryInit));
-			return new WorkableArray<T>(arrayHandle, this);
+
+			var pointer = new ArrayPointer<T>(Alloc(ArrayModel.Size, ArrayModel.Alignment, MemoryInit.Uninitialized));
+
+			ref var model = ref pointer.GetModel(this);
+			model.Items = Alloc(length * info.Size, info.Alignment, memoryInit);
+			model.Length = length;
+
+			return new WorkableArray<T>(pointer, this);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableList<T> AllocList<T>(int capacity = 0) where T : unmanaged
 		{
 			var info = Unmanaged<T>.Info;
-			var items = new ArrayHandle<T>(Alloc(capacity * info.Size, info.Alignment, MemoryInit.Uninitialized));
-			var count = new VarHandleInt(Alloc(sizeof(int), sizeof(int), MemoryInit.Uninitialized));
-			count.Value(this) = 0;
 
-			return new WorkableList<T>(new ListHandle<T>(items, count), this);
-		}
+			var pointer = new ListPointer<T>(Alloc(ListModel.Size, ListModel.Alignment, MemoryInit.Uninitialized));
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ListHandle<T> AllocListHandle<T>(int capacity = 0) where T : unmanaged
-		{
-			var info = Unmanaged<T>.Info;
-			var items = new ArrayHandle<T>(Alloc(capacity * info.Size, info.Alignment, MemoryInit.Uninitialized));
-			var count = new VarHandleInt(Alloc(sizeof(int), sizeof(int), MemoryInit.Uninitialized));
-			count.Value(this) = 0;
+			ref var model = ref pointer.GetModel(this);
+			model.Items = Alloc(capacity * info.Size, info.Alignment, MemoryInit.Uninitialized);
+			model.Capacity = capacity;
+			model.Count = 0;
 
-			return new ListHandle<T>(items, count);
+			return new WorkableList<T>(pointer, this);
 		}
 	}
 }

@@ -5,15 +5,17 @@ namespace Massive
 {
 	public class SetFactory
 	{
+		private readonly Allocator _allocator;
 		private readonly bool _storeEmptyTypesAsDataSets;
 
-		public SetFactory(WorldConfig worldConfig)
-			: this(worldConfig.StoreEmptyTypesAsDataSets)
+		public SetFactory(Allocator allocator, WorldConfig worldConfig)
+			: this(allocator, worldConfig.StoreEmptyTypesAsDataSets)
 		{
 		}
 
-		public SetFactory(bool storeEmptyTypesAsDataSets = false)
+		public SetFactory(Allocator allocator, bool storeEmptyTypesAsDataSets = false)
 		{
+			_allocator = allocator;
 			_storeEmptyTypesAsDataSets = storeEmptyTypesAsDataSets;
 		}
 
@@ -49,6 +51,12 @@ namespace Massive
 			{
 				var dataSet = CopyableUtils.CreateCopyingDataSet(DefaultValueUtils.GetDefaultValueFor<T>());
 				var cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
+				return new Output(dataSet, cloner);
+			}
+			else if (AutoFreeUtils.IsImplementedFor(type) && AllocatorSchemaGenerator.HasPointers(type))
+			{
+				var dataSet = AutoFreeUtils.CreateAutoFreeDataSet(_allocator, DefaultValueUtils.GetDefaultValueFor<T>());
+				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else

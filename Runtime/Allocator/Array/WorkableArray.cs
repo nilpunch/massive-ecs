@@ -12,56 +12,49 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorkableArray<T> where T : unmanaged
 	{
-		private readonly ArrayHandle<T> _arrayHandle;
+		private readonly ArrayPointer<T> _arrayPointer;
 		private readonly Allocator _allocator;
 
-		public WorkableArray(ArrayHandle<T> arrayHandle, Allocator allocator)
+		public WorkableArray(ArrayPointer<T> arrayPointer, Allocator allocator)
 		{
-			_arrayHandle = arrayHandle;
+			_arrayPointer = arrayPointer;
 			_allocator = allocator;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ArrayHandle<T>(WorkableArray<T> array)
+		public static implicit operator ArrayPointer<T>(WorkableArray<T> array)
 		{
-			return new ArrayHandle<T>(array._arrayHandle);
+			return array._arrayPointer;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free()
 		{
-			_arrayHandle.Free(_allocator);
+			_arrayPointer.Free(_allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableArray<T> Track(int id)
+		public void DeepFree()
 		{
-			_arrayHandle.Track(_allocator, id);
-			return this;
+			_arrayPointer.DeepFree(_allocator);
 		}
 
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref _arrayHandle.GetAt(_allocator, index);
+			get => ref _arrayPointer.GetAt(_allocator, index);
 		}
 
 		public int Length
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _arrayHandle.Length(_allocator);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref T GetAtUnchecked(int index)
-		{
-			return ref _arrayHandle.GetAtUnchecked(_allocator, index);
+			get => _arrayPointer.Length(_allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Resize(int minimalLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
-			_allocator.Resize<T>(_arrayHandle, minimalLength, memoryInit);
+			_arrayPointer.Resize(_allocator, minimalLength, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -75,42 +68,42 @@ namespace Massive
 		public int IndexOf(T item, int startIndex, int count)
 		{
 			throw new NotImplementedException();
-
-			var chunk = _allocator.GetChunk(_arrayHandle);
-
-			if ((startIndex + count) * Unmanaged<T>.SizeInBytes >= chunk.OffsetInBytes + chunk.LengthInBytes)
-			{
-				return -1;
-			}
-
-			return Array.IndexOf(_allocator.Data, item, chunk.OffsetInBytes + startIndex, count);
+			//
+			// var chunk = _allocator.GetChunk(_arrayHandle);
+			//
+			// if ((startIndex + count) * Unmanaged<T>.SizeInBytes >= chunk.OffsetInBytes + chunk.LengthInBytes)
+			// {
+			// 	return -1;
+			// }
+			//
+			// return Array.IndexOf(_allocator.Data, item, chunk.OffsetInBytes + startIndex, count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(int sourceIndex, WorkableArray<T> destinationArray, int destinationIndex, int length)
 		{
 			throw new NotImplementedException();
-			Array.Copy(_allocator.Data, _allocator.GetChunk(_arrayHandle).OffsetInBytes + sourceIndex * Unmanaged<T>.SizeInBytes,
-				destinationArray._allocator.Data, destinationArray._allocator.GetChunk(_arrayHandle).OffsetInBytes + destinationIndex * Unmanaged<T>.SizeInBytes,
-				length);
+			// Array.Copy(_allocator.Data, _allocator.GetChunk(_arrayHandle).OffsetInBytes + sourceIndex * Unmanaged<T>.SizeInBytes,
+			// 	destinationArray._allocator.Data, destinationArray._allocator.GetChunk(_arrayHandle).OffsetInBytes + destinationIndex * Unmanaged<T>.SizeInBytes,
+			// 	length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToSelf(int sourceIndex, int destinationIndex, int length)
 		{
-			_arrayHandle.CopyToSelf(_allocator, sourceIndex, destinationIndex, length);
+			_arrayPointer.CopyToSelf(_allocator, sourceIndex, destinationIndex, length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureCapacity(int capacity)
 		{
-			_arrayHandle.EnsureCapacity(_allocator, capacity);
+			_arrayPointer.EnsureCapacity(_allocator, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public UnsafeEnumerator<T> GetEnumerator()
 		{
-			return _arrayHandle.GetEnumerator(_allocator);
+			return _arrayPointer.GetEnumerator(_allocator);
 		}
 	}
 }

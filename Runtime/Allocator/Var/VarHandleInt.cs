@@ -7,17 +7,11 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly partial struct VarHandleInt
 	{
-		public readonly ChunkId ChunkId;
+		public readonly Pointer Pointer;
 
-		public VarHandleInt(ChunkId chunkId)
+		public VarHandleInt(Pointer pointer)
 		{
-			ChunkId = chunkId;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableVarInt In(World world)
-		{
-			return new WorkableVarInt(this, world.Allocator);
+			Pointer = pointer;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -27,9 +21,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ChunkId(VarHandleInt handle)
+		public static implicit operator Pointer(VarHandleInt handle)
 		{
-			return handle.ChunkId;
+			return handle.Pointer;
 		}
 	}
 }

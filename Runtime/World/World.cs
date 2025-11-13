@@ -26,9 +26,9 @@ namespace Massive
 
 		public World(WorldConfig worldConfig)
 		{
-			Components = new Components();
-			Sets = new Sets(new SetFactory(worldConfig), Components);
 			Allocator = new Allocator();
+			Components = new Components();
+			Sets = new Sets(new SetFactory(Allocator, worldConfig), Components);
 			Config = worldConfig;
 			Entities = new Entities(this);
 		}

@@ -11,23 +11,23 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly struct WorkableList<T> where T : unmanaged
 	{
-		private readonly ListHandle<T> _list;
+		private readonly ListPointer<T> _list;
 		private readonly Allocator _allocator;
 
-		public WorkableList(ListHandle<T> list, Allocator allocator)
+		public WorkableList(ListPointer<T> list, Allocator allocator)
 		{
 			_list = list;
 			_allocator = allocator;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ListId(WorkableList<T> list)
+		public static implicit operator Pointer(WorkableList<T> list)
 		{
-			return list._list;
+			return list._list.ModelPointer.AsPointer;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ListHandle<T>(WorkableList<T> list)
+		public static implicit operator ListPointer<T>(WorkableList<T> list)
 		{
 			return list._list;
 		}
@@ -38,17 +38,10 @@ namespace Massive
 			_list.Free(_allocator);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableList<T> Track(int id)
-		{
-			_list.Track(_allocator, id);
-			return this;
-		}
-
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref _list.GetAtUnchecked(_allocator, index);
+			get => ref _list[_allocator, index];
 		}
 
 		public int Count
@@ -102,7 +95,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public UnsafeEnumerator<T> GetEnumerator()
 		{
-			return _list.Enumerate(_allocator);
+			return _list.GetEnumerator(_allocator);
 		}
 	}
 }

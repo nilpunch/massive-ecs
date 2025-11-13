@@ -4,7 +4,6 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
@@ -94,7 +93,7 @@ namespace Massive
 			Get(destinationId) = Get(sourceId);
 		}
 
-		protected override void PrepareData(int id)
+		protected override void ClearData(int id)
 		{
 			PagedData[id >> Constants.PageSizePower][id & Constants.PageSizeMinusOne] = DefaultValue;
 		}
@@ -141,7 +140,16 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private T[] CreatePage()
 		{
-			return PoolCount > 0 ? DataPagePool[--PoolCount] : new T[Constants.PageSize];
+			if (PoolCount > 0)
+			{
+				return DataPagePool[--PoolCount];
+			}
+			else
+			{
+				var newPage = new T[Constants.PageSize];
+				Array.Fill(newPage, DefaultValue);
+				return newPage;
+			}
 		}
 
 		/// <summary>

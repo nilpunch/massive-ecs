@@ -295,8 +295,6 @@ namespace Massive
 			{
 				Sets.LookupByComponentId[buffer[i]].Remove(id);
 			}
-
-			Allocator.FreeTracked(id);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

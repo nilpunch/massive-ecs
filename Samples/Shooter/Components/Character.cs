@@ -6,9 +6,9 @@
 
 		public int Health;
 
-		public ListHandle<Entifier> Bullets;
+		public ListPointer<Entifier> Bullets;
 
-		public Character(int maxHealth, ListHandle<Entifier> bullets)
+		public Character(int maxHealth, ListPointer<Entifier> bullets)
 		{
 			MaxHealth = maxHealth;
 			Bullets = bullets;

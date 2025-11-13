@@ -5,15 +5,13 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public readonly partial struct ListHandle<T> where T : unmanaged
+	public readonly partial struct ListPointer<T> where T : unmanaged
 	{
-		public readonly ArrayHandle<T> ItemsId;
-		public readonly VarHandleInt CountId;
+		public readonly Pointer<ListModel<T>> ModelPointer;
 
-		public ListHandle(ArrayHandle<T> itemsId, VarHandleInt countId)
+		public ListPointer(Pointer<ListModel<T>> modelPointer)
 		{
-			ItemsId = itemsId;
-			CountId = countId;
+			ModelPointer = modelPointer;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -23,9 +21,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ListId(ListHandle<T> handle)
+		public static implicit operator Pointer(ListPointer<T> pointer)
 		{
-			return new ListId(handle.ItemsId, handle.CountId);
+			return pointer.ModelPointer.AsPointer;
 		}
 	}
 }

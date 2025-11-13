@@ -79,8 +79,6 @@ namespace Massive
 				SaturatedBlocks[blockIndex] |= blockMask;
 			}
 
-			PrepareData(id);
-
 			NotifyAfterAdded(id);
 
 			for (var i = 0; i < RemoveOnAddCount; i++)
@@ -120,6 +118,8 @@ namespace Massive
 			{
 				Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
 			}
+
+			ClearData(id);
 
 			if (Bits[bitsIndex] == ulong.MaxValue)
 			{
@@ -184,6 +184,7 @@ namespace Massive
 							{
 								Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
 							}
+							ClearData(id);
 							for (var i = 0; i < RemoveOnRemoveCount; i++)
 							{
 								RemoveOnRemove[i].RemoveBit(bitsIndex, bitMask);
@@ -200,6 +201,7 @@ namespace Massive
 							{
 								Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
 							}
+							ClearData(id);
 							for (var i = 0; i < RemoveOnRemoveCount; i++)
 							{
 								RemoveOnRemove[i].RemoveBit(bitsIndex, 1UL << bit);
@@ -222,7 +224,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Removes all IDs without triggering the <see cref="BeforeRemoved"/> event.
+		/// Removes all IDs without triggering anything.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ClearWithoutNotify()
@@ -271,7 +273,7 @@ namespace Massive
 		{
 		}
 
-		protected virtual void PrepareData(int id)
+		protected virtual void ClearData(int id)
 		{
 		}
 

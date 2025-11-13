@@ -13,42 +13,17 @@ namespace Massive
 		{
 			return world.Allocator.AllocVar(value);
 		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableArray<T> AllocArray<T>(this World world, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
+		public static WorkableArray<T> AllocArray<T>(this World world, int length, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
-			return world.Allocator.AllocArray<T>(minimumLength, memoryInit);
+			return world.Allocator.AllocArray<T>(length, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableList<T> AllocList<T>(this World world, int capacity = 0) where T : unmanaged
 		{
 			return world.Allocator.AllocList<T>(capacity);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free(this World world, ChunkId chunkId)
-		{
-			world.Allocator.Free(chunkId);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Free(this World world, ListId listId)
-		{
-			world.Allocator.Free(listId.Items);
-			world.Allocator.Free(listId.Count);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Track(this World world, int id, ChunkId chunkId)
-		{
-			world.Allocator.Track(id, chunkId);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Track(this World world, int id, ListId listId)
-		{
-			world.Allocator.Track(id, listId.Items);
-			world.Allocator.Track(id, listId.Count);
 		}
 	}
 }

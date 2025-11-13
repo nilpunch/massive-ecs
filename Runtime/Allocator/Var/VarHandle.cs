@@ -7,11 +7,11 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly partial struct VarHandle<T> where T : unmanaged
 	{
-		public readonly ChunkId ChunkId;
+		public readonly Pointer<T> Pointer;
 
-		public VarHandle(ChunkId chunkId)
+		public VarHandle(Pointer<T> pointer)
 		{
-			ChunkId = chunkId;
+			Pointer = pointer;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -21,9 +21,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator ChunkId(VarHandle<T> handle)
+		public static implicit operator Pointer(VarHandle<T> handle)
 		{
-			return handle.ChunkId;
+			return handle.Pointer;
 		}
 	}
 }

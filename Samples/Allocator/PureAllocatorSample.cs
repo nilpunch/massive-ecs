@@ -3,7 +3,7 @@ namespace Massive.Samples.AllocatorUsage
 	class PureAllocatorSample
 	{
 		Allocator Allocator;
-		ArrayHandle<int> Values;
+		ArrayPointer<int> Values;
 
 		void Allocate()
 		{
@@ -12,14 +12,14 @@ namespace Massive.Samples.AllocatorUsage
 			// Allocate an empty array (same as new int[0]).
 			var array = Allocator.AllocArray<int>(0);
 
-			// Store the array using a handle.
-			// Handles are unmanaged and safe to store in simulation.
+			// Store the array using a pointer.
+			// Pointers are unmanaged and safe to store in simulation.
 			Values = array;
 		}
 
 		void Use()
 		{
-			// To access the array, combine the handle with the allocator.
+			// To access the array, combine the pointer with the allocator.
 			var values = Values.In(Allocator);
 
 			// Resize the array whenever needed. The handle stays valid.

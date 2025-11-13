@@ -14,18 +14,22 @@ namespace Massive
 			62, 55, 45, 31, 13, 39, 36, 6, 61, 44, 12, 35, 60, 11, 10, 9,
 		};
 
+		private static readonly byte[] MsbDeBruijn32 =
+		{
+			0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
+			8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
+		};
+
 		/// <summary>
 		/// Computes the smallest power of two greater than or equal to a value.
 		/// </summary>
+		/// <remarks>
+		/// Returns 0 when value is 0.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int NextPowerOf2(int value)
 		{
 			var v = (uint)value;
-
-			if (v == 0)
-			{
-				return 0;
-			}
 
 			v--;
 			v |= v >> 1;
@@ -44,72 +48,41 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPowerOfTwo(int value)
 		{
-			return value > 0 && (value & (value - 1)) == 0;
+			return (value & (value - 1)) == 0;
 		}
 
-		/// <summary>
-		/// Fast log2 for powers of two only.
-		/// </summary>
-		/// <param name="value"> Non-negative power of two value. </param>
+		/// <param name="value"> Non-negative value. </param>
 		/// <remarks>
-		/// Returns -1 when value is 0.
+		/// Returns 0 when value is 0.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int FastLog2(int value)
+		public static int FloorLog2(uint value)
 		{
-			var lzc = value;
-			lzc |= lzc >> 1;
-			lzc |= lzc >> 2;
-			lzc |= lzc >> 4;
-			lzc |= lzc >> 8;
-			lzc |= lzc >> 16;
+			value |= value >> 1;
+			value |= value >> 2;
+			value |= value >> 4;
+			value |= value >> 8;
+			value |= value >> 16;
 
-			lzc -= lzc >> 1 & 0x55555555;
-			lzc = (lzc >> 2 & 0x33333333) + (lzc & 0x33333333);
-			lzc = (lzc >> 4) + lzc & 0x0f0f0f0f;
-			lzc += lzc >> 8;
-			lzc += lzc >> 16;
-
-			// lzc = sizeof(int) * 8 - lzc & 0x0000003f;
-			// log2 = sizeof(int) * 8 - lzc - 1;
-			// So, log2 = (lzc & 0x0000003f) - 1;
-
-			return (lzc & 0x0000003f) - 1;
+			return MsbDeBruijn32[(value * 0x07C4ACDDU) >> 27];
 		}
 
+		/// <param name="value"> Non-negative value. </param>
+		/// <remarks>
+		/// Returns 32 when value is 0.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void NextPowerOf2AndLog2(int value, out int nextPowerOf2, out int log2)
+		public static int CeilLog2(int value)
 		{
-			var v = (uint)value;
-    
-			if (v == 0)
-			{
-				nextPowerOf2 = 0;
-				log2 = -1;
-				return; // log2(0) is undefined, return -1 as per your convention
-			}
+			var value1 = (uint)(value - 1);
 
-			// Calculate next power of 2
-			v--;
-			v |= v >> 1;
-			v |= v >> 2;
-			v |= v >> 4;
-			v |= v >> 8;
-			v |= v >> 16;
-			v++;
-    
-			nextPowerOf2 = (int)v;
-    
-			// Calculate log2 using the same bit pattern we already computed
-			// For a power of 2, v-1 gives us the mask we need for population count
-			uint lzc = v - 1;
-			lzc -= lzc >> 1 & 0x55555555;
-			lzc = (lzc >> 2 & 0x33333333) + (lzc & 0x33333333);
-			lzc = (lzc >> 4) + lzc & 0x0f0f0f0f;
-			lzc += lzc >> 8;
-			lzc += lzc >> 16;
-    
-			log2 = (int)(lzc & 0x0000003f);
+			value1 |= value1 >> 1;
+			value1 |= value1 >> 2;
+			value1 |= value1 >> 4;
+			value1 |= value1 >> 8;
+			value1 |= value1 >> 16;
+
+			return MsbDeBruijn32[(value1 * 0x07C4ACDDU) >> 27] + 1;
 		}
 
 		/// <summary>
@@ -141,6 +114,15 @@ namespace Massive
 			x = (x & 0x3333333333333333UL) + ((x >> 2) & 0x3333333333333333UL);
 			x = (x + (x >> 4)) & 0x0F0F0F0F0F0F0F0FUL;
 			return (int)((x * 0x0101010101010101UL) >> 56);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int PopCount(uint x)
+		{
+			x -= (x >> 1) & 0x55555555U;
+			x = (x & 0x33333333U) + ((x >> 2) & 0x33333333U);
+			x = (x + (x >> 4)) & 0x0F0F0F0FU;
+			return (int)((x * 0x01010101U) >> 24);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -209,13 +191,39 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Max(int a, int b)
 		{
-			return a > b ? a : b;
+			if (b > a)
+			{
+				a = b;
+			}
+
+			return a;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int Max(int a, int b, int c)
+		{
+			if (b > a)
+			{
+				a = b;
+			}
+
+			if (c > a)
+			{
+				a = c;
+			}
+
+			return a;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Min(int a, int b)
 		{
-			return a < b ? a : b;
+			if (b < a)
+			{
+				a = b;
+			}
+
+			return a;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -223,7 +231,7 @@ namespace Massive
 		{
 			return -offset & (alignment - 1);
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static long AlignmentPadding(long offset, int alignment)
 		{

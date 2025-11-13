@@ -2,9 +2,9 @@
 {
 	public struct Item { }
 
-	public struct Inventory
+	public struct Inventory : IAutoFree<Inventory>
 	{
-		public ListHandle<Entifier> Items;
+		public ListPointer<Entifier> Items;
 	}
 
 	class WorldAllocatorSample
@@ -15,14 +15,11 @@
 		{
 			var entity = World.Create();
 
-			// Allocates a list that's tied to this entity's lifetime.
+			// Allocate and assign the list pointer to the Inventory component.
 			// It will be freed automatically when the entity is destroyed.
-			var items = World.AllocList<Entifier>().Track(entity);
-
-			// Assign the list handle to the Inventory component.
 			World.Set(entity, new Inventory()
 			{
-				Items = items
+				Items = World.AllocList<Entifier>()
 			});
 		}
 
@@ -34,7 +31,7 @@
 			// Get a reference to its Inventory component.
 			ref var inventory = ref World.Get<Inventory>(entity);
 
-			// To access the items list, combine the list handle with the world.
+			// To access the items list, combine the list pointer with the world.
 			var items = inventory.Items.In(World);
 
 			// You can treat it like a regular list.
@@ -59,7 +56,7 @@
 		void Free()
 		{
 			// This clears the world and destroys all entities.
-			// All auto-allocated lists will be freed with their entities.
+			// All allocated lists will be freed with their components.
 			World.Clear();
 		}
 	}

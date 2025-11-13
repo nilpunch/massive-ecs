@@ -28,13 +28,6 @@ namespace Massive
 			_varHandle.Free(_allocator);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public WorkableVar<T> Track(int id)
-		{
-			_varHandle.Track(_allocator, id);
-			return this;
-		}
-
 		public ref T Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
