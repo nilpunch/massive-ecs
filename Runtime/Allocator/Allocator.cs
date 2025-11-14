@@ -12,7 +12,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public unsafe partial class Allocator
 	{
-		public struct Page
+		public readonly struct Page
 		{
 			public readonly byte* AlignedPtr;
 
@@ -160,14 +160,14 @@ namespace Massive
 			var newPointer = Alloc(minimumLength, alignment, MemoryInit.Uninitialized);
 			ref var newPage = ref Pages[newPointer.Page];
 
-			var minLength = 1 << MathUtils.Min(page.SizeClass, newPage.SizeClass);
+			var minSlotSize = 1 << MathUtils.Min(page.SizeClass, newPage.SizeClass);
 			var destination = newPage.AlignedPtr + newPointer.Offset;
-			UnsafeUtils.Copy(page.AlignedPtr + pointer.Offset, destination, minLength);
+			UnsafeUtils.Copy(page.AlignedPtr + pointer.Offset, destination, minSlotSize);
 			if (memoryInit == MemoryInit.Clear && newPage.SizeClass > page.SizeClass)
 			{
 				var start = newPointer.Offset + (1 << page.SizeClass);
-				var length = 1 << (newPage.SizeClass - page.SizeClass);
-				UnsafeUtils.Clear(newPage.AlignedPtr, start, length);
+				var remainingLength = 1 << (newPage.SizeClass - page.SizeClass);
+				UnsafeUtils.Clear(newPage.AlignedPtr, start, remainingLength);
 			}
 
 			Free(pointer);

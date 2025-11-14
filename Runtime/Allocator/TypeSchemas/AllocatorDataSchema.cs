@@ -6,16 +6,18 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	[StructLayout(LayoutKind.Sequential, Size = Length + 1, Pack = Length + 1)]
+	[StructLayout(LayoutKind.Sequential, Size = PreferedSize, Pack = PreferedSize)]
 	public unsafe struct AllocatorDataSchema : IEquatable<AllocatorDataSchema>
 	{
-		public const int Length = 7;
+		public const int PreferedSize = 8;
+
+		public const int Length = PreferedSize - 1;
 		public const byte MaxSchema = byte.MaxValue >> 1;
 		public const byte FlagMask = 1 << 7;
 		public const byte UsableMask = FlagMask - 1;
 
 		/// <summary>
-		/// PointerFieldOffset -(if MSB set)> NestedShema -(if MSB set)> CountFieldOffset.
+		/// PointerFieldOffset -(MSB set)-> NestedShema -(MSB set)-> CountFieldOffset.
 		/// </summary>
 		public fixed byte OffsetSchemaCount[Length];
 

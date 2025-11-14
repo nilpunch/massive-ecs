@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.Shooter
 {
-	public struct Character
+	public struct Character : IAutoFree<Character>
 	{
 		public readonly int MaxHealth;
 
