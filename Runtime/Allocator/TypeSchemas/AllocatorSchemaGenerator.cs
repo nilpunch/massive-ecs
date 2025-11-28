@@ -15,15 +15,11 @@ namespace Massive
 		private static readonly Dictionary<Type, byte> _schemaIndices = new Dictionary<Type, byte>();
 		private static readonly Dictionary<AllocatorDataSchema, byte> _existingSchemas = new Dictionary<AllocatorDataSchema, byte>();
 
-		/// <returns>
-		/// byte.<see cref="byte.MaxValue"/> if type has no pointers.
-		/// </returns>
 		public static AllocatorTypeSchema Generate<T>() where T : unmanaged
 		{
+			ClearCache();
 			var rootSchemaIndex = GetRootSchemaIndex(typeof(T));
 			var schema = new AllocatorTypeSchema(_schemas.ToArray(), rootSchemaIndex);
-
-			ResetCache();
 			return schema;
 		}
 
@@ -32,7 +28,7 @@ namespace Massive
 			return GetPointerFields(type, 0).Any();
 		}
 
-		private static void ResetCache()
+		private static void ClearCache()
 		{
 			_schemas.Clear();
 			_schemaIndices.Clear();
@@ -40,7 +36,7 @@ namespace Massive
 		}
 
 		/// <returns>
-		/// byte.<see cref="byte.MaxValue"/> if type has no pointers.
+		/// <see cref="AllocatorDataSchema.InvalidSchema"/> if type has no pointers.
 		/// </returns>
 		private static unsafe byte GetRootSchemaIndex(Type type)
 		{
@@ -57,7 +53,7 @@ namespace Massive
 			var schema = new AllocatorDataSchema();
 
 			var sizeOfType = ReflectionUtils.SizeOfUnmanaged(type);
-			if (sizeOfType > byte.MaxValue)
+			if (sizeOfType > AllocatorDataSchema.MaxElementSize)
 			{
 				throw new InvalidOperationException($"Size of struct is too big. Size: {sizeOfType}");
 			}
@@ -75,6 +71,11 @@ namespace Massive
 					throw new InvalidOperationException("Struct has too many pointers. Increase PointerSchema.PreferedByteSize or reduce amount of pointers in struct.");
 				}
 
+				if (offset > AllocatorDataSchema.MaxOffset)
+				{
+					throw new InvalidOperationException("Field offset in struct is larger than AllocatorDataSchema.MaxOffset.");
+				}
+
 				schema.OffsetSchemaCount[complexityCount++] = (byte)offset;
 
 				if (fieldType == typeof(Pointer))
@@ -84,7 +85,7 @@ namespace Massive
 
 				var nestedSchemaIndex = GetRootSchemaIndex(pointedType);
 
-				if (nestedSchemaIndex == byte.MaxValue)
+				if (nestedSchemaIndex > AllocatorDataSchema.MaxSchema)
 				{
 					continue;
 				}
@@ -97,7 +98,7 @@ namespace Massive
 				schema.OffsetSchemaCount[complexityCount - 1] |= AllocatorDataSchema.FlagMask;
 				schema.OffsetSchemaCount[complexityCount++] = nestedSchemaIndex;
 
-				var pointerFieldAttribute = field.GetCustomAttribute<PointerFieldAttribute>();
+				var pointerFieldAttribute = field.GetCustomAttribute<AllocatorPointerFieldAttribute>();
 				if (pointerFieldAttribute != null && !string.IsNullOrWhiteSpace(pointerFieldAttribute.CountFieldName))
 				{
 					if (complexityCount >= AllocatorDataSchema.Length)
@@ -112,7 +113,7 @@ namespace Massive
 
 			if (complexityCount == 0)
 			{
-				schemaIndex = byte.MaxValue;
+				schemaIndex = AllocatorDataSchema.InvalidSchema;
 			}
 			else if (!_existingSchemas.TryGetValue(schema, out schemaIndex))
 			{

@@ -7,23 +7,17 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public readonly partial struct ArrayPointer<T> where T : unmanaged
 	{
-		public readonly Pointer<ArrayModel<T>> ModelPointer;
+		public readonly Pointer<ArrayModel<T>> Model;
 
-		public ArrayPointer(Pointer<ArrayModel<T>> modelPointer)
+		public ArrayPointer(Pointer<ArrayModel<T>> model)
 		{
-			ModelPointer = modelPointer;
+			Model = model;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorkableArray<T> In(Allocator allocator)
 		{
 			return new WorkableArray<T>(this, allocator);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator Pointer(ArrayPointer<T> pointer)
-		{
-			return pointer.ModelPointer.AsPointer;
 		}
 	}
 }

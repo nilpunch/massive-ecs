@@ -37,8 +37,14 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static unsafe void Copy(byte* source, byte* destination, int length)
 		{
-			if (length <= 0)
+			AllocatorAlignmentsException.ThrowIfNotEqualAlignemnt(source, destination);
+
+			if (length <= 8)
 			{
+				for (var i = 0; i < length; i++)
+				{
+					destination[i] = source[i];
+				}
 				return;
 			}
 
@@ -48,25 +54,39 @@ namespace Massive
 				return;
 			}
 
-			var ptr = source;
-			var end = ptr + length;
+			var end = source + length;
 
-			while (((ulong)source & 7) != 0 && source < end)
+			var misalignment = (int)((ulong)source & 7);
+			if (misalignment != 0)
 			{
-				*destination++ = *source++;
+				var bytesToAlign = 8 - misalignment;
+
+				for (var i = 0; i < bytesToAlign; i++)
+				{
+					destination[i] = source[i];
+				}
+
+				source += bytesToAlign;
+				destination += bytesToAlign;
 			}
 
 			var sourceLong = (long*)source;
 			var destinationLong = (long*)destination;
-			while ((byte*)(sourceLong + 1) <= end)
+			var longCount = (int)((end - source) >> 3);
+
+			for (var i = 0; i < longCount; i++)
 			{
-				*destinationLong++ = *sourceLong++;
+				destinationLong[i] = sourceLong[i];
 			}
 
-			source = (byte*)sourceLong;
-			while (source < end)
+			var bulkCopiedCount = longCount << 3;
+			source += bulkCopiedCount;
+			destination += bulkCopiedCount;
+			var remaining = (int)(end - source);
+
+			for (var i = 0; i < remaining; i++)
 			{
-				*destination++ = *source++;
+				destination[i] = source[i];
 			}
 		}
 

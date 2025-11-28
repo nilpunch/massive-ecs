@@ -9,7 +9,7 @@ namespace Massive
 	public static class WorldAllocatorExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static WorkableVar<T> AllocVar<T>(this World world, T value = default) where T : unmanaged
+		public static WorkablePointer<T> AllocVar<T>(this World world, T value = default) where T : unmanaged
 		{
 			return world.Allocator.AllocVar(value);
 		}
@@ -24,6 +24,18 @@ namespace Massive
 		public static WorkableList<T> AllocList<T>(this World world, int capacity = 0) where T : unmanaged
 		{
 			return world.Allocator.AllocList<T>(capacity);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static ArrayModel<T> AllocArrayModel<T>(this World world, int length, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
+		{
+			return world.Allocator.AllocArrayModel<T>(length, memoryInit);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static ListModel<T> AllocListModel<T>(this World world, int capacity = 0) where T : unmanaged
+		{
+			return world.Allocator.AllocListModel<T>(capacity);
 		}
 	}
 }

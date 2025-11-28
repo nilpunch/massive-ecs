@@ -38,11 +38,11 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void DeepFree(Allocator allocator, Pointer<T> typedPointer)
 		{
-			var pointer = typedPointer.AsPointer;
-			var data = allocator.GetPage(pointer).AlignedPtr + pointer.Offset;
+			var pointer = typedPointer.Raw;
 
 			if (HasPointers)
 			{
+				var data = allocator.GetPage(pointer).AlignedPtr + pointer.Offset;
 				Schema.DeepFreePointedData(allocator, data);
 			}
 
@@ -95,8 +95,9 @@ namespace Massive
 					continue;
 				}
 
+				var nestedData = allocator.GetPtr(nestedPointer);
+
 				var nestedSchemaIndex = schema.OffsetSchemaCount[index++];
-				var nestedData = allocator.GetPage(nestedPointer).AlignedPtr + nestedPointer.Offset;
 				var nestedSchema = Schemas[nestedSchemaIndex & AllocatorDataSchema.UsableMask];
 
 				var isCollection = nestedSchemaIndex >= AllocatorDataSchema.FlagMask;
@@ -109,63 +110,13 @@ namespace Massive
 
 					for (var i = 0; i < count; i++)
 					{
-						DeepFreePointedData_Recursion(allocator, nestedData, nestedSchema);
+						DeepFreePointedData(allocator, nestedData, nestedSchema);
 						nestedData += elementSize;
 					}
 				}
 				else
 				{
-					DeepFreePointedData_Recursion(allocator, nestedData, nestedSchema);
-				}
-
-				allocator.Free(nestedPointer);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void DeepFreePointedData_Recursion(Allocator allocator, byte* data, AllocatorDataSchema schema)
-		{
-			var index = 0;
-			var lastPointerFieldOffset = -1;
-			while (index < AllocatorDataSchema.Length && schema.OffsetSchemaCount[index] > lastPointerFieldOffset)
-			{
-				lastPointerFieldOffset = schema.OffsetSchemaCount[index++];
-
-				var nestedPointer = *(Pointer*)(data + (lastPointerFieldOffset & AllocatorDataSchema.UsableMask));
-
-				if (!allocator.IsAllocated(nestedPointer))
-				{
-					continue;
-				}
-
-				var isPrimitive = lastPointerFieldOffset < AllocatorDataSchema.FlagMask;
-				if (isPrimitive)
-				{
-					allocator.Free(nestedPointer);
-					continue;
-				}
-
-				var nestedSchemaIndex = schema.OffsetSchemaCount[index++];
-				var nestedData = allocator.GetPage(nestedPointer).AlignedPtr + nestedPointer.Offset;
-				var nestedSchema = Schemas[nestedSchemaIndex & AllocatorDataSchema.UsableMask];
-
-				var isCollection = nestedSchemaIndex >= AllocatorDataSchema.FlagMask;
-				if (isCollection)
-				{
-					var countFieldOffset = schema.OffsetSchemaCount[index++];
-
-					var count = *(int*)(data + countFieldOffset);
-					var elementSize = nestedSchema.ElementSize;
-
-					for (var i = 0; i < count; i++)
-					{
-						DeepFreePointedData_Recursion(allocator, nestedData, nestedSchema);
-						nestedData += elementSize;
-					}
-				}
-				else
-				{
-					DeepFreePointedData_Recursion(allocator, nestedData, nestedSchema);
+					DeepFreePointedData(allocator, nestedData, nestedSchema);
 				}
 
 				allocator.Free(nestedPointer);

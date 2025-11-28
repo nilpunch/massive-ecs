@@ -42,68 +42,49 @@ namespace Massive
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref _arrayPointer.GetAt(_allocator, index);
+			get => ref _arrayPointer.Model.Value(_allocator).GetAt(_allocator, index);
 		}
 
 		public int Length
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _arrayPointer.Length(_allocator);
+			get => _arrayPointer.Model.Value(_allocator).Length;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Resize(int minimalLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
-			_arrayPointer.Resize(_allocator, minimalLength, memoryInit);
+			_arrayPointer.Model.Value(_allocator).Resize(_allocator, minimalLength, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item)
+		public int IndexOf<U>(U item) where U : IEquatable<T>
 		{
-			throw new NotImplementedException();
-			// return Array.IndexOf(Allocator.Data, item, Allocator.GetChunk(ChunkId).AlignedOffsetInBytes, Allocator.GetChunk(ChunkId).LengthInBytes);
+			return _arrayPointer.Model.Value(_allocator).IndexOf(_allocator, item);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item, int startIndex, int count)
+		public int IndexOf<U>(U item, int startIndex, int count) where U : IEquatable<T>
 		{
-			throw new NotImplementedException();
-			//
-			// var chunk = _allocator.GetChunk(_arrayHandle);
-			//
-			// if ((startIndex + count) * Unmanaged<T>.SizeInBytes >= chunk.OffsetInBytes + chunk.LengthInBytes)
-			// {
-			// 	return -1;
-			// }
-			//
-			// return Array.IndexOf(_allocator.Data, item, chunk.OffsetInBytes + startIndex, count);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(int sourceIndex, WorkableArray<T> destinationArray, int destinationIndex, int length)
-		{
-			throw new NotImplementedException();
-			// Array.Copy(_allocator.Data, _allocator.GetChunk(_arrayHandle).OffsetInBytes + sourceIndex * Unmanaged<T>.SizeInBytes,
-			// 	destinationArray._allocator.Data, destinationArray._allocator.GetChunk(_arrayHandle).OffsetInBytes + destinationIndex * Unmanaged<T>.SizeInBytes,
-			// 	length);
+			return _arrayPointer.Model.Value(_allocator).IndexOf(_allocator, item, startIndex, count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToSelf(int sourceIndex, int destinationIndex, int length)
 		{
-			_arrayPointer.CopyToSelf(_allocator, sourceIndex, destinationIndex, length);
+			_arrayPointer.Model.Value(_allocator).CopyToSelf(_allocator, sourceIndex, destinationIndex, length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureCapacity(int capacity)
 		{
-			_arrayPointer.EnsureCapacity(_allocator, capacity);
+			_arrayPointer.Model.Value(_allocator).EnsureLength(_allocator, capacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public UnsafeEnumerator<T> GetEnumerator()
 		{
-			return _arrayPointer.GetEnumerator(_allocator);
+			return _arrayPointer.Model.Value(_allocator).GetEnumerator(_allocator);
 		}
 	}
 }

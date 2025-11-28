@@ -7,165 +7,86 @@ using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	public unsafe partial struct ArrayPointer<T>
+	public partial struct ArrayPointer<T>
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref ArrayModel GetModel(Allocator allocator)
-		{
-			return ref *(ArrayModel*)(allocator.GetPage(ModelPointer.AsPointer).AlignedPtr + ModelPointer.AsPointer.Offset);
-		}
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Free(Allocator allocator)
 		{
-			allocator.Free(GetModel(allocator).Items);
-			allocator.Free(ModelPointer.AsPointer);
+			ref var model = ref Model.Value(allocator);
+			allocator.Free(model.Items.Raw);
+			allocator.Free(Model.Raw);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void DeepFree(Allocator allocator)
 		{
-			AllocatorTypeSchema<ArrayModel<T>>.DeepFree(allocator, ModelPointer);
+			Model.DeepFree(allocator);
 		}
 
 		public ref T this[Allocator allocator, int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get
-			{
-				ref var model = ref GetModel(allocator);
-
-				AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, model.Length);
-
-				ref readonly var page = ref allocator.GetPage(model.Items);
-				return ref ((T*)(page.AlignedPtr + model.Items.Offset))[index];
-			}
+			get => ref Model.Value(allocator)[allocator, index];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ref T GetAt(Allocator allocator, int index)
 		{
-			ref var model = ref GetModel(allocator);
-
-			AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index, model.Length);
-
-			ref readonly var page = ref allocator.GetPage(model.Items);
-
-			return ref ((T*)(page.AlignedPtr + model.Items.Offset))[index];
+			return ref Model.Value(allocator).GetAt(allocator, index);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int Length(Allocator allocator)
 		{
-			return GetModel(allocator).Length;
+			return Model.Value(allocator).Length;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Resize(Allocator allocator, int length, MemoryInit memoryInit = MemoryInit.Clear)
 		{
-			ref var model = ref GetModel(allocator);
-
-			var info = Unmanaged<T>.Info;
-			allocator.Resize(ref model.Items, length * info.Size, info.Alignment, memoryInit);
-			model.Length = length;
+			Model.Value(allocator).Resize(allocator, length, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(Allocator allocator, T item)
+		public int IndexOf<U>(Allocator allocator, U item) where U : IEquatable<T>
 		{
-			throw new NotImplementedException();
-			// return Array.IndexOf(Allocator.Data, item, Allocator.GetChunk(ChunkId).AlignedOffsetInBytes, Allocator.GetChunk(ChunkId).LengthInBytes);
+			return Model.Value(allocator).IndexOf(allocator, item);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(Allocator allocator, T item, int startIndex, int count)
+		public int IndexOf<U>(Allocator allocator, U item, int startIndex, int count) where U : IEquatable<T>
 		{
-			throw new NotImplementedException();
-
-			// var chunk = Allocator.GetChunk(ChunkId);
-			//
-			// if ((startIndex + count) * Unmanaged<T>.SizeInBytes >= chunk.OffsetInBytes + chunk.LengthInBytes)
-			// {
-			// 	return -1;
-			// }
-			//
-			// return Array.IndexOf(Allocator.Data, item, chunk.OffsetInBytes + startIndex, count);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(Allocator allocator, int sourceIndex, ArrayPointer<T> destinationArray, int destinationIndex, int length)
-		{
-			throw new NotImplementedException();
-			// Array.Copy(Allocator.Data, Allocator.GetChunk(ChunkId).OffsetInBytes + sourceIndex * Unmanaged<T>.SizeInBytes,
-			// 	destinationArray.Allocator.Data, destinationArray.Allocator.GetChunk(ChunkId).OffsetInBytes + destinationIndex * Unmanaged<T>.SizeInBytes,
-			// 	length);
+			return Model.Value(allocator).IndexOf(allocator, item, startIndex, count);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyToSelf(Allocator allocator, int sourceIndex, int destinationIndex, int length)
 		{
-			ref var model = ref GetModel(allocator);
-
-			ref readonly var dataPage = ref allocator.GetPage(model.Items);
-
-			var lengthInBytes = length * Unmanaged<T>.SizeInBytes;
-			var alignedChunkPtr = (T*)(dataPage.AlignedPtr + model.Items.Offset);
-			UnsafeUtils.Copy(alignedChunkPtr + sourceIndex, alignedChunkPtr + destinationIndex, lengthInBytes);
+			Model.Value(allocator).CopyToSelf(allocator, sourceIndex, destinationIndex, length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void EnsureCapacity(Allocator allocator, int capacity)
+		public void EnsureLength(Allocator allocator, int length)
 		{
-			ref var model = ref GetModel(allocator);
-
-			if (capacity > model.Length)
-			{
-				var info = Unmanaged<T>.Info;
-				allocator.Resize(ref model.Items, capacity * info.Size, info.Alignment);
-				model.Length = capacity;
-			}
+			Model.Value(allocator).EnsureLength(allocator, length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public UnsafeEnumerator<T> GetEnumerator(Allocator allocator)
 		{
-			ref var model = ref GetModel(allocator);
-
-			ref readonly var dataPage = ref allocator.GetPage(model.Items);
-
-			UnsafeEnumerator<T> unsafeEnumerator = default;
-			unsafeEnumerator.Data = (T*)(dataPage.AlignedPtr + model.Items.Offset);
-			unsafeEnumerator.Length = model.Length;
-			unsafeEnumerator.Index = -1;
-			return unsafeEnumerator;
+			return Model.Value(allocator).GetEnumerator(allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public UnsafeEnumerator<T> GetEnumerator(Allocator allocator, int length)
 		{
-			ref var model = ref GetModel(allocator);
-
-			ref readonly var dataPage = ref allocator.GetPage(model.Items);
-
-			UnsafeEnumerator<T> unsafeEnumerator = default;
-			unsafeEnumerator.Data = (T*)(dataPage.AlignedPtr + model.Items.Offset);
-			unsafeEnumerator.Length = length;
-			unsafeEnumerator.Index = -1;
-			return unsafeEnumerator;
+			return Model.Value(allocator).GetEnumerator(allocator, length);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public UnsafeEnumerator<T> GetEnumerator(Allocator allocator, int start, int length)
 		{
-			ref var model = ref GetModel(allocator);
-
-			ref readonly var dataPage = ref allocator.GetPage(model.Items);
-
-			UnsafeEnumerator<T> unsafeEnumerator = default;
-			unsafeEnumerator.Data = (T*)(dataPage.AlignedPtr + model.Items.Offset);
-			unsafeEnumerator.Length = length;
-			unsafeEnumerator.Index = start - 1;
-			return unsafeEnumerator;
+			return Model.Value(allocator).GetEnumerator(allocator, start, length);
 		}
 	}
 }

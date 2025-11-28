@@ -18,24 +18,29 @@ namespace Massive
 
 			public readonly uint* UsedSlots;
 
-			public readonly int SizeClass;
+			public readonly int SlotClass;
 
-			public Page(byte* alignedPtr, int sizeClass)
+			public int SlotLength
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => 1 << SlotClass;
+			}
+
+			public Page(byte* alignedPtr, int slotClass)
 			{
 				AlignedPtr = alignedPtr;
-				SizeClass = sizeClass;
+				SlotClass = slotClass;
 
-				var pageSize = 1 << MathUtils.Max(sizeClass, MinPageSizeClass);
+				var pageSize = 1 << MathUtils.Max(slotClass, MinPageSlotClass);
 				UsedSlots = (uint*)(alignedPtr + pageSize);
 			}
 		}
 
-		public const int MinPageSizeClass = 16;
-		public const int MinPageSize = 1 << MinPageSizeClass;
-		public const int MinSmallClass = 2; // Alignment for uint bitset at the end and free list of Pointer's.
-		public const int MinSmallClassSize = 1 << MinSmallClass;
-		public const int MaxSmallClass = MinPageSizeClass;
-		public const int AllClassCount = 32 - MinSmallClass;
+		public const int MinPageSlotClass = 16;
+		public const int MinPageSize = 1 << MinPageSlotClass;
+		public const int MinSlotClass = 2; // Ensures alignment for free list of Pointer's.
+		public const int MinSlotLength = 1 << MinSlotClass;
+		public const int AllClassCount = 32 - MinSlotClass;
 
 		public Page[] Pages { get; private set; } = Array.Empty<Page>();
 
@@ -60,9 +65,13 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public ref T Get<T>(Pointer pointer) where T : unmanaged
+		public ref T Value<T>(Pointer pointer) where T : unmanaged
 		{
-			return ref *(T*)(GetPage(pointer).AlignedPtr + pointer.Offset);
+			ref readonly var page = ref GetPage(pointer);
+
+			AllocatorOutOfRangeException.ThrowIfNotFitsInSlot(Unmanaged<T>.SizeInBytes, page.SlotLength);
+
+			return ref *(T*)(page.AlignedPtr + pointer.Offset);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -70,7 +79,7 @@ namespace Massive
 		{
 			ref readonly var page = ref GetPage(pointer);
 
-			AllocatorIndexOutOfRangeException.ThrowIfOutOfRangeExclusive(index * Unmanaged<T>.SizeInBytes, 1 << page.SizeClass);
+			AllocatorOutOfRangeException.ThrowIfOutOfRangeExclusive((index * Unmanaged<T>.SizeInBytes) + Unmanaged<T>.SizeInBytes - 1, page.SlotLength);
 
 			return ref ((T*)(page.AlignedPtr + pointer.Offset))[index];
 		}
@@ -87,50 +96,50 @@ namespace Massive
 		{
 			NotPowerOfTwoArgumentException.ThrowIfNotPowerOfTwo(alignment);
 
-			var sizeClass = SizeClass(minimumLength, alignment);
-			var sizeClassIndex = sizeClass - MinSmallClass;
-			var slotSize = 1 << sizeClass;
+			var slotClass = SlotClass(minimumLength, alignment);
+			var slotClassIndex = slotClass - MinSlotClass;
+			var slotLength = 1 << slotClass;
 
-			var pointer = FreeToAlloc[sizeClassIndex];
+			var pointer = FreeToAlloc[slotClassIndex];
 			if (pointer.IsNotNull)
 			{
 				ref var page = ref Pages[pointer.Page];
-				FreeToAlloc[sizeClassIndex] = *(Pointer*)(page.AlignedPtr + pointer.Offset);
-				SetUsedSlot(page.UsedSlots, pointer.Offset >> sizeClass);
+				FreeToAlloc[slotClassIndex] = *(Pointer*)(page.AlignedPtr + pointer.Offset);
+				SetUsedSlot(page.UsedSlots, pointer.Offset >> slotClass);
 				if (memoryInit == MemoryInit.Clear)
 				{
-					UnsafeUtils.Clear(page.AlignedPtr, pointer.Offset, slotSize);
+					UnsafeUtils.Clear(page.AlignedPtr, pointer.Offset, slotLength);
 				}
 
 				return pointer;
 			}
 
-			pointer = NextToAlloc[sizeClassIndex];
+			pointer = NextToAlloc[slotClassIndex];
 			if (pointer.Offset != 0)
 			{
 				ref var page = ref Pages[pointer.Page];
-				NextToAlloc[sizeClassIndex].Offset = unchecked((ushort)(pointer.Offset + slotSize));
-				SetUsedSlot(page.UsedSlots, pointer.Offset >> sizeClass);
+				NextToAlloc[slotClassIndex].Offset = unchecked((ushort)(pointer.Offset + slotLength));
+				SetUsedSlot(page.UsedSlots, pointer.Offset >> slotClass);
 				if (memoryInit == MemoryInit.Clear)
 				{
-					UnsafeUtils.Clear(page.AlignedPtr, pointer.Offset, slotSize);
+					UnsafeUtils.Clear(page.AlignedPtr, pointer.Offset, slotLength);
 				}
 				return pointer;
 			}
 
 			EnsurePageAt(PageCount);
-			var bitSetLength = BitSetLength(sizeClass);
-			var pageSize = 1 << MathUtils.Max(sizeClass, MinPageSizeClass);
+			var bitSetLength = BitSetLength(slotClass);
+			var pageSize = 1 << MathUtils.Max(slotClass, MinPageSlotClass);
 
-			Pages[PageCount] = new Page(UnsafeUtils.AllocAligned(pageSize + bitSetLength, MinPageSize), sizeClass);
-			NextToAlloc[sizeClassIndex] = new Pointer() { Offset = (ushort)slotSize, Page = PageCount };
+			Pages[PageCount] = new Page(UnsafeUtils.AllocAligned(pageSize + bitSetLength, MinPageSize), slotClass);
+			NextToAlloc[slotClassIndex] = new Pointer() { Offset = (ushort)slotLength, Page = PageCount };
 
 			UnsafeUtils.Clear((byte*)Pages[PageCount].UsedSlots, bitSetLength);
 			SetUsedSlot(Pages[PageCount].UsedSlots, 0);
 
 			if (memoryInit == MemoryInit.Clear)
 			{
-				UnsafeUtils.Clear(Pages[PageCount].AlignedPtr, slotSize);
+				UnsafeUtils.Clear(Pages[PageCount].AlignedPtr, slotLength);
 			}
 
 			return new Pointer() { Offset = 0, Page = PageCount++ };
@@ -151,8 +160,8 @@ namespace Massive
 
 			ref var page = ref Pages[pointer.Page];
 
-			var newSizeClass = SizeClass(minimumLength, alignment);
-			if (newSizeClass == page.SizeClass)
+			var newSizeClass = SlotClass(minimumLength, alignment);
+			if (newSizeClass == page.SlotClass)
 			{
 				return;
 			}
@@ -160,13 +169,13 @@ namespace Massive
 			var newPointer = Alloc(minimumLength, alignment, MemoryInit.Uninitialized);
 			ref var newPage = ref Pages[newPointer.Page];
 
-			var minSlotSize = 1 << MathUtils.Min(page.SizeClass, newPage.SizeClass);
+			var minSlotLength = 1 << MathUtils.Min(page.SlotClass, newPage.SlotClass);
 			var destination = newPage.AlignedPtr + newPointer.Offset;
-			UnsafeUtils.Copy(page.AlignedPtr + pointer.Offset, destination, minSlotSize);
-			if (memoryInit == MemoryInit.Clear && newPage.SizeClass > page.SizeClass)
+			UnsafeUtils.Copy(page.AlignedPtr + pointer.Offset, destination, minSlotLength);
+			if (memoryInit == MemoryInit.Clear && newPage.SlotClass > page.SlotClass)
 			{
-				var start = newPointer.Offset + (1 << page.SizeClass);
-				var remainingLength = 1 << (newPage.SizeClass - page.SizeClass);
+				var start = newPointer.Offset + (1 << page.SlotClass);
+				var remainingLength = 1 << (newPage.SlotClass - page.SlotClass);
 				UnsafeUtils.Clear(newPage.AlignedPtr, start, remainingLength);
 			}
 
@@ -185,15 +194,15 @@ namespace Massive
 
 			ref var page = ref Pages[pointer.Page];
 
-			var slot = pointer.Offset >> page.SizeClass;
+			var slot = pointer.Offset >> page.SlotClass;
 			var bitsetIndex = slot >> 5;
 			var bitsetMask = 1U << (slot & 31);
 
 			if ((page.UsedSlots[bitsetIndex] & bitsetMask) != 0)
 			{
-				var sizeClassIndex = page.SizeClass - MinSmallClass;
-				*(Pointer*)(page.AlignedPtr + pointer.Offset) = FreeToAlloc[sizeClassIndex];
-				FreeToAlloc[sizeClassIndex] = pointer;
+				var slotClassIndex = page.SlotClass - MinSlotClass;
+				*(Pointer*)(page.AlignedPtr + pointer.Offset) = FreeToAlloc[slotClassIndex];
+				FreeToAlloc[slotClassIndex] = pointer;
 				page.UsedSlots[bitsetIndex] &= ~bitsetMask;
 				return true;
 			}
@@ -208,13 +217,13 @@ namespace Massive
 
 			ref var page = ref Pages[pointer.Page];
 
-			var slot = pointer.Offset >> page.SizeClass;
+			var slot = pointer.Offset >> page.SlotClass;
 			var bitsetIndex = slot >> 5;
 			var bitsetMask = 1U << (slot & 31);
 
-			var sizeClassIndex = page.SizeClass - MinSmallClass;
-			*(Pointer*)(page.AlignedPtr + pointer.Offset) = FreeToAlloc[sizeClassIndex];
-			FreeToAlloc[sizeClassIndex] = pointer;
+			var slotClassIndex = page.SlotClass - MinSlotClass;
+			*(Pointer*)(page.AlignedPtr + pointer.Offset) = FreeToAlloc[slotClassIndex];
+			FreeToAlloc[slotClassIndex] = pointer;
 			page.UsedSlots[bitsetIndex] &= ~bitsetMask;
 		}
 
@@ -228,7 +237,7 @@ namespace Massive
 
 			ref var page = ref Pages[pointer.Page];
 
-			var slot = pointer.Offset >> page.SizeClass;
+			var slot = pointer.Offset >> page.SlotClass;
 			var bitsetIndex = slot >> 5;
 			var bitsetMask = 1U << (slot & 31);
 
@@ -244,6 +253,14 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* GetPtr(Pointer pointer)
+		{
+			InvalidPointerException.ThrowIfNotAllocated(this, pointer);
+
+			return Pages[pointer.Page].AlignedPtr + pointer.Offset;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsurePageAt(int index)
 		{
 			if (index >= Pages.Length)
@@ -253,15 +270,15 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private int SizeClass(int length, int alignment)
+		private int SlotClass(int length, int alignment)
 		{
-			return MathUtils.CeilLog2(MathUtils.Max(length, alignment, MinSmallClassSize));
+			return MathUtils.CeilLog2(MathUtils.Max(length, alignment, MinSlotLength));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private int BitSetLength(int sizeClass)
+		private int BitSetLength(int slotClass)
 		{
-			var slotCount = 1 << MathUtils.Max(MinPageSizeClass - sizeClass, 0);
+			var slotCount = 1 << MathUtils.Max(MinPageSlotClass - slotClass, 0);
 			return (slotCount + 7) >> 3;
 		}
 
@@ -287,11 +304,11 @@ namespace Massive
 				ref var page = ref Pages[i];
 				ref var otherPage = ref other.Pages[i];
 
-				var pageSizeClass = page.SizeClass;
-				var bitsetLength = BitSetLength(page.SizeClass);
-				var pageSize = (1 << MathUtils.Max(pageSizeClass, MinPageSizeClass)) + bitsetLength;
+				var pageSizeClass = page.SlotClass;
+				var bitsetLength = BitSetLength(page.SlotClass);
+				var pageSize = (1 << MathUtils.Max(pageSizeClass, MinPageSlotClass)) + bitsetLength;
 
-				if (pageSizeClass != otherPage.SizeClass)
+				if (pageSizeClass != otherPage.SlotClass)
 				{
 					UnsafeUtils.FreeAligned(otherPage.AlignedPtr);
 					otherPage = new Page(UnsafeUtils.AllocAligned(pageSize, MinPageSize), pageSizeClass);

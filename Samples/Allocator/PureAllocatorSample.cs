@@ -22,7 +22,7 @@ namespace Massive.Samples.AllocatorUsage
 			// To access the array, combine the pointer with the allocator.
 			var values = Values.In(Allocator);
 
-			// Resize the array whenever needed. The handle stays valid.
+			// Resize the array whenever needed. The pointer stays valid.
 			values.Resize(2);
 
 			// Use it like a normal array: index, iterate, modify, copy.
@@ -37,7 +37,7 @@ namespace Massive.Samples.AllocatorUsage
 		void Free()
 		{
 			// Free the array when you're done with it.
-			Allocator.Free(Values);
+			Values.Free(Allocator);
 		}
 	}
 }
