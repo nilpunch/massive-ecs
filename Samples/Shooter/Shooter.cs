@@ -17,6 +17,7 @@ namespace Massive.Samples.Shooter
 				.New<BulletLifetimeSystem>()
 				.New<CharacterRespawnSystem>()
 				.New<DamageSystem>()
+				.New<DestroyDeadCharactersBulletsSystem>()
 				.New<DelayedBulletDeathSystem>()
 				.New<MovementSystem>()
 				.New<ShootingSystem>()

@@ -7,16 +7,14 @@
 	{
 		public void Update(float deltaTime)
 		{
-			World.ForEach((World, deltaTime),
-				static (int characterId, ref Dead dead, ref Character character, (World World, float DeltaTime) args) =>
+			World.ForEach(deltaTime,
+				static (Entity entity, ref Dead dead, ref Character character, float deltaTime) =>
 				{
-					var (world, deltaTime) = args;
-
 					dead.ElapsedTimeSinceDeath += deltaTime;
 
 					if (dead.ElapsedTimeSinceDeath > 3f)
 					{
-						world.Remove<Dead>(characterId);
+						entity.Remove<Dead>();
 						character.Health = character.MaxHealth;
 					}
 				});

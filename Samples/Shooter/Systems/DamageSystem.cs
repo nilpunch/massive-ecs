@@ -31,23 +31,10 @@
 						if (character.Health <= 0)
 						{
 							World.Set(characterId, new Dead());
-							DestroyCharacterBullets(ref character);
 							break;
 						}
 					}
 				}
-			}
-
-			void DestroyCharacterBullets(ref Character character)
-			{
-				var characterBullets = character.Bullets.In(World);
-
-				foreach (var bullet in characterBullets)
-				{
-					World.Add<Dead>(bullet);
-				}
-
-				characterBullets.Clear();
 			}
 
 			bool IsCollided(int firstId, int secondId)

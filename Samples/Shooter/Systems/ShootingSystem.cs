@@ -25,7 +25,7 @@
 					bullet.Set(new CircleCollider() { Radius = 0.1f });
 					bullet.Set(new VelocityDamper() { DampingFactor = 0.05f });
 
-					character.Bullets.In(world).Add(bullet.Entifier);
+					character.Bullets.Add(world, bullet.Entifier);
 				});
 		}
 	}
