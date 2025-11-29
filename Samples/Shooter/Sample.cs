@@ -3,15 +3,13 @@ using System.Numerics;
 
 namespace Massive.Samples.Shooter
 {
-	
-	
-	public class Shooter
+	public class Sample
 	{
 		public World World { get; } = new World();
 
 		public Systems Systems { get; } = new Systems();
 
-		public Shooter()
+		public Sample()
 		{
 			Systems
 				.New<BulletLifetimeSystem>()

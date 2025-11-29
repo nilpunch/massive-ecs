@@ -290,6 +290,24 @@ namespace Massive
 			usedBits[slot >> 5] |= 1U << (slot & 31);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Reset()
+		{
+			for (var i = 1; i < PageCount; i++)
+			{
+				UnsafeUtils.FreeAligned(Pages[i].AlignedPtr);
+				Pages[i] = default;
+			}
+			PageCount = 1;
+
+			UnsafeUtils.Clear((byte*)Pages[0].UsedSlots, BitSetLength(MinSlotClass));
+
+			Array.Clear(NextToAlloc, 0, AllClassCount);
+			Array.Clear(FreeToAlloc, 0, AllClassCount);
+
+			NextToAlloc[0].Offset = MinSlotLength;
+		}
+
 		public Allocator Clone()
 		{
 			var clone = new Allocator();
@@ -306,14 +324,14 @@ namespace Massive
 				ref var page = ref Pages[i];
 				ref var otherPage = ref other.Pages[i];
 
-				var pageSizeClass = page.SlotClass;
+				var pageSlotClass = page.SlotClass;
 				var bitsetLength = BitSetLength(page.SlotClass);
-				var pageSize = (1 << MathUtils.Max(pageSizeClass, MinPageSlotClass)) + bitsetLength;
+				var pageSize = (1 << MathUtils.Max(pageSlotClass, MinPageSlotClass)) + bitsetLength;
 
-				if (pageSizeClass != otherPage.SlotClass)
+				if (pageSlotClass != otherPage.SlotClass)
 				{
 					UnsafeUtils.FreeAligned(otherPage.AlignedPtr);
-					otherPage = new Page(UnsafeUtils.AllocAligned(pageSize, MinPageSize), pageSizeClass);
+					otherPage = new Page(UnsafeUtils.AllocAligned(pageSize, MinPageSize), pageSlotClass);
 				}
 
 				Buffer.MemoryCopy(page.AlignedPtr, otherPage.AlignedPtr, pageSize, pageSize);

@@ -10,13 +10,13 @@ namespace Massive
 
 		public Systems Build(World world)
 		{
+			Allocator.Reset();
 			_systems = new ISystem[_registeredFactories.Count];
 			var systemsCount = 0;
 			foreach (var systemFactory in _registeredFactories.OrderBy(factory => factory.Order))
 			{
 				var system = systemFactory.Create();
-				system.World = world;
-				system.Order = systemsCount;
+				system.Initialize(world, systemsCount, Allocator);
 				_systems[systemsCount++] = system;
 			}
 			_systemsCache.Clear();

@@ -1,10 +1,10 @@
 ﻿namespace Massive.Samples.UpdateLoop
 {
-	public class Program
+	public class Sample
 	{
 		private readonly Systems _systems;
 
-		public Program()
+		public Sample()
 		{
 			_systems = new Systems()
 				.Instance(new SpawnSystem(spawnAmount: 20))

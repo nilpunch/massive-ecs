@@ -2,7 +2,6 @@
 {
 	public interface ISystem
 	{
-		World World { get; set; }
-		int Order { get; set; }
+		void Initialize(World world, int id, Allocator allocator);
 	}
 }

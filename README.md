@@ -36,7 +36,7 @@ Design considerations:
 - Deterministic with lazy initialization.
 - No deferred command execution — all changes apply immediately.
 - Minimal storage for fast saving. No archetypes.
-- Fully managed — no unsafe code, no `Dispose()` methods.
+- Standard .Net lifecycle - no mutable global state and no `Dispose()` methods.
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
 
 Features:

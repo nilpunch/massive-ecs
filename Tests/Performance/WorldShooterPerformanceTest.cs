@@ -16,19 +16,19 @@ namespace Massive.PerformanceTests
 			const int fps = 60;
 			const int simulateSeconds = 30;
 
-			Shooter shooter = new Shooter();
+			Sample sample = new Sample();
 
-			Measure.Method(() => shooter.Systems.Run<IUpdate, float>(1f / fps))
+			Measure.Method(() => sample.Systems.Run<IUpdate, float>(1f / fps))
 				.SetUp(() =>
 				{
-					shooter.CreateCharactersInTwoOppositeRows(Vector2.Zero,
+					sample.CreateCharactersInTwoOppositeRows(Vector2.Zero,
 						new Vector2(0, 1f),
 						new Vector2(1f, 0f),
 						CharacterRowsAmount);
 				})
-				.CleanUp(() => shooter.World.ForEach((entityId) =>
+				.CleanUp(() => sample.World.ForEach((entityId) =>
 				{
-					shooter.World.Destroy(entityId);
+					sample.World.Destroy(entityId);
 				}))
 				.WarmupCount(1)
 				.MeasurementCount(20)
