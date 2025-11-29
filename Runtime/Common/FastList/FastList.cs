@@ -128,7 +128,7 @@ namespace Massive
 		{
 			if (Capacity < min)
 			{
-				Capacity = MathUtils.NextPowerOf2(min);
+				Capacity = MathUtils.RoundUpToPowerOfTwo(min);
 			}
 		}
 

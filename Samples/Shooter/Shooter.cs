@@ -9,17 +9,19 @@ namespace Massive.Samples.Shooter
 	{
 		public World World { get; } = new World();
 
-		public Action<World, float> Systems { get; } = (_, _) => { };
+		public Systems Systems { get; } = new Systems();
 
 		public Shooter()
 		{
-			Systems += BulletLifetimeSystem.Update;
-			Systems += CharacterRespawnSystem.Update;
-			Systems += DamageSystem.Update;
-			Systems += DelayedBulletDeathSystem.Update;
-			Systems += MovementSystem.Update;
-			Systems += ShootingSystem.Update;
-			Systems += VelocityDampingSystem.Update;
+			Systems
+				.New<BulletLifetimeSystem>()
+				.New<CharacterRespawnSystem>()
+				.New<DamageSystem>()
+				.New<DelayedBulletDeathSystem>()
+				.New<MovementSystem>()
+				.New<ShootingSystem>()
+				.New<VelocityDampingSystem>()
+				.Build(World);
 		}
 
 		public void CreateCharactersInTwoOppositeRows(Vector2 startPosition, Vector2 offset, Vector2 axis, int amount)

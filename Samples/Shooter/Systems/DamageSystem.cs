@@ -1,36 +1,36 @@
 ﻿namespace Massive.Samples.Shooter
 {
-	public static class DamageSystem
+	public class DamageSystem : SystemBase, IUpdate
 	{
-		public static void Update(World world, float deltaTime)
+		public void Update(float deltaTime)
 		{
-			var characters = world.DataSet<Character>();
-			var bullets = world.DataSet<Bullet>();
-			var colliders = world.DataSet<CircleCollider>();
-			var positions = world.DataSet<Position>();
+			var characters = World.DataSet<Character>();
+			var bullets = World.DataSet<Bullet>();
+			var colliders = World.DataSet<CircleCollider>();
+			var positions = World.DataSet<Position>();
 
-			foreach (var characterId in world.Include<Character>().Exclude<Dead>())
+			foreach (var characterId in World.Include<Character>().Exclude<Dead>())
 			{
 				ref var character = ref characters.Get(characterId);
 
-				foreach (var bulletId in world.Include<Bullet>().Exclude<Dead>())
+				foreach (var bulletId in World.Include<Bullet>().Exclude<Dead>())
 				{
 					ref var bullet = ref bullets.Get(bulletId);
 
 					// Don't collide a character with its own bullet.
-					if (bullet.Owner == world.GetEntifier(characterId))
+					if (bullet.Owner == World.GetEntifier(characterId))
 					{
 						continue;
 					}
 
 					if (IsCollided(bulletId, characterId))
 					{
-						world.Set(bulletId, new Dead());
+						World.Set(bulletId, new Dead());
 
 						character.Health -= bullet.Damage;
 						if (character.Health <= 0)
 						{
-							world.Set(characterId, new Dead());
+							World.Set(characterId, new Dead());
 							DestroyCharacterBullets(ref character);
 							break;
 						}
@@ -40,11 +40,11 @@
 
 			void DestroyCharacterBullets(ref Character character)
 			{
-				var characterBullets = character.Bullets.In(world);
+				var characterBullets = character.Bullets.In(World);
 
 				foreach (var bullet in characterBullets)
 				{
-					world.Add<Dead>(bullet);
+					World.Add<Dead>(bullet);
 				}
 
 				characterBullets.Clear();

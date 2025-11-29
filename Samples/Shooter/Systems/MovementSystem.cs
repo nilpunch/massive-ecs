@@ -3,11 +3,11 @@
 	/// <summary>
 	/// Move entities according to their velocities.
 	/// </summary>
-	public static class MovementSystem
+	public class MovementSystem : SystemBase, IUpdate
 	{
-		public static void Update(World world, float deltaTime)
+		public void Update(float deltaTime)
 		{
-			world.Exclude<Dead>().ForEach(deltaTime,
+			World.Exclude<Dead>().ForEach(deltaTime,
 				static (ref Velocity velocity, ref Position position, float deltaTime) =>
 				{
 					position.Value += velocity.Value * deltaTime;

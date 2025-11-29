@@ -94,6 +94,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Pointer Alloc(int minimumLength, int alignment, MemoryInit memoryInit = MemoryInit.Clear)
 		{
+			NegativeArgumentException.ThrowIfNegative(minimumLength);
 			NotPowerOfTwoArgumentException.ThrowIfNotPowerOfTwo(alignment);
 
 			var slotClass = SlotClass(minimumLength, alignment);
@@ -155,6 +156,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Resize(ref Pointer pointer, int minimumLength, int alignment, MemoryInit memoryInit = MemoryInit.Clear)
 		{
+			NegativeArgumentException.ThrowIfNegative(minimumLength);
 			NotPowerOfTwoArgumentException.ThrowIfNotPowerOfTwo(alignment);
 			InvalidPointerException.ThrowIfNotAllocated(this, pointer);
 
@@ -272,7 +274,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private int SlotClass(int length, int alignment)
 		{
-			return MathUtils.CeilLog2(MathUtils.Max(length, alignment, MinSlotLength));
+			return MathUtils.CeilLog2((uint)MathUtils.Max(length, alignment, MinSlotLength));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

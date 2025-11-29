@@ -20,7 +20,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static T[] ResizeToNextPowOf2<T>(this T[] array, int capacity)
 		{
-			Array.Resize(ref array, MathUtils.NextPowerOf2(capacity));
+			Array.Resize(ref array, MathUtils.RoundUpToPowerOfTwo(capacity));
 			return array;
 		}
 
@@ -28,7 +28,7 @@ namespace Massive
 		public static T[] ResizeToNextPowOf2<T>(this T[] array, int capacity, T growFill)
 		{
 			var lastCapacity = array.Length;
-			Array.Resize(ref array, MathUtils.NextPowerOf2(capacity));
+			Array.Resize(ref array, MathUtils.RoundUpToPowerOfTwo(capacity));
 			if (array.Length > lastCapacity)
 			{
 				Array.Fill(array, growFill, lastCapacity, array.Length - lastCapacity);

@@ -99,27 +99,47 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static unsafe void Clear(byte* data, int start, int length)
 		{
-			if (length <= 0)
+			data += start;
+
+			if (length <= 8)
+			{
+				for (var i = 0; i < length; i++)
+				{
+					data[i] = data[i];
+				}
 				return;
-
-			var ptr = data + start;
-			var end = ptr + length;
-
-			while (((ulong)ptr & 7) != 0 && ptr < end)
-			{
-				*ptr++ = 0;
 			}
 
-			var ptrLong = (long*)ptr;
-			while ((byte*)(ptrLong + 1) <= end)
+			var end = data + length;
+
+			var misalignment = (int)((ulong)data & 7);
+			if (misalignment != 0)
 			{
-				*ptrLong++ = 0L;
+				var bytesToAlign = 8 - misalignment;
+
+				for (var i = 0; i < bytesToAlign; i++)
+				{
+					data[i] = 0;
+				}
+
+				data += bytesToAlign;
 			}
 
-			ptr = (byte*)ptrLong;
-			while (ptr < end)
+			var dataLong = (long*)data;
+			var longCount = (int)((end - data) >> 3);
+
+			for (var i = 0; i < longCount; i++)
 			{
-				*ptr++ = 0;
+				dataLong[i] = 0;
+			}
+
+			var bulkCopiedCount = longCount << 3;
+			data += bulkCopiedCount;
+			var remaining = (int)(end - data);
+
+			for (var i = 0; i < remaining; i++)
+			{
+				data[i] = 0;
 			}
 		}
 	}

@@ -14,20 +14,23 @@ namespace Massive
 			62, 55, 45, 31, 13, 39, 36, 6, 61, 44, 12, 35, 60, 11, 10, 9,
 		};
 
-		private static readonly byte[] MsbDeBruijn32 =
-		{
-			0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
-			8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
-		};
+		private static readonly byte[] LogTable256;
 
-		/// <summary>
-		/// Computes the smallest power of two greater than or equal to a value.
-		/// </summary>
+		static MathUtils()
+		{
+			LogTable256 = new byte[256];
+			LogTable256[0] = LogTable256[1] = 0;
+			for (var i = 2; i < 256; i++)
+			{
+				LogTable256[i] = (byte)(1 + LogTable256[i / 2]);
+			}
+		}
+
 		/// <remarks>
 		/// Returns 0 when value is 0.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int NextPowerOf2(int value)
+		public static int RoundUpToPowerOfTwo(int value)
 		{
 			var v = (uint)value;
 
@@ -51,38 +54,66 @@ namespace Massive
 			return (value & (value - 1)) == 0;
 		}
 
-		/// <param name="value"> Non-negative value. </param>
 		/// <remarks>
 		/// Returns 0 when value is 0.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int FloorLog2(uint value)
+		public static int FloorLog2(uint x)
 		{
-			value |= value >> 1;
-			value |= value >> 2;
-			value |= value >> 4;
-			value |= value >> 8;
-			value |= value >> 16;
+			uint t;
 
-			return MsbDeBruijn32[(value * 0x07C4ACDDU) >> 27];
+			if ((t = x >> 24) > 0) 
+			{
+				return 24 + LogTable256[t];
+			}
+			else if ((t = x >> 16) > 0) 
+			{
+				return 16 + LogTable256[t];
+			}
+			else if ((t = x >> 8) > 0) 
+			{
+				return 8 + LogTable256[t];
+			}
+			else 
+			{
+				return LogTable256[x];
+			}
 		}
 
-		/// <param name="value"> Non-negative value. </param>
 		/// <remarks>
 		/// Returns 32 when value is 0.
 		/// </remarks>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int CeilLog2(int value)
+		public static int CeilLog2(uint x)
 		{
-			var value1 = (uint)(value - 1);
+			uint t;
+			x--;
 
-			value1 |= value1 >> 1;
-			value1 |= value1 >> 2;
-			value1 |= value1 >> 4;
-			value1 |= value1 >> 8;
-			value1 |= value1 >> 16;
+			if ((t = x >> 24) > 0) 
+			{
+				return 25 + LogTable256[t];
+			}
+			else if ((t = x >> 16) > 0) 
+			{
+				return 17 + LogTable256[t];
+			}
+			else if ((t = x >> 8) > 0) 
+			{
+				return 9 + LogTable256[t];
+			}
+			else 
+			{
+				return 1 + LogTable256[x];
+			}
+		}
 
-			return MsbDeBruijn32[(value1 * 0x07C4ACDDU) >> 27] + 1;
+		/// <remarks>
+		/// Returns 0 when value is 0.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int FloorLog2(ulong x)
+		{
+			return MSB(x);
 		}
 
 		/// <summary>
@@ -131,6 +162,40 @@ namespace Massive
 			return DeBruijn[(int)(((x & (ulong)-(long)x) * 0x37E84A99DAE458FUL) >> 58)];
 		}
 
+		/// <remarks>
+		/// Returns 0 when value is 0.
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int MSB(ulong x)
+		{
+			const ulong MSB32 = 1UL << 32;
+
+			var baseLog = 0;
+			ulong t;
+			if (x >= MSB32)
+			{
+				baseLog = 32;
+				x >>= 32;
+			}
+
+			if ((t = x >> 24) > 0) 
+			{
+				return baseLog + 24 + LogTable256[(int)t];
+			}
+			else if ((t = x >> 16) > 0) 
+			{
+				return baseLog + 16 + LogTable256[(int)t];
+			}
+			else if ((t = x >> 8) > 0) 
+			{
+				return baseLog + 8 + LogTable256[(int)t];
+			}
+			else 
+			{
+				return baseLog + LogTable256[(int)x];
+			}
+		}
+		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int ApproximateMSB(ulong x)
 		{

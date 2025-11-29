@@ -18,7 +18,7 @@ namespace Massive.PerformanceTests
 
 			Shooter shooter = new Shooter();
 
-			Measure.Method(() => shooter.Systems.Invoke(shooter.World, 1f / fps))
+			Measure.Method(() => shooter.Systems.Run<IUpdate, float>(1f / fps))
 				.SetUp(() =>
 				{
 					shooter.CreateCharactersInTwoOppositeRows(Vector2.Zero,

@@ -27,7 +27,7 @@ namespace Massive
 		{
 			if (blocksCapacity > BlocksCapacity)
 			{
-				BlocksCapacity = MathUtils.NextPowerOf2(blocksCapacity);
+				BlocksCapacity = MathUtils.RoundUpToPowerOfTwo(blocksCapacity);
 				NonEmptyBlocks = NonEmptyBlocks.Resize(BlocksCapacity);
 				SaturatedBlocks = SaturatedBlocks.Resize(BlocksCapacity);
 				Bits = Bits.Resize(BlocksCapacity << 6);
@@ -39,7 +39,7 @@ namespace Massive
 		{
 			if (blockIndex >= BlocksCapacity)
 			{
-				BlocksCapacity = MathUtils.NextPowerOf2(blockIndex + 1);
+				BlocksCapacity = MathUtils.RoundUpToPowerOfTwo(blockIndex + 1);
 				NonEmptyBlocks = NonEmptyBlocks.Resize(BlocksCapacity);
 				SaturatedBlocks = SaturatedBlocks.Resize(BlocksCapacity);
 				Bits = Bits.Resize(BlocksCapacity << 6);

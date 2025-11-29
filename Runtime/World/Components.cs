@@ -105,7 +105,7 @@ namespace Massive
 		{
 			if (capacity > EntitiesCapacity)
 			{
-				EntitiesCapacity = MathUtils.NextPowerOf2(capacity);
+				EntitiesCapacity = MathUtils.RoundUpToPowerOfTwo(capacity);
 				var requiredCapacity = MaskLength * EntitiesCapacity;
 				if (requiredCapacity > BitMapCapacity)
 				{

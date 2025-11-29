@@ -1,10 +1,10 @@
 ﻿namespace Massive.Samples.Shooter
 {
-	public static class VelocityDampingSystem
+	public class VelocityDampingSystem : SystemBase, IUpdate
 	{
-		public static void Update(World world, float deltaTime)
+		public void Update(float deltaTime)
 		{
-			world.ForEach(deltaTime,
+			World.ForEach(deltaTime,
 				static (ref Velocity velocity, ref VelocityDamper damper, float deltaTime) =>
 				{
 					damper.DampVelocity(ref velocity, deltaTime);

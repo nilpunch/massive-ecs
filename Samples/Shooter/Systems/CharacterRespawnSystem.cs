@@ -3,11 +3,11 @@
 	/// <summary>
 	/// Respawns dead characters with full health after some time.
 	/// </summary>
-	public static class CharacterRespawnSystem
+	public class CharacterRespawnSystem : SystemBase, IUpdate
 	{
-		public static void Update(World world, float deltaTime)
+		public void Update(float deltaTime)
 		{
-			world.ForEach((world, deltaTime),
+			World.ForEach((World, deltaTime),
 				static (int characterId, ref Dead dead, ref Character character, (World World, float DeltaTime) args) =>
 				{
 					var (world, deltaTime) = args;

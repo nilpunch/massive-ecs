@@ -3,11 +3,11 @@
 	/// <summary>
 	/// Just delays a full destruction of a bullet to apply some visual death effect.
 	/// </summary>
-	public static class DelayedBulletDeathSystem
+	public class DelayedBulletDeathSystem : SystemBase, IUpdate
 	{
-		public static void Update(World world, float deltaTime)
+		public void Update(float deltaTime)
 		{
-			world.Include<Bullet>().ForEach((world, deltaTime),
+			World.Include<Bullet>().ForEach((World, deltaTime),
 				static (int id, ref Dead dead, (World World, float DeltaTime) args) =>
 				{
 					var (world, deltaTime) = args;

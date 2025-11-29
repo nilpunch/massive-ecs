@@ -43,7 +43,7 @@ namespace Massive
 		{
 			if (PoolCount >= CachePool.Length)
 			{
-				CachePool = CachePool.Resize(MathUtils.NextPowerOf2(PoolCount + 1));
+				CachePool = CachePool.Resize(MathUtils.RoundUpToPowerOfTwo(PoolCount + 1));
 			}
 
 			CachePool[PoolCount++] = queryCache;
@@ -119,6 +119,7 @@ namespace Massive
 
 			foreach (var excluded in Excluded)
 			{
+				excluded.EnsureBlocksCapacity(minBlocksLength);
 				for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
 				{
 					NonEmptyBlocks[blockIndex] &= ~excluded.SaturatedBlocks[blockIndex];

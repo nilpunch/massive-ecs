@@ -1,10 +1,10 @@
 ﻿namespace Massive.Samples.Shooter
 {
-	public static class BulletLifetimeSystem
+	public class BulletLifetimeSystem : SystemBase, IUpdate
 	{
-		public static void Update(World world, float deltaTime)
+		public void Update(float deltaTime)
 		{
-			world.Exclude<Dead>().ForEach((world, deltaTime),
+			World.Exclude<Dead>().ForEach((World, deltaTime),
 				static (int bulletId, ref Bullet bullet, (World World, float DeltaTime) args) =>
 				{
 					var (world, deltaTime) = args;
