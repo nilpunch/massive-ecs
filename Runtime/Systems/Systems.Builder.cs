@@ -16,7 +16,7 @@ namespace Massive
 			foreach (var systemFactory in _registeredFactories.OrderBy(factory => factory.Order))
 			{
 				var system = systemFactory.Create();
-				system.Initialize(world, systemsCount, Allocator);
+				system.Initialize(systemsCount, Allocator, world);
 				_systems[systemsCount++] = system;
 			}
 			_systemsCache.Clear();

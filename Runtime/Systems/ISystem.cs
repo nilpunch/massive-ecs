@@ -2,6 +2,6 @@
 {
 	public interface ISystem
 	{
-		void Initialize(World world, int id, Allocator allocator);
+		void Initialize(int id, Allocator allocator, World world);
 	}
 }

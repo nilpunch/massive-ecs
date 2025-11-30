@@ -10,11 +10,11 @@
 
 		public ref TState State => ref StatePointer.Value(Allocator);
 
-		public virtual void Initialize(World world, int id, Allocator allocator)
+		void ISystem.Initialize(int id, Allocator allocator, World world)
 		{
-			World = world;
 			Id = id;
 			Allocator = allocator;
+			World = world;
 			StatePointer = (Pointer<TState>)Allocator.Alloc<TState>(1);
 		}
 	}

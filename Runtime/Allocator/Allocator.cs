@@ -10,7 +10,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public unsafe partial class Allocator
+	public unsafe class Allocator
 	{
 		public readonly struct Page
 		{
@@ -26,18 +26,34 @@ namespace Massive
 				get => 1 << SlotClass;
 			}
 
+			public int PageLength
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => PageLength(SlotClass);
+			}
+
+			public int BitSetLength
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => BitSetLength(SlotClass);
+			}
+
+			public int FullPageLength
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				get => PageLength + BitSetLength;
+			}
+
 			public Page(byte* alignedPtr, int slotClass)
 			{
 				AlignedPtr = alignedPtr;
 				SlotClass = slotClass;
-
-				var pageSize = 1 << MathUtils.Max(slotClass, MinPageSlotClass);
-				UsedSlots = (uint*)(alignedPtr + pageSize);
+				UsedSlots = (uint*)(alignedPtr + PageLength(slotClass));
 			}
 		}
 
 		public const int MinPageSlotClass = 16;
-		public const int MinPageSize = 1 << MinPageSlotClass;
+		public const int MinPageLength = 1 << MinPageSlotClass;
 		public const int MinSlotClass = 2; // Ensures alignment for free list of Pointer's.
 		public const int MinSlotLength = 1 << MinSlotClass;
 		public const int AllClassCount = 32 - MinSlotClass;
@@ -130,9 +146,9 @@ namespace Massive
 
 			EnsurePageAt(PageCount);
 			var bitSetLength = BitSetLength(slotClass);
-			var pageSize = 1 << MathUtils.Max(slotClass, MinPageSlotClass);
+			var pageLength = PageLength(slotClass);
 
-			Pages[PageCount] = new Page(UnsafeUtils.AllocAligned(pageSize + bitSetLength, MinPageSize), slotClass);
+			Pages[PageCount] = new Page(UnsafeUtils.AllocAligned(pageLength + bitSetLength, MinPageLength), slotClass);
 			NextToAlloc[slotClassIndex] = new Pointer() { Offset = (ushort)slotLength, Page = PageCount };
 
 			UnsafeUtils.Clear((byte*)Pages[PageCount].UsedSlots, bitSetLength);
@@ -272,16 +288,22 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private int SlotClass(int length, int alignment)
+		public static int SlotClass(int length, int alignment)
 		{
 			return MathUtils.CeilLog2((uint)MathUtils.Max(length, alignment, MinSlotLength));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private int BitSetLength(int slotClass)
+		public static int BitSetLength(int slotClass)
 		{
 			var slotCount = 1 << MathUtils.Max(MinPageSlotClass - slotClass, 0);
 			return (slotCount + 7) >> 3;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static int PageLength(int slotClass)
+		{
+			return 1 << MathUtils.Max(slotClass, MinPageSlotClass);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -290,7 +312,11 @@ namespace Massive
 			usedBits[slot >> 5] |= 1U << (slot & 31);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetPageCount(ushort pageCount)
+		{
+			PageCount = pageCount;
+		}
+		
 		public void Reset()
 		{
 			for (var i = 1; i < PageCount; i++)
@@ -319,22 +345,39 @@ namespace Massive
 		{
 			other.EnsurePageAt(PageCount - 1);
 
-			for (var i = 0; i < PageCount; i++)
+			var encounteredSlotClasses = stackalloc bool[AllClassCount];
+			for (var i = 0; i < AllClassCount; i++)
+			{
+				encounteredSlotClasses[i] = false;
+			}
+
+			// Leverage the fact that we know used length of last pages of each slot class.
+			for (var i = PageCount - 1; i >= 0; i--)
 			{
 				ref var page = ref Pages[i];
 				ref var otherPage = ref other.Pages[i];
 
 				var pageSlotClass = page.SlotClass;
 				var bitsetLength = BitSetLength(page.SlotClass);
-				var pageSize = (1 << MathUtils.Max(pageSlotClass, MinPageSlotClass)) + bitsetLength;
+				var fullPageLength = PageLength(page.SlotClass) + bitsetLength;
 
 				if (pageSlotClass != otherPage.SlotClass)
 				{
 					UnsafeUtils.FreeAligned(otherPage.AlignedPtr);
-					otherPage = new Page(UnsafeUtils.AllocAligned(pageSize, MinPageSize), pageSlotClass);
+					otherPage = new Page(UnsafeUtils.AllocAligned(fullPageLength, MinPageLength), pageSlotClass);
 				}
 
-				Buffer.MemoryCopy(page.AlignedPtr, otherPage.AlignedPtr, pageSize, pageSize);
+				var isLastPageOfSlotClass = !encounteredSlotClasses[pageSlotClass] && NextToAlloc[pageSlotClass].Offset > 0;
+				if (isLastPageOfSlotClass)
+				{
+					UnsafeUtils.Copy(page.AlignedPtr, otherPage.AlignedPtr, NextToAlloc[pageSlotClass].Offset);
+					UnsafeUtils.Copy(page.UsedSlots, otherPage.UsedSlots, bitsetLength);
+					encounteredSlotClasses[pageSlotClass] = true;
+				}
+				else
+				{
+					UnsafeUtils.Copy(page.AlignedPtr, otherPage.AlignedPtr, fullPageLength);
+				}
 			}
 
 			for (var i = PageCount; i < other.PageCount; i++)

@@ -2,13 +2,13 @@
 {
 	public class SystemBase : ISystem
 	{
-		public World World { get; private set; }
 		public int Id { get; private set; }
+		public World World { get; private set; }
 
-		public void Initialize(World world, int id, Allocator _)
+		void ISystem.Initialize(int id, Allocator _, World world)
 		{
-			World = world;
 			Id = id;
+			World = world;
 		}
 	}
 }
