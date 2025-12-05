@@ -3,109 +3,60 @@ using System.Collections.Generic;
 
 namespace Massive
 {
+	internal struct SystemMethodKind
+	{
+	}
+
 	public partial class Systems
 	{
-		public class SystemsCache<TSystemMethod>
-			where TSystemMethod : ISystemMethodBase<TSystemMethod>
-		{
-			public TSystemMethod[] SystemMethods;
-			public TSystemMethod[] RecursiveSystemMethods;
-			public IRecursive<TSystemMethod>[] RecursiveConditionsArray;
-		}
-
-		private readonly Dictionary<Type, object> _systemsCache = new Dictionary<Type, object>();
+		private Array[] _systemsLookup = Array.Empty<Array>();
 		private ISystem[] _systems = Array.Empty<ISystem>();
 
 		public void Run<TSystemMethod>()
 			where TSystemMethod : ISystemMethod<TSystemMethod>
 		{
-			var systemsCache = GetSystemsCache<TSystemMethod>();
-			foreach (var method in systemsCache.SystemMethods)
+			foreach (var method in GetSystemsOfType<TSystemMethod>())
 			{
 				method.Run();
 			}
-
-			bool running;
-			do
-			{
-				running = false;
-				for (var i = 0; i < systemsCache.RecursiveConditionsArray.Length; i++)
-				{
-					if (systemsCache.RecursiveConditionsArray[i].NeedRerun)
-					{
-						systemsCache.RecursiveSystemMethods[i].Run();
-						running = true;
-					}
-				}
-			} while (running);
 		}
 
 		public void Run<TSystemMethod, TArgs>(TArgs args)
 			where TSystemMethod : ISystemMethod<TSystemMethod, TArgs>
 		{
-			var systemsCache = GetSystemsCache<TSystemMethod>();
-			foreach (var method in systemsCache.SystemMethods)
+			foreach (var method in GetSystemsOfType<TSystemMethod>())
 			{
 				method.Run(args);
 			}
-
-			bool running;
-			do
-			{
-				running = false;
-				for (var i = 0; i < systemsCache.RecursiveConditionsArray.Length; i++)
-				{
-					if (systemsCache.RecursiveConditionsArray[i].NeedRerun)
-					{
-						systemsCache.RecursiveSystemMethods[i].Run(args);
-						running = true;
-					}
-				}
-			} while (running);
 		}
 
-		public TSystemMethod[] GetSystems<TSystemMethod>()
-			where TSystemMethod : ISystemMethodBase<TSystemMethod>
+		public TSystemMethod[] GetSystemsOfType<TSystemMethod>()
 		{
-			return GetSystemsCache<TSystemMethod>().SystemMethods;
-		}
+			var lookupIndex = TypeId<SystemMethodKind, TSystemMethod>.Info.Index;
 
-		public SystemsCache<TSystemMethod> GetSystemsCache<TSystemMethod>()
-			where TSystemMethod : ISystemMethodBase<TSystemMethod>
-		{
-			var type = typeof(TSystemMethod);
-
-			if (_systemsCache.TryGetValue(type, out var systemsCache))
+			if (lookupIndex >= _systemsLookup.Length)
 			{
-				return (SystemsCache<TSystemMethod>)systemsCache;
+				_systemsLookup = _systemsLookup.ResizeToNextPowOf2(lookupIndex + 1);
+			}
+
+			var candidate = _systemsLookup[lookupIndex];
+
+			if (candidate != null)
+			{
+				return (TSystemMethod[])candidate;
 			}
 
 			var systemMethods = new List<TSystemMethod>();
-			var recursiveSystemMethods = new List<TSystemMethod>();
-			var conditions = new List<IRecursive<TSystemMethod>>();
 			foreach (var system in _systems)
 			{
-				if (system is not TSystemMethod runMethod)
+				if (system is TSystemMethod runMethod)
 				{
-					continue;
-				}
-
-				systemMethods.Add(runMethod);
-
-				if (system is IRecursive<TSystemMethod> condition)
-				{
-					recursiveSystemMethods.Add(runMethod);
-					conditions.Add(condition);
+					systemMethods.Add(runMethod);
 				}
 			}
-			systemsCache = new SystemsCache<TSystemMethod>
-			{
-				SystemMethods = systemMethods.ToArray(),
-				RecursiveSystemMethods = recursiveSystemMethods.ToArray(),
-				RecursiveConditionsArray = conditions.ToArray(),
-			};
-			_systemsCache[type] = systemsCache;
-			return (SystemsCache<TSystemMethod>)systemsCache;
+			var systemsArray = systemMethods.ToArray();
+			_systemsLookup[lookupIndex] = systemsArray;
+			return systemsArray;
 		}
 	}
 }

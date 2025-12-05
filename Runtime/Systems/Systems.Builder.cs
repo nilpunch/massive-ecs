@@ -19,7 +19,7 @@ namespace Massive
 				system.Initialize(systemsCount, Allocator, world);
 				_systems[systemsCount++] = system;
 			}
-			_systemsCache.Clear();
+			Array.Clear(_systemsLookup, 0, _systemsLookup.Length);
 			return this;
 		}
 
