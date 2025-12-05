@@ -9,6 +9,8 @@ namespace Massive
 	{
 		Query IQueryable.Query => Query;
 
+		EntityEnumerable IQueryable.Entities => Query.Entities;
+
 		private Query Query => new Query
 		{
 			World = this,

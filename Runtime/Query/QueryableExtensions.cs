@@ -325,6 +325,17 @@ namespace Massive
 			return new Entity(Entifier.Dead, queryable.World);
 		}
 
+		public static bool Any<TQueryable>(this TQueryable queryable)
+			where TQueryable : IQueryable
+		{
+			foreach (var id in queryable)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		public static void Destroy<TQueryable>(this TQueryable queryable)
 			where TQueryable : IQueryable
 		{

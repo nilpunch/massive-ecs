@@ -3,6 +3,10 @@ using System.Runtime.CompilerServices;
 
 namespace Massive
 {
+	internal struct SelectorKind
+	{
+	}
+
 	public partial class Sets
 	{
 		public BitSet[][] SelectionLookup { get; private set; } = Array.Empty<BitSet[]>();
@@ -11,7 +15,7 @@ namespace Massive
 		public BitSet[] SelectSets<TSelector>()
 			where TSelector : ISetSelector, new()
 		{
-			var info = MiscTypeId<TSelector>.Info;
+			var info = TypeId<SelectorKind, TSelector>.Info;
 
 			EnsureSelectionLookupAt(info.Index);
 			var candidate = SelectionLookup[info.Index];

@@ -316,7 +316,7 @@ namespace Massive
 		{
 			PageCount = pageCount;
 		}
-		
+
 		public void Reset()
 		{
 			for (var i = 1; i < PageCount; i++)

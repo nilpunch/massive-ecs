@@ -10,7 +10,7 @@ namespace Massive
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public static class TypeId
+	public static class TypeId<TKind>
 	{
 		private static readonly Dictionary<Type, TypeIdInfo> s_typeInfo = new Dictionary<Type, TypeIdInfo>();
 		private static Type[] s_types = Array.Empty<Type>();
@@ -79,21 +79,21 @@ namespace Massive
 	[Il2CppEagerStaticClassConstruction]
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public static class TypeId<T>
+	public static class TypeId<TKind, T>
 	{
 		public static readonly TypeIdInfo Info;
 
 		static TypeId()
 		{
 			var type = typeof(T);
-			var index = TypeId.IncrementTypeCounter();
+			var index = TypeId<TKind>.IncrementTypeCounter();
 			var typeName = type.GetFullGenericName();
 
 			var info = new TypeIdInfo(index, typeName, type);
 
 			Info = info;
 
-			TypeId.Register(type, info);
+			TypeId<TKind>.Register(type, info);
 		}
 	}
 }

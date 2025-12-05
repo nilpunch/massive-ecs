@@ -9,6 +9,10 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
+	internal struct SetKind
+	{
+	}
+
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public partial class Sets
@@ -53,7 +57,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitSet Get<T>()
 		{
-			var info = TypeId<T>.Info;
+			var info = TypeId<SetKind, T>.Info;
 
 			EnsureLookupByTypeAt(info.Index);
 			var candidate = LookupByTypeId[info.Index];
@@ -79,7 +83,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public BitSet GetReflected(Type setType)
 		{
-			if (TypeId.TryGetInfo(setType, out var info))
+			if (TypeId<SetKind>.TryGetInfo(setType, out var info))
 			{
 				EnsureLookupByTypeAt(info.Index);
 				var candidate = LookupByTypeId[info.Index];
@@ -143,7 +147,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Type TypeOf(BitSet bitSet)
 		{
-			return TypeId.GetTypeByIndex(bitSet.ComponentId);
+			return TypeId<SetKind>.GetTypeByIndex(bitSet.ComponentId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -104,7 +104,7 @@ namespace Massive
 		{
 			InvalidSetOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = TypeId<T>.Info;
+			var info = TypeId<SetKind, T>.Info;
 
 			world.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = world.Sets.LookupByTypeId[info.Index];
@@ -135,7 +135,7 @@ namespace Massive
 		{
 			InvalidAddOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = TypeId<T>.Info;
+			var info = TypeId<SetKind, T>.Info;
 
 			world.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = world.Sets.LookupByTypeId[info.Index];
@@ -162,7 +162,7 @@ namespace Massive
 		{
 			InvalidRemoveOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = TypeId<T>.Info;
+			var info = TypeId<SetKind, T>.Info;
 
 			world.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = world.Sets.LookupByTypeId[info.Index];
@@ -186,7 +186,7 @@ namespace Massive
 		{
 			InvalidHasOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = TypeId<T>.Info;
+			var info = TypeId<SetKind, T>.Info;
 
 			world.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = world.Sets.LookupByTypeId[info.Index];
@@ -211,7 +211,7 @@ namespace Massive
 		{
 			InvalidGetOperationException.ThrowIfEntityDead(world.Entities, id);
 
-			var info = TypeId<T>.Info;
+			var info = TypeId<SetKind, T>.Info;
 
 			world.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = world.Sets.LookupByTypeId[info.Index];

@@ -62,19 +62,19 @@ namespace Massive
 		{
 			uint t;
 
-			if ((t = x >> 24) > 0) 
+			if ((t = x >> 24) > 0)
 			{
 				return 24 + LogTable256[t];
 			}
-			else if ((t = x >> 16) > 0) 
+			else if ((t = x >> 16) > 0)
 			{
 				return 16 + LogTable256[t];
 			}
-			else if ((t = x >> 8) > 0) 
+			else if ((t = x >> 8) > 0)
 			{
 				return 8 + LogTable256[t];
 			}
-			else 
+			else
 			{
 				return LogTable256[x];
 			}
@@ -89,19 +89,19 @@ namespace Massive
 			uint t;
 			x--;
 
-			if ((t = x >> 24) > 0) 
+			if ((t = x >> 24) > 0)
 			{
 				return 25 + LogTable256[t];
 			}
-			else if ((t = x >> 16) > 0) 
+			else if ((t = x >> 16) > 0)
 			{
 				return 17 + LogTable256[t];
 			}
-			else if ((t = x >> 8) > 0) 
+			else if ((t = x >> 8) > 0)
 			{
 				return 9 + LogTable256[t];
 			}
-			else 
+			else
 			{
 				return 1 + LogTable256[x];
 			}
@@ -178,24 +178,24 @@ namespace Massive
 				x >>= 32;
 			}
 
-			if ((t = x >> 24) > 0) 
+			if ((t = x >> 24) > 0)
 			{
 				return baseLog + 24 + LogTable256[(int)t];
 			}
-			else if ((t = x >> 16) > 0) 
+			else if ((t = x >> 16) > 0)
 			{
 				return baseLog + 16 + LogTable256[(int)t];
 			}
-			else if ((t = x >> 8) > 0) 
+			else if ((t = x >> 8) > 0)
 			{
 				return baseLog + 8 + LogTable256[(int)t];
 			}
-			else 
+			else
 			{
 				return baseLog + LogTable256[(int)x];
 			}
 		}
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int ApproximateMSB(ulong x)
 		{

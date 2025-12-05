@@ -4,6 +4,6 @@
 	{
 		void Update(float deltaTime);
 
-		void ISystemMethod<IUpdate, float>.Run(float arg) => Update(arg);
+		void ISystemMethod<IUpdate, float>.Run(float args) => Update(args);
 	}
 }

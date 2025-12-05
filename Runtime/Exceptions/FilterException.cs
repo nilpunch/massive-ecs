@@ -19,6 +19,21 @@ namespace Massive
 
 		[Conditional(Condition)]
 		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static void ThrowIfCantSetFilter(BitSet[] newFilter, BitSet[] existingFilter)
+		{
+			if (newFilter == null || newFilter.Length == 0)
+			{
+				throw new FilterException($"Trying to set empty or null filter.");
+			}
+
+			if (existingFilter.Length != 0)
+			{
+				throw new FilterException($"Trying to override existing filter.");
+			}
+		}
+
+		[Conditional(Condition)]
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static void ThrowIfHasConflicts(BitSet[] setsA, BitSet[] setsB, FilterType typeA, FilterType typeB)
 		{
 			for (var i = 0; i < setsA.Length; i++)

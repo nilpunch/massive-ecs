@@ -15,7 +15,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitSet BitSet<T>(this World world)
 		{
-			var info = TypeId<T>.Info;
+			var info = TypeId<SetKind, T>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureLookupByTypeAt(info.Index);
@@ -32,7 +32,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static DataSet<T> DataSet<T>(this World world)
 		{
-			var info = TypeId<T>.Info;
+			var info = TypeId<SetKind, T>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureLookupByTypeAt(info.Index);
@@ -52,7 +52,7 @@ namespace Massive
 
 		public static BitSet[] SelectSets<T>(this World world)
 		{
-			var info = MiscTypeId<Selector<T>>.Info;
+			var info = TypeId<SelectorKind, Selector<T>>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureSelectionLookupAt(info.Index);
@@ -68,7 +68,7 @@ namespace Massive
 
 		public static BitSet[] SelectSets<T1, T2>(this World world)
 		{
-			var info = MiscTypeId<Selector<T1, T2>>.Info;
+			var info = TypeId<SelectorKind, Selector<T1, T2>>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureSelectionLookupAt(info.Index);
@@ -84,7 +84,7 @@ namespace Massive
 
 		public static BitSet[] SelectSets<T1, T2, T3>(this World world)
 		{
-			var info = MiscTypeId<Selector<T1, T2, T3>>.Info;
+			var info = TypeId<SelectorKind, Selector<T1, T2, T3>>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureSelectionLookupAt(info.Index);
@@ -100,7 +100,7 @@ namespace Massive
 
 		public static BitSet[] SelectSets<T1, T2, T3, T4>(this World world)
 		{
-			var info = MiscTypeId<Selector<T1, T2, T3, T4>>.Info;
+			var info = TypeId<SelectorKind, Selector<T1, T2, T3, T4>>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureSelectionLookupAt(info.Index);
@@ -116,7 +116,7 @@ namespace Massive
 
 		public static BitSet[] SelectSets<T1, T2, T3, T4, T5>(this World world)
 		{
-			var info = MiscTypeId<Selector<T1, T2, T3, T4, T5>>.Info;
+			var info = TypeId<SelectorKind, Selector<T1, T2, T3, T4, T5>>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureSelectionLookupAt(info.Index);
@@ -132,7 +132,7 @@ namespace Massive
 
 		public static BitSet[] SelectSets<T1, T2, T3, T4, T5, T6>(this World world)
 		{
-			var info = MiscTypeId<Selector<T1, T2, T3, T4, T5, T6>>.Info;
+			var info = TypeId<SelectorKind, Selector<T1, T2, T3, T4, T5, T6>>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureSelectionLookupAt(info.Index);
@@ -150,7 +150,7 @@ namespace Massive
 		public static BitSet[] SelectSets<T1, T2, T3, T4, T5, T6, TSelector>(this World world)
 			where TSelector : ISetSelector, new()
 		{
-			var info = MiscTypeId<Selector<T1, T2, T3, TSelector>>.Info;
+			var info = TypeId<SelectorKind, Selector<T1, T2, T3, TSelector>>.Info;
 			var sets = world.Sets;
 
 			sets.EnsureSelectionLookupAt(info.Index);

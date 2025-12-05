@@ -5,65 +5,107 @@ namespace Massive
 {
 	public partial class Systems
 	{
-		private readonly Dictionary<Type, Array> _systemsCache = new Dictionary<Type, Array>();
+		public class SystemsCache<TSystemMethod>
+			where TSystemMethod : ISystemMethodBase<TSystemMethod>
+		{
+			public TSystemMethod[] SystemMethods;
+			public TSystemMethod[] RecursiveSystemMethods;
+			public IRecursive<TSystemMethod>[] RecursiveConditionsArray;
+		}
+
+		private readonly Dictionary<Type, object> _systemsCache = new Dictionary<Type, object>();
 		private ISystem[] _systems = Array.Empty<ISystem>();
 
 		public void Run<TSystemMethod>()
 			where TSystemMethod : ISystemMethod<TSystemMethod>
 		{
-			foreach (var method in GetMethods<TSystemMethod>())
+			var systemsCache = GetSystemsCache<TSystemMethod>();
+			foreach (var method in systemsCache.SystemMethods)
 			{
 				method.Run();
 			}
-		}
 
-		public void Run<TSystemMethod, TArg>(TArg arg)
-			where TSystemMethod : ISystemMethod<TSystemMethod, TArg>
-		{
-			foreach (var method in GetMethods<TSystemMethod>())
+			bool running;
+			do
 			{
-				method.Run(arg);
-			}
+				running = false;
+				for (var i = 0; i < systemsCache.RecursiveConditionsArray.Length; i++)
+				{
+					if (systemsCache.RecursiveConditionsArray[i].NeedRerun)
+					{
+						systemsCache.RecursiveSystemMethods[i].Run();
+						running = true;
+					}
+				}
+			} while (running);
 		}
 
-		public void Run<TSystemMethod, TArg1, TArg2>(TArg1 arg1, TArg2 arg2)
-			where TSystemMethod : ISystemMethod<TSystemMethod, TArg1, TArg2>
+		public void Run<TSystemMethod, TArgs>(TArgs args)
+			where TSystemMethod : ISystemMethod<TSystemMethod, TArgs>
 		{
-			foreach (var method in GetMethods<TSystemMethod>())
+			var systemsCache = GetSystemsCache<TSystemMethod>();
+			foreach (var method in systemsCache.SystemMethods)
 			{
-				method.Run(arg1, arg2);
+				method.Run(args);
 			}
+
+			bool running;
+			do
+			{
+				running = false;
+				for (var i = 0; i < systemsCache.RecursiveConditionsArray.Length; i++)
+				{
+					if (systemsCache.RecursiveConditionsArray[i].NeedRerun)
+					{
+						systemsCache.RecursiveSystemMethods[i].Run(args);
+						running = true;
+					}
+				}
+			} while (running);
 		}
 
-		public void Run<TSystemMethod, TArg1, TArg2, TArg3>(TArg1 arg1, TArg2 arg2, TArg3 arg3)
-			where TSystemMethod : ISystemMethod<TSystemMethod, TArg1, TArg2, TArg3>
+		public TSystemMethod[] GetSystems<TSystemMethod>()
+			where TSystemMethod : ISystemMethodBase<TSystemMethod>
 		{
-			foreach (var method in GetMethods<TSystemMethod>())
-			{
-				method.Run(arg1, arg2, arg3);
-			}
+			return GetSystemsCache<TSystemMethod>().SystemMethods;
 		}
 
-		private TSystemMethod[] GetMethods<TSystemMethod>()
+		public SystemsCache<TSystemMethod> GetSystemsCache<TSystemMethod>()
+			where TSystemMethod : ISystemMethodBase<TSystemMethod>
 		{
 			var type = typeof(TSystemMethod);
 
-			if (_systemsCache.TryGetValue(type, out var runMethodsList))
+			if (_systemsCache.TryGetValue(type, out var systemsCache))
 			{
-				return (TSystemMethod[])runMethodsList;
+				return (SystemsCache<TSystemMethod>)systemsCache;
 			}
 
 			var systemMethods = new List<TSystemMethod>();
+			var recursiveSystemMethods = new List<TSystemMethod>();
+			var conditions = new List<IRecursive<TSystemMethod>>();
 			foreach (var system in _systems)
 			{
-				if (system is TSystemMethod runMethod)
+				if (system is not TSystemMethod runMethod)
 				{
-					systemMethods.Add(runMethod);
+					continue;
+				}
+
+				systemMethods.Add(runMethod);
+
+				if (system is IRecursive<TSystemMethod> condition)
+				{
+					recursiveSystemMethods.Add(runMethod);
+					conditions.Add(condition);
 				}
 			}
-			var systemsArray = systemMethods.ToArray();
-			_systemsCache[type] = systemsArray;
-			return systemsArray;
+			systemsCache = new SystemsCache<TSystemMethod>
+			{
+				SystemMethods = systemMethods.ToArray(),
+				RecursiveSystemMethods = recursiveSystemMethods.ToArray(),
+				RecursiveConditionsArray = conditions.ToArray(),
+			};
+			_systemsCache[type] = systemsCache;
+			return (SystemsCache<TSystemMethod>)systemsCache;
 		}
 	}
 }

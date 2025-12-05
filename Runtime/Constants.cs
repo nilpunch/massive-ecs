@@ -7,7 +7,7 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public static class Constants
 	{
-		public const string LibraryName = "Massive";
+		public const string LibraryName = "Massive ECS";
 
 		public const int DefaultFramesCapacity = 121;
 

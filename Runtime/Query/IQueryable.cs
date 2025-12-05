@@ -2,11 +2,13 @@
 {
 	public interface IQueryable
 	{
-		public Query Query { get; }
+		Query Query { get; }
 
-		public World World => Query.World;
+		World World => Query.World;
 
-		public Filter Filter => Query.Filter;
+		Filter Filter => Query.Filter;
+
+		EntityEnumerable Entities { get; }
 
 		IdsEnumerator GetEnumerator();
 	}

@@ -43,7 +43,6 @@ namespace Massive
 			_filter.IncludeCount += 1;
 
 			FilterException.ThrowIfHasConflicts(_filter.Included, _filter.Excluded, FilterType.Included, FilterType.Excluded);
-			FilterException.ThrowIfHasConflicts(_filter.Included, _filter.Any, FilterType.Included, FilterType.Any);
 
 			return this;
 		}
@@ -66,7 +65,6 @@ namespace Massive
 			_filter.ExcludeCount += 1;
 
 			FilterException.ThrowIfHasConflicts(_filter.Included, _filter.Excluded, FilterType.Included, FilterType.Excluded);
-			FilterException.ThrowIfHasConflicts(_filter.Excluded, _filter.Any, FilterType.Excluded, FilterType.Any);
 
 			return this;
 		}
