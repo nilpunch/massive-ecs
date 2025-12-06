@@ -3,10 +3,6 @@ using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	internal struct SelectorKind
-	{
-	}
-
 	public partial class Sets
 	{
 		public BitSet[][] SelectionLookup { get; private set; } = Array.Empty<BitSet[]>();
@@ -40,5 +36,9 @@ namespace Massive
 				SelectionLookup = SelectionLookup.ResizeToNextPowOf2(index + 1);
 			}
 		}
+	}
+
+	internal struct SelectorKind
+	{
 	}
 }

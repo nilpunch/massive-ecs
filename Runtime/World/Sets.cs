@@ -9,10 +9,6 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	internal struct SetKind
-	{
-	}
-
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public partial class Sets
@@ -206,5 +202,9 @@ namespace Massive
 				otherSet.ClearWithoutNotify();
 			}
 		}
+	}
+
+	internal struct SetKind
+	{
 	}
 }

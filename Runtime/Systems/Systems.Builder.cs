@@ -8,6 +8,8 @@ namespace Massive
 	{
 		private readonly List<ISystemFactory> _registeredFactories = new List<ISystemFactory>();
 
+		public Allocator Allocator { get; } = new Allocator();
+
 		public Systems Build(World world)
 		{
 			Allocator.Reset();

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Massive
 {
-	public class CyclicFrameCounter
+	public class CyclicFrameCounter : IMassive
 	{
 		private int _savedFrames;
 
