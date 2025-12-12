@@ -55,8 +55,9 @@ namespace Massive
 		public const int MinPageSlotClass = 16;
 		public const int MinPageLength = 1 << MinPageSlotClass;
 		public const int MinSlotClass = 2; // Ensures alignment for free list of Pointer's.
+		public const int MaxSlotClass = 32;
 		public const int MinSlotLength = 1 << MinSlotClass;
-		public const int AllClassCount = 32 - MinSlotClass;
+		public const int AllClassCount = MaxSlotClass - MinSlotClass;
 
 		public const uint SingleBit = 1U;
 		public const int SlotPower = 5;
@@ -92,6 +93,12 @@ namespace Massive
 			AllocatorOutOfRangeException.ThrowIfNotFitsInSlot(Unmanaged<T>.SizeInBytes, page.SlotLength);
 
 			return ref *(T*)(page.AlignedPtr + pointer.Offset);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ref T ValueUnsafe<T>(Pointer pointer) where T : unmanaged
+		{
+			return ref *(T*)(Pages[pointer.Page].AlignedPtr + pointer.Offset);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
