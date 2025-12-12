@@ -58,6 +58,10 @@ namespace Massive
 		public const int MinSlotLength = 1 << MinSlotClass;
 		public const int AllClassCount = 32 - MinSlotClass;
 
+		public const uint SingleBit = 1U;
+		public const int SlotPower = 5;
+		public const int SlotMask = (1 << SlotPower) - 1;
+
 		public Page[] Pages { get; private set; } = Array.Empty<Page>();
 
 		public ushort PageCount { get; private set; }
@@ -213,8 +217,8 @@ namespace Massive
 			ref var page = ref Pages[pointer.Page];
 
 			var slot = pointer.Offset >> page.SlotClass;
-			var bitsetIndex = slot >> 5;
-			var bitsetMask = 1U << (slot & 31);
+			var bitsetIndex = slot >> SlotPower;
+			var bitsetMask = SingleBit << (slot & SlotMask);
 
 			if ((page.UsedSlots[bitsetIndex] & bitsetMask) != 0)
 			{
@@ -236,8 +240,8 @@ namespace Massive
 			ref var page = ref Pages[pointer.Page];
 
 			var slot = pointer.Offset >> page.SlotClass;
-			var bitsetIndex = slot >> 5;
-			var bitsetMask = 1U << (slot & 31);
+			var bitsetIndex = slot >> SlotPower;
+			var bitsetMask = SingleBit << (slot & SlotMask);
 
 			var slotClassIndex = page.SlotClass - MinSlotClass;
 			*(Pointer*)(page.AlignedPtr + pointer.Offset) = FreeToAlloc[slotClassIndex];
@@ -256,8 +260,8 @@ namespace Massive
 			ref var page = ref Pages[pointer.Page];
 
 			var slot = pointer.Offset >> page.SlotClass;
-			var bitsetIndex = slot >> 5;
-			var bitsetMask = 1U << (slot & 31);
+			var bitsetIndex = slot >> SlotPower;
+			var bitsetMask = SingleBit << (slot & SlotMask);
 
 			return (page.UsedSlots[bitsetIndex] & bitsetMask) != 0;
 		}
@@ -296,7 +300,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int BitSetLength(int slotClass)
 		{
-			var slotCount = 1 << MathUtils.Max(MinPageSlotClass - slotClass, 0);
+			var slotCount = 1 << MathUtils.Max(MinPageSlotClass - slotClass, SlotPower);
 			return (slotCount + 7) >> 3;
 		}
 
@@ -309,7 +313,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void SetUsedSlot(uint* usedBits, int slot)
 		{
-			usedBits[slot >> 5] |= 1U << (slot & 31);
+			usedBits[slot >> SlotPower] |= SingleBit << (slot & SlotMask);
 		}
 
 		public void SetPageCount(ushort pageCount)
