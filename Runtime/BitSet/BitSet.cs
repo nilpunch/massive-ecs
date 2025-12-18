@@ -13,12 +13,12 @@ namespace Massive
 	public class BitSet : BitSetBase
 	{
 		/// <summary>
-		/// Associated type index. Session-dependent.
+		/// Associated type index for global lookup. Session-dependent.
 		/// </summary>
 		public int TypeId { get; private set; } = -1;
 
 		/// <summary>
-		/// Associated component index. World-dependent.
+		/// Associated component index for world lookup. World-dependent.
 		/// </summary>
 		public int ComponentId { get; private set; } = -1;
 

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.IL2CPP.CompilerServices;
 
 namespace Massive
 {
-	internal struct SystemMethodKind
-	{
-	}
-
+	[Il2CppSetOption(Option.NullChecks, false)]
+	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public partial class Systems
 	{
 		private Array[] _systemsLookup = Array.Empty<Array>();
@@ -58,5 +57,9 @@ namespace Massive
 			_systemsLookup[lookupIndex] = systemsArray;
 			return systemsArray;
 		}
+	}
+
+	internal struct SystemMethodKind
+	{
 	}
 }

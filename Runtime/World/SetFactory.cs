@@ -49,19 +49,19 @@ namespace Massive
 			var type = typeof(T);
 			if (CopyableUtils.IsImplementedFor(type))
 			{
-				var dataSet = CopyableUtils.CreateCopyingDataSet(DefaultValueUtils.GetDefaultValueFor<T>());
+				var dataSet = CopyableUtils.CreateCopyingDataSet(Default<T>.Value);
 				var cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else if (AutoFreeUtils.IsImplementedFor(type) && AllocatorSchemaGenerator.HasPointers(type))
 			{
-				var dataSet = AutoFreeUtils.CreateAutoFreeDataSet(_allocator, DefaultValueUtils.GetDefaultValueFor<T>());
+				var dataSet = AutoFreeUtils.CreateAutoFreeDataSet(_allocator, Default<T>.Value);
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}
 			else
 			{
-				var dataSet = new DataSet<T>(DefaultValueUtils.GetDefaultValueFor<T>());
+				var dataSet = new DataSet<T>(Default<T>.Value);
 				var cloner = new DataSetCloner<T>(dataSet);
 				return new Output(dataSet, cloner);
 			}

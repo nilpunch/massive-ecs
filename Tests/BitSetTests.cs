@@ -29,6 +29,7 @@ namespace Massive.Tests
 			Assert.IsFalse(isAssigned);
 		}
 
+#if !MASSIVE_DISABLE_ASSERT
 		[TestCase(-2)]
 		[TestCase(-1)]
 		public void WhenAssigned_AndNegativeIndex_ThenThrow(int id)
@@ -40,5 +41,6 @@ namespace Massive.Tests
 				sparseSet.Add(id);
 			});
 		}
+#endif
 	}
 }

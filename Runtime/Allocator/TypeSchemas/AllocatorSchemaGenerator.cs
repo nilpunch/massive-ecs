@@ -17,7 +17,7 @@ namespace Massive
 
 		public static AllocatorTypeSchema Generate<T>() where T : unmanaged
 		{
-			ClearCache();
+			ClearBuffers();
 			var rootSchemaIndex = GetRootSchemaIndex(typeof(T));
 			var schema = new AllocatorTypeSchema(_schemas.ToArray(), rootSchemaIndex);
 			return schema;
@@ -28,7 +28,7 @@ namespace Massive
 			return GetPointerFields(type, 0).Any();
 		}
 
-		private static void ClearCache()
+		private static void ClearBuffers()
 		{
 			_schemas.Clear();
 			_schemaIndices.Clear();
@@ -50,14 +50,13 @@ namespace Massive
 				throw new InvalidOperationException("Type is not user struct.");
 			}
 
-			var schema = new AllocatorDataSchema();
-
 			var sizeOfType = ReflectionUtils.SizeOfUnmanaged(type);
 			if (sizeOfType > AllocatorDataSchema.MaxElementSize)
 			{
 				throw new InvalidOperationException($"Size of struct is too big. Size: {sizeOfType}");
 			}
 
+			var schema = new AllocatorDataSchema();
 			schema.ElementSize = (byte)sizeOfType;
 
 			var complexityCount = 0;
@@ -132,11 +131,6 @@ namespace Massive
 			return schemaIndex;
 		}
 
-		private static int GetFieldOffset(Type type, FieldInfo field)
-		{
-			return (int)Marshal.OffsetOf(type, field.Name);
-		}
-
 		private static IEnumerable<(FieldInfo Field, int Offset)> GetPointerFields(Type type, int baseOffset)
 		{
 			if (!IsUserStruct(type))
@@ -165,6 +159,11 @@ namespace Massive
 					}
 				}
 			}
+		}
+
+		private static int GetFieldOffset(Type type, FieldInfo field)
+		{
+			return (int)Marshal.OffsetOf(type, field.Name);
 		}
 
 		private static bool IsUserStruct(Type type)

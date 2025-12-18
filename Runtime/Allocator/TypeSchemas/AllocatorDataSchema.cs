@@ -6,12 +6,11 @@ namespace Massive
 {
 	/// <summary>
 	/// Defines the memory layout schema for pointer fields within a struct.<br/>
-	/// Schema budget allocation rules:<br/>
-	/// - Total available budget: <see cref="AllocatorDataSchema.Length"/> bytes<br/>
-	/// - Pointer field costs vary based on content type:<br/>
-	///   • <b>1 point</b>: Points to simple data (no nested pointers)<br/>
-	///   • <b>2 points</b>: Points to another pointer<br/>
-	///   • <b>3 points</b>: Points to a collection of pointers<br/>
+	/// Total available schema budget: <see cref="AllocatorDataSchema.Length"/> bytes<br/>
+	/// Pointer field costs vary based on content type:<br/>
+	/// <b>1 point</b>: Points to simple data (no nested pointers)<br/>
+	/// <b>2 points</b>: Points to another pointer<br/>
+	/// <b>3 points</b>: Points to a collection of pointers<br/>
 	/// The total cost of all pointer fields must not exceed the available budget.
 	/// </summary>
 	[Il2CppSetOption(Option.NullChecks, false)]

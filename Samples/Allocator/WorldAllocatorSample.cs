@@ -48,7 +48,7 @@
 			items.RemoveAtSwapBack(0);
 
 			// Iterate through the remaining items.
-			foreach (var item in items)
+			foreach (ref var item in items)
 			{
 			}
 		}

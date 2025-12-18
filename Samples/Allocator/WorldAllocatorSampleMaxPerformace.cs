@@ -37,7 +37,7 @@
 
 			items.RemoveAtSwapBack(World, 0);
 
-			foreach (var item in items.GetEnumerator(World))
+			foreach (ref var item in items.GetEnumerator(World))
 			{
 			}
 		}

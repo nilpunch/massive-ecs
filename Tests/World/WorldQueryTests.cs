@@ -7,7 +7,7 @@ namespace Massive.Tests
 	[TestFixture(typeof(TestState64Stable), typeof(TestState64))]
 	[TestFixture(typeof(TestState64), typeof(TestState64Stable))]
 	[TestFixture(typeof(TestState64Stable), typeof(TestState64Stable_2))]
-	public class WorldIntegrationTests<TComponent1, TComponent2>
+	public class WorldQueryTests<TComponent1, TComponent2>
 	{
 		[Test]
 		public void StorageResizeDuringIterationOverComponents_ShouldNotCauseConfusion()
@@ -303,7 +303,7 @@ namespace Massive.Tests
 	}
 
 	[TestFixture]
-	public class WorldIntegrationTests
+	public class WorldQueryTests
 	{
 		private struct StableData
 		{
