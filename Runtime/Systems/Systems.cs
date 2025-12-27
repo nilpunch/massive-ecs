@@ -11,22 +11,26 @@ namespace Massive
 		private Array[] _systemsLookup = Array.Empty<Array>();
 		private ISystem[] _systems = Array.Empty<ISystem>();
 
-		public void Run<TSystemMethod>()
+		public Systems Run<TSystemMethod>()
 			where TSystemMethod : ISystemMethod<TSystemMethod>
 		{
 			foreach (var method in GetSystemsOfType<TSystemMethod>())
 			{
 				method.Run();
 			}
+
+			return this;
 		}
 
-		public void Run<TSystemMethod, TArgs>(TArgs args)
+		public Systems Run<TSystemMethod, TArgs>(TArgs args)
 			where TSystemMethod : ISystemMethod<TSystemMethod, TArgs>
 		{
 			foreach (var method in GetSystemsOfType<TSystemMethod>())
 			{
 				method.Run(args);
 			}
+
+			return this;
 		}
 
 		public TSystemMethod[] GetSystemsOfType<TSystemMethod>()

@@ -2,7 +2,7 @@
 {
 	public static class SystemsRecusrionExtensions
 	{
-		public static void RunRecursion<TSystemMethod>(this Systems systems)
+		public static Systems RunRecursion<TSystemMethod>(this Systems systems)
 			where TSystemMethod : IRecursiveSystemMethod<TSystemMethod>
 		{
 			var methods = systems.GetSystemsOfType<TSystemMethod>();
@@ -15,9 +15,11 @@
 					running |= method.Run() == RunResult.Active;
 				}
 			} while (running);
+
+			return systems;
 		}
 
-		public static void RunRecursion<TSystemMethod, TArgs>(this Systems systems, TArgs args)
+		public static Systems RunRecursion<TSystemMethod, TArgs>(this Systems systems, TArgs args)
 			where TSystemMethod : IRecursiveSystemMethod<TSystemMethod, TArgs>
 		{
 			var methods = systems.GetSystemsOfType<TSystemMethod>();
@@ -30,6 +32,8 @@
 					running |= method.Run(args) == RunResult.Active;
 				}
 			} while (running);
+
+			return systems;
 		}
 	}
 }

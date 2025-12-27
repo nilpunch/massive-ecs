@@ -10,7 +10,7 @@ namespace Massive
 
 		public Allocator Allocator { get; } = new Allocator();
 
-		public Systems Build(World world)
+		public Systems Build()
 		{
 			Allocator.Reset();
 			_systems = new ISystem[_registeredFactories.Count];
@@ -18,7 +18,7 @@ namespace Massive
 			foreach (var systemFactory in _registeredFactories.OrderBy(factory => factory.Order))
 			{
 				var system = systemFactory.Create();
-				system.Initialize(systemsCount, Allocator, world);
+				system.Build(systemsCount, Allocator);
 				_systems[systemsCount++] = system;
 			}
 			Array.Clear(_systemsLookup, 0, _systemsLookup.Length);

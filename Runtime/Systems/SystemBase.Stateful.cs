@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class SystemBase<TState> : ISystem where TState : unmanaged
+	public class SystemBase<TState> : ISystem, ISystemInject<World> where TState : unmanaged
 	{
 		public World World { get; private set; }
 		public int Id { get; private set; }
@@ -19,12 +19,16 @@ namespace Massive
 			get => ref StatePointer.Value(Allocator);
 		}
 
-		void ISystem.Initialize(int id, Allocator allocator, World world)
+		void ISystem.Build(int id, Allocator allocator)
 		{
 			Id = id;
 			Allocator = allocator;
+			StatePointer = Allocator.AllocVar<TState>();
+		}
+
+		void ISystemInject<World>.Inject(World world)
+		{
 			World = world;
-			StatePointer = (Pointer<TState>)Allocator.Alloc<TState>(1);
 		}
 	}
 }
