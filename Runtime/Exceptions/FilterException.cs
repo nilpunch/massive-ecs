@@ -40,7 +40,7 @@ namespace Massive
 			{
 				for (var j = 0; j < setsB.Length; j++)
 				{
-					if (setsA[i] != null && setsB[i] != null && setsA[i] == setsB[i])
+					if (setsA[i] != null && setsB[j] != null && setsA[i] == setsB[j])
 					{
 						throw new FilterException($"Query has conflicting {Name(typeA)} and {Name(typeB)} components.");
 
