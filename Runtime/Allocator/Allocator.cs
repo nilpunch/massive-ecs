@@ -38,7 +38,7 @@ namespace Massive
 				get => BitSetLength(SlotClass);
 			}
 
-			public int FullPageLength
+			public int PageLengthWithBitset
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
 				get => PageLength + BitSetLength;
@@ -112,10 +112,10 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Pointer Alloc<T>(int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
+		public Pointer<T> Alloc<T>(int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
 			var info = Unmanaged<T>.Info;
-			return Alloc(minimumLength * info.Size, info.Alignment, memoryInit);
+			return (Pointer<T>)Alloc(minimumLength * info.Size, info.Alignment, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -25,7 +25,6 @@ namespace Massive
 
 		private FastList<BitSetBase> Included { get; } = new FastList<BitSetBase>();
 		private FastList<BitSetBase> Excluded { get; } = new FastList<BitSetBase>();
-		private FastList<BitSetBase> IncludedWithoutMin { get; } = new FastList<BitSetBase>();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static QueryCache Rent()
@@ -105,15 +104,10 @@ namespace Massive
 			{
 				if (included != minIncluded)
 				{
-					IncludedWithoutMin.Add(included);
-				}
-			}
-
-			foreach (var included in IncludedWithoutMin)
-			{
-				for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
-				{
-					NonEmptyBlocks[blockIndex] &= included.NonEmptyBlocks[blockIndex];
+					for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
+					{
+						NonEmptyBlocks[blockIndex] &= included.NonEmptyBlocks[blockIndex];
+					}
 				}
 			}
 
@@ -176,12 +170,15 @@ namespace Massive
 				Bits[bitsIndex] = minIncluded.Bits[bitsIndex];
 			}
 
-			foreach (var included in IncludedWithoutMin)
+			foreach (var included in Included)
 			{
-				for (var i = 0; i < NonEmptyBitsCount; i++)
+				if (included != minIncluded)
 				{
-					var bitsIndex = NonEmptyBitsIndices[i];
-					Bits[bitsIndex] &= included.Bits[bitsIndex];
+					for (var i = 0; i < NonEmptyBitsCount; i++)
+					{
+						var bitsIndex = NonEmptyBitsIndices[i];
+						Bits[bitsIndex] &= included.Bits[bitsIndex];
+					}
 				}
 			}
 
@@ -194,7 +191,6 @@ namespace Massive
 				}
 			}
 
-			IncludedWithoutMin.Clear();
 			return this;
 		}
 

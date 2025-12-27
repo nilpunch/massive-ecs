@@ -14,8 +14,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkablePointer<T> AllocVar<T>(this Allocator allocator, T value = default) where T : unmanaged
 		{
-			var info = Unmanaged<T>.Info;
-			var pointer = (Pointer<T>)allocator.Alloc(info.Size, info.Alignment, MemoryInit.Uninitialized);
+			var pointer = allocator.Alloc<T>(1, MemoryInit.Uninitialized);
 			pointer.Value(allocator) = value;
 			return new WorkablePointer<T>(pointer, allocator);
 		}
@@ -23,12 +22,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableArray<T> AllocArray<T>(this Allocator allocator, int length, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
-			var info = Unmanaged<T>.Info;
-
-			var pointer = new ArrayPointer<T>((Pointer<ArrayModel<T>>)allocator.Alloc(ArrayModel<T>.Size, ArrayModel<T>.Alignment, MemoryInit.Uninitialized));
+			var pointer = new ArrayPointer<T>(allocator.Alloc<ArrayModel<T>>(1, MemoryInit.Uninitialized));
 
 			ref var model = ref pointer.Model.Value(allocator);
-			model.Items = (Pointer<T>)allocator.Alloc(length * info.Size, info.Alignment, memoryInit);
+			model.Items = allocator.Alloc<T>(length, memoryInit);
 			model.Length = length;
 
 			return new WorkableArray<T>(pointer, allocator);
@@ -37,12 +34,10 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static WorkableList<T> AllocList<T>(this Allocator allocator, int capacity = 0) where T : unmanaged
 		{
-			var info = Unmanaged<T>.Info;
-
-			var pointer = new ListPointer<T>((Pointer<ListModel<T>>)allocator.Alloc(ListModel<T>.Size, ListModel<T>.Alignment, MemoryInit.Uninitialized));
+			var pointer = new ListPointer<T>(allocator.Alloc<ListModel<T>>(1, MemoryInit.Uninitialized));
 
 			ref var model = ref pointer.Model.Value(allocator);
-			model.Items = (Pointer<T>)allocator.Alloc(capacity * info.Size, info.Alignment, MemoryInit.Uninitialized);
+			model.Items = allocator.Alloc<T>(capacity, MemoryInit.Uninitialized);
 			model.Capacity = capacity;
 			model.Count = 0;
 
@@ -52,10 +47,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ArrayModel<T> AllocArrayModel<T>(this Allocator allocator, int length, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
-			var info = Unmanaged<T>.Info;
-
 			ArrayModel<T> model = default;
-			model.Items = (Pointer<T>)allocator.Alloc(length * info.Size, info.Alignment, memoryInit);
+			model.Items = allocator.Alloc<T>(length, memoryInit);
 			model.Length = length;
 
 			return model;
@@ -64,10 +57,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ListModel<T> AllocListModel<T>(this Allocator allocator, int capacity = 0) where T : unmanaged
 		{
-			var info = Unmanaged<T>.Info;
-
 			ListModel<T> model = default;
-			model.Items = (Pointer<T>)allocator.Alloc(capacity * info.Size, info.Alignment, MemoryInit.Uninitialized);
+			model.Items = allocator.Alloc<T>(capacity, MemoryInit.Uninitialized);
 			model.Capacity = capacity;
 			model.Count = 0;
 

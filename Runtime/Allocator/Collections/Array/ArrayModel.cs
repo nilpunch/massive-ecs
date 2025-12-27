@@ -23,18 +23,18 @@ namespace Massive
 		public int Length;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Free(Allocator allocator)
+		public readonly void Free(Allocator allocator)
 		{
 			Items.Free(allocator);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void DeepFree(Allocator allocator)
+		public readonly void DeepFree(Allocator allocator)
 		{
 			Items.DeepFree(allocator);
 		}
 
-		public unsafe ref T this[Allocator allocator, int index]
+		public readonly unsafe ref T this[Allocator allocator, int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
@@ -48,13 +48,36 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe ref T GetAt(Allocator allocator, int index)
+		public readonly unsafe ref T GetAt(Allocator allocator, int index)
 		{
 			ref readonly var page = ref allocator.GetPage(Items.Raw);
 
 			AllocatorOutOfRangeException.ThrowIfOutOfRangeExclusive(index, Length);
 
 			return ref ((T*)(page.AlignedPtr + Items.Raw.Offset))[index];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly ArrayModel<T> Slice(Allocator allocator, int start, int length)
+		{
+			AllocatorOutOfRangeException.ThrowIfOutOfRangeExclusive(start, Length);
+			AllocatorOutOfRangeException.ThrowIfOutOfRangeExclusive(start + length - 1, Length);
+
+			ArrayModel<T> slice = default;
+			slice.Items = Items.Add(allocator, start);
+			slice.Length = length;
+			return slice;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly ArrayModel<T> SliceFrom(Allocator allocator, int start)
+		{
+			AllocatorOutOfRangeException.ThrowIfOutOfRangeExclusive(start, Length);
+
+			ArrayModel<T> slice = default;
+			slice.Items = Items.Add(allocator, start);
+			slice.Length = Length - start;
+			return slice;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,7 +100,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe int IndexOf<U>(Allocator allocator, U item) where U : IEquatable<T>
+		public readonly unsafe int IndexOf<U>(Allocator allocator, U item) where U : IEquatable<T>
 		{
 			var data = (T*)allocator.GetPtr(Items.Raw);
 			var endIndex = Length;
@@ -93,7 +116,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe int IndexOf<U>(Allocator allocator, U item, int startIndex, int count) where U : IEquatable<T>
+		public readonly unsafe int IndexOf<U>(Allocator allocator, U item, int startIndex, int count) where U : IEquatable<T>
 		{
 			var data = (T*)allocator.GetPtr(Items.Raw);
 			var endIndex = startIndex + count;
@@ -112,7 +135,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe void CopyToSelf(Allocator allocator, int sourceIndex, int destinationIndex, int length)
+		public readonly unsafe void CopyToSelf(Allocator allocator, int sourceIndex, int destinationIndex, int length)
 		{
 			var lengthInBytes = length * Unmanaged<T>.SizeInBytes;
 			var dataPtr = (T*)allocator.GetPtr(Items.Raw);
@@ -120,7 +143,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe UnsafeEnumerator<T> GetEnumerator(Allocator allocator)
+		public readonly unsafe UnsafeEnumerator<T> GetEnumerator(Allocator allocator)
 		{
 			UnsafeEnumerator<T> unsafeEnumerator = default;
 			unsafeEnumerator.Data = (T*)allocator.GetPtr(Items.Raw);
@@ -130,17 +153,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe UnsafeEnumerator<T> GetEnumerator(Allocator allocator, int length)
-		{
-			UnsafeEnumerator<T> unsafeEnumerator = default;
-			unsafeEnumerator.Data = (T*)allocator.GetPtr(Items.Raw);
-			unsafeEnumerator.Length = length;
-			unsafeEnumerator.Index = -1;
-			return unsafeEnumerator;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe UnsafeEnumerator<T> GetEnumerator(Allocator allocator, int start, int length)
+		public readonly unsafe UnsafeEnumerator<T> GetEnumerator(Allocator allocator, int start, int length)
 		{
 			UnsafeEnumerator<T> unsafeEnumerator = default;
 			unsafeEnumerator.Data = (T*)allocator.GetPtr(Items.Raw);

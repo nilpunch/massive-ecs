@@ -1,4 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if !MASSIVE_DISABLE_ASSERT
+#define MASSIVE_ASSERT
+#endif
+
+using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
 namespace Massive

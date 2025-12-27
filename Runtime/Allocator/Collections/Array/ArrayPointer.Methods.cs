@@ -78,12 +78,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public UnsafeEnumerator<T> GetEnumerator(Allocator allocator, int length)
-		{
-			return Model.Value(allocator).GetEnumerator(allocator, length);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public UnsafeEnumerator<T> GetEnumerator(Allocator allocator, int start, int length)
 		{
 			return Model.Value(allocator).GetEnumerator(allocator, start, length);
