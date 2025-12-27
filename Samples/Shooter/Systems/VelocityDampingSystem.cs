@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.Shooter
 {
-	public class VelocityDampingSystem : SystemBase, IUpdate
+	public class VelocityDampingSystem : WorldSystem, IUpdate
 	{
 		public void Update(float deltaTime)
 		{

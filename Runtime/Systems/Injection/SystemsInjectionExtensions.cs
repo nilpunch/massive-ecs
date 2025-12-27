@@ -7,7 +7,15 @@ namespace Massive
 		/// </summary>
 		public static Systems Inject<TArg>(this Systems systems, TArg arg)
 		{
-			return systems.Run<ISystemInject<TArg>, TArg>(arg);
+			foreach (var system in systems.GetAllSystems())
+			{
+				if (system is ISystemInject<TArg> injectMethod)
+				{
+					injectMethod.Inject(arg);
+				}
+			}
+
+			return systems;
 		}
 
 		/// <summary>

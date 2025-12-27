@@ -1,6 +1,6 @@
 ﻿namespace Massive
 {
-	public class SystemBase : ISystem, ISystemInject<World>
+	public class WorldSystem : ISystem, ISystemInject<World>
 	{
 		public int Id { get; private set; }
 		public World World { get; private set; }

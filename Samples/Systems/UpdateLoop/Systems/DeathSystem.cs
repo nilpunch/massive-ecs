@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.UpdateLoop
 {
-	public class DeathSystem : SystemBase, IUpdate
+	public class DeathSystem : WorldSystem, IUpdate
 	{
 		public void Update(float deltaTime)
 		{

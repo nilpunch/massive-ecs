@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Move entities according to their velocities.
 	/// </summary>
-	public class MovementSystem : SystemBase, IUpdate
+	public class MovementSystem : WorldSystem, IUpdate
 	{
 		public void Update(float deltaTime)
 		{

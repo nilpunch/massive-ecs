@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.UpdateLoop
 {
-	public class SpawnSystem : SystemBase, IFirstTick
+	public class SpawnSystem : WorldSystem, IFirstTick
 	{
 		private readonly int _spawnAmount;
 

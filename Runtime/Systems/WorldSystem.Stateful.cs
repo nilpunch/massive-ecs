@@ -5,7 +5,7 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class SystemBase<TState> : ISystem, ISystemInject<World> where TState : unmanaged
+	public class WorldSystem<TState> : ISystem, ISystemInject<World> where TState : unmanaged
 	{
 		public World World { get; private set; }
 		public int Id { get; private set; }

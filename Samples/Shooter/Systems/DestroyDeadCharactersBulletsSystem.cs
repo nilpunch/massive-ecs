@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.Shooter
 {
-	public class DestroyDeadCharactersBulletsSystem : SystemBase, IUpdate
+	public class DestroyDeadCharactersBulletsSystem : WorldSystem, IUpdate
 	{
 		public void Update(float deltaTime)
 		{

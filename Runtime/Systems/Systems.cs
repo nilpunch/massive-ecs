@@ -61,6 +61,11 @@ namespace Massive
 			_systemsLookup[lookupIndex] = systemsArray;
 			return systemsArray;
 		}
+
+		public ISystem[] GetAllSystems()
+		{
+			return _systems;
+		}
 	}
 
 	internal struct SystemMethodKind

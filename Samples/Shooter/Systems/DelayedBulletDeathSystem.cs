@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Just delays a full destruction of a bullet to apply some visual death effect.
 	/// </summary>
-	public class DelayedBulletDeathSystem : SystemBase, IUpdate
+	public class DelayedBulletDeathSystem : WorldSystem, IUpdate
 	{
 		public void Update(float deltaTime)
 		{

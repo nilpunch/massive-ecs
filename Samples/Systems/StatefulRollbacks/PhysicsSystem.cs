@@ -2,7 +2,7 @@
 
 namespace Massive.Samples.StatefulRollbacks
 {
-	public class PhysicsSystem : SystemBase<PhysicsSystem.SystemState>, IFirstTick, IUpdate
+	public class PhysicsSystem : WorldSystem<PhysicsSystem.SystemState>, IFirstTick, IUpdate
 	{
 		public struct SystemState
 		{

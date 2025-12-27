@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.UpdateLoop
 {
-	public class HealingBuffSystem : SystemBase, IUpdate
+	public class HealingBuffSystem : WorldSystem, IUpdate
 	{
 		public void Update(float deltaTime)
 		{

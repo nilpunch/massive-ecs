@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Respawns dead characters with full health after some time.
 	/// </summary>
-	public class CharacterRespawnSystem : SystemBase, IUpdate
+	public class CharacterRespawnSystem : WorldSystem, IUpdate
 	{
 		public void Update(float deltaTime)
 		{

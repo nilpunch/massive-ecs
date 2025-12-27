@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.UpdateLoop
 {
-	public class DamageSystem : SystemBase, IUpdate, IInitinalize
+	public class DamageSystem : WorldSystem, IUpdate, IInitinalize
 	{
 		private BitSet TakeDamageSelf;
 
