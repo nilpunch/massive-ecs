@@ -15,6 +15,7 @@ namespace Massive
 	{
 		private static QueryCache[] CachePool { get; set; } = Array.Empty<QueryCache>();
 		private static int PoolCount { get; set; }
+		private static readonly object Lock = new();
 
 		public ulong[] Bits { get; private set; } = new ulong[1];
 		private ulong[] NonEmptyBlocks { get; set; } = Array.Empty<ulong>();
@@ -29,24 +30,30 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static QueryCache Rent()
 		{
-			if (PoolCount > 0)
+			lock (Lock)
 			{
-				return CachePool[--PoolCount];
-			}
+				if (PoolCount > 0)
+				{
+					return CachePool[--PoolCount];
+				}
 
-			return new QueryCache();
+				return new QueryCache();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ReturnAndPop(QueryCache queryCache)
 		{
-			if (PoolCount >= CachePool.Length)
+			lock (Lock)
 			{
-				CachePool = CachePool.Resize(MathUtils.RoundUpToPowerOfTwo(PoolCount + 1));
-			}
+				if (PoolCount >= CachePool.Length)
+				{
+					CachePool = CachePool.Resize(MathUtils.RoundUpToPowerOfTwo(PoolCount + 1));
+				}
 
-			CachePool[PoolCount++] = queryCache;
-			queryCache.Pop();
+				CachePool[PoolCount++] = queryCache;
+				queryCache.Pop();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
