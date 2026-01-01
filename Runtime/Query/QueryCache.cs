@@ -11,11 +11,8 @@ namespace Massive
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	[Il2CppEagerStaticClassConstruction]
-	public class QueryCache
+	public partial class QueryCache
 	{
-		private static QueryCache[] CachePool { get; set; } = Array.Empty<QueryCache>();
-		private static int PoolCount { get; set; }
-
 		public ulong[] Bits { get; private set; } = new ulong[1];
 		private ulong[] NonEmptyBlocks { get; set; } = Array.Empty<ulong>();
 		private int BitsCapacity { get; set; }
@@ -25,29 +22,6 @@ namespace Massive
 
 		private FastList<BitSetBase> Included { get; } = new FastList<BitSetBase>();
 		private FastList<BitSetBase> Excluded { get; } = new FastList<BitSetBase>();
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static QueryCache Rent()
-		{
-			if (PoolCount > 0)
-			{
-				return CachePool[--PoolCount];
-			}
-
-			return new QueryCache();
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ReturnAndPop(QueryCache queryCache)
-		{
-			if (PoolCount >= CachePool.Length)
-			{
-				CachePool = CachePool.Resize(MathUtils.RoundUpToPowerOfTwo(PoolCount + 1));
-			}
-
-			CachePool[PoolCount++] = queryCache;
-			queryCache.Pop();
-		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public QueryCache AddInclude(BitSetBase bitSet)
