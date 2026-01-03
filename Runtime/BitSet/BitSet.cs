@@ -298,15 +298,25 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetComponentId(int componentId)
 		{
-			if (ComponentId == componentId)
+			if (componentId == ComponentId)
 			{
 				return;
 			}
 
-			ComponentId = componentId;
-			ComponentIndex = componentId >> 6;
-			ComponentMask = 1UL << (componentId & 63);
-			ComponentMaskNegative = ~ComponentMask;
+			if (componentId < 0)
+			{
+				ComponentId = -1;
+				ComponentIndex = -1;
+				ComponentMask = 0;
+				ComponentMaskNegative = 0;
+			}
+			else
+			{
+				ComponentId = componentId;
+				ComponentIndex = componentId >> 6;
+				ComponentMask = 1UL << (componentId & 63);
+				ComponentMaskNegative = ~ComponentMask;
+			}
 		}
 	}
 }

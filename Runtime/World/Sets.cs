@@ -58,8 +58,16 @@ namespace Massive
 			EnsureLookupByTypeAt(info.Index);
 			var candidate = LookupByTypeId[info.Index];
 
+			if (candidate != null && candidate.ComponentId >= 0)
+			{
+				return candidate;
+			}
+
 			if (candidate != null)
 			{
+				var reusedId = ComponentCount++;
+				candidate.SetComponentId(reusedId);
+				LookupByComponentId[reusedId] = candidate;
 				return candidate;
 			}
 
@@ -84,7 +92,7 @@ namespace Massive
 				EnsureLookupByTypeAt(info.Index);
 				var candidate = LookupByTypeId[info.Index];
 
-				if (candidate != null)
+				if (candidate != null && candidate.ComponentId >= 0)
 				{
 					return candidate;
 				}
@@ -194,13 +202,16 @@ namespace Massive
 				otherSet.SetComponentId(i);
 			}
 
-			// Clear other sets.
+			// Clear other sets and mark them invalid.
 			for (var i = ComponentCount; i < other.ComponentCount; i++)
 			{
-				var otherSet = other.LookupByComponentId[i];
-				otherSet.SetComponentId(i);
+				ref var otherSet = ref other.LookupByComponentId[i];
+				otherSet.SetComponentId(-1);
 				otherSet.ClearWithoutNotify();
+				otherSet = null;
 			}
+
+			other.ComponentCount = ComponentCount;
 		}
 	}
 
