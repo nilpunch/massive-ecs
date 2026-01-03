@@ -12,8 +12,14 @@ namespace Massive
 			FramesCapacity = framesCapacity;
 		}
 
+		/// <summary>
+		/// The maximum number of frames that can be saved.
+		/// </summary>
 		public int FramesCapacity { get; }
 
+		/// <summary>
+		/// The index of the current frame.
+		/// </summary>
 		public int CurrentFrame { get; private set; }
 
 		public int CanRollbackFrames
@@ -32,6 +38,8 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Rollback(int frames)
 		{
+			NegativeArgumentException.ThrowIfNegative(frames);
+
 			if (frames > CanRollbackFrames)
 			{
 				throw new ArgumentOutOfRangeException(nameof(frames), frames, $"Can't rollback this far. CanRollbackFrames: {CanRollbackFrames}.");
@@ -39,6 +47,29 @@ namespace Massive
 
 			_savedFrames -= frames;
 			CurrentFrame = LoopNegative(CurrentFrame - frames, FramesCapacity);
+		}
+
+		/// <summary>
+		/// Returns the frame index from a previous frame without modifying the current state.<br/>
+		/// A value of 0 returns the <see cref="CurrentFrame"/>.
+		/// </summary>
+		/// <param name="frames">
+		/// The number of frames to peek back. Must be non-negative and not exceed <see cref="CanRollbackFrames"/>.
+		/// </param>
+		/// <returns>
+		/// The cycled frame index corresponding to the specified number of frames ago.
+		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int Peekback(int frames)
+		{
+			NegativeArgumentException.ThrowIfNegative(frames);
+
+			if (frames > CanRollbackFrames)
+			{
+				throw new ArgumentOutOfRangeException(nameof(frames), frames, $"Can't peekback this far. CanRollbackFrames: {CanRollbackFrames}.");
+			}
+
+			return LoopNegative(CurrentFrame - frames, FramesCapacity);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

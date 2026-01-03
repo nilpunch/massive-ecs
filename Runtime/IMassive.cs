@@ -1,5 +1,9 @@
 ﻿namespace Massive
 {
+	/// <summary>
+	/// Defines a contract for objects that support saving and restoring snapshots of state.<br/>
+	/// The term "frames" refers to snapshots of states.
+	/// </summary>
 	public interface IMassive
 	{
 		/// <summary>

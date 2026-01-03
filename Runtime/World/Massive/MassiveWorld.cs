@@ -58,5 +58,23 @@ namespace Massive
 
 			Rollbacked?.Invoke(frames);
 		}
+
+		/// <summary>
+		/// Returns the saved world from a previous frame without modifying the current state.<br/>
+		/// A value of 0 returns the world from the last <see cref="IMassive.SaveFrame"/> call.
+		/// </summary>
+		/// <param name="frames">
+		/// The number of frames to peek back. Must be non-negative and not exceed <see cref="IMassive.CanRollbackFrames"/>.
+		/// </param>
+		/// <returns>
+		/// A copy of the saved world from the specified frame.
+		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public World Peekback(int frames)
+		{
+			var peekbackFrame = _cyclicFrameCounter.Peekback(frames);
+
+			return _frames[peekbackFrame];
+		}
 	}
 }
