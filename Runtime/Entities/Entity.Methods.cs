@@ -70,7 +70,7 @@ namespace Massive
 			World.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = World.Sets.LookupByTypeId[info.Index];
 
-			if (candidate == null || candidate.ComponentId < 0)
+			if (candidate == null || !candidate.IsComponentBound)
 			{
 				candidate = World.Sets.Get<T>();
 			}
@@ -101,7 +101,7 @@ namespace Massive
 			World.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = World.Sets.LookupByTypeId[info.Index];
 
-			if (candidate == null || candidate.ComponentId < 0)
+			if (candidate == null || !candidate.IsComponentBound)
 			{
 				candidate = World.Sets.Get<T>();
 			}
@@ -128,7 +128,7 @@ namespace Massive
 			World.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = World.Sets.LookupByTypeId[info.Index];
 
-			if (candidate == null || candidate.ComponentId < 0)
+			if (candidate == null || !candidate.IsComponentBound)
 			{
 				candidate = World.Sets.Get<T>();
 			}
@@ -152,7 +152,7 @@ namespace Massive
 			World.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = World.Sets.LookupByTypeId[info.Index];
 
-			if (candidate == null || candidate.ComponentId < 0)
+			if (candidate == null || !candidate.IsComponentBound)
 			{
 				candidate = World.Sets.Get<T>();
 			}
@@ -177,7 +177,7 @@ namespace Massive
 			World.Sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = World.Sets.LookupByTypeId[info.Index];
 
-			if (candidate == null || candidate.ComponentId < 0)
+			if (candidate == null || !candidate.IsComponentBound)
 			{
 				candidate = World.Sets.Get<T>();
 			}

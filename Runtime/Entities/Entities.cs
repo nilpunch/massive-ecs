@@ -351,7 +351,6 @@ namespace Massive
 		/// <summary>
 		/// Creates and returns a new entities collection that is an exact copy of this one.
 		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Entities Clone()
 		{
 			var clone = new Entities();
@@ -362,7 +361,6 @@ namespace Massive
 		/// <summary>
 		/// Copies all entities and state from this entities collection into the specified one.
 		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Entities other)
 		{
 			CopyBitSetTo(other);

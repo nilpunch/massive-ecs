@@ -58,7 +58,7 @@ namespace Massive
 			EnsureLookupByTypeAt(info.Index);
 			var candidate = LookupByTypeId[info.Index];
 
-			if (candidate != null && candidate.ComponentId >= 0)
+			if (candidate != null && candidate.IsComponentBound)
 			{
 				return candidate;
 			}
@@ -66,7 +66,7 @@ namespace Massive
 			if (candidate != null)
 			{
 				var reusedId = ComponentCount++;
-				candidate.SetComponentId(reusedId);
+				candidate.RebindComponent(reusedId);
 				LookupByComponentId[reusedId] = candidate;
 				return candidate;
 			}
@@ -78,7 +78,7 @@ namespace Massive
 
 			var componentId = ComponentCount++;
 			EnsureLookupByComponentAt(componentId);
-			set.SetupComponent(Components, info.Index, componentId);
+			set.BindComponent(Components, info.Index, componentId);
 			LookupByComponentId[componentId] = set;
 
 			return set;
@@ -92,7 +92,7 @@ namespace Massive
 				EnsureLookupByTypeAt(info.Index);
 				var candidate = LookupByTypeId[info.Index];
 
-				if (candidate != null && candidate.ComponentId >= 0)
+				if (candidate != null && candidate.IsComponentBound)
 				{
 					return candidate;
 				}
@@ -167,6 +167,19 @@ namespace Massive
 			return hash;
 		}
 
+		public void Reset()
+		{
+			for (var i = 0; i < ComponentCount; i++)
+			{
+				ref var set = ref LookupByComponentId[i];
+				set.UnbindComponent();
+				set.ClearWithoutNotify();
+				set = null;
+			}
+
+			ComponentCount = 0;
+		}
+		
 		/// <summary>
 		/// Copies all sets from this registry into the specified one.
 		/// Clears sets in the target registry that are not present in the source.
@@ -174,7 +187,6 @@ namespace Massive
 		/// <remarks>
 		/// Throws if the set factories are incompatible.
 		/// </remarks>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Sets other)
 		{
 			IncompatibleConfigsException.ThrowIfIncompatible(SetFactory, other.SetFactory);
@@ -199,14 +211,14 @@ namespace Massive
 					(otherSet, otherMatchedSet) = (otherMatchedSet, otherSet);
 				}
 
-				otherSet.SetComponentId(i);
+				otherSet.RebindComponent(i);
 			}
 
 			// Clear other sets and mark them invalid.
 			for (var i = ComponentCount; i < other.ComponentCount; i++)
 			{
 				ref var otherSet = ref other.LookupByComponentId[i];
-				otherSet.SetComponentId(-1);
+				otherSet.UnbindComponent();
 				otherSet.ClearWithoutNotify();
 				otherSet = null;
 			}

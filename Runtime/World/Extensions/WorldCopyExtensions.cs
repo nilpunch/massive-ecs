@@ -15,7 +15,6 @@ namespace Massive
 		/// <summary>
 		/// Creates and returns a new world that is an exact copy of this one.
 		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static World Clone(this World world)
 		{
 			var clone = new World(world.Config);
@@ -31,7 +30,6 @@ namespace Massive
 		/// <remarks>
 		/// Throws if the worlds have incompatible configs.
 		/// </remarks>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void CopyTo(this World world, World other)
 		{
 			IncompatibleConfigsException.ThrowIfIncompatible(world, other);

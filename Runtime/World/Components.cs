@@ -26,7 +26,7 @@ namespace Massive
 
 		public int BitMapCapacity { get; private set; }
 
-		public int MaskLength { get; private set; }
+		public int MaskLength { get; private set; } = 1;
 
 		public int EntitiesCapacity { get; private set; }
 
@@ -139,11 +139,35 @@ namespace Massive
 				BitMap = newBitMap;
 				MaskLength = maskLength;
 				BitMapCapacity = BitMap.Length;
-				Buffer = Buffer.Resize(maskLength * 64);
+				Buffer = Buffer.Resize(maskLength << 6);
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		/// Does not preserve bitmap data.
+		/// </summary>
+		public void EnsureBitMapCapacity(int entitiesCapacity, int maskLength)
+		{
+			var bitmapCapacity = entitiesCapacity * maskLength;
+
+			if (maskLength != MaskLength)
+			{
+				if (maskLength << 6 > Buffer.Length)
+				{
+					Buffer = Buffer.Resize(maskLength << 6);
+				}
+				MaskLength = maskLength;
+			}
+
+			if (BitMapCapacity < bitmapCapacity)
+			{
+				BitMap = new ulong[bitmapCapacity];
+				BitMapCapacity = bitmapCapacity;
+			}
+
+			EntitiesCapacity = BitMapCapacity / maskLength;
+		}
+
 		public Components Clone()
 		{
 			var clone = new Components();
@@ -151,34 +175,15 @@ namespace Massive
 			return clone;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(Components other)
 		{
-			var bitmapCapacity = BitMapCapacity;
-			var otherBitmapCapacity = other.BitMapCapacity;
+			other.EnsureBitMapCapacity(EntitiesCapacity, MaskLength);
 
-			if (other.MaskLength != MaskLength)
+			Array.Copy(BitMap, other.BitMap, BitMapCapacity);
+
+			if (BitMapCapacity < other.BitMapCapacity)
 			{
-				if (MaskLength > other.MaskLength)
-				{
-					other.Buffer = other.Buffer.Resize(MaskLength * 64);
-				}
-				other.MaskLength = MaskLength;
-				other.EntitiesCapacity = otherBitmapCapacity / MaskLength;
-			}
-
-			if (otherBitmapCapacity < bitmapCapacity)
-			{
-				other.BitMap = new ulong[bitmapCapacity];
-				other.EntitiesCapacity = EntitiesCapacity;
-				other.BitMapCapacity = bitmapCapacity;
-			}
-
-			Array.Copy(BitMap, other.BitMap, bitmapCapacity);
-
-			if (bitmapCapacity < otherBitmapCapacity)
-			{
-				Array.Fill(other.BitMap, 0UL, bitmapCapacity, otherBitmapCapacity - bitmapCapacity);
+				Array.Fill(other.BitMap, 0UL, BitMapCapacity, other.BitMapCapacity - BitMapCapacity);
 			}
 		}
 	}

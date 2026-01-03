@@ -10,27 +10,8 @@ namespace Massive
 {
 	[Il2CppSetOption(Option.NullChecks, false)]
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-	public class BitSet : BitSetBase
+	public partial class BitSet : BitSetBase
 	{
-		/// <summary>
-		/// Associated type index for global lookup. Session-dependent.
-		/// </summary>
-		public int TypeId { get; private set; } = -1;
-
-		/// <summary>
-		/// Associated component index for world lookup. World-dependent.
-		/// </summary>
-		public int ComponentId { get; private set; } = -1;
-
-		public int ComponentIndex { get; private set; } = -1;
-		public ulong ComponentMask { get; private set; }
-		public ulong ComponentMaskNegative { get; private set; }
-
-		/// <summary>
-		/// Shortcut to access components.
-		/// </summary>
-		private Components Components { get; set; }
-
 		/// <summary>
 		/// Shoots only after <see cref="Add"/> call, when the ID was not already present.
 		/// </summary>
@@ -285,38 +266,6 @@ namespace Massive
 				Components.BitMap[id * Components.MaskLength + ComponentIndex] |= ComponentMask;
 			}
 			AfterAdded?.Invoke(id);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SetupComponent(Components components, int typeId, int componentId)
-		{
-			Components = components;
-			TypeId = typeId;
-			SetComponentId(componentId);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SetComponentId(int componentId)
-		{
-			if (componentId == ComponentId)
-			{
-				return;
-			}
-
-			if (componentId < 0)
-			{
-				ComponentId = -1;
-				ComponentIndex = -1;
-				ComponentMask = 0;
-				ComponentMaskNegative = 0;
-			}
-			else
-			{
-				ComponentId = componentId;
-				ComponentIndex = componentId >> 6;
-				ComponentMask = 1UL << (componentId & 63);
-				ComponentMaskNegative = ~ComponentMask;
-			}
 		}
 	}
 }

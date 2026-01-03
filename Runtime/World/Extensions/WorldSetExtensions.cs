@@ -21,7 +21,7 @@ namespace Massive
 			sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = sets.LookupByTypeId[info.Index];
 
-			if (candidate != null && candidate.ComponentId >= 0)
+			if (candidate != null && candidate.IsComponentBound)
 			{
 				return candidate;
 			}
@@ -38,7 +38,7 @@ namespace Massive
 			sets.EnsureLookupByTypeAt(info.Index);
 			var candidate = sets.LookupByTypeId[info.Index];
 
-			if (candidate != null && candidate.ComponentId >= 0)
+			if (candidate != null && candidate.IsComponentBound)
 			{
 				NoDataException.ThrowIfHasNoData(candidate, info.Type, DataAccessContext.WorldDataSet);
 				return (DataSet<T>)candidate;
