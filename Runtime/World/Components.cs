@@ -19,12 +19,12 @@ namespace Massive
 
 		public ulong[] BitMap { get; private set; } = Array.Empty<ulong>();
 
+		public int BitMapCapacity { get; private set; }
+
 		/// <summary>
 		/// Has capacity of MaskLenght * 64.
 		/// </summary>
-		public int[] Buffer { get; private set; } = Array.Empty<int>();
-
-		public int BitMapCapacity { get; private set; }
+		public int[] Buffer { get; private set; } = new int[64];
 
 		public int MaskLength { get; private set; } = 1;
 

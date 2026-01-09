@@ -67,7 +67,7 @@ namespace Massive
 		/// The number of frames to peek back. Must be non-negative and not exceed <see cref="IMassive.CanRollbackFrames"/>.
 		/// </param>
 		/// <returns>
-		/// A copy of the saved world from the specified frame.
+		/// The saved world from the specified frames ago.
 		/// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public World Peekback(int frames)

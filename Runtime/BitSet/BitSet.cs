@@ -95,8 +95,13 @@ namespace Massive
 			}
 
 			BeforeRemoved?.Invoke(id);
-			if (Components != null)
+			if (IsComponentBound)
 			{
+				Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
+			}
+			else if (Components != null)
+			{
+				Sets.EnsureBinded(this);
 				Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
 			}
 
@@ -161,8 +166,13 @@ namespace Massive
 
 							var id = bitsOffset + bit;
 							BeforeRemoved?.Invoke(id);
-							if (Components != null)
+							if (IsComponentBound)
 							{
+								Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
+							}
+							else if (Components != null)
+							{
+								Sets.EnsureBinded(this);
 								Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
 							}
 							ClearData(id);
@@ -178,8 +188,13 @@ namespace Massive
 						{
 							var id = bitsOffset + bit;
 							BeforeRemoved?.Invoke(id);
-							if (Components != null)
+							if (IsComponentBound)
 							{
+								Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
+							}
+							else if (Components != null)
+							{
+								Sets.EnsureBinded(this);
 								Components.BitMap[id * Components.MaskLength + ComponentIndex] &= ComponentMaskNegative;
 							}
 							ClearData(id);
@@ -261,11 +276,39 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected void NotifyAfterAdded(int id)
 		{
-			if (Components != null)
+			if (IsComponentBound)
 			{
 				Components.BitMap[id * Components.MaskLength + ComponentIndex] |= ComponentMask;
 			}
+			else if (Components != null)
+			{
+				Sets.EnsureBinded(this);
+				Components.BitMap[id * Components.MaskLength + ComponentIndex] |= ComponentMask;
+			}
 			AfterAdded?.Invoke(id);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public BitSet CloneBitSet()
+		{
+			var clone = new BitSet();
+			CopyBitSetTo(clone);
+			return clone;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyBitSetTo(BitSet other)
+		{
+			if (IsComponentBound && other.Components != null)
+			{
+				other.Sets.EnsureBinded(other);
+			}
+
+			other.GrowToFit(this);
+
+			Array.Copy(NonEmptyBlocks, other.NonEmptyBlocks, BlocksCapacity);
+			Array.Copy(SaturatedBlocks, other.SaturatedBlocks, BlocksCapacity);
+			Array.Copy(Bits, other.Bits, Bits.Length);
 		}
 	}
 }

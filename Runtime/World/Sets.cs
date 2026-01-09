@@ -58,16 +58,8 @@ namespace Massive
 			EnsureLookupByTypeAt(info.Index);
 			var candidate = LookupByTypeId[info.Index];
 
-			if (candidate != null && candidate.IsComponentBound)
-			{
-				return candidate;
-			}
-
 			if (candidate != null)
 			{
-				var reusedId = ComponentCount++;
-				candidate.RebindComponent(reusedId);
-				LookupByComponentId[reusedId] = candidate;
 				return candidate;
 			}
 
@@ -76,10 +68,7 @@ namespace Massive
 			InsertSet(info.FullName, set, cloner);
 			LookupByTypeId[info.Index] = set;
 
-			var componentId = ComponentCount++;
-			EnsureLookupByComponentAt(componentId);
-			set.BindComponent(Components, info.Index, componentId);
-			LookupByComponentId[componentId] = set;
+			set.SetupComponent(this, Components, info.Index);
 
 			return set;
 		}
@@ -121,6 +110,20 @@ namespace Massive
 				LookupByComponentId = LookupByComponentId.ResizeToNextPowOf2(index + 1);
 				Components.EnsureComponentsCapacity(LookupByComponentId.Length);
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void EnsureBinded(BitSet set)
+		{
+			if (set.IsComponentBound)
+			{
+				return;
+			}
+
+			var componentId = ComponentCount++;
+			EnsureLookupByComponentAt(componentId);
+			set.BindComponentId(componentId);
+			LookupByComponentId[componentId] = set;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
@@ -172,7 +175,7 @@ namespace Massive
 			for (var i = 0; i < ComponentCount; i++)
 			{
 				ref var set = ref LookupByComponentId[i];
-				set.UnbindComponent();
+				set.UnbindComponentId();
 				set.ClearWithoutNotify();
 				set = null;
 			}
@@ -211,14 +214,14 @@ namespace Massive
 					(otherSet, otherMatchedSet) = (otherMatchedSet, otherSet);
 				}
 
-				otherSet.RebindComponent(i);
+				otherSet.BindComponentId(i);
 			}
 
 			// Clear other sets and mark them invalid.
 			for (var i = ComponentCount; i < other.ComponentCount; i++)
 			{
 				ref var otherSet = ref other.LookupByComponentId[i];
-				otherSet.UnbindComponent();
+				otherSet.UnbindComponentId();
 				otherSet.ClearWithoutNotify();
 				otherSet = null;
 			}

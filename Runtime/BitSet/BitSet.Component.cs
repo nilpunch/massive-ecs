@@ -25,20 +25,25 @@ namespace Massive
 		}
 
 		/// <summary>
+		/// Shortcut to access sets.
+		/// </summary>
+		private Sets Sets { get; set; }
+
+		/// <summary>
 		/// Shortcut to access components.
 		/// </summary>
 		private Components Components { get; set; }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void BindComponent(Components components, int typeId, int componentId)
+		public void SetupComponent(Sets sets, Components components, int typeId)
 		{
+			Sets = sets;
 			Components = components;
 			TypeId = typeId;
-			RebindComponent(componentId);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void RebindComponent(int componentId)
+		public void BindComponentId(int componentId)
 		{
 			NegativeArgumentException.ThrowIfNegative(componentId);
 
@@ -54,7 +59,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void UnbindComponent()
+		public void UnbindComponentId()
 		{
 			ComponentId = -1;
 			ComponentIndex = -1;

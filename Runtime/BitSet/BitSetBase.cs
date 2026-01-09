@@ -47,24 +47,6 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet CloneBitSet()
-		{
-			var clone = new BitSet();
-			CopyBitSetTo(clone);
-			return clone;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyBitSetTo(BitSetBase other)
-		{
-			other.GrowToFit(this);
-
-			Array.Copy(NonEmptyBlocks, other.NonEmptyBlocks, BlocksCapacity);
-			Array.Copy(SaturatedBlocks, other.SaturatedBlocks, BlocksCapacity);
-			Array.Copy(Bits, other.Bits, Bits.Length);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static BitSetBase GetMinBitSet(BitSetBase[] bitSet)
 		{
 			var minimal = bitSet[0];
