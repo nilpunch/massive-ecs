@@ -1,6 +1,6 @@
 namespace Massive
 {
-	public interface ISystemInject<TArg>
+	public interface IInject<TArg>
 	{
 		void Inject(TArg arg);
 	}

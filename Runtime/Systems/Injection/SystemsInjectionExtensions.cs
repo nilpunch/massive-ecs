@@ -3,13 +3,13 @@ namespace Massive
 	public static class SystemsInjectionExtensions
 	{
 		/// <summary>
-		/// Calls <see cref="ISystemInject{TArg}.Inject"/> on all builded systems.
+		/// Calls <see cref="IInject{TArg}.Inject"/> on all builded systems.
 		/// </summary>
 		public static Systems Inject<TArg>(this Systems systems, TArg arg)
 		{
 			foreach (var system in systems.GetAllSystems())
 			{
-				if (system is ISystemInject<TArg> injectMethod)
+				if (system is IInject<TArg> injectMethod)
 				{
 					injectMethod.Inject(arg);
 				}
@@ -19,7 +19,7 @@ namespace Massive
 		}
 
 		/// <summary>
-		/// Builds systems and calls <see cref="ISystemInject{TArg}.Inject"/> with <see cref="World"/> argument on all builded systems.
+		/// Builds systems and calls <see cref="IInject{TArg}.Inject"/> with <see cref="World"/> argument on all builded systems.
 		/// </summary>
 		public static Systems Build(this Systems systems, World world)
 		{

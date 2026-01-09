@@ -1,6 +1,6 @@
 ﻿namespace Massive
 {
-	public class WorldSystem : ISystem, ISystemInject<World>
+	public class WorldSystem : ISystem, IInject<World>
 	{
 		public int Id { get; private set; }
 		public World World { get; private set; }
@@ -10,7 +10,7 @@
 			Id = id;
 		}
 
-		void ISystemInject<World>.Inject(World world)
+		void IInject<World>.Inject(World world)
 		{
 			World = world;
 		}

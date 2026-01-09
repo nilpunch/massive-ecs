@@ -22,6 +22,13 @@ namespace Massive
 				_systems[systemsCount++] = system;
 			}
 			Array.Clear(_systemsLookup, 0, _systemsLookup.Length);
+			foreach (var system in _systems)
+			{
+				if (system is ISystemsCallbacks callbacks)
+				{
+					callbacks.AfterBuilded(this);
+				}
+			}
 			return this;
 		}
 

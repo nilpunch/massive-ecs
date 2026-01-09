@@ -11,6 +11,11 @@ namespace Massive
 		private Array[] _systemsLookup = Array.Empty<Array>();
 		private ISystem[] _systems = Array.Empty<ISystem>();
 
+		public ISystem[] GetAllSystems()
+		{
+			return _systems;
+		}
+
 		public Systems Run<TSystemMethod>()
 			where TSystemMethod : ISystemMethod<TSystemMethod>
 		{
@@ -60,11 +65,6 @@ namespace Massive
 			var systemsArray = systemMethods.ToArray();
 			_systemsLookup[lookupIndex] = systemsArray;
 			return systemsArray;
-		}
-
-		public ISystem[] GetAllSystems()
-		{
-			return _systems;
 		}
 	}
 
