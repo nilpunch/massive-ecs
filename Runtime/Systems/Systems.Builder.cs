@@ -24,9 +24,9 @@ namespace Massive
 			Array.Clear(_systemsLookup, 0, _systemsLookup.Length);
 			foreach (var system in _systems)
 			{
-				if (system is ISystemsCallbacks callbacks)
+				if (system is ISystemsCallback callback)
 				{
-					callbacks.AfterBuilded(this);
+					callback.AfterBuilded(this);
 				}
 			}
 			return this;

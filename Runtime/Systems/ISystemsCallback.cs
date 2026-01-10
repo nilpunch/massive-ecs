@@ -1,6 +1,6 @@
 ﻿namespace Massive
 {
-	public interface ISystemsCallbacks
+	public interface ISystemsCallback
 	{
 		void AfterBuilded(Systems systems);
 	}

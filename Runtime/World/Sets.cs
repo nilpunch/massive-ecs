@@ -182,7 +182,7 @@ namespace Massive
 
 			ComponentCount = 0;
 		}
-		
+
 		/// <summary>
 		/// Copies all sets from this registry into the specified one.
 		/// Clears sets in the target registry that are not present in the source.

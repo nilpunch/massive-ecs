@@ -49,6 +49,8 @@ namespace Massive
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _list.Model.Value(_allocator).Count;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set => _list.Model.Value(_allocator).Count = value;
 		}
 
 		public int Capacity
