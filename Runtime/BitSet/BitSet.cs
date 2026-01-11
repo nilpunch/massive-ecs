@@ -226,6 +226,7 @@ namespace Massive
 		public void ClearWithoutNotify()
 		{
 			Array.Fill(NonEmptyBlocks, 0UL);
+			Array.Fill(SaturatedBlocks, 0UL);
 			Array.Fill(Bits, 0UL);
 			FreeAllPages();
 		}

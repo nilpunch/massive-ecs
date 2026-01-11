@@ -81,7 +81,7 @@ namespace Massive
 				EnsureLookupByTypeAt(info.Index);
 				var candidate = LookupByTypeId[info.Index];
 
-				if (candidate != null && candidate.IsComponentBound)
+				if (candidate != null)
 				{
 					return candidate;
 				}
@@ -113,7 +113,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void EnsureBinded(BitSet set)
+		public void EnsureBinded(BitSet set)
 		{
 			if (set.IsComponentBound)
 			{
@@ -148,26 +148,13 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(BitSet bitSet)
 		{
-			return bitSet.ComponentId;
+			return bitSet.TypeId;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Type TypeOf(BitSet bitSet)
 		{
-			return TypeId<SetKind>.GetTypeByIndex(bitSet.ComponentId);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetOrderedHashCode(BitSet[] orderedSets)
-		{
-			var hash = 17;
-			for (var i = 0; i < orderedSets.Length; i++)
-			{
-				var index = IndexOf(orderedSets[i]) + 1; // Avoid zero.
-				hash = unchecked(hash * 31 + index);
-			}
-
-			return hash;
+			return TypeId<SetKind>.GetTypeByIndex(bitSet.TypeId);
 		}
 
 		public void Reset()
@@ -217,7 +204,7 @@ namespace Massive
 				otherSet.BindComponentId(i);
 			}
 
-			// Clear other sets and mark them invalid.
+			// Clear other sets and reset them.
 			for (var i = ComponentCount; i < other.ComponentCount; i++)
 			{
 				ref var otherSet = ref other.LookupByComponentId[i];
