@@ -15,6 +15,9 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public class Components
 	{
+		// Storage adapted from StaticEcs.
+		// Source: https://github.com/Felid-Force-Studios/StaticEcs/blob/be8bb1c668309294aeecef80313677da368d7703/Src/Utils/BitMask.cs
+
 		private byte[] DeBruijn { get; } = MathUtils.DeBruijn;
 
 		public ulong[] BitMap { get; private set; } = Array.Empty<ulong>();
@@ -64,8 +67,6 @@ namespace Massive
 				var componentOffset = i << 6;
 				var mask = BitMap[maskIndex];
 
-				// Algorithm adapted from StaticEcs.
-				// Source: https://github.com/Felid-Force-Studios/StaticEcs/blob/be8bb1c668309294aeecef80313677da368d7703/Src/Utils/BitMask.cs#L432
 				while (mask != 0UL)
 				{
 					var componentIndex = (int)DeBruijn[(int)(((mask & (ulong)-(long)mask) * 0x37E84A99DAE458FUL) >> 58)];

@@ -163,7 +163,7 @@ namespace Massive
 			{
 				ref var set = ref LookupByComponentId[i];
 				set.UnbindComponentId();
-				set.ClearWithoutNotify();
+				set.Reset();
 				set = null;
 			}
 
@@ -189,7 +189,8 @@ namespace Massive
 
 			other.EnsureLookupByComponentAt(ComponentCount - 1);
 
-			// Sort lookup to match Components.
+			// Reorder the target world's component IDs to match the current world's layout.
+			// This ensures that both worlds use identical component indices for their masks.
 			for (var i = 0; i < ComponentCount; i++)
 			{
 				var set = LookupByComponentId[i];
@@ -204,12 +205,12 @@ namespace Massive
 				otherSet.BindComponentId(i);
 			}
 
-			// Clear other sets and reset them.
+			// Ubind other sets and reset them.
 			for (var i = ComponentCount; i < other.ComponentCount; i++)
 			{
 				ref var otherSet = ref other.LookupByComponentId[i];
 				otherSet.UnbindComponentId();
-				otherSet.ClearWithoutNotify();
+				otherSet.Reset();
 				otherSet = null;
 			}
 

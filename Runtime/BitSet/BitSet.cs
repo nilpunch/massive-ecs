@@ -223,7 +223,7 @@ namespace Massive
 		/// Removes all IDs without triggering anything.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ClearWithoutNotify()
+		public void Reset()
 		{
 			Array.Fill(NonEmptyBlocks, 0UL);
 			Array.Fill(SaturatedBlocks, 0UL);

@@ -5,12 +5,13 @@ namespace Massive
 	public partial class BitSet
 	{
 		/// <summary>
-		/// Associated type index for global lookup. Session-dependent.
+		/// Associated type index for global lookup. This value is session-dependent.
 		/// </summary>
 		public int TypeId { get; private set; } = -1;
 
 		/// <summary>
-		/// Associated component index for world lookup. World-dependent.
+		/// Associated component index for <see cref="Components"/> masks.<br/>
+		/// Assigned after the first modification operation on the set.
 		/// </summary>
 		public int ComponentId { get; private set; } = -1;
 
