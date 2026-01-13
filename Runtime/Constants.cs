@@ -23,15 +23,18 @@ namespace Massive
 		public const int PagesInBlockPower = 12 - PageSizePower;
 
 		public static readonly ulong[] PageMasks;
+		public static readonly ulong[] PageMasksNegative;
 
 		static Constants()
 		{
 			const int pagesInBlock = PagesInBlockMinusOne + 1;
 			PageMasks = new ulong[pagesInBlock];
+			PageMasksNegative = new ulong[pagesInBlock];
 
 			for (var i = 0; i < pagesInBlock; i++)
 			{
 				PageMasks[i] = BasePageMask << (i << PageMaskShift);
+				PageMasksNegative[i] = ~PageMasks[i];
 			}
 		}
 	}

@@ -174,7 +174,7 @@ namespace Massive
 			CopyBitSetTo(other);
 
 			var blocksLength = BlocksCapacity;
-			var pageMasks = PageMasks;
+			var pageMasksNegative = Constants.PageMasksNegative;
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
 			{
@@ -200,17 +200,23 @@ namespace Massive
 					}
 #endif
 
-					block &= ~pageMasks[pageIndexMod];
+					block &= pageMasksNegative[pageIndexMod];
 				}
 			}
 		}
 
-		Array IDataSet.GetPage(int page) => PagedData[page];
+		BitSet IDataSet.BitSet => this;
 
 		Type IDataSet.ElementType => typeof(T);
+
+		Type IDataSet.ArrayType => typeof(T[]);
+
+		Array IDataSet.GetPage(int page) => PagedData[page];
 
 		object IDataSet.GetRaw(int id) => Get(id);
 
 		void IDataSet.SetRaw(int id, object value) => Set(id, (T)value);
+
+		DataPageEnumerable IDataSet.GetDataPages() => new DataPageEnumerable(this);
 	}
 }
