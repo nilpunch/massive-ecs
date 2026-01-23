@@ -13,17 +13,24 @@ namespace Massive
 
 		private Pointer<TState> StatePointer { get; set; }
 
+		private TState InitialState { get; }
+
 		public ref TState State
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => ref StatePointer.Value(Allocator);
 		}
 
+		public WorldSystem(TState initialState = default)
+		{
+			InitialState = initialState;
+		}
+
 		void ISystem.Build(int id, Allocator allocator)
 		{
 			Id = id;
 			Allocator = allocator;
-			StatePointer = Allocator.AllocVar<TState>();
+			StatePointer = Allocator.AllocVar(InitialState);
 		}
 
 		void IInject<World>.Inject(World world)

@@ -140,7 +140,7 @@ namespace Massive
 				BitMap = newBitMap;
 				MaskLength = maskLength;
 				BitMapCapacity = BitMap.Length;
-				Buffer = Buffer.Resize(maskLength << 6);
+				EnsureBufferMaskLength();
 			}
 		}
 
@@ -153,11 +153,8 @@ namespace Massive
 
 			if (maskLength != MaskLength)
 			{
-				if (maskLength << 6 > Buffer.Length)
-				{
-					Buffer = Buffer.Resize(maskLength << 6);
-				}
 				MaskLength = maskLength;
+				EnsureBufferMaskLength();
 			}
 
 			if (BitMapCapacity < bitmapCapacity)
@@ -167,6 +164,21 @@ namespace Massive
 			}
 
 			EntitiesCapacity = BitMapCapacity / maskLength;
+		}
+
+		private void EnsureBufferMaskLength()
+		{
+			if (MaskLength << 6 > Buffer.Length)
+			{
+				Buffer = Buffer.Resize(MaskLength << 6);
+			}
+		}
+
+		public void Reset()
+		{
+			Array.Fill(BitMap, 0UL);
+			MaskLength = 1;
+			EntitiesCapacity = BitMapCapacity / MaskLength;
 		}
 
 		public Components Clone()
