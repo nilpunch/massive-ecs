@@ -15,7 +15,7 @@ namespace Massive
 		{
 			if (((ulong)src & 7) != ((ulong)dst & 7))
 			{
-				throw new AllocatorAlignmentsException("Source and destination pointers have different alignment!");
+				throw new AllocatorAlignmentsException("Source and destination pointers have different alignment.");
 			}
 		}
 	}

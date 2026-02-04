@@ -33,7 +33,7 @@ namespace Massive
 					_ => throw new ArgumentOutOfRangeException(nameof(context), context, null)
 				};
 
-				throw new NoDataException($"The component {typeof(T).GetFullGenericName()} has no associated data! " +
+				throw new NoDataException($"The component {typeof(T).GetFullGenericName()} has no associated data. " +
 					$"{suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
 			}
 		}
@@ -53,7 +53,7 @@ namespace Massive
 					_ => throw new ArgumentOutOfRangeException(nameof(context), context, null)
 				};
 
-				throw new NoDataException($"The component {type.GetFullGenericName()} has no associated data! " +
+				throw new NoDataException($"The component {type.GetFullGenericName()} has no associated data. " +
 					$"{suggestion}, or enable {nameof(WorldConfig.StoreEmptyTypesAsDataSets)} in world config.");
 			}
 		}
