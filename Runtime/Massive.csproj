@@ -1,25 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
-        <LangVersion>9.0</LangVersion>
-        <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+        <OutputType>library</OutputType>
+        <TargetFrameworks>net9.0;net8.0;net7.0;net6.0;netstandard2.1</TargetFrameworks>
+        <LangVersion>9</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Nullable>disable</Nullable>
+        <RootNamespace>Massive</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Version>20.0.0</Version>
         <Title>Massive ECS</Title>
-        <Authors>Daniil Pankevich</Authors>
-        <Description>Sparse set ECS library made for prediction-rollback netcode</Description>
-        <Copyright>Copyright (c) 2025 Daniil Pankevich</Copyright>
+        <Authors>nilpunch</Authors>
+        <Description>Bitset-based ECS with rollbacks. C# library and Unity package.</Description>
+        <Copyright>Copyright (c) 2026 Daniil Pankevich</Copyright>
         <PackageLicenseUrl>https://github.com/nilpunch/massive-ecs/blob/master/LICENSE.md</PackageLicenseUrl>
+        <PackageTags>ecs; gamedev; unity; massive; massiveecs</PackageTags>
         <RepositoryUrl>https://github.com/nilpunch/massive-ecs</RepositoryUrl>
-        <IsPackable>false</IsPackable>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="**\*.meta" />
-        <None Remove="**\*.asmdef" />
-        <None Include="..\LICENSE.md" Pack="true" PackagePath="" />
-        <None Include="..\CHANGELOG.md" Pack="true" PackagePath="" />
+        <Content Include="..\LICENSE.md" Pack="true" PackagePath=""/>
+        <Content Include="..\CHANGELOG.md" Pack="true" PackagePath=""/>
+        <Content Include="..\README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="**\*.meta"/>
+        <None Remove="**\*.asmdef"/>
+        <None Remove="package.json"/>
+        <None Remove="LICENSE.meta"/>
     </ItemGroup>
 
 </Project>
