@@ -3,7 +3,6 @@
 #endif
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -13,17 +12,13 @@ namespace Massive
 	[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 	public partial class Sets
 	{
-		private Dictionary<string, BitSet> SetsByNames { get; } = new Dictionary<string, BitSet>();
-
-		private FastList<string> Names { get; } = new FastList<string>();
-
-		private FastList<SetCloner> Cloners { get; } = new FastList<SetCloner>();
-
-		public BitSetList Sorted { get; } = new BitSetList();
-
 		public BitSet[] LookupByTypeId { get; private set; } = Array.Empty<BitSet>();
 
+		public SetCloner[] ClonerByTypeId { get; private set; } = Array.Empty<SetCloner>();
+
 		public BitSet[] LookupByComponentId { get; private set; } = Array.Empty<BitSet>();
+
+		public SetCloner[] ClonerByComponentId { get; private set; } = Array.Empty<SetCloner>();
 
 		public int LookupCapacity { get; private set; }
 
@@ -37,17 +32,6 @@ namespace Massive
 		{
 			SetFactory = setFactory;
 			Components = components;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet GetExisting(string setId)
-		{
-			if (SetsByNames.TryGetValue(setId, out var set))
-			{
-				return set;
-			}
-
-			return null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -65,8 +49,8 @@ namespace Massive
 
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
 
-			InsertSet(info.FullName, set, cloner);
 			LookupByTypeId[info.Index] = set;
+			ClonerByTypeId[info.Index] = cloner;
 
 			set.SetupComponent(this, Components, info.Index);
 
@@ -98,6 +82,7 @@ namespace Massive
 			if (index >= LookupCapacity)
 			{
 				LookupByTypeId = LookupByTypeId.ResizeToNextPowOf2(index + 1);
+				ClonerByTypeId = ClonerByTypeId.Resize(LookupByTypeId.Length);
 				LookupCapacity = LookupByTypeId.Length;
 			}
 		}
@@ -108,6 +93,7 @@ namespace Massive
 			if (index >= LookupByComponentId.Length)
 			{
 				LookupByComponentId = LookupByComponentId.ResizeToNextPowOf2(index + 1);
+				ClonerByComponentId = ClonerByComponentId.Resize(LookupByComponentId.Length);
 				Components.EnsureComponentsCapacity(LookupByComponentId.Length);
 			}
 		}
@@ -124,31 +110,7 @@ namespace Massive
 			EnsureLookupByComponentAt(componentId);
 			set.BindComponentId(componentId);
 			LookupByComponentId[componentId] = set;
-		}
-
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		private void InsertSet(string setName, BitSet set, SetCloner cloner)
-		{
-			// Maintain items sorted.
-			var itemIndex = Names.BinarySearch(setName);
-			if (itemIndex >= 0)
-			{
-				MassiveException.Throw($"You are trying to insert already existing item:{setName}.");
-			}
-			else
-			{
-				var insertionIndex = ~itemIndex;
-				Names.Insert(insertionIndex, setName);
-				Sorted.Insert(insertionIndex, set);
-				Cloners.Insert(insertionIndex, cloner);
-				SetsByNames.Add(setName, set);
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(BitSet bitSet)
-		{
-			return bitSet.TypeId;
+			ClonerByComponentId[componentId] = ClonerByTypeId[set.TypeId];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -165,6 +127,7 @@ namespace Massive
 				set.UnbindComponentId();
 				set.Reset();
 				set = null;
+				ClonerByComponentId[i] = null;
 			}
 
 			ComponentCount = 0;
@@ -182,9 +145,9 @@ namespace Massive
 			IncompatibleConfigsException.ThrowIfIncompatible(SetFactory, other.SetFactory);
 
 			// Copy present sets.
-			foreach (var cloner in Cloners)
+			for (var i = 0; i < ComponentCount; i++)
 			{
-				cloner.CopyTo(other);
+				ClonerByComponentId[i].CopyTo(other);
 			}
 
 			other.EnsureLookupByComponentAt(ComponentCount - 1);
@@ -198,8 +161,13 @@ namespace Massive
 
 				if (otherSet == null || otherSet.TypeId != set.TypeId)
 				{
-					ref var otherMatchedSet = ref other.LookupByComponentId[other.LookupByTypeId[set.TypeId].ComponentId];
+					var matchedComponentId = other.LookupByTypeId[set.TypeId].ComponentId;
+					ref var otherMatchedSet = ref other.LookupByComponentId[matchedComponentId];
 					(otherSet, otherMatchedSet) = (otherMatchedSet, otherSet);
+
+					ref var otherCloner = ref other.ClonerByComponentId[i];
+					ref var otherMatchedCloner = ref other.ClonerByComponentId[matchedComponentId];
+					(otherCloner, otherMatchedCloner) = (otherMatchedCloner, otherCloner);
 				}
 
 				otherSet.BindComponentId(i);
@@ -212,6 +180,7 @@ namespace Massive
 				otherSet.UnbindComponentId();
 				otherSet.Reset();
 				otherSet = null;
+				other.ClonerByComponentId[i] = null;
 			}
 
 			other.ComponentCount = ComponentCount;
