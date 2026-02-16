@@ -21,7 +21,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="..\LICENSE.md" Pack="true" PackagePath=""/>
+        <Content Include="..\LICENSE" Pack="true" PackagePath=""/>
         <Content Include="..\CHANGELOG.md" Pack="true" PackagePath=""/>
         <Content Include="..\README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
