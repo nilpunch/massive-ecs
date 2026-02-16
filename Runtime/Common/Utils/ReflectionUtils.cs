@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Massive
 {
@@ -83,20 +84,44 @@ namespace Massive
 
 		private static readonly Dictionary<Type, int> s_sizeOfCache = new Dictionary<Type, int>();
 
-		private static unsafe int SizeOf<T>() where T : unmanaged => sizeof(T);
+		public static unsafe int SizeOf<T>() where T : unmanaged => sizeof(T);
 
 		public static int SizeOfUnmanaged(Type t)
 		{
 			if (!s_sizeOfCache.TryGetValue(t, out var size))
 			{
-				var genericMethod = typeof(ReflectionUtils)
-					.GetMethod(nameof(SizeOf), BindingFlags.Static | BindingFlags.NonPublic)
-					.MakeGenericMethod(t);
-				size = (int)genericMethod.Invoke(null, new object[] { });
+				if (t.IsPointer)
+				{
+					size = IntPtr.Size;
+				}
+				else if (t.IsGenericType || t.IsByRef || t.IsArray || t.ContainsGenericParameters)
+				{
+					size = SizeOfGeneric(t);
+				}
+				else
+				{
+					size = Marshal.SizeOf(t);
+				}
 				s_sizeOfCache.Add(t, size);
 			}
 
 			return size;
+		}
+
+		private static int SizeOfGeneric(Type t)
+		{
+			try
+			{
+				var genericMethod = typeof(ReflectionUtils)
+					.GetMethod(nameof(SizeOf), BindingFlags.Static | BindingFlags.NonPublic)
+					.MakeGenericMethod(t);
+				var size = (int)genericMethod.Invoke(null, new object[] { });
+				return size;
+			}
+			catch (Exception e)
+			{
+				throw new Exception($"Can't get runtime size of {t.GetFullGenericName()}.", e);
+			}
 		}
 	}
 }
