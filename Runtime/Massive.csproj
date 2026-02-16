@@ -13,7 +13,7 @@
         <Authors>nilpunch</Authors>
         <Description>Bitset-based ECS with rollbacks. C# library and Unity package.</Description>
         <Copyright>Copyright (c) 2026 Daniil Pankevich</Copyright>
-        <PackageLicenseUrl>https://github.com/nilpunch/massive-ecs/blob/master/LICENSE.md</PackageLicenseUrl>
+        <PackageLicenseUrl>https://github.com/nilpunch/massive-ecs/blob/master/LICENSE</PackageLicenseUrl>
         <PackageTags>ecs; gamedev; unity; massive; massiveecs</PackageTags>
         <RepositoryUrl>https://github.com/nilpunch/massive-ecs</RepositoryUrl>
         <IncludeSymbols>true</IncludeSymbols>
