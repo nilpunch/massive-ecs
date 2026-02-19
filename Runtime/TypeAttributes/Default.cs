@@ -5,7 +5,7 @@ using Member = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
 
 namespace Massive
 {
-	public static class Default<[Preserve(Member.PublicProperties | Member.PublicMethods)] T>
+	public static class Default<T>
 	{
 		public static readonly T Value;
 
@@ -13,7 +13,9 @@ namespace Massive
 		{
 			var type = typeof(T);
 
+#pragma warning disable IL2087
 			var defaultValue = Default.GetDefaultValue(type);
+#pragma warning restore IL2087
 
 			Value = defaultValue != null ? (T)defaultValue : default;
 		}
@@ -21,7 +23,7 @@ namespace Massive
 
 	internal static class Default
 	{
-		internal static object GetDefaultValue([Preserve(Member.PublicProperties | Member.PublicMethods)] Type type)
+		internal static object GetDefaultValue([Preserve(Member.PublicProperties | Member.NonPublicProperties)] Type type)
 		{
 			var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 

@@ -37,7 +37,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet Get<[Preserve(Member.PublicFields | Member.NonPublicFields | Member.Interfaces)] T>()
+		public BitSet Get<T>()
 		{
 			var info = TypeId<SetKind, T>.Info;
 
@@ -49,7 +49,9 @@ namespace Massive
 				return candidate;
 			}
 
+#pragma warning disable IL2091
 			var (set, cloner) = SetFactory.CreateAppropriateSet<T>();
+#pragma warning restore IL2091
 
 			LookupByTypeId[info.Index] = set;
 			ClonerByTypeId[info.Index] = cloner;
@@ -60,7 +62,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet GetReflected([Preserve(Member.PublicFields | Member.NonPublicFields | Member.Interfaces)] Type setType)
+		public BitSet GetReflected(Type setType)
 		{
 			if (TypeId<SetKind>.TryGetInfo(setType, out var info))
 			{
