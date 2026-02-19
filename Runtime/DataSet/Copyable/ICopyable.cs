@@ -5,10 +5,10 @@ namespace Massive
 		void CopyTo(ref T other);
 
 		[UnityEngine.Scripting.Preserve]
-		private static void ReflectionSupportForAOT()
+		public static SetAndCloner CreateDataSetAndCloner(object defaultValue)
 		{
-			_ = new CopyingDataSet<T>();
-			_ = new CopyingDataSetCloner<T>(null);
+			var set = new CopyingDataSet<T>((T)defaultValue);
+			return new SetAndCloner(set, new CopyingDataSetCloner<T>(set));
 		}
 	}
 }

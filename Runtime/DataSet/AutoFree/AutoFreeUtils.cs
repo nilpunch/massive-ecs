@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using Massive.AutoFree;
+using Preserve = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
+using Member = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
 
 namespace Massive
 {
 	public static class AutoFreeUtils
 	{
-		public static bool IsImplementedFor(Type type)
+		private const string FactoryMethodName = "CreateDataSetAndCloner";
+
+		public static bool IsImplementedFor([Preserve(Member.Interfaces)] Type type)
 		{
 			return type.GetInterfaces()
 				.Any(@interface => @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(IAutoFree<>));
@@ -15,9 +21,19 @@ namespace Massive
 		/// <summary>
 		/// Create <see cref="AutoFreeDataSet{T}"/> bypassing <see cref="IAutoFree{T}"/> constraint.
 		/// </summary>
-		public static DataSet<T> CreateAutoFreeDataSet<T>(Allocator allocator, T defaultValue = default)
+		[UnconditionalSuppressMessage("", "IL2072")]
+		public static SetAndCloner CreateAutoFreeDataSet([Preserve(Member.Interfaces)] Type type, Allocator allocator, object defaultValue)
 		{
-			return (DataSet<T>)ReflectionUtils.CreateGeneric(typeof(AutoFreeDataSet<>), typeof(T), allocator, defaultValue);
+			var autoFreeInterface = type.GetInterfaces()
+				.First(@interface => @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(IAutoFree<>));
+
+			return (SetAndCloner)CreateDataSetAndCloner(autoFreeInterface).Invoke(null, new object[] { allocator, defaultValue });
+		}
+
+		[DynamicDependency(FactoryMethodName, typeof(IAutoFree<>))]
+		private static MethodInfo CreateDataSetAndCloner([Preserve(Member.PublicMethods)] Type type)
+		{
+			return type.GetMethod(FactoryMethodName, BindingFlags.Static | BindingFlags.Public);
 		}
 	}
 }

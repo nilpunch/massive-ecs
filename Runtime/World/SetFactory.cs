@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Preserve = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
+using Member = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
 
 namespace Massive
 {
@@ -25,8 +27,10 @@ namespace Massive
 			return _storeEmptyTypesAsDataSets == other._storeEmptyTypesAsDataSets;
 		}
 
-		public Output CreateAppropriateSet<T>()
+		public SetAndCloner CreateAppropriateSet<[Preserve(Member.PublicFields | Member.NonPublicFields | Member.Interfaces)] T>()
 		{
+			ReflectionUtils.PreserveSize<T>();
+
 			var type = typeof(T);
 
 			if (TypeHasNoData(type))
@@ -37,62 +41,35 @@ namespace Massive
 			return CreateDataSet<T>();
 		}
 
-		private Output CreateBitSet<T>()
+		private SetAndCloner CreateBitSet<T>()
 		{
 			var bitSet = new BitSet();
 			var cloner = new BitSetCloner<T>(bitSet);
-			return new Output(bitSet, cloner);
+			return new SetAndCloner(bitSet, cloner);
 		}
 
-		private Output CreateDataSet<T>()
+		private SetAndCloner CreateDataSet<[Preserve(Member.PublicFields | Member.NonPublicFields | Member.Interfaces)] T>()
 		{
 			var type = typeof(T);
 			if (CopyableUtils.IsImplementedFor(type))
 			{
-				var dataSet = CopyableUtils.CreateCopyingDataSet(Default<T>.Value);
-				var cloner = CopyableUtils.CreateCopyingDataSetCloner(dataSet);
-				return new Output(dataSet, cloner);
+				return CopyableUtils.CreateCopyingDataSet(type, Default<T>.Value);
 			}
 			else if (AutoFreeUtils.IsImplementedFor(type) && AllocatorSchemaGenerator.HasPointers(type))
 			{
-				var dataSet = AutoFreeUtils.CreateAutoFreeDataSet(_allocator, Default<T>.Value);
-				var cloner = new DataSetCloner<T>(dataSet);
-				return new Output(dataSet, cloner);
+				return AutoFreeUtils.CreateAutoFreeDataSet(type, _allocator, Default<T>.Value);
 			}
 			else
 			{
 				var dataSet = new DataSet<T>(Default<T>.Value);
 				var cloner = new DataSetCloner<T>(dataSet);
-				return new Output(dataSet, cloner);
+				return new SetAndCloner(dataSet, cloner);
 			}
 		}
 
-		public bool TypeHasData(Type type)
-		{
-			return !TypeHasNoData(type);
-		}
-
-		public bool TypeHasNoData(Type type)
+		public bool TypeHasNoData([Preserve(Member.PublicFields | Member.NonPublicFields)] Type type)
 		{
 			return type.IsValueType && ReflectionUtils.HasNoFields(type) && !_storeEmptyTypesAsDataSets;
-		}
-
-		public readonly struct Output
-		{
-			public readonly BitSet Set;
-			public readonly SetCloner Cloner;
-
-			public Output(BitSet set, SetCloner cloner)
-			{
-				Set = set;
-				Cloner = cloner;
-			}
-
-			public void Deconstruct(out BitSet set, out SetCloner cloner)
-			{
-				set = Set;
-				cloner = Cloner;
-			}
 		}
 	}
 }

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Preserve = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
+using Member = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
 
 namespace Massive
 {
@@ -36,30 +39,25 @@ namespace Massive
 			return type.Name;
 		}
 
-		public static object CreateGeneric(Type genericType, Type genericArg, params object[] args)
-		{
-			var constructedType = genericType.MakeGenericType(genericArg);
-			return Activator.CreateInstance(constructedType, args);
-		}
-
-		public static bool HasNoFields(Type type)
+		public static bool HasNoFields([Preserve(Member.PublicFields | Member.NonPublicFields)] Type type)
 		{
 			return !HasAnyFields(type);
 		}
 
-		public static bool HasAnyFields(Type type)
+		public static bool HasAnyFields([Preserve(Member.PublicFields | Member.NonPublicFields)] Type type)
 		{
 			return type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length > 0;
 		}
 
 		private static readonly Dictionary<Type, bool> s_managedCache = new Dictionary<Type, bool>();
 
-		public static bool IsManaged(this Type type)
+		public static bool IsManaged([Preserve(Member.PublicFields | Member.NonPublicFields)] this Type type)
 		{
 			return !IsUnmanaged(type);
 		}
 
-		public static bool IsUnmanaged(this Type type)
+		[UnconditionalSuppressMessage("", "IL2072")]
+		public static bool IsUnmanaged([Preserve(Member.PublicFields | Member.NonPublicFields)] this Type type)
 		{
 			if (!s_managedCache.TryGetValue(type, out var isUnmanaged))
 			{
@@ -82,46 +80,66 @@ namespace Massive
 			return isUnmanaged;
 		}
 
+#if NET5_0_OR_GREATER
+		public static void PreserveSize<T>()
+		{
+			s_sizeOfCache[typeof(T)] = System.Runtime.CompilerServices.Unsafe.SizeOf<T>();
+		}
+#else
+		public static void PreserveSize<T>()
+		{
+		}
+#endif
+
 		private static readonly Dictionary<Type, int> s_sizeOfCache = new Dictionary<Type, int>();
 
-		public static unsafe int SizeOf<T>() where T : unmanaged => sizeof(T);
+		private static unsafe int SizeOf<T>() where T : unmanaged => sizeof(T);
 
 		public static int SizeOfUnmanaged(Type t)
 		{
+#if NET5_0_OR_GREATER
 			if (!s_sizeOfCache.TryGetValue(t, out var size))
 			{
-				if (t.IsPointer)
+				throw new Exception($"Can't get runtime size of {t.GetFullGenericName()}.");
+			}
+
+			return size;
+#else
+			if (!s_sizeOfCache.TryGetValue(t, out var size))
+			{
+				try
 				{
-					size = IntPtr.Size;
+					if (t.IsPointer)
+					{
+						size = IntPtr.Size;
+					}
+					else if (t.IsGenericType || t.IsByRef || t.IsArray || t.ContainsGenericParameters)
+					{
+						size = SizeOfGeneric(t);
+					}
+					else
+					{
+						size = Marshal.SizeOf(t);
+					}
 				}
-				else if (t.IsGenericType || t.IsByRef || t.IsArray || t.ContainsGenericParameters)
+				catch
 				{
-					size = SizeOfGeneric(t);
-				}
-				else
-				{
-					size = Marshal.SizeOf(t);
+					throw new Exception($"Can't get runtime size of {t.GetFullGenericName()}.");
 				}
 				s_sizeOfCache.Add(t, size);
 			}
 
 			return size;
+#endif
 		}
 
 		private static int SizeOfGeneric(Type t)
 		{
-			try
-			{
-				var genericMethod = typeof(ReflectionUtils)
-					.GetMethod(nameof(SizeOf), BindingFlags.Static | BindingFlags.NonPublic)
-					.MakeGenericMethod(t);
-				var size = (int)genericMethod.Invoke(null, new object[] { });
-				return size;
-			}
-			catch (Exception e)
-			{
-				throw new Exception($"Can't get runtime size of {t.GetFullGenericName()}.", e);
-			}
+			var genericMethod = typeof(ReflectionUtils)
+				.GetMethod(nameof(SizeOf), BindingFlags.Static | BindingFlags.NonPublic)
+				.MakeGenericMethod(t);
+			var size = (int)genericMethod.Invoke(null, new object[] { });
+			return size;
 		}
 	}
 }

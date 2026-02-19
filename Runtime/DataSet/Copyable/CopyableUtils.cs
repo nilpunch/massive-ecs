@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
+using Preserve = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
+using Member = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
 
 namespace Massive
 {
 	public static class CopyableUtils
 	{
-		public static bool IsImplementedFor(Type type)
+		private const string FactoryMethodName = "CreateDataSetAndCloner";
+
+		public static bool IsImplementedFor([Preserve(Member.Interfaces)] Type type)
 		{
 			return type.GetInterfaces()
 				.Any(@interface => @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(ICopyable<>));
@@ -14,17 +20,19 @@ namespace Massive
 		/// <summary>
 		/// Create <see cref="CopyingDataSet{T}"/> bypassing <see cref="ICopyable{T}"/> constraint.
 		/// </summary>
-		public static DataSet<T> CreateCopyingDataSet<T>(T defaultValue = default)
+		[UnconditionalSuppressMessage("", "IL2072")]
+		public static SetAndCloner CreateCopyingDataSet([Preserve(Member.Interfaces)] Type type, object defaultValue)
 		{
-			return (DataSet<T>)ReflectionUtils.CreateGeneric(typeof(CopyingDataSet<>), typeof(T), defaultValue);
+			var copyableInterface = type.GetInterfaces()
+				.First(@interface => @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(ICopyable<>));
+
+			return (SetAndCloner)CreateDataSetAndCloner(copyableInterface).Invoke(null, new object[] { defaultValue });
 		}
 
-		/// <summary>
-		/// Create <see cref="CopyingDataSetCloner{T}"/> bypassing <see cref="ICopyable{T}"/> constraint.
-		/// </summary>
-		public static SetCloner CreateCopyingDataSetCloner<T>(DataSet<T> dataSet)
+		[DynamicDependency(FactoryMethodName, typeof(ICopyable<>))]
+		private static MethodInfo CreateDataSetAndCloner([Preserve(Member.PublicMethods)] Type type)
 		{
-			return (SetCloner)ReflectionUtils.CreateGeneric(typeof(CopyingDataSetCloner<>), typeof(T), dataSet);
+			return type.GetMethod(FactoryMethodName, BindingFlags.Static | BindingFlags.Public);
 		}
 	}
 }

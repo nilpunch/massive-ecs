@@ -5,6 +5,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
+using Preserve = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
+using Member = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
 
 namespace Massive
 {
@@ -35,7 +37,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet Get<T>()
+		public BitSet Get<[Preserve(Member.PublicFields | Member.NonPublicFields | Member.Interfaces)] T>()
 		{
 			var info = TypeId<SetKind, T>.Info;
 
@@ -58,7 +60,7 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public BitSet GetReflected(Type setType)
+		public BitSet GetReflected([Preserve(Member.PublicFields | Member.NonPublicFields | Member.Interfaces)] Type setType)
 		{
 			if (TypeId<SetKind>.TryGetInfo(setType, out var info))
 			{
@@ -72,8 +74,8 @@ namespace Massive
 			}
 
 			var createMethod = typeof(Sets).GetMethod(nameof(Get));
-			var genericMethod = createMethod?.MakeGenericMethod(setType);
-			return (BitSet)genericMethod?.Invoke(this, new object[] { });
+			var genericMethod = createMethod.MakeGenericMethod(setType);
+			return (BitSet)genericMethod.Invoke(this, new object[] { });
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
