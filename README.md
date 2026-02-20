@@ -18,8 +18,8 @@ Make sure you have standalone [Git](https://git-scm.com/downloads) installed fir
 In Unity, open "Window" -> "Package Manager".  
 Click the "+" sign at the top left corner -> "Add package from git URL..."  
 Paste link to the version:  
-Latest: `https://github.com/nilpunch/massive-ecs.git#v20.0.0-alpha.6`  
-Stable: `https://github.com/nilpunch/massive-ecs.git#v19.1.0`  
+Latest: `https://github.com/nilpunch/massive-ecs.git`  
+Stable: `https://github.com/nilpunch/massive-ecs.git#v20.0.0`  
 See minimum required Unity version in the `package.json` file.
 
 ## Overview
@@ -36,14 +36,15 @@ Design considerations:
 - Deterministic with lazy initialization.
 - No deferred command execution — all changes apply immediately.
 - Minimal storage for fast saving. No archetypes.
-- Standard .Net lifecycle - no mutable global state and no `Dispose()` methods.
+- Standard .Net lifecycle - no mutable global state, fully GC-managed.
 - IL2CPP friendly, tested with high stripping level on PC, Android, and WebGL.
+- NativeAOT supported, but requires further testing.
 
 Features:
 
 - `Clone()` and `CopyTo(other)` methods for creating snapshots.  
   Ideal for implementing replays, undo/redo, or rollbacks.
-- Lightweight [queries](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#views) for fast iteration over entities and components.
+- Lightweight [queries](https://github.com/nilpunch/massive-ecs/wiki/Entity-Component-System#queries) for fast iteration over entities and components.
 - Stable storage with no reference invalidation.
 - `Allocator` lets you use collections inside components and easily integrate external tools in rollback pipeline.
 
@@ -61,7 +62,7 @@ Features:
 ### Addons
 
 - Full-state serialization and deserialization ([package](https://github.com/nilpunch/massive-serialization)).
-- Networking with input buffers, commands prediction, and resimulation loop ([package](https://github.com/nilpunch/massive-netcode)).
+- Client-server, input prediction and resimulation loop ([package](https://github.com/nilpunch/massive-netcode)).
 - Unity integration ([package](https://github.com/nilpunch/massive-unity-integration)).
 
 Consider this list a work in progress as well as the project.

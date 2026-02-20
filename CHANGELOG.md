@@ -1,14 +1,35 @@
 # Changelog
 
+## 20.0.0 - February 20, 2026
+
+Stabilization of the new architecture.
+
+### Added
+
+- Built-in `Systems` with customizable method running.
+- Polyfills for NativeAOT support.
+- `IAutoFree<T>` component interface to automatically free allocator pointers when the component is removed from an entity.
+- `Peekback(frames)` method to `MassiveWorld` to access previous `World` states. Can be used to impelemnt interpolation.
+
+### Changed
+
+- `Allocator` is now unamanged and unified.
+
+### Fixed
+
+- Read-only operations and queries no longer cause internal component IDs to be assigned.
+  Component IDs for masks are now assigned on set modification rather than when requesting a set.
+- Thread-safety of `QueryCache` pool.
+
 ## 20.0.0-alpha.4 - September 9, 2025
 
 Breaking storage changes.
 
 ### Changed
 
-- Sparse sets are replaces with hierarchical bitsets.
+- `SparseSet`s are replaced with hierarchical `BitSet`s.
 - Iteration reworked to use bit scans and boolean operations on the entities in each pool of interest.
-- TODO etc.
+- A lot of internal changes.
 
 ## 20.0.0-alpha.3 - August 8, 2025
 

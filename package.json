@@ -1,9 +1,9 @@
 {
   "name": "massive-ecs",
-  "version": "20.0.0-alpha.6",
+  "version": "20.0.0",
   "displayName": "Massive ECS",
   "unity": "2021.2",
-  "description": "Sparse set ECS library made for prediction-rollback netcode.",
+  "description": "Bitset-based deterministic ECS with rollbacks.",
   "dependencies":
   {
     "com.unity.test-framework.performance": "3.0.3"
