@@ -8,7 +8,6 @@ namespace Massive
 	{
 		Included,
 		Excluded,
-		Any,
 	}
 
 	public class FilterException : MassiveException
@@ -49,7 +48,6 @@ namespace Massive
 							{
 								FilterType.Included => "Included",
 								FilterType.Excluded => "Excluded",
-								FilterType.Any => "Any",
 								_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 							};
 					}
