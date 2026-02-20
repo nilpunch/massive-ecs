@@ -322,7 +322,7 @@ namespace Massive
 				return queryable.World.GetEntity(id);
 			}
 
-			return new Entity(Entifier.Dead, queryable.World);
+			return Entity.Dead;
 		}
 
 		public static bool Any<TQueryable>(this TQueryable queryable)
