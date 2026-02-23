@@ -38,19 +38,19 @@ namespace Massive
 			return this;
 		}
 
-		public Systems New(Func<ISystem> factory)
+		public Systems New(Func<ISystem> factory, int order = 0)
 		{
-			return Factory(new DelegateSystemFactory(factory));
+			return Factory(new DelegateSystemFactory(factory, order));
 		}
 
-		public Systems New<T>() where T : ISystem, new()
+		public Systems New<T>(int order = 0) where T : ISystem, new()
 		{
-			return Factory(new NewSystemFactory<T>());
+			return Factory(new NewSystemFactory<T>(order));
 		}
 
-		public Systems Instance(ISystem system)
+		public Systems Instance(ISystem system, int order = 0)
 		{
-			return Factory(new InstanceSystemFactory(system));
+			return Factory(new InstanceSystemFactory(system, order));
 		}
 
 		public Systems Factory(ISystemFactory systemFactory)
