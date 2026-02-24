@@ -9,7 +9,7 @@
 			_systems = new Systems()
 				.Instance(new SpawnSystem(spawnAmount: 20))
 				.New<DamageSystem>()
-				.New<HealingBuffSystem>()
+				.New(() => new HealingBuffSystem())
 				.New<DeathSystem>()
 				.Build(new World());
 

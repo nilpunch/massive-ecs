@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Unity.IL2CPP.CompilerServices;
+using Preserve = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
+using Member = System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
 
 namespace Massive
 {
@@ -18,12 +20,15 @@ namespace Massive
 		public static AllocatorTypeSchema Generate<T>() where T : unmanaged
 		{
 			ClearBuffers();
+			ReflectionUtils.PreserveSize<T>();
+#pragma warning disable IL2087
 			var rootSchemaIndex = GetRootSchemaIndex(typeof(T));
+#pragma warning restore IL2087
 			var schema = new AllocatorTypeSchema(_schemas.ToArray(), rootSchemaIndex);
 			return schema;
 		}
 
-		public static bool HasPointers(Type type)
+		public static bool HasPointers([Preserve(Member.PublicFields | Member.NonPublicFields)] Type type)
 		{
 			return GetPointerFields(type, 0).Any();
 		}
@@ -38,7 +43,7 @@ namespace Massive
 		/// <returns>
 		/// <see cref="AllocatorDataSchema.InvalidSchema"/> if type has no pointers.
 		/// </returns>
-		private static unsafe byte GetRootSchemaIndex(Type type)
+		private static unsafe byte GetRootSchemaIndex([Preserve(Member.PublicFields | Member.NonPublicFields)] Type type)
 		{
 			if (_schemaIndices.TryGetValue(type, out var schemaIndex))
 			{
@@ -82,7 +87,9 @@ namespace Massive
 					continue;
 				}
 
+#pragma warning disable IL2062
 				var nestedSchemaIndex = GetRootSchemaIndex(pointedType);
+#pragma warning restore IL2062
 
 				if (nestedSchemaIndex > AllocatorDataSchema.MaxSchema)
 				{
@@ -131,7 +138,7 @@ namespace Massive
 			return schemaIndex;
 		}
 
-		private static IEnumerable<(FieldInfo Field, int Offset)> GetPointerFields(Type type, int baseOffset)
+		private static IEnumerable<(FieldInfo Field, int Offset)> GetPointerFields([Preserve(Member.PublicFields | Member.NonPublicFields)] Type type, int baseOffset)
 		{
 			if (!IsUserStruct(type))
 			{
@@ -153,10 +160,12 @@ namespace Massive
 				}
 				else if (IsUserStruct(fieldType))
 				{
+#pragma warning disable IL2072
 					foreach (var nested in GetPointerFields(fieldType, offset))
 					{
 						yield return nested;
 					}
+#pragma warning restore IL2072
 				}
 			}
 		}
