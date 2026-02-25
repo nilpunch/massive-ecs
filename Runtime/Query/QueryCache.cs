@@ -15,10 +15,15 @@ namespace Massive
 	{
 		public ulong[] Bits { get; private set; } = new ulong[1];
 		private ulong[] NonEmptyBlocks { get; set; } = Array.Empty<ulong>();
+		private ulong[] SaturatedBlocks { get; set; } = Array.Empty<ulong>();
 		private int BitsCapacity { get; set; }
 
 		public int[] NonEmptyBitsIndices { get; private set; } = Array.Empty<int>();
+		private int[] SaturatedBitsIndices { get; set; } = Array.Empty<int>();
+		private int[] RefineBitsIndices { get; set; } = Array.Empty<int>();
 		public int NonEmptyBitsCount { get; private set; }
+		public int SaturatedBitsCount { get; private set; }
+		public int RefineBitsCount { get; private set; }
 
 		private FastList<BitSetBase> Included { get; } = new FastList<BitSetBase>();
 		private FastList<BitSetBase> Excluded { get; } = new FastList<BitSetBase>();
@@ -73,14 +78,19 @@ namespace Massive
 
 			EnsureBlocksCapacity(minBlocksLength);
 			Array.Copy(minIncluded.NonEmptyBlocks, NonEmptyBlocks, minBlocksLength);
+			Array.Copy(minIncluded.SaturatedBlocks, SaturatedBlocks, minBlocksLength);
 
 			foreach (var included in Included)
 			{
 				if (included != minIncluded)
 				{
+					var includedNonEmptyBlocks = included.NonEmptyBlocks;
+					var includedSaturatedBlocks = included.SaturatedBlocks;
+
 					for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
 					{
-						NonEmptyBlocks[blockIndex] &= included.NonEmptyBlocks[blockIndex];
+						NonEmptyBlocks[blockIndex] &= includedNonEmptyBlocks[blockIndex];
+						SaturatedBlocks[blockIndex] &= includedSaturatedBlocks[blockIndex];
 					}
 				}
 			}
@@ -88,80 +98,114 @@ namespace Massive
 			foreach (var excluded in Excluded)
 			{
 				excluded.EnsureBlocksCapacity(minBlocksLength);
+
+				var excludedNonEmptyBlocks = excluded.NonEmptyBlocks;
+				var excludedSaturatedBlocks = excluded.SaturatedBlocks;
+
 				for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
 				{
-					NonEmptyBlocks[blockIndex] &= ~excluded.SaturatedBlocks[blockIndex];
+					NonEmptyBlocks[blockIndex] &= ~excludedSaturatedBlocks[blockIndex];
+					SaturatedBlocks[blockIndex] &= ~excludedNonEmptyBlocks[blockIndex];
 				}
 			}
 
 			if (minBlocksLength << 6 > NonEmptyBitsIndices.Length)
 			{
 				NonEmptyBitsIndices = NonEmptyBitsIndices.ResizeToNextPowOf2(minBlocksLength << 6);
+				SaturatedBitsIndices = SaturatedBitsIndices.ResizeToNextPowOf2(minBlocksLength << 6);
+				RefineBitsIndices = RefineBitsIndices.ResizeToNextPowOf2(minBlocksLength << 6);
 			}
 
 			NonEmptyBitsCount = 0;
+			SaturatedBitsCount = 0;
+			RefineBitsCount = 0;
 			var deBruijn = MathUtils.DeBruijn;
 			for (var blockIndex = 0; blockIndex < minBlocksLength; blockIndex++)
 			{
-				var block = NonEmptyBlocks[blockIndex];
-				if (block == 0UL)
+				var nonEmptyBlock = NonEmptyBlocks[blockIndex];
+				var saturatedBlock = SaturatedBlocks[blockIndex];
+				if (nonEmptyBlock == 0UL)
 				{
 					continue;
 				}
 
 				var blockOffset = blockIndex << 6;
 
-				var blockBit = (int)deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
+				var blockBit = (int)deBruijn[(int)(((nonEmptyBlock & (ulong)-(long)nonEmptyBlock) * 0x37E84A99DAE458FUL) >> 58)];
 
-				var runEnd = MathUtils.ApproximateMSB(block);
-				var setBits = MathUtils.PopCount(block);
+				var runEnd = MathUtils.ApproximateMSB(nonEmptyBlock);
+				var setBits = MathUtils.PopCount(nonEmptyBlock);
 				if (setBits << 1 > runEnd - blockBit)
 				{
 					for (; blockBit < runEnd; blockBit++)
 					{
-						if ((block & (1UL << blockBit)) == 0UL)
+						if ((nonEmptyBlock & (1UL << blockBit)) == 0UL)
 						{
 							continue;
 						}
 
-						NonEmptyBitsIndices[NonEmptyBitsCount++] = blockOffset + blockBit;
+						var bitsIndex = blockOffset + blockBit;
+						NonEmptyBitsIndices[NonEmptyBitsCount++] = bitsIndex;
+
+						var oneIfSaturated = (int)((saturatedBlock >> blockBit) & 1UL);
+						SaturatedBitsIndices[SaturatedBitsCount] = bitsIndex;
+						RefineBitsIndices[RefineBitsCount] = bitsIndex;
+						SaturatedBitsCount += oneIfSaturated;
+						RefineBitsCount += 1 - oneIfSaturated;
 					}
 				}
 				else
 				{
 					do
 					{
-						NonEmptyBitsIndices[NonEmptyBitsCount++] = blockOffset + blockBit;
-						block &= block - 1UL;
-						blockBit = deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
-					} while (block != 0UL);
+						var bitsIndex = blockOffset + blockBit;
+						NonEmptyBitsIndices[NonEmptyBitsCount++] = bitsIndex;
+
+						var oneIfSaturated = (int)((saturatedBlock >> blockBit) & 1UL);
+						SaturatedBitsIndices[SaturatedBitsCount] = bitsIndex;
+						RefineBitsIndices[RefineBitsCount] = bitsIndex;
+						SaturatedBitsCount += oneIfSaturated;
+						RefineBitsCount += 1 - oneIfSaturated;
+
+						nonEmptyBlock &= nonEmptyBlock - 1UL;
+						blockBit = deBruijn[(int)(((nonEmptyBlock & (ulong)-(long)nonEmptyBlock) * 0x37E84A99DAE458FUL) >> 58)];
+					} while (nonEmptyBlock != 0UL);
 				}
 			}
 
-			for (var i = 0; i < NonEmptyBitsCount; i++)
+			for (var i = 0; i < SaturatedBitsCount; i++)
 			{
-				var bitsIndex = NonEmptyBitsIndices[i];
-				Bits[bitsIndex] = minIncluded.Bits[bitsIndex];
+				var bitsIndex = SaturatedBitsIndices[i];
+				Bits[bitsIndex] = ulong.MaxValue;
+			}
+
+			var minIncludedBits = minIncluded.Bits;
+			for (var i = 0; i < RefineBitsCount; i++)
+			{
+				var bitsIndex = RefineBitsIndices[i];
+				Bits[bitsIndex] = minIncludedBits[bitsIndex];
 			}
 
 			foreach (var included in Included)
 			{
 				if (included != minIncluded)
 				{
-					for (var i = 0; i < NonEmptyBitsCount; i++)
+					var includedBits = included.Bits;
+					for (var i = 0; i < RefineBitsCount; i++)
 					{
-						var bitsIndex = NonEmptyBitsIndices[i];
-						Bits[bitsIndex] &= included.Bits[bitsIndex];
+						var bitsIndex = RefineBitsIndices[i];
+						Bits[bitsIndex] &= includedBits[bitsIndex];
 					}
 				}
 			}
 
 			foreach (var excluded in Excluded)
 			{
-				for (var i = 0; i < NonEmptyBitsCount; i++)
+				var excludedBits = excluded.Bits;
+				for (var i = 0; i < RefineBitsCount; i++)
 				{
-					var bitsIndex = NonEmptyBitsIndices[i];
-					Bits[bitsIndex] &= ~excluded.Bits[bitsIndex];
+					var bitsIndex = RefineBitsIndices[i];
+					Bits[bitsIndex] &= ~excludedBits[bitsIndex];
 				}
 			}
 
@@ -174,6 +218,7 @@ namespace Massive
 			if (blocksCapacity > NonEmptyBlocks.Length)
 			{
 				NonEmptyBlocks = NonEmptyBlocks.ResizeToNextPowOf2(blocksCapacity);
+				SaturatedBlocks = SaturatedBlocks.Resize(NonEmptyBlocks.Length);
 				BitsCapacity = NonEmptyBlocks.Length << 6;
 				Bits = Bits.Resize(BitsCapacity);
 			}
