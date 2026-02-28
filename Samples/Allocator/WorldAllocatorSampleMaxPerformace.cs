@@ -1,6 +1,6 @@
 ﻿namespace Massive.Samples.AllocatorUsage
 {
-	public struct InventoryFast : IAutoFree<InventoryFast>
+	public struct InventoryFast : IAuto<InventoryFast>
 	{
 		public ListModel<Entifier> Items;
 	}

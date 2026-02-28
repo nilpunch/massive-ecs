@@ -24,6 +24,18 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void DeepCopy(Allocator allocator, ref T value)
+		{
+			if (HasPointers)
+			{
+				fixed (T* ptr = &value)
+				{
+					Schema.DeepFreePointedData(allocator, (byte*)ptr);
+				}
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void DeepFree(Allocator allocator, ref T value)
 		{
 			if (HasPointers)
@@ -120,6 +132,68 @@ namespace Massive
 				}
 
 				allocator.Free(nestedPointer);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void DeepCopyPointedData(Allocator allocator, byte* source, byte* destination)
+		{
+			DeepCopyPointedData(allocator, source, destination, Schemas[RootSchema]);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void DeepCopyPointedData(Allocator allocator, byte* source, byte* destination, AllocatorDataSchema schema)
+		{
+			var index = 0;
+			var lastPointerFieldOffset = -1;
+			while (index < AllocatorDataSchema.Length && schema.OffsetSchemaCount[index] > lastPointerFieldOffset)
+			{
+				lastPointerFieldOffset = schema.OffsetSchemaCount[index++];
+
+				var sourceNestedPointer = *(Pointer*)(source + (lastPointerFieldOffset & AllocatorDataSchema.UsableMask));
+
+				if (!allocator.IsAllocated(sourceNestedPointer))
+				{
+					continue;
+				}
+
+				var destinationNestedPointer = (Pointer*)(destination + (lastPointerFieldOffset & AllocatorDataSchema.UsableMask));
+
+				var sourcePage = allocator.Pages[sourceNestedPointer.Page];
+				var sourceNestedData = sourcePage.AlignedPtr + sourceNestedPointer.Offset;
+				var slotLength = sourcePage.SlotLength;
+				*destinationNestedPointer = allocator.Alloc(slotLength, slotLength, MemoryInit.Uninitialized);
+				var destinationNestedData = allocator.GetPtr(*destinationNestedPointer);
+				UnsafeUtils.Copy(sourceNestedData, destinationNestedData, slotLength);
+
+				var isPrimitive = lastPointerFieldOffset < AllocatorDataSchema.FlagMask;
+				if (isPrimitive)
+				{
+					continue;
+				}
+
+				var nestedSchemaIndex = schema.OffsetSchemaCount[index++];
+				var nestedSchema = Schemas[nestedSchemaIndex & AllocatorDataSchema.UsableMask];
+
+				var isCollection = nestedSchemaIndex >= AllocatorDataSchema.FlagMask;
+				if (isCollection)
+				{
+					var countFieldOffset = schema.OffsetSchemaCount[index++];
+
+					var count = *(int*)(source + countFieldOffset);
+					var elementSize = nestedSchema.ElementSize;
+
+					for (var i = 0; i < count; i++)
+					{
+						DeepCopyPointedData(allocator, sourceNestedData, destinationNestedData, nestedSchema);
+						sourceNestedData += elementSize;
+						destinationNestedData += elementSize;
+					}
+				}
+				else
+				{
+					DeepCopyPointedData(allocator, sourceNestedData, destinationNestedData, nestedSchema);
+				}
 			}
 		}
 	}

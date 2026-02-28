@@ -55,9 +55,9 @@ namespace Massive
 			{
 				return CopyableUtils.CreateCopyingDataSet(type, Default<T>.Value);
 			}
-			else if (AutoFreeUtils.IsImplementedFor(type) && AllocatorSchemaGenerator.HasPointers(type))
+			else if (AutoUtils.IsImplementedFor(type) && AllocatorSchemaGenerator.HasPointers(type))
 			{
-				return AutoFreeUtils.CreateAutoFreeDataSet(type, _allocator, Default<T>.Value);
+				return AutoUtils.CreateAutoDataSet(type, _allocator, Default<T>.Value);
 			}
 			else
 			{

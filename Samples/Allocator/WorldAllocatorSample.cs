@@ -2,7 +2,7 @@
 {
 	public struct Item { }
 
-	public struct Inventory : IAutoFree<Inventory>
+	public struct Inventory : IAuto<Inventory>
 	{
 		public ListPointer<Entifier> Items;
 	}
