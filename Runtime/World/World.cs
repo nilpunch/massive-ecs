@@ -18,6 +18,7 @@ namespace Massive
 		public Allocator Allocator { get; }
 
 		public WorldConfig Config { get; }
+		public WorldQueryConfig QueryConfig { get; }
 
 		public World()
 			: this(new WorldConfig())
@@ -31,6 +32,7 @@ namespace Massive
 			Sets = new Sets(new SetFactory(Allocator, worldConfig), Components);
 			Config = worldConfig;
 			Entities = new Entities(this);
+			QueryConfig = new WorldQueryConfig(this);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

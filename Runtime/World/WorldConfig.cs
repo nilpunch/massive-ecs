@@ -1,10 +1,13 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Massive
 {
 	public class WorldConfig
 	{
 		public readonly bool StoreEmptyTypesAsDataSets = false;
+
+		public readonly List<ISetSelector> ExcludedImplicitly = new List<ISetSelector>();
 
 		public WorldConfig(bool? storeEmptyTypesAsDataSets = default)
 		{
@@ -15,6 +18,13 @@ namespace Massive
 		public bool CompatibleWith(WorldConfig other)
 		{
 			return StoreEmptyTypesAsDataSets == other.StoreEmptyTypesAsDataSets;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public WorldConfig ExcludeImplicitly<T>()
+		{
+			ExcludedImplicitly.Add(new Selector<T>());
+			return this;
 		}
 	}
 }

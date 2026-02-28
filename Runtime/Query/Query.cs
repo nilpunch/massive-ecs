@@ -633,6 +633,8 @@ namespace Massive
 				var excluded = filter.Excluded[i];
 				resultQueryCache.AddExclude(excluded);
 			}
+
+			World.QueryConfig.ApplyImplicitExclusion(filter, resultQueryCache);
 		}
 	}
 }
