@@ -9,5 +9,11 @@
 		{
 			FramesCapacity = framesCapacity ?? FramesCapacity;
 		}
+
+		public new MassiveWorldConfig ExcludeImplicitly<T>()
+		{
+			ExcludedImplicitly.Add(new Selector<T>());
+			return this;
+		}
 	}
 }

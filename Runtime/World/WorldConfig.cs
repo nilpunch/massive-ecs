@@ -20,7 +20,6 @@ namespace Massive
 			return StoreEmptyTypesAsDataSets == other.StoreEmptyTypesAsDataSets;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public WorldConfig ExcludeImplicitly<T>()
 		{
 			ExcludedImplicitly.Add(new Selector<T>());
