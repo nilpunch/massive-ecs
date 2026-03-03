@@ -93,7 +93,7 @@ namespace Massive
 
 		private static readonly Dictionary<Type, int> s_sizeOfCache = new Dictionary<Type, int>();
 
-		private static unsafe int SizeOf<T>() where T : unmanaged => sizeof(T);
+		public static unsafe int SizeOfUnmanaged<T>() where T : unmanaged => sizeof(T);
 
 		public static int SizeOfUnmanaged(Type t)
 		{
@@ -136,7 +136,7 @@ namespace Massive
 		private static int SizeOfGeneric(Type t)
 		{
 			var genericMethod = typeof(ReflectionUtils)
-				.GetMethod(nameof(SizeOf), BindingFlags.Static | BindingFlags.NonPublic)
+				.GetMethod(nameof(SizeOfUnmanaged), BindingFlags.Static | BindingFlags.NonPublic)
 				.MakeGenericMethod(t);
 			var size = (int)genericMethod.Invoke(null, new object[] { });
 			return size;
