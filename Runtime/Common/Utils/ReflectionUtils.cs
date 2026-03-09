@@ -93,14 +93,22 @@ namespace Massive
 
 		private static readonly Dictionary<Type, int> s_sizeOfCache = new Dictionary<Type, int>();
 
-		public static unsafe int SizeOfUnmanaged<T>() where T : unmanaged => sizeof(T);
+		public static unsafe int SizeOf<T>() where T : unmanaged => sizeof(T);
 
 		public static int SizeOfUnmanaged(Type t)
 		{
 #if NET5_0_OR_GREATER
 			if (!s_sizeOfCache.TryGetValue(t, out var size))
 			{
-				throw new Exception($"Can't get runtime size of {t.GetFullGenericName()}.");
+				try
+				{
+					size = SizeOfUmanagedGeneric(t);
+				}
+				catch
+				{
+					throw new Exception($"Can't get runtime size of {t.GetFullGenericName()}.");
+				}
+				s_sizeOfCache.Add(t, size);
 			}
 
 			return size;
@@ -115,7 +123,7 @@ namespace Massive
 					}
 					else if (t.IsGenericType || t.IsByRef || t.IsArray || t.ContainsGenericParameters)
 					{
-						size = SizeOfGeneric(t);
+						size = SizeOfUmanagedGeneric(t);
 					}
 					else
 					{
@@ -133,13 +141,21 @@ namespace Massive
 #endif
 		}
 
-		private static int SizeOfGeneric(Type t)
+		private static int SizeOfUmanagedGeneric(Type t)
 		{
-			var genericMethod = typeof(ReflectionUtils)
-				.GetMethod(nameof(SizeOfUnmanaged), BindingFlags.Static | BindingFlags.NonPublic)
+#if NET5_0_OR_GREATER
+			var genericMethod = typeof(System.Runtime.CompilerServices.Unsafe)
+				.GetMethod("SizeOf", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
 				.MakeGenericMethod(t);
 			var size = (int)genericMethod.Invoke(null, new object[] { });
 			return size;
+#else
+			var genericMethod = typeof(ReflectionUtils)
+				.GetMethod(nameof(SizeOf), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+				.MakeGenericMethod(t);
+			var size = (int)genericMethod.Invoke(null, new object[] { });
+			return size;
+#endif
 		}
 	}
 }
