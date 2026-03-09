@@ -1,5 +1,26 @@
 # Changelog
 
+## 20.1.0 - March 8, 2026
+
+### Added
+
+- Ordering support for `Systems` registration methods.
+- mplicitly excluded components in `WorldConfig`. These components are automatically added  
+  to the `Exclude` filter in all queries unless explicitly included.
+- Automatic cloning of deep pointers and their data when an entity is cloned.
+
+### Changed
+
+- `IInject<T>` is now contravariant.
+- Renamed `IAutoFree<T>` to `IAuto<T>`.
+- Improved `QueryCache` update efficiency.
+
+### Fixed
+
+- `SizeOfUnmanaged` on .NET 5+ could fail when no size cache preserved. Added a reflection fallback.
+- Fixed an issue in `AllocatorSchemaGenerator` when a type contained a pointer to a primitive.
+- Fixed an issue with `AllocatorPointerField` when a type contained nested wrapper structs.
+
 ## 20.0.0 - February 20, 2026
 
 Stabilization of the new architecture.

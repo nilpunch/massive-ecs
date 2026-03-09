@@ -8,7 +8,7 @@
         <Nullable>disable</Nullable>
         <RootNamespace>Massive</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>20.0.0</Version>
+        <Version>20.1.0</Version>
         <Title>Massive ECS</Title>
         <Authors>nilpunch</Authors>
         <Description>Bitset-based ECS with rollbacks. C# library and Unity package.</Description>
