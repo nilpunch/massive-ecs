@@ -65,7 +65,7 @@ namespace Massive
 			schema.ElementSize = (byte)sizeOfType;
 
 			var complexityCount = 0;
-			foreach (var (nestedType, field, offset) in GetPointerFields(type, 0))
+			foreach (var (baseType, baseOffset, field, offset) in GetPointerFields(type, 0))
 			{
 				var fieldType = field.FieldType;
 				var pointedType = fieldType.IsGenericType ? fieldType.GetGenericArguments()[0] : null;
@@ -113,7 +113,7 @@ namespace Massive
 					}
 
 					schema.OffsetSchemaCount[complexityCount - 1] |= AllocatorDataSchema.FlagMask;
-					schema.OffsetSchemaCount[complexityCount++] = (byte)Marshal.OffsetOf(nestedType, pointerFieldAttribute.CountFieldName);
+					schema.OffsetSchemaCount[complexityCount++] = (byte)(baseOffset + (int)Marshal.OffsetOf(baseType, pointerFieldAttribute.CountFieldName));
 				}
 			}
 
@@ -138,7 +138,7 @@ namespace Massive
 			return schemaIndex;
 		}
 
-		private static IEnumerable<(Type Type, FieldInfo Field, int Offset)> GetPointerFields([Preserve(Member.PublicFields | Member.NonPublicFields)] Type type, int baseOffset)
+		private static IEnumerable<(Type Type, int TypeOffset, FieldInfo Field, int FieldOffset)> GetPointerFields([Preserve(Member.PublicFields | Member.NonPublicFields)] Type type, int baseOffset)
 		{
 			if (!IsUserStruct(type))
 			{
@@ -156,7 +156,7 @@ namespace Massive
 
 				if (fieldType == typeof(Pointer) || genericTypeDefinition == typeof(Pointer<>))
 				{
-					yield return (type, field, offset + baseOffset);
+					yield return (type, baseOffset, field, offset + baseOffset);
 				}
 				else if (IsUserStruct(fieldType))
 				{
