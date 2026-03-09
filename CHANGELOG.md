@@ -5,7 +5,7 @@
 ### Added
 
 - Ordering support for `Systems` registration methods.
-- mplicitly excluded components in `WorldConfig`. These components are automatically added  
+- Implicitly excluded components in `WorldConfig`. These components are automatically added  
   to the `Exclude` filter in all queries unless explicitly included.
 - Automatic cloning of deep pointers and their data when an entity is cloned.
 
