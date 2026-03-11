@@ -2,6 +2,7 @@
 #define MASSIVE_ASSERT
 #endif
 
+using System;
 using System.Runtime.CompilerServices;
 using Unity.IL2CPP.CompilerServices;
 
@@ -43,9 +44,19 @@ namespace Massive
 		/// All data is copied using <see cref="ICopyable{T}"/>.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyToCopyable(DataSet<T> other)
+		public void CopyToCopyable(CopyingDataSet<T> other)
 		{
 			CopyBitSetTo(other);
+
+			foreach (var page in other.PagedData)
+			{
+				if (page != null)
+				{
+					Array.Fill(page, DefaultValue);
+				}
+			}
+
+			other.FreeAllPages();
 
 			var blocksLength = BlocksCapacity;
 

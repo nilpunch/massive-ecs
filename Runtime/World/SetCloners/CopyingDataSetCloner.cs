@@ -15,7 +15,7 @@ namespace Massive
 
 		public override void CopyTo(Sets sets)
 		{
-			_dataSet.CopyToCopyable((DataSet<T>)sets.Get<T>());
+			_dataSet.CopyToCopyable((CopyingDataSet<T>)sets.Get<T>());
 		}
 	}
 }
