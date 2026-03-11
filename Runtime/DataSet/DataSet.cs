@@ -181,7 +181,7 @@ namespace Massive
 		{
 			CopyBitSetTo(other);
 
-			var initialPoolCount = other.PoolCount;
+			var otherInitialPoolCount = other.PoolCount;
 			other.FreeAllPages();
 
 			foreach (var pageIndex in GetDataPages())
@@ -201,9 +201,9 @@ namespace Massive
 #endif
 			}
 
-			for (var poolPageIndex = initialPoolCount; poolPageIndex < other.PoolCount; poolPageIndex++)
+			for (var otherPoolPage = otherInitialPoolCount; otherPoolPage < other.PoolCount; otherPoolPage++)
 			{
-				Array.Fill(DataPagePool[poolPageIndex], DefaultValue);
+				Array.Fill(other.DataPagePool[otherPoolPage], DefaultValue);
 			}
 		}
 
