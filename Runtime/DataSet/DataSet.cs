@@ -98,6 +98,32 @@ namespace Massive
 			PagedData[id >> Constants.PageSizePower][id & Constants.PageSizeMinusOne] = DefaultValue;
 		}
 
+		protected override void FillPagesWithDefaultValue()
+		{
+			var defaultValue = DefaultValue;
+			var blocksLength = BlocksCapacity;
+			var pageMasksNegative = Constants.PageMasksNegative;
+			var deBruijn = MathUtils.DeBruijn;
+			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
+			{
+				var block = NonEmptyBlocks[blockIndex];
+				var pageOffset = blockIndex << Constants.PagesInBlockPower;
+				while (block != 0UL)
+				{
+					var blockBit = (int)deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
+					var pageIndexMod = blockBit >> Constants.PageMaskShift;
+
+					var pageIndex = pageOffset + pageIndexMod;
+
+					var page = PagedData[pageIndex];
+
+					Array.Fill(page, defaultValue);
+
+					block &= pageMasksNegative[pageIndexMod];
+				}
+			}
+		}
+
 		protected override void FreePage(int page)
 		{
 			FreePageInternal(page);

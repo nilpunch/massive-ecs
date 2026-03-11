@@ -225,6 +225,7 @@ namespace Massive
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Reset()
 		{
+			FillPagesWithDefaultValue();
 			Array.Fill(NonEmptyBlocks, 0UL);
 			Array.Fill(SaturatedBlocks, 0UL);
 			Array.Fill(Bits, 0UL);
@@ -271,6 +272,10 @@ namespace Massive
 		}
 
 		protected virtual void ClearData(int id)
+		{
+		}
+
+		protected virtual void FillPagesWithDefaultValue()
 		{
 		}
 
