@@ -100,27 +100,9 @@ namespace Massive
 
 		protected override void FillPagesWithDefaultValue()
 		{
-			var defaultValue = DefaultValue;
-			var blocksLength = BlocksCapacity;
-			var pageMasksNegative = Constants.PageMasksNegative;
-			var deBruijn = MathUtils.DeBruijn;
-			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
+			foreach (var pageIndex in GetDataPages())
 			{
-				var block = NonEmptyBlocks[blockIndex];
-				var pageOffset = blockIndex << Constants.PagesInBlockPower;
-				while (block != 0UL)
-				{
-					var blockBit = (int)deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
-					var pageIndexMod = blockBit >> Constants.PageMaskShift;
-
-					var pageIndex = pageOffset + pageIndexMod;
-
-					var page = PagedData[pageIndex];
-
-					Array.Fill(page, defaultValue);
-
-					block &= pageMasksNegative[pageIndexMod];
-				}
+				Array.Fill(PagedData[pageIndex], DefaultValue);
 			}
 		}
 
@@ -199,35 +181,29 @@ namespace Massive
 		{
 			CopyBitSetTo(other);
 
-			var blocksLength = BlocksCapacity;
-			var pageMasksNegative = Constants.PageMasksNegative;
-			var deBruijn = MathUtils.DeBruijn;
-			for (var blockIndex = 0; blockIndex < blocksLength; blockIndex++)
+			var initialPoolCount = other.PoolCount;
+			other.FreeAllPages();
+
+			foreach (var pageIndex in GetDataPages())
 			{
-				var block = NonEmptyBlocks[blockIndex];
-				var pageOffset = blockIndex << Constants.PagesInBlockPower;
-				while (block != 0UL)
-				{
-					var blockBit = (int)deBruijn[(int)(((block & (ulong)-(long)block) * 0x37E84A99DAE458FUL) >> 58)];
-					var pageIndexMod = blockBit >> Constants.PageMaskShift;
+				other.EnsurePageInternal(pageIndex);
 
-					var pageIndex = pageOffset + pageIndexMod;
-					other.EnsurePageInternal(pageIndex);
-
-					var page = PagedData[pageIndex];
-					var otherPage = other.PagedData[pageIndex];
+				var page = PagedData[pageIndex];
+				var otherPage = other.PagedData[pageIndex];
 
 #if UNITY_EDITOR || NET
-					Array.Copy(page, otherPage, Constants.PageSize);
+				Array.Copy(page, otherPage, Constants.PageSize);
 #else
-					for (var i = 0; i < Constants.PageSize; i++)
-					{
-						otherPage[i] = page[i];
-					}
-#endif
-
-					block &= pageMasksNegative[pageIndexMod];
+				for (var i = 0; i < Constants.PageSize; i++)
+				{
+					otherPage[i] = page[i];
 				}
+#endif
+			}
+
+			for (var poolPageIndex = initialPoolCount; poolPageIndex < other.PoolCount; poolPageIndex++)
+			{
+				Array.Fill(DataPagePool[poolPageIndex], DefaultValue);
 			}
 		}
 
@@ -243,6 +219,7 @@ namespace Massive
 
 		void IDataSet.SetRaw(int id, object value) => Set(id, (T)value);
 
-		DataPageEnumerable IDataSet.GetDataPages() => new DataPageEnumerable(this);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public DataPageEnumerable GetDataPages() => new DataPageEnumerable(this);
 	}
 }
