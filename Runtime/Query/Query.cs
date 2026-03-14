@@ -52,31 +52,24 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 
-				var runEnd = MathUtils.ApproximateMSB(bits);
-				var setBits = MathUtils.PopCount(bits);
-				if (setBits << 1 > runEnd - bit)
+				do
 				{
-					for (; bit < runEnd; bit++)
-					{
-						if ((bitsRef & (1UL << bit)) == 0UL)
-						{
-							continue;
-						}
+					var isolatedBit = bits & (ulong)-(long)bits;
+					var bitIndex = deBruijn[(uint)((isolatedBit * 0x37E84A99DAE458FUL) >> 58)];
 
-						action.Apply(bitsOffset + bit);
-					}
-				}
-				else
-				{
+					var entityIndex = bitsOffset + bitIndex;
+
 					do
 					{
-						action.Apply(bitsOffset + bit);
-						bits &= (bits - 1UL) & bitsRef;
-						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
-					} while (bits != 0UL);
-				}
+						action.Apply(entityIndex);
+
+						isolatedBit <<= 1;
+						entityIndex++;
+					} while ((bitsRef & isolatedBit) != 0);
+
+					bits = bitsRef & ~(isolatedBit - 1);
+				} while (bits != 0);
 			}
 
 			QueryCache.ReturnAndPop(cache);
@@ -114,36 +107,30 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
 
-				var runEnd = MathUtils.ApproximateMSB(bits);
-				var setBits = MathUtils.PopCount(bits);
-				if (setBits << 1 > runEnd - bit)
+				do
 				{
-					for (; bit < runEnd; bit++)
-					{
-						if ((bitsRef & (1UL << bit)) == 0UL)
-						{
-							continue;
-						}
+					var isolatedBit = bits & (ulong)-(long)bits;
+					var bitIndex = deBruijn[(uint)((isolatedBit * 0x37E84A99DAE458FUL) >> 58)];
 
-						action.Apply(bitsOffset + bit,
-							ref dataPage1[dataOffset + bit]);
-					}
-				}
-				else
-				{
+					var dataIndex = dataOffset + bitIndex;
+					var entityIndex = bitsOffset + bitIndex;
+
 					do
 					{
-						action.Apply(bitsOffset + bit,
-							ref dataPage1[dataOffset + bit]);
-						bits &= (bits - 1UL) & bitsRef;
-						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
-					} while (bits != 0UL);
-				}
+						action.Apply(entityIndex,
+							ref dataPage1[dataIndex]);
+
+						isolatedBit <<= 1;
+						dataIndex++;
+						entityIndex++;
+					} while ((bitsRef & isolatedBit) != 0);
+
+					bits = bitsRef & ~(isolatedBit - 1);
+				} while (bits != 0);
 			}
 
 			QueryCache.ReturnAndPop(cache);
@@ -185,41 +172,32 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
 				var dataPage2 = dataSet2.PagedData[pageIndex];
 
-				var runEnd = MathUtils.ApproximateMSB(bits);
-				var setBits = MathUtils.PopCount(bits);
-				if (setBits << 1 > runEnd - bit)
+				do
 				{
-					for (; bit < runEnd; bit++)
-					{
-						if ((bitsRef & (1UL << bit)) == 0UL)
-						{
-							continue;
-						}
+					var isolatedBit = bits & (ulong)-(long)bits;
+					var bitIndex = deBruijn[(uint)((isolatedBit * 0x37E84A99DAE458FUL) >> 58)];
 
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
-							ref dataPage1[dataIndex],
-							ref dataPage2[dataIndex]);
-					}
-				}
-				else
-				{
+					var dataIndex = dataOffset + bitIndex;
+					var entityIndex = bitsOffset + bitIndex;
+
 					do
 					{
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
+						action.Apply(entityIndex,
 							ref dataPage1[dataIndex],
 							ref dataPage2[dataIndex]);
-						bits &= (bits - 1UL) & bitsRef;
-						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
-					} while (bits != 0UL);
-				}
+
+						isolatedBit <<= 1;
+						dataIndex++;
+						entityIndex++;
+					} while ((bitsRef & isolatedBit) != 0);
+
+					bits = bitsRef & ~(isolatedBit - 1);
+				} while (bits != 0);
 			}
 
 			QueryCache.ReturnAndPop(cache);
@@ -265,44 +243,34 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
 				var dataPage2 = dataSet2.PagedData[pageIndex];
 				var dataPage3 = dataSet3.PagedData[pageIndex];
 
-				var runEnd = MathUtils.ApproximateMSB(bits);
-				var setBits = MathUtils.PopCount(bits);
-				if (setBits << 1 > runEnd - bit)
+				do
 				{
-					for (; bit < runEnd; bit++)
-					{
-						if ((bitsRef & (1UL << bit)) == 0UL)
-						{
-							continue;
-						}
+					var isolatedBit = bits & (ulong)-(long)bits;
+					var bitIndex = deBruijn[(uint)((isolatedBit * 0x37E84A99DAE458FUL) >> 58)];
 
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
-							ref dataPage1[dataIndex],
-							ref dataPage2[dataIndex],
-							ref dataPage3[dataIndex]);
-					}
-				}
-				else
-				{
+					var dataIndex = dataOffset + bitIndex;
+					var entityIndex = bitsOffset + bitIndex;
+
 					do
 					{
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
+						action.Apply(entityIndex,
 							ref dataPage1[dataIndex],
 							ref dataPage2[dataIndex],
 							ref dataPage3[dataIndex]);
-						bits &= (bits - 1UL) & bitsRef;
-						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
-					} while (bits != 0UL);
-				}
+
+						isolatedBit <<= 1;
+						dataIndex++;
+						entityIndex++;
+					} while ((bitsRef & isolatedBit) != 0);
+
+					bits = bitsRef & ~(isolatedBit - 1);
+				} while (bits != 0);
 			}
 
 			QueryCache.ReturnAndPop(cache);
@@ -352,7 +320,6 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
@@ -360,39 +327,29 @@ namespace Massive
 				var dataPage3 = dataSet3.PagedData[pageIndex];
 				var dataPage4 = dataSet4.PagedData[pageIndex];
 
-				var runEnd = MathUtils.ApproximateMSB(bits);
-				var setBits = MathUtils.PopCount(bits);
-				if (setBits << 1 > runEnd - bit)
+				do
 				{
-					for (; bit < runEnd; bit++)
-					{
-						if ((bitsRef & (1UL << bit)) == 0UL)
-						{
-							continue;
-						}
+					var isolatedBit = bits & (ulong)-(long)bits;
+					var bitIndex = deBruijn[(uint)((isolatedBit * 0x37E84A99DAE458FUL) >> 58)];
 
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
-							ref dataPage1[dataIndex],
-							ref dataPage2[dataIndex],
-							ref dataPage3[dataIndex],
-							ref dataPage4[dataIndex]);
-					}
-				}
-				else
-				{
+					var dataIndex = dataOffset + bitIndex;
+					var entityIndex = bitsOffset + bitIndex;
+
 					do
 					{
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
+						action.Apply(entityIndex,
 							ref dataPage1[dataIndex],
 							ref dataPage2[dataIndex],
 							ref dataPage3[dataIndex],
 							ref dataPage4[dataIndex]);
-						bits &= (bits - 1UL) & bitsRef;
-						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
-					} while (bits != 0UL);
-				}
+
+						isolatedBit <<= 1;
+						dataIndex++;
+						entityIndex++;
+					} while ((bitsRef & isolatedBit) != 0);
+
+					bits = bitsRef & ~(isolatedBit - 1);
+				} while (bits != 0);
 			}
 
 			QueryCache.ReturnAndPop(cache);
@@ -446,7 +403,6 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
@@ -455,41 +411,30 @@ namespace Massive
 				var dataPage4 = dataSet4.PagedData[pageIndex];
 				var dataPage5 = dataSet5.PagedData[pageIndex];
 
-				var runEnd = MathUtils.ApproximateMSB(bits);
-				var setBits = MathUtils.PopCount(bits);
-				if (setBits << 1 > runEnd - bit)
+				do
 				{
-					for (; bit < runEnd; bit++)
-					{
-						if ((bitsRef & (1UL << bit)) == 0UL)
-						{
-							continue;
-						}
+					var isolatedBit = bits & (ulong)-(long)bits;
+					var bitIndex = deBruijn[(uint)((isolatedBit * 0x37E84A99DAE458FUL) >> 58)];
 
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
-							ref dataPage1[dataIndex],
-							ref dataPage2[dataIndex],
-							ref dataPage3[dataIndex],
-							ref dataPage4[dataIndex],
-							ref dataPage5[dataIndex]);
-					}
-				}
-				else
-				{
+					var dataIndex = dataOffset + bitIndex;
+					var entityIndex = bitsOffset + bitIndex;
+
 					do
 					{
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
+						action.Apply(entityIndex,
 							ref dataPage1[dataIndex],
 							ref dataPage2[dataIndex],
 							ref dataPage3[dataIndex],
 							ref dataPage4[dataIndex],
 							ref dataPage5[dataIndex]);
-						bits &= (bits - 1UL) & bitsRef;
-						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
-					} while (bits != 0UL);
-				}
+
+						isolatedBit <<= 1;
+						dataIndex++;
+						entityIndex++;
+					} while ((bitsRef & isolatedBit) != 0);
+
+					bits = bitsRef & ~(isolatedBit - 1);
+				} while (bits != 0);
 			}
 
 			QueryCache.ReturnAndPop(cache);
@@ -547,7 +492,6 @@ namespace Massive
 				}
 
 				var bitsOffset = bitsIndex << 6;
-				var bit = (int)deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
 				var dataOffset = bitsOffset & Constants.PageSizeMinusOne;
 				var pageIndex = bitsOffset >> Constants.PageSizePower;
 				var dataPage1 = dataSet1.PagedData[pageIndex];
@@ -557,43 +501,31 @@ namespace Massive
 				var dataPage5 = dataSet5.PagedData[pageIndex];
 				var dataPage6 = dataSet6.PagedData[pageIndex];
 
-				var runEnd = MathUtils.ApproximateMSB(bits);
-				var setBits = MathUtils.PopCount(bits);
-				if (setBits << 1 > runEnd - bit)
+				do
 				{
-					for (; bit < runEnd; bit++)
-					{
-						if ((bitsRef & (1UL << bit)) == 0UL)
-						{
-							continue;
-						}
+					var isolatedBit = bits & (ulong)-(long)bits;
+					var bitIndex = deBruijn[(uint)((isolatedBit * 0x37E84A99DAE458FUL) >> 58)];
 
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
-							ref dataPage1[dataIndex],
-							ref dataPage2[dataIndex],
-							ref dataPage3[dataIndex],
-							ref dataPage4[dataIndex],
-							ref dataPage5[dataIndex],
-							ref dataPage6[dataIndex]);
-					}
-				}
-				else
-				{
+					var dataIndex = dataOffset + bitIndex;
+					var entityIndex = bitsOffset + bitIndex;
+
 					do
 					{
-						var dataIndex = dataOffset + bit;
-						action.Apply(bitsOffset + bit,
+						action.Apply(entityIndex,
 							ref dataPage1[dataIndex],
 							ref dataPage2[dataIndex],
 							ref dataPage3[dataIndex],
 							ref dataPage4[dataIndex],
 							ref dataPage5[dataIndex],
 							ref dataPage6[dataIndex]);
-						bits &= (bits - 1UL) & bitsRef;
-						bit = deBruijn[(int)(((bits & (ulong)-(long)bits) * 0x37E84A99DAE458FUL) >> 58)];
-					} while (bits != 0UL);
-				}
+
+						isolatedBit <<= 1;
+						dataIndex++;
+						entityIndex++;
+					} while ((bitsRef & isolatedBit) != 0);
+
+					bits = bitsRef & ~(isolatedBit - 1);
+				} while (bits != 0);
 			}
 
 			QueryCache.ReturnAndPop(cache);
