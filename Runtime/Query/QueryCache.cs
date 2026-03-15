@@ -124,6 +124,7 @@ namespace Massive
 			{
 				var nonEmptyBlock = NonEmptyBlocks[blockIndex];
 				var saturatedBlock = SaturatedBlocks[blockIndex];
+
 				if (nonEmptyBlock == 0UL)
 				{
 					continue;
@@ -131,46 +132,29 @@ namespace Massive
 
 				var blockOffset = blockIndex << 6;
 
-				var blockBit = (int)deBruijn[(int)(((nonEmptyBlock & (ulong)-(long)nonEmptyBlock) * 0x37E84A99DAE458FUL) >> 58)];
-
-				var runEnd = MathUtils.ApproximateMSB(nonEmptyBlock);
-				var setBits = MathUtils.PopCount(nonEmptyBlock);
-				if (setBits << 1 > runEnd - blockBit)
+				do
 				{
-					for (; blockBit < runEnd; blockBit++)
-					{
-						if ((nonEmptyBlock & (1UL << blockBit)) == 0UL)
-						{
-							continue;
-						}
+					var isolatedBit = nonEmptyBlock & (ulong)-(long)nonEmptyBlock;
+					var blockBitIndex = deBruijn[(uint)((isolatedBit * 0x37E84A99DAE458FUL) >> 58)];
 
-						var bitsIndex = blockOffset + blockBit;
-						NonEmptyBitsIndices[NonEmptyBitsCount++] = bitsIndex;
-
-						var oneIfSaturated = (int)((saturatedBlock >> blockBit) & 1UL);
-						SaturatedBitsIndices[SaturatedBitsCount] = bitsIndex;
-						RefineBitsIndices[RefineBitsCount] = bitsIndex;
-						SaturatedBitsCount += oneIfSaturated;
-						RefineBitsCount += 1 - oneIfSaturated;
-					}
-				}
-				else
-				{
 					do
 					{
-						var bitsIndex = blockOffset + blockBit;
+						var bitsIndex = blockOffset + blockBitIndex;
+
 						NonEmptyBitsIndices[NonEmptyBitsCount++] = bitsIndex;
 
-						var oneIfSaturated = (int)((saturatedBlock >> blockBit) & 1UL);
+						var oneIfSaturated = (int)((saturatedBlock >> blockBitIndex) & 1UL);
 						SaturatedBitsIndices[SaturatedBitsCount] = bitsIndex;
 						RefineBitsIndices[RefineBitsCount] = bitsIndex;
 						SaturatedBitsCount += oneIfSaturated;
 						RefineBitsCount += 1 - oneIfSaturated;
 
-						nonEmptyBlock &= nonEmptyBlock - 1UL;
-						blockBit = deBruijn[(int)(((nonEmptyBlock & (ulong)-(long)nonEmptyBlock) * 0x37E84A99DAE458FUL) >> 58)];
-					} while (nonEmptyBlock != 0UL);
-				}
+						isolatedBit <<= 1;
+						blockBitIndex++;
+					} while ((nonEmptyBlock & isolatedBit) != 0);
+
+					nonEmptyBlock &= ~(isolatedBit - 1);
+				} while (nonEmptyBlock != 0);
 			}
 
 			for (var i = 0; i < SaturatedBitsCount; i++)
