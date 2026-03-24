@@ -159,7 +159,7 @@ namespace Massive
 				var blockOffset = blockIndex << 6;
 
 				// Block loop.
-				do
+				while (block != 0)
 				{
 					var blockBit = block & (ulong)-(long)block;
 					var blockBitIndex = deBruijn[(uint)((blockBit * 0x37E84A99DAE458FUL) >> 58)];
@@ -195,7 +195,7 @@ namespace Massive
 					Bits[bitsIndex] = 0UL;
 
 					block &= ~(blockBit - 1);
-				} while (block != 0);
+				}
 
 				NonEmptyBlocks[blockIndex] = 0UL;
 				SaturatedBlocks[blockIndex] = 0UL;

@@ -125,14 +125,9 @@ namespace Massive
 				var nonEmptyBlock = NonEmptyBlocks[blockIndex];
 				var saturatedBlock = SaturatedBlocks[blockIndex];
 
-				if (nonEmptyBlock == 0UL)
-				{
-					continue;
-				}
-
 				var blockOffset = blockIndex << 6;
 
-				do
+				while (nonEmptyBlock != 0)
 				{
 					var isolatedBit = nonEmptyBlock & (ulong)-(long)nonEmptyBlock;
 					var blockBitIndex = deBruijn[(uint)((isolatedBit * 0x37E84A99DAE458FUL) >> 58)];
@@ -154,7 +149,7 @@ namespace Massive
 					} while ((nonEmptyBlock & isolatedBit) != 0);
 
 					nonEmptyBlock &= ~(isolatedBit - 1);
-				} while (nonEmptyBlock != 0);
+				}
 			}
 
 			for (var i = 0; i < SaturatedBitsCount; i++)
