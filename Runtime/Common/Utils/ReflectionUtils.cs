@@ -101,18 +101,7 @@ namespace Massive
 			{
 				try
 				{
-					if (t.IsPointer)
-					{
-						size = IntPtr.Size;
-					}
-					else if (t.IsGenericType || t.IsByRef || t.IsArray || t.ContainsGenericParameters)
-					{
-						size = SizeOfUmanagedGeneric(t);
-					}
-					else
-					{
-						size = Marshal.SizeOf(t);
-					}
+					size = SizeOfGeneric(t);
 				}
 				catch
 				{
@@ -124,7 +113,7 @@ namespace Massive
 			return size;
 		}
 
-		private static int SizeOfUmanagedGeneric(Type t)
+		private static int SizeOfGeneric(Type t)
 		{
 			var genericMethod = typeof(ReflectionUtils)
 				.GetMethod(nameof(SizeOf), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
