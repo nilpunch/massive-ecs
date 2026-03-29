@@ -11,31 +11,21 @@ namespace Massive
 	{
 		public static readonly UnmanagedInfo Info;
 		public static readonly int SizeInBytes;
-		public static readonly int Alignment;
 
 		static unsafe Unmanaged()
 		{
 			SizeInBytes = sizeof(T);
-			Alignment = (int)Marshal.OffsetOf<AlignmentHelper>(nameof(AlignmentHelper.Target));
-			Info = new UnmanagedInfo(SizeInBytes, Alignment);
-		}
-
-		private struct AlignmentHelper
-		{
-			public byte Padding;
-			public T Target;
+			Info = new UnmanagedInfo(SizeInBytes);
 		}
 	}
 
 	public struct UnmanagedInfo
 	{
 		public readonly int Size;
-		public readonly int Alignment;
 
-		public UnmanagedInfo(int size, int alignment)
+		public UnmanagedInfo(int size)
 		{
 			Size = size;
-			Alignment = alignment;
 		}
 	}
 }

@@ -32,7 +32,7 @@ namespace Massive.Tests
 					case 0: // Alloc
 					{
 						var size = Sizes[rnd.Next(Sizes.Length)];
-						var pointer = _allocator.Alloc(size, 1);
+						var pointer = _allocator.Alloc(size);
 						Assert.Greater(pointer.AsInt, 0);
 						Assert.IsTrue(_allocator.IsAllocated(pointer));
 						_activePointers.Add((pointer, size));
@@ -56,7 +56,7 @@ namespace Massive.Tests
 							var index = rnd.Next(_activePointers.Count);
 							var pointer = _activePointers[index];
 							var newSize = Sizes[rnd.Next(Sizes.Length)];
-							_allocator.Resize(ref pointer.pointer, newSize, 1);
+							_allocator.Resize(ref pointer.pointer, newSize);
 							Assert.IsTrue(_allocator.IsAllocated(pointer.pointer));
 							_activePointers[index] = (pointer.pointer, newSize);
 						}

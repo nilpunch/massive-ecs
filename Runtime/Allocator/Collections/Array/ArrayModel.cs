@@ -84,7 +84,7 @@ namespace Massive
 		public void Resize(Allocator allocator, int length, MemoryInit memoryInit = MemoryInit.Clear)
 		{
 			var info = Unmanaged<T>.Info;
-			allocator.Resize(ref Items.Raw, length * info.Size, info.Alignment, memoryInit);
+			allocator.Resize(ref Items.Raw, length * info.Size, memoryInit);
 			Length = length;
 		}
 
@@ -94,7 +94,7 @@ namespace Massive
 			if (length > Length)
 			{
 				var info = Unmanaged<T>.Info;
-				allocator.Resize(ref Items.Raw, length * info.Size, info.Alignment);
+				allocator.Resize(ref Items.Raw, length * info.Size);
 				Length = length;
 			}
 		}

@@ -66,7 +66,7 @@ namespace Massive
 				var newCapacity = MathUtils.RoundUpToPowerOfTwo(Count + 1);
 
 				var info = Unmanaged<T>.Info;
-				allocator.Resize(ref Items.Raw, newCapacity * info.Size, info.Alignment);
+				allocator.Resize(ref Items.Raw, newCapacity * info.Size);
 				Capacity = newCapacity;
 			}
 
@@ -172,7 +172,7 @@ namespace Massive
 				var newCapacity = MathUtils.RoundUpToPowerOfTwo(index + 1);
 
 				var info = Unmanaged<T>.Info;
-				allocator.Resize(ref Items.Raw, newCapacity * info.Size, info.Alignment);
+				allocator.Resize(ref Items.Raw, newCapacity * info.Size);
 				Capacity = newCapacity;
 			}
 		}

@@ -162,7 +162,7 @@ namespace Massive
 				var sourcePage = allocator.Pages[sourceNestedPointer.Page];
 				var sourceNestedData = sourcePage.AlignedPtr + sourceNestedPointer.Offset;
 				var slotLength = sourcePage.SlotLength;
-				*destinationNestedPointer = allocator.Alloc(slotLength, slotLength, MemoryInit.Uninitialized);
+				*destinationNestedPointer = allocator.Alloc(slotLength, MemoryInit.Uninitialized);
 				var destinationNestedData = allocator.GetPtr(*destinationNestedPointer);
 				UnsafeUtils.Copy(sourceNestedData, destinationNestedData, slotLength);
 

@@ -73,7 +73,7 @@ namespace Massive
 		public Allocator()
 		{
 			// Reserve default value of pointer to be invalid.
-			Alloc(0, 0, MemoryInit.Uninitialized);
+			Alloc(0, MemoryInit.Uninitialized);
 			Pages[0].UsedSlots[0] = 0; // Mark it not in use, but also not in free list.
 		}
 
@@ -115,16 +115,15 @@ namespace Massive
 		public Pointer<T> Alloc<T>(int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
 			var info = Unmanaged<T>.Info;
-			return (Pointer<T>)Alloc(minimumLength * info.Size, info.Alignment, memoryInit);
+			return (Pointer<T>)Alloc(minimumLength * info.Size, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Pointer Alloc(int minimumLength, int alignment, MemoryInit memoryInit = MemoryInit.Clear)
+		public Pointer Alloc(int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
 			NegativeArgumentException.ThrowIfNegative(minimumLength);
-			NotPowerOfTwoArgumentException.ThrowIfNotPowerOfTwo(alignment);
 
-			var slotClass = SlotClass(minimumLength, alignment);
+			var slotClass = SlotClass(minimumLength);
 			var slotClassIndex = slotClass - MinSlotClass;
 			var slotLength = 1 << slotClass;
 
@@ -177,25 +176,24 @@ namespace Massive
 		public void Resize<T>(ref Pointer pointer, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear) where T : unmanaged
 		{
 			var info = Unmanaged<T>.Info;
-			Resize(ref pointer, minimumLength * info.Size, info.Alignment, memoryInit);
+			Resize(ref pointer, minimumLength * info.Size, memoryInit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Resize(ref Pointer pointer, int minimumLength, int alignment, MemoryInit memoryInit = MemoryInit.Clear)
+		public void Resize(ref Pointer pointer, int minimumLength, MemoryInit memoryInit = MemoryInit.Clear)
 		{
 			NegativeArgumentException.ThrowIfNegative(minimumLength);
-			NotPowerOfTwoArgumentException.ThrowIfNotPowerOfTwo(alignment);
 			InvalidPointerException.ThrowIfNotAllocated(this, pointer);
 
 			ref var page = ref Pages[pointer.Page];
 
-			var newSizeClass = SlotClass(minimumLength, alignment);
+			var newSizeClass = SlotClass(minimumLength);
 			if (newSizeClass == page.SlotClass)
 			{
 				return;
 			}
 
-			var newPointer = Alloc(minimumLength, alignment, MemoryInit.Uninitialized);
+			var newPointer = Alloc(minimumLength, MemoryInit.Uninitialized);
 			ref var newPage = ref Pages[newPointer.Page];
 
 			var minSlotLength = 1 << MathUtils.Min(page.SlotClass, newPage.SlotClass);
@@ -299,9 +297,9 @@ namespace Massive
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int SlotClass(int length, int alignment)
+		public static int SlotClass(int length)
 		{
-			return MathUtils.CeilLog2((uint)MathUtils.Max(length, alignment, MinSlotLength));
+			return MathUtils.CeilLog2((uint)MathUtils.Max(length, MinSlotLength));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
