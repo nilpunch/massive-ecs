@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Unity.IL2CPP.CompilerServices;
+﻿using Unity.IL2CPP.CompilerServices;
 
 // ReSharper disable StaticMemberInGenericType
 namespace Massive

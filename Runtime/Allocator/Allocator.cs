@@ -367,6 +367,8 @@ namespace Massive
 				ref var otherPage = ref other.Pages[i];
 
 				var pageSlotClass = page.SlotClass;
+				var slotClassIndex = pageSlotClass - MinSlotClass;
+
 				var bitsetLength = BitSetLength(page.SlotClass);
 				var fullPageLength = PageLength(page.SlotClass) + bitsetLength;
 
@@ -376,12 +378,12 @@ namespace Massive
 					otherPage = new Page(UnsafeUtils.AllocAligned(fullPageLength, MinPageLength), pageSlotClass);
 				}
 
-				var isLastPageOfSlotClass = !encounteredSlotClasses[pageSlotClass] && NextToAlloc[pageSlotClass].Offset > 0;
+				var isLastPageOfSlotClass = !encounteredSlotClasses[slotClassIndex] && NextToAlloc[slotClassIndex].Offset > 0;
 				if (isLastPageOfSlotClass)
 				{
-					UnsafeUtils.Copy(page.AlignedPtr, otherPage.AlignedPtr, NextToAlloc[pageSlotClass].Offset);
+					UnsafeUtils.Copy(page.AlignedPtr, otherPage.AlignedPtr, NextToAlloc[slotClassIndex].Offset);
 					UnsafeUtils.Copy(page.UsedSlots, otherPage.UsedSlots, bitsetLength);
-					encounteredSlotClasses[pageSlotClass] = true;
+					encounteredSlotClasses[slotClassIndex] = true;
 				}
 				else
 				{

@@ -105,7 +105,7 @@ namespace Massive
 			{
 				for (var i = 0; i < length; i++)
 				{
-					data[i] = data[i];
+					data[i] = 0;
 				}
 				return;
 			}
