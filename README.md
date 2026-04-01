@@ -19,7 +19,7 @@ In Unity, open "Window" -> "Package Manager".
 Click the "+" sign at the top left corner -> "Add package from git URL..."  
 Paste link to the version:  
 Latest: `https://github.com/nilpunch/massive-ecs.git`  
-Stable: `https://github.com/nilpunch/massive-ecs.git#v20.1.0`  
+Stable: `https://github.com/nilpunch/massive-ecs.git#v20.1.1`  
 See minimum required Unity version in the `package.json` file.
 
 ## Overview
