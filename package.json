@@ -1,6 +1,6 @@
 {
   "name": "massive-ecs",
-  "version": "20.1.0",
+  "version": "20.1.1",
   "displayName": "Massive ECS",
   "unity": "2021.2",
   "description": "Bitset-based deterministic ECS with rollbacks.",

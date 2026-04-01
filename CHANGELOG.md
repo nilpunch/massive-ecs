@@ -1,5 +1,18 @@
 # Changelog
 
+## 20.1.1 - March 31, 2026
+
+### Changed
+
+- Updated iteration algorithm to reduce code size and improve adaptability to bitset filling.
+- Removed explicit alignment from `Allocator`. Allocations are naturally aligned by size anyway.
+
+### Fixed
+
+- `SizeOfUnmanaged` returning inconsistent values between Mono and .NET.
+- Fixed default value invalidation (#12).
+- Fixed incorrect allocator rollbacks and clearing of small allocations.
+
 ## 20.1.0 - March 8, 2026
 
 ### Added
